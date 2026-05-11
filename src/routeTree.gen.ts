@@ -20,11 +20,20 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudentIndexRouteImport } from './routes/student.index'
+import { Route as LeaderIndexRouteImport } from './routes/leader.index'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentNotificationsRouteImport } from './routes/student.notifications'
 import { Route as StudentMyOrgsRouteImport } from './routes/student.my-orgs'
 import { Route as StudentExploreRouteImport } from './routes/student.explore'
 import { Route as StudentEventsRouteImport } from './routes/student.events'
+import { Route as LeaderRequestsRouteImport } from './routes/leader.requests'
+import { Route as LeaderProfileRouteImport } from './routes/leader.profile'
+import { Route as LeaderOrganizationRouteImport } from './routes/leader.organization'
+import { Route as LeaderMembersRouteImport } from './routes/leader.members'
+import { Route as LeaderManageEventsRouteImport } from './routes/leader.manage-events'
+import { Route as LeaderCreateEventRouteImport } from './routes/leader.create-event'
+import { Route as LeaderAttendanceRouteImport } from './routes/leader.attendance'
+import { Route as LeaderAnnouncementsRouteImport } from './routes/leader.announcements'
 
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
@@ -81,6 +90,11 @@ const StudentIndexRoute = StudentIndexRouteImport.update({
   path: '/',
   getParentRoute: () => StudentRoute,
 } as any)
+const LeaderIndexRoute = LeaderIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LeaderRoute,
+} as any)
 const StudentProfileRoute = StudentProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -106,6 +120,46 @@ const StudentEventsRoute = StudentEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => StudentRoute,
 } as any)
+const LeaderRequestsRoute = LeaderRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => LeaderRoute,
+} as any)
+const LeaderProfileRoute = LeaderProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => LeaderRoute,
+} as any)
+const LeaderOrganizationRoute = LeaderOrganizationRouteImport.update({
+  id: '/organization',
+  path: '/organization',
+  getParentRoute: () => LeaderRoute,
+} as any)
+const LeaderMembersRoute = LeaderMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => LeaderRoute,
+} as any)
+const LeaderManageEventsRoute = LeaderManageEventsRouteImport.update({
+  id: '/manage-events',
+  path: '/manage-events',
+  getParentRoute: () => LeaderRoute,
+} as any)
+const LeaderCreateEventRoute = LeaderCreateEventRouteImport.update({
+  id: '/create-event',
+  path: '/create-event',
+  getParentRoute: () => LeaderRoute,
+} as any)
+const LeaderAttendanceRoute = LeaderAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => LeaderRoute,
+} as any)
+const LeaderAnnouncementsRoute = LeaderAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
+  getParentRoute: () => LeaderRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -113,16 +167,25 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/events': typeof EventsRoute
   '/features': typeof FeaturesRoute
-  '/leader': typeof LeaderRoute
+  '/leader': typeof LeaderRouteWithChildren
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/register': typeof RegisterRoute
   '/student': typeof StudentRouteWithChildren
+  '/leader/announcements': typeof LeaderAnnouncementsRoute
+  '/leader/attendance': typeof LeaderAttendanceRoute
+  '/leader/create-event': typeof LeaderCreateEventRoute
+  '/leader/manage-events': typeof LeaderManageEventsRoute
+  '/leader/members': typeof LeaderMembersRoute
+  '/leader/organization': typeof LeaderOrganizationRoute
+  '/leader/profile': typeof LeaderProfileRoute
+  '/leader/requests': typeof LeaderRequestsRoute
   '/student/events': typeof StudentEventsRoute
   '/student/explore': typeof StudentExploreRoute
   '/student/my-orgs': typeof StudentMyOrgsRoute
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
+  '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
 }
 export interface FileRoutesByTo {
@@ -131,15 +194,23 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/events': typeof EventsRoute
   '/features': typeof FeaturesRoute
-  '/leader': typeof LeaderRoute
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/register': typeof RegisterRoute
+  '/leader/announcements': typeof LeaderAnnouncementsRoute
+  '/leader/attendance': typeof LeaderAttendanceRoute
+  '/leader/create-event': typeof LeaderCreateEventRoute
+  '/leader/manage-events': typeof LeaderManageEventsRoute
+  '/leader/members': typeof LeaderMembersRoute
+  '/leader/organization': typeof LeaderOrganizationRoute
+  '/leader/profile': typeof LeaderProfileRoute
+  '/leader/requests': typeof LeaderRequestsRoute
   '/student/events': typeof StudentEventsRoute
   '/student/explore': typeof StudentExploreRoute
   '/student/my-orgs': typeof StudentMyOrgsRoute
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
+  '/leader': typeof LeaderIndexRoute
   '/student': typeof StudentIndexRoute
 }
 export interface FileRoutesById {
@@ -149,16 +220,25 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/events': typeof EventsRoute
   '/features': typeof FeaturesRoute
-  '/leader': typeof LeaderRoute
+  '/leader': typeof LeaderRouteWithChildren
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/register': typeof RegisterRoute
   '/student': typeof StudentRouteWithChildren
+  '/leader/announcements': typeof LeaderAnnouncementsRoute
+  '/leader/attendance': typeof LeaderAttendanceRoute
+  '/leader/create-event': typeof LeaderCreateEventRoute
+  '/leader/manage-events': typeof LeaderManageEventsRoute
+  '/leader/members': typeof LeaderMembersRoute
+  '/leader/organization': typeof LeaderOrganizationRoute
+  '/leader/profile': typeof LeaderProfileRoute
+  '/leader/requests': typeof LeaderRequestsRoute
   '/student/events': typeof StudentEventsRoute
   '/student/explore': typeof StudentExploreRoute
   '/student/my-orgs': typeof StudentMyOrgsRoute
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
+  '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
 }
 export interface FileRouteTypes {
@@ -174,11 +254,20 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/register'
     | '/student'
+    | '/leader/announcements'
+    | '/leader/attendance'
+    | '/leader/create-event'
+    | '/leader/manage-events'
+    | '/leader/members'
+    | '/leader/organization'
+    | '/leader/profile'
+    | '/leader/requests'
     | '/student/events'
     | '/student/explore'
     | '/student/my-orgs'
     | '/student/notifications'
     | '/student/profile'
+    | '/leader/'
     | '/student/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -187,15 +276,23 @@ export interface FileRouteTypes {
     | '/admin'
     | '/events'
     | '/features'
-    | '/leader'
     | '/login'
     | '/organizations'
     | '/register'
+    | '/leader/announcements'
+    | '/leader/attendance'
+    | '/leader/create-event'
+    | '/leader/manage-events'
+    | '/leader/members'
+    | '/leader/organization'
+    | '/leader/profile'
+    | '/leader/requests'
     | '/student/events'
     | '/student/explore'
     | '/student/my-orgs'
     | '/student/notifications'
     | '/student/profile'
+    | '/leader'
     | '/student'
   id:
     | '__root__'
@@ -209,11 +306,20 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/register'
     | '/student'
+    | '/leader/announcements'
+    | '/leader/attendance'
+    | '/leader/create-event'
+    | '/leader/manage-events'
+    | '/leader/members'
+    | '/leader/organization'
+    | '/leader/profile'
+    | '/leader/requests'
     | '/student/events'
     | '/student/explore'
     | '/student/my-orgs'
     | '/student/notifications'
     | '/student/profile'
+    | '/leader/'
     | '/student/'
   fileRoutesById: FileRoutesById
 }
@@ -223,7 +329,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   EventsRoute: typeof EventsRoute
   FeaturesRoute: typeof FeaturesRoute
-  LeaderRoute: typeof LeaderRoute
+  LeaderRoute: typeof LeaderRouteWithChildren
   LoginRoute: typeof LoginRoute
   OrganizationsRoute: typeof OrganizationsRoute
   RegisterRoute: typeof RegisterRoute
@@ -309,6 +415,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentIndexRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/leader/': {
+      id: '/leader/'
+      path: '/'
+      fullPath: '/leader/'
+      preLoaderRoute: typeof LeaderIndexRouteImport
+      parentRoute: typeof LeaderRoute
+    }
     '/student/profile': {
       id: '/student/profile'
       path: '/profile'
@@ -344,8 +457,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentEventsRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/leader/requests': {
+      id: '/leader/requests'
+      path: '/requests'
+      fullPath: '/leader/requests'
+      preLoaderRoute: typeof LeaderRequestsRouteImport
+      parentRoute: typeof LeaderRoute
+    }
+    '/leader/profile': {
+      id: '/leader/profile'
+      path: '/profile'
+      fullPath: '/leader/profile'
+      preLoaderRoute: typeof LeaderProfileRouteImport
+      parentRoute: typeof LeaderRoute
+    }
+    '/leader/organization': {
+      id: '/leader/organization'
+      path: '/organization'
+      fullPath: '/leader/organization'
+      preLoaderRoute: typeof LeaderOrganizationRouteImport
+      parentRoute: typeof LeaderRoute
+    }
+    '/leader/members': {
+      id: '/leader/members'
+      path: '/members'
+      fullPath: '/leader/members'
+      preLoaderRoute: typeof LeaderMembersRouteImport
+      parentRoute: typeof LeaderRoute
+    }
+    '/leader/manage-events': {
+      id: '/leader/manage-events'
+      path: '/manage-events'
+      fullPath: '/leader/manage-events'
+      preLoaderRoute: typeof LeaderManageEventsRouteImport
+      parentRoute: typeof LeaderRoute
+    }
+    '/leader/create-event': {
+      id: '/leader/create-event'
+      path: '/create-event'
+      fullPath: '/leader/create-event'
+      preLoaderRoute: typeof LeaderCreateEventRouteImport
+      parentRoute: typeof LeaderRoute
+    }
+    '/leader/attendance': {
+      id: '/leader/attendance'
+      path: '/attendance'
+      fullPath: '/leader/attendance'
+      preLoaderRoute: typeof LeaderAttendanceRouteImport
+      parentRoute: typeof LeaderRoute
+    }
+    '/leader/announcements': {
+      id: '/leader/announcements'
+      path: '/announcements'
+      fullPath: '/leader/announcements'
+      preLoaderRoute: typeof LeaderAnnouncementsRouteImport
+      parentRoute: typeof LeaderRoute
+    }
   }
 }
+
+interface LeaderRouteChildren {
+  LeaderAnnouncementsRoute: typeof LeaderAnnouncementsRoute
+  LeaderAttendanceRoute: typeof LeaderAttendanceRoute
+  LeaderCreateEventRoute: typeof LeaderCreateEventRoute
+  LeaderManageEventsRoute: typeof LeaderManageEventsRoute
+  LeaderMembersRoute: typeof LeaderMembersRoute
+  LeaderOrganizationRoute: typeof LeaderOrganizationRoute
+  LeaderProfileRoute: typeof LeaderProfileRoute
+  LeaderRequestsRoute: typeof LeaderRequestsRoute
+  LeaderIndexRoute: typeof LeaderIndexRoute
+}
+
+const LeaderRouteChildren: LeaderRouteChildren = {
+  LeaderAnnouncementsRoute: LeaderAnnouncementsRoute,
+  LeaderAttendanceRoute: LeaderAttendanceRoute,
+  LeaderCreateEventRoute: LeaderCreateEventRoute,
+  LeaderManageEventsRoute: LeaderManageEventsRoute,
+  LeaderMembersRoute: LeaderMembersRoute,
+  LeaderOrganizationRoute: LeaderOrganizationRoute,
+  LeaderProfileRoute: LeaderProfileRoute,
+  LeaderRequestsRoute: LeaderRequestsRoute,
+  LeaderIndexRoute: LeaderIndexRoute,
+}
+
+const LeaderRouteWithChildren =
+  LeaderRoute._addFileChildren(LeaderRouteChildren)
 
 interface StudentRouteChildren {
   StudentEventsRoute: typeof StudentEventsRoute
@@ -374,7 +570,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   EventsRoute: EventsRoute,
   FeaturesRoute: FeaturesRoute,
-  LeaderRoute: LeaderRoute,
+  LeaderRoute: LeaderRouteWithChildren,
   LoginRoute: LoginRoute,
   OrganizationsRoute: OrganizationsRoute,
   RegisterRoute: RegisterRoute,
