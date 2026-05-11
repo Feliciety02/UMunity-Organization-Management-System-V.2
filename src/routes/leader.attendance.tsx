@@ -31,27 +31,27 @@ function Attendance() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {[
-                ["Innovation Summit 2026", "May 24", 184, 162, "Upcoming", "info" as const],
-                ["Hack Night Vol. 2", "Apr 18", 78, 70, "Completed", "success" as const],
-                ["Coding Bootcamp Day 3", "Apr 03", 64, 58, "Completed", "success" as const],
-                ["Welcome Mixer 2026", "Mar 12", 142, 118, "Completed", "success" as const],
-                ["Tech Talk: Web3", "Feb 20", 92, 64, "Completed", "warning" as const],
-              ].map(([t, d, r, a, s, tone]) => {
-                const rate = Math.round(((a as number) / (r as number)) * 100);
+              {([
+                { t: "Innovation Summit 2026", d: "May 24", r: 184, a: 162, s: "Upcoming", tone: "info" as const },
+                { t: "Hack Night Vol. 2", d: "Apr 18", r: 78, a: 70, s: "Completed", tone: "success" as const },
+                { t: "Coding Bootcamp Day 3", d: "Apr 03", r: 64, a: 58, s: "Completed", tone: "success" as const },
+                { t: "Welcome Mixer 2026", d: "Mar 12", r: 142, a: 118, s: "Completed", tone: "success" as const },
+                { t: "Tech Talk: Web3", d: "Feb 20", r: 92, a: 64, s: "Completed", tone: "warning" as const },
+              ]).map((row) => {
+                const rate = Math.round((row.a / row.r) * 100);
                 return (
-                  <tr key={t as string} className="hover:bg-secondary/40">
-                    <td className="py-3 font-semibold">{t}</td>
-                    <td className="text-muted-foreground">{d}</td>
-                    <td>{r}</td>
-                    <td>{a}</td>
+                  <tr key={row.t} className="hover:bg-secondary/40">
+                    <td className="py-3 font-semibold">{row.t}</td>
+                    <td className="text-muted-foreground">{row.d}</td>
+                    <td>{row.r}</td>
+                    <td>{row.a}</td>
                     <td>
                       <div className="flex items-center gap-2">
                         <div className="h-1.5 w-20 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-gradient-maroon" style={{ width: `${rate}%` }} /></div>
                         <span className="text-xs">{rate}%</span>
                       </div>
                     </td>
-                    <td><Badge tone={tone}>{s}</Badge></td>
+                    <td><Badge tone={row.tone}>{row.s}</Badge></td>
                   </tr>
                 );
               })}
