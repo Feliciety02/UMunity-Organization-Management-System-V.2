@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Sparkles, Mail, Lock, ArrowRight } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Sparkles, Mail, Lock, ArrowRight, User as UserIcon } from "lucide-react";
+import { useState } from "react";
+import { login, homeFor, DEMO_USERS } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -12,6 +14,29 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const s = login(email, password);
+    if (!s) {
+      setError("Invalid credentials. Try a demo account below.");
+      return;
+    }
+    navigate({ to: homeFor(s.role) });
+  }
+
+  function quickLogin(idx: number) {
+    const u = DEMO_USERS[idx];
+    setEmail(u.email);
+    setPassword(u.password);
+    const s = login(u.email, u.password);
+    if (s) navigate({ to: homeFor(s.role) });
+  }
+
   return (
     <AuthLayout
       title="Welcome back."
@@ -22,9 +47,10 @@ function Login() {
         </>
       }
     >
-      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-        <Field icon={Mail} type="email" label="UM Email" placeholder="you@umindanao.edu.ph" />
-        <Field icon={Lock} type="password" label="Password" placeholder="••••••••" />
+      <form className="space-y-4" onSubmit={submit}>
+        <Field icon={Mail} type="email" label="UM Email" placeholder="you@umindanao.edu.ph" value={email} onChange={setEmail} />
+        <Field icon={Lock} type="password" label="Password" placeholder="••••••••" value={password} onChange={setPassword} />
+        {error && <p className="rounded-xl bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">{error}</p>}
         <div className="flex items-center justify-between text-sm">
           <label className="flex items-center gap-2 text-muted-foreground">
             <input type="checkbox" className="h-4 w-4 rounded border-border accent-[var(--primary)]" />
@@ -36,6 +62,28 @@ function Login() {
           Sign in <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </button>
       </form>
+
+      <div className="mt-8 rounded-2xl border border-dashed border-primary/30 bg-secondary/50 p-4">
+        <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
+          <UserIcon className="h-3.5 w-3.5" /> Demo accounts
+        </p>
+        <div className="mt-3 grid gap-2">
+          {DEMO_USERS.map((u, i) => (
+            <button
+              key={u.email}
+              onClick={() => quickLogin(i)}
+              type="button"
+              className="flex items-center justify-between gap-2 rounded-xl bg-card px-3 py-2 text-left text-xs transition hover:border-primary hover:shadow-soft"
+            >
+              <div>
+                <p className="font-semibold capitalize text-foreground">{u.role}</p>
+                <p className="text-muted-foreground">{u.email} · <span className="font-mono">{u.password}</span></p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-primary" />
+            </button>
+          ))}
+        </div>
+      </div>
     </AuthLayout>
   );
 }
@@ -43,7 +91,6 @@ function Login() {
 export function AuthLayout({ title, sub, footer, children }: { title: string; sub: string; footer: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      {/* Visual side */}
       <div className="relative hidden overflow-hidden bg-gradient-maroon text-primary-foreground lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="absolute inset-0 bg-hero opacity-60" />
         <div className="absolute -left-32 top-32 h-96 w-96 rounded-full bg-gold/20 blur-3xl" />
@@ -64,7 +111,6 @@ export function AuthLayout({ title, sub, footer, children }: { title: string; su
         <p className="relative text-xs text-primary-foreground/60">© {new Date().getFullYear()} UMUnity · University of Mindanao</p>
       </div>
 
-      {/* Form side */}
       <div className="flex items-center justify-center bg-background px-4 py-12 sm:px-6">
         <div className="w-full max-w-md">
           <Link to="/" className="mb-8 inline-flex items-center gap-2 lg:hidden">
@@ -83,7 +129,7 @@ export function AuthLayout({ title, sub, footer, children }: { title: string; su
   );
 }
 
-export function Field({ icon: Icon, label, type, placeholder }: { icon: any; label: string; type: string; placeholder: string }) {
+export function Field({ icon: Icon, label, type, placeholder, value, onChange }: { icon: any; label: string; type: string; placeholder: string; value?: string; onChange?: (v: string) => void }) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-sm font-medium text-foreground">{label}</span>
@@ -92,6 +138,8 @@ export function Field({ icon: Icon, label, type, placeholder }: { icon: any; lab
         <input
           type={type}
           placeholder={placeholder}
+          value={value}
+          onChange={onChange ? (e) => onChange(e.target.value) : undefined}
           className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
         />
       </div>
