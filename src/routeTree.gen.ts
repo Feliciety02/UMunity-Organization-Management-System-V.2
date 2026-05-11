@@ -20,8 +20,11 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudentIndexRouteImport } from './routes/student.index'
+import { Route as StudentProfileRouteImport } from './routes/student.profile'
+import { Route as StudentNotificationsRouteImport } from './routes/student.notifications'
 import { Route as StudentMyOrgsRouteImport } from './routes/student.my-orgs'
 import { Route as StudentExploreRouteImport } from './routes/student.explore'
+import { Route as StudentEventsRouteImport } from './routes/student.events'
 
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
@@ -78,6 +81,16 @@ const StudentIndexRoute = StudentIndexRouteImport.update({
   path: '/',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentProfileRoute = StudentProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentNotificationsRoute = StudentNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => StudentRoute,
+} as any)
 const StudentMyOrgsRoute = StudentMyOrgsRouteImport.update({
   id: '/my-orgs',
   path: '/my-orgs',
@@ -86,6 +99,11 @@ const StudentMyOrgsRoute = StudentMyOrgsRouteImport.update({
 const StudentExploreRoute = StudentExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentEventsRoute = StudentEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
   getParentRoute: () => StudentRoute,
 } as any)
 
@@ -100,8 +118,11 @@ export interface FileRoutesByFullPath {
   '/organizations': typeof OrganizationsRoute
   '/register': typeof RegisterRoute
   '/student': typeof StudentRouteWithChildren
+  '/student/events': typeof StudentEventsRoute
   '/student/explore': typeof StudentExploreRoute
   '/student/my-orgs': typeof StudentMyOrgsRoute
+  '/student/notifications': typeof StudentNotificationsRoute
+  '/student/profile': typeof StudentProfileRoute
   '/student/': typeof StudentIndexRoute
 }
 export interface FileRoutesByTo {
@@ -114,8 +135,11 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/register': typeof RegisterRoute
+  '/student/events': typeof StudentEventsRoute
   '/student/explore': typeof StudentExploreRoute
   '/student/my-orgs': typeof StudentMyOrgsRoute
+  '/student/notifications': typeof StudentNotificationsRoute
+  '/student/profile': typeof StudentProfileRoute
   '/student': typeof StudentIndexRoute
 }
 export interface FileRoutesById {
@@ -130,8 +154,11 @@ export interface FileRoutesById {
   '/organizations': typeof OrganizationsRoute
   '/register': typeof RegisterRoute
   '/student': typeof StudentRouteWithChildren
+  '/student/events': typeof StudentEventsRoute
   '/student/explore': typeof StudentExploreRoute
   '/student/my-orgs': typeof StudentMyOrgsRoute
+  '/student/notifications': typeof StudentNotificationsRoute
+  '/student/profile': typeof StudentProfileRoute
   '/student/': typeof StudentIndexRoute
 }
 export interface FileRouteTypes {
@@ -147,8 +174,11 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/register'
     | '/student'
+    | '/student/events'
     | '/student/explore'
     | '/student/my-orgs'
+    | '/student/notifications'
+    | '/student/profile'
     | '/student/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -161,8 +191,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/organizations'
     | '/register'
+    | '/student/events'
     | '/student/explore'
     | '/student/my-orgs'
+    | '/student/notifications'
+    | '/student/profile'
     | '/student'
   id:
     | '__root__'
@@ -176,8 +209,11 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/register'
     | '/student'
+    | '/student/events'
     | '/student/explore'
     | '/student/my-orgs'
+    | '/student/notifications'
+    | '/student/profile'
     | '/student/'
   fileRoutesById: FileRoutesById
 }
@@ -273,6 +309,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentIndexRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/profile': {
+      id: '/student/profile'
+      path: '/profile'
+      fullPath: '/student/profile'
+      preLoaderRoute: typeof StudentProfileRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/notifications': {
+      id: '/student/notifications'
+      path: '/notifications'
+      fullPath: '/student/notifications'
+      preLoaderRoute: typeof StudentNotificationsRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/my-orgs': {
       id: '/student/my-orgs'
       path: '/my-orgs'
@@ -287,18 +337,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentExploreRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/events': {
+      id: '/student/events'
+      path: '/events'
+      fullPath: '/student/events'
+      preLoaderRoute: typeof StudentEventsRouteImport
+      parentRoute: typeof StudentRoute
+    }
   }
 }
 
 interface StudentRouteChildren {
+  StudentEventsRoute: typeof StudentEventsRoute
   StudentExploreRoute: typeof StudentExploreRoute
   StudentMyOrgsRoute: typeof StudentMyOrgsRoute
+  StudentNotificationsRoute: typeof StudentNotificationsRoute
+  StudentProfileRoute: typeof StudentProfileRoute
   StudentIndexRoute: typeof StudentIndexRoute
 }
 
 const StudentRouteChildren: StudentRouteChildren = {
+  StudentEventsRoute: StudentEventsRoute,
   StudentExploreRoute: StudentExploreRoute,
   StudentMyOrgsRoute: StudentMyOrgsRoute,
+  StudentNotificationsRoute: StudentNotificationsRoute,
+  StudentProfileRoute: StudentProfileRoute,
   StudentIndexRoute: StudentIndexRoute,
 }
 
