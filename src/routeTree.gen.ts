@@ -21,6 +21,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudentIndexRouteImport } from './routes/student.index'
 import { Route as LeaderIndexRouteImport } from './routes/leader.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentNotificationsRouteImport } from './routes/student.notifications'
 import { Route as StudentMyOrgsRouteImport } from './routes/student.my-orgs'
@@ -34,6 +35,13 @@ import { Route as LeaderManageEventsRouteImport } from './routes/leader.manage-e
 import { Route as LeaderCreateEventRouteImport } from './routes/leader.create-event'
 import { Route as LeaderAttendanceRouteImport } from './routes/leader.attendance'
 import { Route as LeaderAnnouncementsRouteImport } from './routes/leader.announcements'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminProfileRouteImport } from './routes/admin.profile'
+import { Route as AdminOrganizationsRouteImport } from './routes/admin.organizations'
+import { Route as AdminLogsRouteImport } from './routes/admin.logs'
+import { Route as AdminEventsRouteImport } from './routes/admin.events'
+import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
 
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
@@ -94,6 +102,11 @@ const LeaderIndexRoute = LeaderIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LeaderRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const StudentProfileRoute = StudentProfileRouteImport.update({
   id: '/profile',
@@ -160,11 +173,46 @@ const LeaderAnnouncementsRoute = LeaderAnnouncementsRouteImport.update({
   path: '/announcements',
   getParentRoute: () => LeaderRoute,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfileRoute = AdminProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrganizationsRoute = AdminOrganizationsRouteImport.update({
+  id: '/organizations',
+  path: '/organizations',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLogsRoute = AdminLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEventsRoute = AdminEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnnouncementsRoute = AdminAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/events': typeof EventsRoute
   '/features': typeof FeaturesRoute
   '/leader': typeof LeaderRouteWithChildren
@@ -172,6 +220,13 @@ export interface FileRoutesByFullPath {
   '/organizations': typeof OrganizationsRoute
   '/register': typeof RegisterRoute
   '/student': typeof StudentRouteWithChildren
+  '/admin/announcements': typeof AdminAnnouncementsRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/logs': typeof AdminLogsRoute
+  '/admin/organizations': typeof AdminOrganizationsRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
   '/leader/create-event': typeof LeaderCreateEventRoute
@@ -185,18 +240,25 @@ export interface FileRoutesByFullPath {
   '/student/my-orgs': typeof StudentMyOrgsRoute
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
+  '/admin/': typeof AdminIndexRoute
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
   '/events': typeof EventsRoute
   '/features': typeof FeaturesRoute
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/register': typeof RegisterRoute
+  '/admin/announcements': typeof AdminAnnouncementsRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/logs': typeof AdminLogsRoute
+  '/admin/organizations': typeof AdminOrganizationsRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
   '/leader/create-event': typeof LeaderCreateEventRoute
@@ -210,6 +272,7 @@ export interface FileRoutesByTo {
   '/student/my-orgs': typeof StudentMyOrgsRoute
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
+  '/admin': typeof AdminIndexRoute
   '/leader': typeof LeaderIndexRoute
   '/student': typeof StudentIndexRoute
 }
@@ -217,7 +280,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/events': typeof EventsRoute
   '/features': typeof FeaturesRoute
   '/leader': typeof LeaderRouteWithChildren
@@ -225,6 +288,13 @@ export interface FileRoutesById {
   '/organizations': typeof OrganizationsRoute
   '/register': typeof RegisterRoute
   '/student': typeof StudentRouteWithChildren
+  '/admin/announcements': typeof AdminAnnouncementsRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/logs': typeof AdminLogsRoute
+  '/admin/organizations': typeof AdminOrganizationsRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
   '/leader/create-event': typeof LeaderCreateEventRoute
@@ -238,6 +308,7 @@ export interface FileRoutesById {
   '/student/my-orgs': typeof StudentMyOrgsRoute
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
+  '/admin/': typeof AdminIndexRoute
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
 }
@@ -254,6 +325,13 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/register'
     | '/student'
+    | '/admin/announcements'
+    | '/admin/events'
+    | '/admin/logs'
+    | '/admin/organizations'
+    | '/admin/profile'
+    | '/admin/reports'
+    | '/admin/users'
     | '/leader/announcements'
     | '/leader/attendance'
     | '/leader/create-event'
@@ -267,18 +345,25 @@ export interface FileRouteTypes {
     | '/student/my-orgs'
     | '/student/notifications'
     | '/student/profile'
+    | '/admin/'
     | '/leader/'
     | '/student/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/admin'
     | '/events'
     | '/features'
     | '/login'
     | '/organizations'
     | '/register'
+    | '/admin/announcements'
+    | '/admin/events'
+    | '/admin/logs'
+    | '/admin/organizations'
+    | '/admin/profile'
+    | '/admin/reports'
+    | '/admin/users'
     | '/leader/announcements'
     | '/leader/attendance'
     | '/leader/create-event'
@@ -292,6 +377,7 @@ export interface FileRouteTypes {
     | '/student/my-orgs'
     | '/student/notifications'
     | '/student/profile'
+    | '/admin'
     | '/leader'
     | '/student'
   id:
@@ -306,6 +392,13 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/register'
     | '/student'
+    | '/admin/announcements'
+    | '/admin/events'
+    | '/admin/logs'
+    | '/admin/organizations'
+    | '/admin/profile'
+    | '/admin/reports'
+    | '/admin/users'
     | '/leader/announcements'
     | '/leader/attendance'
     | '/leader/create-event'
@@ -319,6 +412,7 @@ export interface FileRouteTypes {
     | '/student/my-orgs'
     | '/student/notifications'
     | '/student/profile'
+    | '/admin/'
     | '/leader/'
     | '/student/'
   fileRoutesById: FileRoutesById
@@ -326,7 +420,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   EventsRoute: typeof EventsRoute
   FeaturesRoute: typeof FeaturesRoute
   LeaderRoute: typeof LeaderRouteWithChildren
@@ -422,6 +516,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderIndexRouteImport
       parentRoute: typeof LeaderRoute
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/student/profile': {
       id: '/student/profile'
       path: '/profile'
@@ -513,8 +614,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderAnnouncementsRouteImport
       parentRoute: typeof LeaderRoute
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/profile': {
+      id: '/admin/profile'
+      path: '/profile'
+      fullPath: '/admin/profile'
+      preLoaderRoute: typeof AdminProfileRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/organizations': {
+      id: '/admin/organizations'
+      path: '/organizations'
+      fullPath: '/admin/organizations'
+      preLoaderRoute: typeof AdminOrganizationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/logs': {
+      id: '/admin/logs'
+      path: '/logs'
+      fullPath: '/admin/logs'
+      preLoaderRoute: typeof AdminLogsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/events': {
+      id: '/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AdminEventsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/announcements': {
+      id: '/admin/announcements'
+      path: '/announcements'
+      fullPath: '/admin/announcements'
+      preLoaderRoute: typeof AdminAnnouncementsRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
+  AdminEventsRoute: typeof AdminEventsRoute
+  AdminLogsRoute: typeof AdminLogsRoute
+  AdminOrganizationsRoute: typeof AdminOrganizationsRoute
+  AdminProfileRoute: typeof AdminProfileRoute
+  AdminReportsRoute: typeof AdminReportsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnnouncementsRoute: AdminAnnouncementsRoute,
+  AdminEventsRoute: AdminEventsRoute,
+  AdminLogsRoute: AdminLogsRoute,
+  AdminOrganizationsRoute: AdminOrganizationsRoute,
+  AdminProfileRoute: AdminProfileRoute,
+  AdminReportsRoute: AdminReportsRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface LeaderRouteChildren {
   LeaderAnnouncementsRoute: typeof LeaderAnnouncementsRoute
@@ -567,7 +741,7 @@ const StudentRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   EventsRoute: EventsRoute,
   FeaturesRoute: FeaturesRoute,
   LeaderRoute: LeaderRouteWithChildren,
