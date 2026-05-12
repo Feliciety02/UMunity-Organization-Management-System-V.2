@@ -41,18 +41,18 @@ export function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar — desktop */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-card/80 backdrop-blur-xl lg:flex">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-card lg:flex">
         <SidebarInner role={role} nav={nav} />
       </aside>
 
       {/* Mobile sidebar */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-foreground/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="absolute inset-0 bg-foreground/40" onClick={() => setMobileOpen(false)} />
           <aside className="absolute left-0 top-0 flex h-full w-72 flex-col border-r border-border bg-card">
             <div className="flex items-center justify-between p-4">
               <Brand />
-              <button onClick={() => setMobileOpen(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-border">
+              <button onClick={() => setMobileOpen(false)} className="grid h-9 w-9 place-items-center rounded-lg border border-border hover:bg-secondary">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -64,9 +64,9 @@ export function DashboardLayout({
       {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar role={role} session={session} notifs={notifs} onMenu={() => setMobileOpen(true)} />
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          <div className={`mb-4 inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wider ${meta.accent}`}>
-            <span className={`h-1.5 w-1.5 rounded-full bg-gradient-to-br ${meta.bg}`} /> {meta.label} Workspace
+        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <div className={`mb-5 inline-flex items-center gap-2 rounded-md bg-secondary px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${meta.accent}`}>
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" /> {meta.label} Workspace
           </div>
           {children}
         </main>
