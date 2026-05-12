@@ -270,20 +270,20 @@ export function PageHead({ title, sub, action }: { title: string; sub?: string; 
 
 export function StatCard({ label, value, delta, icon: Icon, tone = "primary" }: { label: string; value: string; delta?: string; icon: LucideIcon; tone?: "primary" | "gold" | "rose" | "emerald" }) {
   const toneCls = {
-    primary: "bg-gradient-maroon text-gold",
-    gold: "bg-gradient-gold text-primary-deep",
-    rose: "bg-gradient-to-br from-rose-500 to-primary text-white",
-    emerald: "bg-gradient-to-br from-emerald-500 to-primary-deep text-white",
+    primary: "bg-primary/10 text-primary",
+    gold: "bg-gold/20 text-primary-deep",
+    rose: "bg-rose-100 text-rose-700",
+    emerald: "bg-emerald-100 text-emerald-700",
   }[tone];
   return (
-    <div className="group rounded-3xl border border-border bg-card p-5 shadow-soft transition hover:-translate-y-0.5 hover:shadow-glow">
+    <div className="rounded-lg border border-border bg-card p-5 shadow-soft">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
-          <p className="mt-2 font-display text-3xl font-bold tracking-tight">{value}</p>
+          <p className="mt-2 font-display text-2xl font-bold tracking-tight">{value}</p>
           {delta && <p className="mt-1 text-xs font-medium text-emerald-600">{delta}</p>}
         </div>
-        <div className={`grid h-11 w-11 place-items-center rounded-2xl ${toneCls}`}>
+        <div className={`grid h-10 w-10 place-items-center rounded-md ${toneCls}`}>
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -293,10 +293,10 @@ export function StatCard({ label, value, delta, icon: Icon, tone = "primary" }: 
 
 export function Panel({ title, action, children, className = "" }: { title?: string; action?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`rounded-3xl border border-border bg-card p-5 shadow-soft ${className}`}>
+    <div className={`rounded-lg border border-border bg-card p-5 shadow-soft ${className}`}>
       {(title || action) && (
         <div className="mb-4 flex items-center justify-between">
-          {title && <h3 className="font-display text-base font-bold">{title}</h3>}
+          {title && <h3 className="font-display text-base font-semibold">{title}</h3>}
           {action}
         </div>
       )}
@@ -312,9 +312,9 @@ export function Badge({ children, tone = "neutral" }: { children: React.ReactNod
     warning: "bg-amber-100 text-amber-800",
     danger: "bg-rose-100 text-rose-700",
     info: "bg-sky-100 text-sky-700",
-    gold: "bg-gradient-gold text-primary-deep",
+    gold: "bg-gold/20 text-primary-deep",
   }[tone];
-  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${cls}`}>{children}</span>;
+  return <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${cls}`}>{children}</span>;
 }
 
 export function MiniBarChart({ data, color = "var(--primary)" }: { data: number[]; color?: string }) {
@@ -322,10 +322,10 @@ export function MiniBarChart({ data, color = "var(--primary)" }: { data: number[
   return (
     <div className="flex h-32 items-end gap-2">
       {data.map((v, i) => (
-        <div key={i} className="group flex flex-1 flex-col items-center gap-1">
+        <div key={i} className="flex flex-1 flex-col items-center gap-1">
           <div
-            className="w-full rounded-t-lg transition group-hover:opacity-80"
-            style={{ height: `${(v / max) * 100}%`, background: `linear-gradient(180deg, ${color}, color-mix(in oklab, ${color} 60%, transparent))` }}
+            className="w-full rounded-t-md"
+            style={{ height: `${(v / max) * 100}%`, background: color, opacity: 0.85 }}
           />
         </div>
       ))}
@@ -344,8 +344,8 @@ export function LineSpark({ data }: { data: number[] }) {
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-32 w-full">
       <defs>
         <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="var(--gold)" stopOpacity="0" />
+          <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
         </linearGradient>
       </defs>
       <polygon fill="url(#lg)" points={`0,100 ${pts} 100,100`} />
@@ -356,11 +356,11 @@ export function LineSpark({ data }: { data: number[] }) {
 
 export function EmptyState({ title, sub, icon: Icon }: { title: string; sub?: string; icon: LucideIcon }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-secondary/40 p-10 text-center">
-      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-maroon text-gold">
+    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-secondary/40 p-10 text-center">
+      <div className="grid h-12 w-12 place-items-center rounded-md bg-primary/10 text-primary">
         <Icon className="h-5 w-5" />
       </div>
-      <p className="mt-4 font-display text-base font-bold">{title}</p>
+      <p className="mt-4 font-display text-base font-semibold">{title}</p>
       {sub && <p className="mt-1 max-w-xs text-sm text-muted-foreground">{sub}</p>}
     </div>
   );
