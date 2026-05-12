@@ -22,11 +22,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudentIndexRouteImport } from './routes/student.index'
 import { Route as LeaderIndexRouteImport } from './routes/leader.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as StudentSavedRouteImport } from './routes/student.saved'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentNotificationsRouteImport } from './routes/student.notifications'
 import { Route as StudentMyOrgsRouteImport } from './routes/student.my-orgs'
 import { Route as StudentExploreRouteImport } from './routes/student.explore'
 import { Route as StudentEventsRouteImport } from './routes/student.events'
+import { Route as OrgSlugRouteImport } from './routes/org.$slug'
 import { Route as LeaderRequestsRouteImport } from './routes/leader.requests'
 import { Route as LeaderProfileRouteImport } from './routes/leader.profile'
 import { Route as LeaderOrganizationRouteImport } from './routes/leader.organization'
@@ -108,6 +110,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const StudentSavedRoute = StudentSavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => StudentRoute,
+} as any)
 const StudentProfileRoute = StudentProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -132,6 +139,11 @@ const StudentEventsRoute = StudentEventsRouteImport.update({
   id: '/events',
   path: '/events',
   getParentRoute: () => StudentRoute,
+} as any)
+const OrgSlugRoute = OrgSlugRouteImport.update({
+  id: '/org/$slug',
+  path: '/org/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderRequestsRoute = LeaderRequestsRouteImport.update({
   id: '/requests',
@@ -235,11 +247,13 @@ export interface FileRoutesByFullPath {
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/profile': typeof LeaderProfileRoute
   '/leader/requests': typeof LeaderRequestsRoute
+  '/org/$slug': typeof OrgSlugRoute
   '/student/events': typeof StudentEventsRoute
   '/student/explore': typeof StudentExploreRoute
   '/student/my-orgs': typeof StudentMyOrgsRoute
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
+  '/student/saved': typeof StudentSavedRoute
   '/admin/': typeof AdminIndexRoute
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
@@ -267,11 +281,13 @@ export interface FileRoutesByTo {
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/profile': typeof LeaderProfileRoute
   '/leader/requests': typeof LeaderRequestsRoute
+  '/org/$slug': typeof OrgSlugRoute
   '/student/events': typeof StudentEventsRoute
   '/student/explore': typeof StudentExploreRoute
   '/student/my-orgs': typeof StudentMyOrgsRoute
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
+  '/student/saved': typeof StudentSavedRoute
   '/admin': typeof AdminIndexRoute
   '/leader': typeof LeaderIndexRoute
   '/student': typeof StudentIndexRoute
@@ -303,11 +319,13 @@ export interface FileRoutesById {
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/profile': typeof LeaderProfileRoute
   '/leader/requests': typeof LeaderRequestsRoute
+  '/org/$slug': typeof OrgSlugRoute
   '/student/events': typeof StudentEventsRoute
   '/student/explore': typeof StudentExploreRoute
   '/student/my-orgs': typeof StudentMyOrgsRoute
   '/student/notifications': typeof StudentNotificationsRoute
   '/student/profile': typeof StudentProfileRoute
+  '/student/saved': typeof StudentSavedRoute
   '/admin/': typeof AdminIndexRoute
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
@@ -340,11 +358,13 @@ export interface FileRouteTypes {
     | '/leader/organization'
     | '/leader/profile'
     | '/leader/requests'
+    | '/org/$slug'
     | '/student/events'
     | '/student/explore'
     | '/student/my-orgs'
     | '/student/notifications'
     | '/student/profile'
+    | '/student/saved'
     | '/admin/'
     | '/leader/'
     | '/student/'
@@ -372,11 +392,13 @@ export interface FileRouteTypes {
     | '/leader/organization'
     | '/leader/profile'
     | '/leader/requests'
+    | '/org/$slug'
     | '/student/events'
     | '/student/explore'
     | '/student/my-orgs'
     | '/student/notifications'
     | '/student/profile'
+    | '/student/saved'
     | '/admin'
     | '/leader'
     | '/student'
@@ -407,11 +429,13 @@ export interface FileRouteTypes {
     | '/leader/organization'
     | '/leader/profile'
     | '/leader/requests'
+    | '/org/$slug'
     | '/student/events'
     | '/student/explore'
     | '/student/my-orgs'
     | '/student/notifications'
     | '/student/profile'
+    | '/student/saved'
     | '/admin/'
     | '/leader/'
     | '/student/'
@@ -428,6 +452,7 @@ export interface RootRouteChildren {
   OrganizationsRoute: typeof OrganizationsRoute
   RegisterRoute: typeof RegisterRoute
   StudentRoute: typeof StudentRouteWithChildren
+  OrgSlugRoute: typeof OrgSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -523,6 +548,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/student/saved': {
+      id: '/student/saved'
+      path: '/saved'
+      fullPath: '/student/saved'
+      preLoaderRoute: typeof StudentSavedRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/profile': {
       id: '/student/profile'
       path: '/profile'
@@ -557,6 +589,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/student/events'
       preLoaderRoute: typeof StudentEventsRouteImport
       parentRoute: typeof StudentRoute
+    }
+    '/org/$slug': {
+      id: '/org/$slug'
+      path: '/org/$slug'
+      fullPath: '/org/$slug'
+      preLoaderRoute: typeof OrgSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/leader/requests': {
       id: '/leader/requests'
@@ -723,6 +762,7 @@ interface StudentRouteChildren {
   StudentMyOrgsRoute: typeof StudentMyOrgsRoute
   StudentNotificationsRoute: typeof StudentNotificationsRoute
   StudentProfileRoute: typeof StudentProfileRoute
+  StudentSavedRoute: typeof StudentSavedRoute
   StudentIndexRoute: typeof StudentIndexRoute
 }
 
@@ -732,6 +772,7 @@ const StudentRouteChildren: StudentRouteChildren = {
   StudentMyOrgsRoute: StudentMyOrgsRoute,
   StudentNotificationsRoute: StudentNotificationsRoute,
   StudentProfileRoute: StudentProfileRoute,
+  StudentSavedRoute: StudentSavedRoute,
   StudentIndexRoute: StudentIndexRoute,
 }
 
@@ -749,7 +790,18 @@ const rootRouteChildren: RootRouteChildren = {
   OrganizationsRoute: OrganizationsRoute,
   RegisterRoute: RegisterRoute,
   StudentRoute: StudentRouteWithChildren,
+  OrgSlugRoute: OrgSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
