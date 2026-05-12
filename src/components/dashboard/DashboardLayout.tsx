@@ -192,17 +192,17 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
             )}
           </button>
           {openNotif && (
-            <div className="absolute right-0 top-12 w-80 rounded-2xl border border-border bg-card p-2 shadow-glow">
+            <div className="absolute right-0 top-12 w-80 rounded-lg border border-border bg-card p-2 shadow-glow">
               <div className="flex items-center justify-between p-2">
                 <p className="font-display text-sm font-bold">Notifications</p>
                 <span className="text-xs text-muted-foreground">{unread} new</span>
               </div>
               <div className="max-h-80 space-y-1 overflow-y-auto">
-                {notifs.length === 0 && <p className="p-4 text-center text-xs text-muted-foreground">You're all caught up ✨</p>}
+                {notifs.length === 0 && <p className="p-4 text-center text-xs text-muted-foreground">You're all caught up</p>}
                 {notifs.map((n, i) => (
-                  <div key={i} className={`rounded-xl p-3 text-sm transition hover:bg-secondary ${n.unread ? "bg-secondary/60" : ""}`}>
+                  <div key={i} className={`rounded-md p-3 text-sm transition hover:bg-secondary ${n.unread ? "bg-secondary/60" : ""}`}>
                     <div className="flex items-start gap-2">
-                      {n.unread && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-gradient-gold" />}
+                      {n.unread && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />}
                       <div className="min-w-0">
                         <p className="truncate font-medium">{n.title}</p>
                         <p className="truncate text-xs text-muted-foreground">{n.meta}</p>
