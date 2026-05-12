@@ -11,9 +11,9 @@
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-xl: calc(var(--radius) + 2px);
+  --radius-2xl: calc(var(--radius) + 4px);
+  --radius-3xl: calc(var(--radius) + 8px);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -39,48 +39,48 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --shadow-soft: 0 10px 30px -10px color-mix(in oklab, var(--primary) 25%, transparent);
-  --shadow-glow: 0 20px 60px -20px color-mix(in oklab, var(--gold) 45%, transparent);
+  /* Subtle neutral shadows — no maroon glow */
+  --shadow-soft: 0 1px 2px rgba(30, 27, 22, 0.04), 0 1px 1px rgba(30, 27, 22, 0.03);
+  --shadow-glow: 0 6px 16px -8px rgba(30, 27, 22, 0.08), 0 2px 4px rgba(30, 27, 22, 0.04);
 
-  --gradient-hero: radial-gradient(at 20% 20%, color-mix(in oklab, var(--primary) 80%, transparent) 0%, transparent 50%),
-                   radial-gradient(at 80% 0%, color-mix(in oklab, var(--gold) 70%, transparent) 0%, transparent 55%),
-                   radial-gradient(at 50% 100%, color-mix(in oklab, var(--primary-deep) 90%, transparent) 0%, transparent 60%),
-                   linear-gradient(135deg, var(--primary-deep), var(--primary));
+  /* Calm hero — solid maroon with one soft gold accent */
+  --gradient-hero: radial-gradient(at 85% 15%, color-mix(in oklab, var(--gold) 28%, transparent) 0%, transparent 55%),
+                   linear-gradient(160deg, var(--primary-deep), var(--primary));
   --gradient-gold: linear-gradient(135deg, var(--gold), var(--gold-warm));
-  --gradient-maroon: linear-gradient(135deg, var(--primary-deep), var(--primary));
+  --gradient-maroon: linear-gradient(160deg, var(--primary-deep), var(--primary));
 }
 
 :root {
-  --radius: 1rem;
+  --radius: 0.875rem;
 
   /* Brand */
-  --primary: oklch(0.36 0.14 18);       /* UM Maroon #7A0019 */
-  --primary-deep: oklch(0.27 0.12 18);  /* Deep Maroon #4B0010 */
+  --primary: oklch(0.36 0.14 18);
+  --primary-deep: oklch(0.27 0.12 18);
   --primary-foreground: oklch(0.99 0.01 90);
-  --gold: oklch(0.82 0.16 85);          /* Academic Gold #F4B000 */
-  --gold-warm: oklch(0.85 0.17 82);     /* Warm Gold #FFC72C */
-  --cream: oklch(0.98 0.02 90);         /* Soft Cream */
+  --gold: oklch(0.82 0.16 85);
+  --gold-warm: oklch(0.85 0.17 82);
+  --cream: oklch(0.985 0.022 88);          /* #FFF8E7 */
 
-  --background: oklch(0.975 0.012 85);  /* #F8F5EF */
-  --foreground: oklch(0.18 0.015 60);   /* #1E1B16 */
+  --background: oklch(0.972 0.014 86);     /* #F8F5EF page */
+  --foreground: oklch(0.18 0.012 60);      /* #1E1B16 text */
 
   --card: oklch(1 0 0);
   --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
 
-  --secondary: oklch(0.96 0.025 85);
+  --secondary: oklch(0.955 0.018 86);
   --secondary-foreground: var(--primary-deep);
-  --muted: oklch(0.94 0.02 85);
-  --muted-foreground: oklch(0.45 0.02 60);
+  --muted: oklch(0.945 0.016 86);
+  --muted-foreground: oklch(0.46 0.012 60); /* #6B6258 */
   --accent: var(--gold);
   --accent-foreground: var(--primary-deep);
 
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
 
-  --border: oklch(0.9 0.02 80);
-  --input: oklch(0.92 0.02 80);
+  --border: oklch(0.89 0.028 82);          /* #E7DCC8 */
+  --input: oklch(0.91 0.022 82);
   --ring: var(--primary);
 }
 
@@ -110,7 +110,7 @@
   }
   h1, h2, h3, h4, h5 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.015em;
   }
 }
 
@@ -118,6 +118,7 @@
   .bg-hero { background-image: var(--gradient-hero); }
   .bg-gradient-gold { background-image: var(--gradient-gold); }
   .bg-gradient-maroon { background-image: var(--gradient-maroon); }
+  .bg-cream { background-color: var(--cream); }
   .text-gradient-gold {
     background-image: var(--gradient-gold);
     -webkit-background-clip: text;
@@ -125,43 +126,32 @@
     color: transparent;
   }
   .text-gradient-maroon {
-    background-image: linear-gradient(135deg, var(--primary), var(--gold));
+    background-image: linear-gradient(135deg, var(--primary-deep), var(--primary));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
+  /* Calmer glass — barely transparent, no heavy blur */
   .glass {
-    background: color-mix(in oklab, white 60%, transparent);
-    backdrop-filter: blur(16px);
-    border: 1px solid color-mix(in oklab, white 60%, transparent);
+    background: color-mix(in oklab, white 92%, transparent);
+    border: 1px solid var(--border);
   }
   .glass-dark {
-    background: color-mix(in oklab, var(--primary-deep) 40%, transparent);
-    backdrop-filter: blur(16px);
-    border: 1px solid color-mix(in oklab, var(--gold) 25%, transparent);
+    background: var(--primary-deep);
+    border: 1px solid color-mix(in oklab, var(--gold) 15%, transparent);
   }
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .shadow-glow { box-shadow: var(--shadow-glow); }
 
   @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
+    50% { transform: translateY(-6px); }
   }
-  .animate-float { animation: float 6s ease-in-out infinite; }
+  .animate-float { animation: float 8s ease-in-out infinite; }
 
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .animate-fade-up { animation: fade-up 0.7s ease-out both; }
-
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-  .shimmer {
-    background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--gold) 40%, transparent), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 3s infinite;
-  }
+  .animate-fade-up { animation: fade-up 0.5s ease-out both; }
 }
