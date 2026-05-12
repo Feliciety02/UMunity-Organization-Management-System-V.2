@@ -31,6 +31,7 @@ import { Route as StudentEventsRouteImport } from './routes/student.events'
 import { Route as OrgSlugRouteImport } from './routes/org.$slug'
 import { Route as LeaderRequestsRouteImport } from './routes/leader.requests'
 import { Route as LeaderProfileRouteImport } from './routes/leader.profile'
+import { Route as LeaderPreviewRouteImport } from './routes/leader.preview'
 import { Route as LeaderPostsRouteImport } from './routes/leader.posts'
 import { Route as LeaderOrganizationRouteImport } from './routes/leader.organization'
 import { Route as LeaderMembersRouteImport } from './routes/leader.members'
@@ -42,8 +43,11 @@ import { Route as LeaderAttendanceRouteImport } from './routes/leader.attendance
 import { Route as LeaderAnnouncementsRouteImport } from './routes/leader.announcements'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminReportedPostsRouteImport } from './routes/admin.reported-posts'
+import { Route as AdminReportedCommentsRouteImport } from './routes/admin.reported-comments'
 import { Route as AdminProfileRouteImport } from './routes/admin.profile'
 import { Route as AdminOrganizationsRouteImport } from './routes/admin.organizations'
+import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminLogsRouteImport } from './routes/admin.logs'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
@@ -158,6 +162,11 @@ const LeaderProfileRoute = LeaderProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => LeaderRoute,
 } as any)
+const LeaderPreviewRoute = LeaderPreviewRouteImport.update({
+  id: '/preview',
+  path: '/preview',
+  getParentRoute: () => LeaderRoute,
+} as any)
 const LeaderPostsRoute = LeaderPostsRouteImport.update({
   id: '/posts',
   path: '/posts',
@@ -213,6 +222,16 @@ const AdminReportsRoute = AdminReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminReportedPostsRoute = AdminReportedPostsRouteImport.update({
+  id: '/reported-posts',
+  path: '/reported-posts',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportedCommentsRoute = AdminReportedCommentsRouteImport.update({
+  id: '/reported-comments',
+  path: '/reported-comments',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProfileRoute = AdminProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -221,6 +240,11 @@ const AdminProfileRoute = AdminProfileRouteImport.update({
 const AdminOrganizationsRoute = AdminOrganizationsRouteImport.update({
   id: '/organizations',
   path: '/organizations',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminModerationRoute = AdminModerationRouteImport.update({
+  id: '/moderation',
+  path: '/moderation',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminLogsRoute = AdminLogsRouteImport.update({
@@ -253,8 +277,11 @@ export interface FileRoutesByFullPath {
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/logs': typeof AdminLogsRoute
+  '/admin/moderation': typeof AdminModerationRoute
   '/admin/organizations': typeof AdminOrganizationsRoute
   '/admin/profile': typeof AdminProfileRoute
+  '/admin/reported-comments': typeof AdminReportedCommentsRoute
+  '/admin/reported-posts': typeof AdminReportedPostsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/users': typeof AdminUsersRoute
   '/leader/announcements': typeof LeaderAnnouncementsRoute
@@ -266,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/leader/members': typeof LeaderMembersRoute
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/posts': typeof LeaderPostsRoute
+  '/leader/preview': typeof LeaderPreviewRoute
   '/leader/profile': typeof LeaderProfileRoute
   '/leader/requests': typeof LeaderRequestsRoute
   '/org/$slug': typeof OrgSlugRoute
@@ -290,8 +318,11 @@ export interface FileRoutesByTo {
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/logs': typeof AdminLogsRoute
+  '/admin/moderation': typeof AdminModerationRoute
   '/admin/organizations': typeof AdminOrganizationsRoute
   '/admin/profile': typeof AdminProfileRoute
+  '/admin/reported-comments': typeof AdminReportedCommentsRoute
+  '/admin/reported-posts': typeof AdminReportedPostsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/users': typeof AdminUsersRoute
   '/leader/announcements': typeof LeaderAnnouncementsRoute
@@ -303,6 +334,7 @@ export interface FileRoutesByTo {
   '/leader/members': typeof LeaderMembersRoute
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/posts': typeof LeaderPostsRoute
+  '/leader/preview': typeof LeaderPreviewRoute
   '/leader/profile': typeof LeaderProfileRoute
   '/leader/requests': typeof LeaderRequestsRoute
   '/org/$slug': typeof OrgSlugRoute
@@ -331,8 +363,11 @@ export interface FileRoutesById {
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/logs': typeof AdminLogsRoute
+  '/admin/moderation': typeof AdminModerationRoute
   '/admin/organizations': typeof AdminOrganizationsRoute
   '/admin/profile': typeof AdminProfileRoute
+  '/admin/reported-comments': typeof AdminReportedCommentsRoute
+  '/admin/reported-posts': typeof AdminReportedPostsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/users': typeof AdminUsersRoute
   '/leader/announcements': typeof LeaderAnnouncementsRoute
@@ -344,6 +379,7 @@ export interface FileRoutesById {
   '/leader/members': typeof LeaderMembersRoute
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/posts': typeof LeaderPostsRoute
+  '/leader/preview': typeof LeaderPreviewRoute
   '/leader/profile': typeof LeaderProfileRoute
   '/leader/requests': typeof LeaderRequestsRoute
   '/org/$slug': typeof OrgSlugRoute
@@ -373,8 +409,11 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/events'
     | '/admin/logs'
+    | '/admin/moderation'
     | '/admin/organizations'
     | '/admin/profile'
+    | '/admin/reported-comments'
+    | '/admin/reported-posts'
     | '/admin/reports'
     | '/admin/users'
     | '/leader/announcements'
@@ -386,6 +425,7 @@ export interface FileRouteTypes {
     | '/leader/members'
     | '/leader/organization'
     | '/leader/posts'
+    | '/leader/preview'
     | '/leader/profile'
     | '/leader/requests'
     | '/org/$slug'
@@ -410,8 +450,11 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/events'
     | '/admin/logs'
+    | '/admin/moderation'
     | '/admin/organizations'
     | '/admin/profile'
+    | '/admin/reported-comments'
+    | '/admin/reported-posts'
     | '/admin/reports'
     | '/admin/users'
     | '/leader/announcements'
@@ -423,6 +466,7 @@ export interface FileRouteTypes {
     | '/leader/members'
     | '/leader/organization'
     | '/leader/posts'
+    | '/leader/preview'
     | '/leader/profile'
     | '/leader/requests'
     | '/org/$slug'
@@ -450,8 +494,11 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/events'
     | '/admin/logs'
+    | '/admin/moderation'
     | '/admin/organizations'
     | '/admin/profile'
+    | '/admin/reported-comments'
+    | '/admin/reported-posts'
     | '/admin/reports'
     | '/admin/users'
     | '/leader/announcements'
@@ -463,6 +510,7 @@ export interface FileRouteTypes {
     | '/leader/members'
     | '/leader/organization'
     | '/leader/posts'
+    | '/leader/preview'
     | '/leader/profile'
     | '/leader/requests'
     | '/org/$slug'
@@ -647,6 +695,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderProfileRouteImport
       parentRoute: typeof LeaderRoute
     }
+    '/leader/preview': {
+      id: '/leader/preview'
+      path: '/preview'
+      fullPath: '/leader/preview'
+      preLoaderRoute: typeof LeaderPreviewRouteImport
+      parentRoute: typeof LeaderRoute
+    }
     '/leader/posts': {
       id: '/leader/posts'
       path: '/posts'
@@ -724,6 +779,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReportsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/reported-posts': {
+      id: '/admin/reported-posts'
+      path: '/reported-posts'
+      fullPath: '/admin/reported-posts'
+      preLoaderRoute: typeof AdminReportedPostsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reported-comments': {
+      id: '/admin/reported-comments'
+      path: '/reported-comments'
+      fullPath: '/admin/reported-comments'
+      preLoaderRoute: typeof AdminReportedCommentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/profile': {
       id: '/admin/profile'
       path: '/profile'
@@ -736,6 +805,13 @@ declare module '@tanstack/react-router' {
       path: '/organizations'
       fullPath: '/admin/organizations'
       preLoaderRoute: typeof AdminOrganizationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/moderation': {
+      id: '/admin/moderation'
+      path: '/moderation'
+      fullPath: '/admin/moderation'
+      preLoaderRoute: typeof AdminModerationRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/logs': {
@@ -766,8 +842,11 @@ interface AdminRouteChildren {
   AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminLogsRoute: typeof AdminLogsRoute
+  AdminModerationRoute: typeof AdminModerationRoute
   AdminOrganizationsRoute: typeof AdminOrganizationsRoute
   AdminProfileRoute: typeof AdminProfileRoute
+  AdminReportedCommentsRoute: typeof AdminReportedCommentsRoute
+  AdminReportedPostsRoute: typeof AdminReportedPostsRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -777,8 +856,11 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAnnouncementsRoute: AdminAnnouncementsRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminLogsRoute: AdminLogsRoute,
+  AdminModerationRoute: AdminModerationRoute,
   AdminOrganizationsRoute: AdminOrganizationsRoute,
   AdminProfileRoute: AdminProfileRoute,
+  AdminReportedCommentsRoute: AdminReportedCommentsRoute,
+  AdminReportedPostsRoute: AdminReportedPostsRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -796,6 +878,7 @@ interface LeaderRouteChildren {
   LeaderMembersRoute: typeof LeaderMembersRoute
   LeaderOrganizationRoute: typeof LeaderOrganizationRoute
   LeaderPostsRoute: typeof LeaderPostsRoute
+  LeaderPreviewRoute: typeof LeaderPreviewRoute
   LeaderProfileRoute: typeof LeaderProfileRoute
   LeaderRequestsRoute: typeof LeaderRequestsRoute
   LeaderIndexRoute: typeof LeaderIndexRoute
@@ -811,6 +894,7 @@ const LeaderRouteChildren: LeaderRouteChildren = {
   LeaderMembersRoute: LeaderMembersRoute,
   LeaderOrganizationRoute: LeaderOrganizationRoute,
   LeaderPostsRoute: LeaderPostsRoute,
+  LeaderPreviewRoute: LeaderPreviewRoute,
   LeaderProfileRoute: LeaderProfileRoute,
   LeaderRequestsRoute: LeaderRequestsRoute,
   LeaderIndexRoute: LeaderIndexRoute,
