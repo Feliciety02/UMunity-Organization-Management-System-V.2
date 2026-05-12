@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Panel, Badge } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 import { getSession } from "@/lib/auth";
 import { organizations, posts } from "@/data/site";
 import { OrgAvatar } from "@/components/social/PostCard";
@@ -26,6 +26,7 @@ function Profile() {
 
   return (
     <>
+      <PageHead title="My profile" sub="Manage your student profile and activity settings." />
       {/* Cover + header */}
       <div className="overflow-hidden rounded-lg border border-border bg-card shadow-soft">
         <div className="relative h-44 bg-gradient-to-br from-primary-deep via-primary to-amber-700 sm:h-56">

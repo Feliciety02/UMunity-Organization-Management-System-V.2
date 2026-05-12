@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Panel, Badge } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 import { organizations, events, posts } from "@/data/site";
 import { PostCard, OrgAvatar } from "@/components/social/PostCard";
 import { Calendar, MapPin, Sparkles, TrendingUp } from "lucide-react";
@@ -14,7 +14,22 @@ function StudentFeed() {
   const recommended = organizations.slice(3, 6);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+    <>
+      <PageHead title="Home feed" sub="See the latest updates from your organizations and campus community." />
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-1 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-primary/10 text-primary">AD</span>
+          <div>What's happening on campus, <span className="font-semibold">Althea</span>?</div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {['All', 'Following', 'Events', 'Announcements'].map((label) => (
+            <button key={label} className="rounded-full border border-border bg-white px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-secondary">
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div className="min-w-0 space-y-4">
         {/* Composer prompt */}
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 shadow-soft">
@@ -90,5 +105,6 @@ function StudentFeed() {
         </div>
       </aside>
     </div>
+  </>
   );
 }

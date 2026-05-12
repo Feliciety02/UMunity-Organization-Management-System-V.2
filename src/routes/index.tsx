@@ -38,7 +38,7 @@ function Home() {
                 Discover organizations, join communities, manage events, and stay connected across the University of Mindanao.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link to="/organizations" className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold px-6 py-3 text-sm font-semibold text-primary-deep shadow-glow transition-transform hover:scale-105">
+                <Link to="/organizations" className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold px-6 py-3 text-sm font-semibold text-primary-deep shadow-soft transition-transform hover:scale-105">
                   Explore Organizations
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
@@ -58,7 +58,7 @@ function Home() {
 
             {/* Visual */}
             <div className="relative animate-fade-up [animation-delay:200ms]">
-              <div className="glass-dark relative rounded-3xl p-6 shadow-glow">
+              <div className="glass-dark relative rounded-3xl p-6 shadow-soft">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs uppercase tracking-wider text-gold">Live Now</p>
@@ -92,7 +92,7 @@ function Home() {
                   ))}
                 </div>
               </div>
-              <div className="absolute -bottom-6 -left-6 hidden rounded-2xl bg-gradient-gold p-4 shadow-glow animate-float sm:block">
+              <div className="absolute -bottom-6 -left-6 hidden rounded-2xl bg-gradient-gold p-4 shadow-soft animate-float sm:block">
                 <div className="flex items-center gap-2 text-primary-deep">
                   <Star className="h-4 w-4 fill-current" />
                   <span className="text-xs font-bold">98% Student Satisfaction</span>
@@ -223,7 +223,7 @@ function Home() {
 
       {/* FINAL CTA */}
       <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-maroon p-10 text-center text-primary-foreground shadow-glow md:p-16">
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-maroon p-10 text-center text-primary-foreground shadow-soft md:p-16">
           <div className="absolute -left-20 -top-20 h-72 w-72 rounded-full bg-gold/30 blur-3xl" />
           <div className="absolute -right-20 -bottom-20 h-72 w-72 rounded-full bg-primary/60 blur-3xl" />
           <div className="relative">
@@ -234,7 +234,7 @@ function Home() {
               Join thousands of UM students already building their college story on UMUnity.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link to="/register" className="rounded-full bg-gradient-gold px-7 py-3 text-sm font-bold text-primary-deep shadow-glow transition-transform hover:scale-105">Create your account</Link>
+              <Link to="/register" className="rounded-full bg-gradient-gold px-7 py-3 text-sm font-bold text-primary-deep shadow-soft transition-transform hover:scale-105">Create your account</Link>
               <Link to="/organizations" className="rounded-full border border-white/30 bg-white/10 px-7 py-3 text-sm font-semibold text-primary-foreground backdrop-blur transition hover:bg-white/20">Browse organizations</Link>
             </div>
           </div>
@@ -258,7 +258,7 @@ export function SectionHeader({ eyebrow, title, sub, light }: { eyebrow: string;
 
 export function OrgCard({ name, category, members, desc, color }: { name: string; category: string; members: number; desc: string; color: string }) {
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-glow">
+    <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-soft">
       <div className="flex items-start justify-between">
         <div className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${color} font-display text-xl font-bold text-primary-foreground shadow-soft`}>
           {name.split(" ").filter(w => w !== "UM").slice(0,2).map(w => w[0]).join("")}
@@ -280,7 +280,7 @@ export function OrgCard({ name, category, members, desc, color }: { name: string
 export function EventCard({ title, date, time, venue, host, status }: { title: string; date: string; time: string; venue: string; host: string; status: string }) {
   const statusColor = status === "Open" ? "bg-emerald-100 text-emerald-700" : status === "Filling Fast" ? "bg-amber-100 text-amber-800" : "bg-secondary text-primary";
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-glow">
+    <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-soft">
       <div className="relative h-28 bg-gradient-maroon">
         <div className="absolute inset-0 bg-hero opacity-50" />
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-4">

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Panel, EmptyState } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, EmptyState } from "@/components/dashboard/DashboardLayout";
 import { posts, organizations } from "@/data/site";
 import { PostCard } from "@/components/social/PostCard";
 import { Bookmark } from "lucide-react";
@@ -14,10 +14,7 @@ function Saved() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
-      <div>
-        <h1 className="font-display text-2xl font-bold">Saved posts</h1>
-        <p className="text-sm text-muted-foreground">Things you bookmarked for later.</p>
-      </div>
+      <PageHead title="Saved posts" sub="Things you bookmarked for later." />
       {saved.length === 0 ? (
         <Panel><EmptyState icon={Bookmark} title="Nothing saved yet" sub="Tap the bookmark icon on any post to save it here." /></Panel>
       ) : (
