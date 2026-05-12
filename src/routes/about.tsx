@@ -63,7 +63,7 @@ function About() {
           <div className="relative">
             <h2 className="font-display text-3xl font-bold md:text-4xl">Be part of the movement.</h2>
             <p className="mx-auto mt-3 max-w-xl text-primary-foreground/80">Join UMUnity and shape the future of student life at UM.</p>
-            <Link to="/register" className="mt-8 inline-block rounded-full bg-gradient-gold px-7 py-3 text-sm font-bold text-primary-deep shadow-glow transition-transform hover:scale-105">
+            <Link to="/register" className="mt-8 inline-block rounded-full bg-gradient-gold px-7 py-3 text-sm font-bold text-primary-deep shadow-soft transition-transform hover:scale-105">
               Get started today
             </Link>
           </div>

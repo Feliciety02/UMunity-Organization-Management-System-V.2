@@ -1,12 +1,13 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import {
-  Bell, Search, Menu, X, ChevronDown, LogOut, Settings, User as UserIcon,
+  Bell, Search, Menu, PanelLeft, X, ChevronDown, LogOut, MessageSquare, Settings, User as UserIcon,
   Sparkles, type LucideIcon,
 } from "lucide-react";
 import { getSession, logout, ROLE_META, type Role } from "@/lib/auth";
+import { BrandLogo } from "@/components/BrandLogo";
 
-export type NavItem = { to: string; label: string; icon: LucideIcon; badge?: string };
+export type NavItem = { to: string; label: string; icon: LucideIcon; badge?: string; section?: string };
 
 export type Notif = { title: string; meta: string; unread?: boolean };
 
@@ -24,6 +25,7 @@ export function DashboardLayout({
   const navigate = useNavigate();
   const [session, setSession] = useState(() => getSession());
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const s = getSession();
@@ -34,41 +36,51 @@ export function DashboardLayout({
     }
   }, [navigate, role]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const media = window.matchMedia("(min-width: 768px) and (max-width: 1279px)");
+    const sync = () => setSidebarCollapsed(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
   if (!session) return null;
 
   const meta = ROLE_META[role];
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Sidebar — desktop */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-card lg:flex">
-        <SidebarInner role={role} nav={nav} />
+      <aside className={`sticky top-0 hidden h-screen shrink-0 border-r border-border bg-[#FEFDFE] md:flex ${sidebarCollapsed ? "w-20" : "w-[280px]"}`}>
+        <SidebarInner role={role} nav={nav} collapsed={sidebarCollapsed} onToggleCollapse={() => setSidebarCollapsed((v) => !v)} />
       </aside>
 
-      {/* Mobile sidebar */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-foreground/40" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 flex h-full w-72 flex-col border-r border-border bg-card">
-            <div className="flex items-center justify-between p-4">
-              <Brand />
-              <button onClick={() => setMobileOpen(false)} className="grid h-9 w-9 place-items-center rounded-lg border border-border hover:bg-secondary">
-                <X className="h-4 w-4" />
-              </button>
+          <aside className="absolute left-0 top-0 flex h-full w-[280px] max-w-[calc(100vw-2rem)] flex-col border-r border-border bg-[#FEFDFE]">
+            <div className="flex h-20 items-center justify-between border-b border-border px-4">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setMobileOpen(false)} className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground transition hover:bg-primary/6 hover:text-primary">
+                  <X className="h-4 w-4" />
+                </button>
+                <Brand />
+              </div>
             </div>
             <SidebarInner role={role} nav={nav} onNav={() => setMobileOpen(false)} hideBrand />
           </aside>
         </div>
       )}
 
-      {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar role={role} session={session} notifs={notifs} onMenu={() => setMobileOpen(true)} />
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          <div className={`mb-5 inline-flex items-center gap-2 rounded-md bg-secondary px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${meta.accent}`}>
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" /> {meta.label} Workspace
+        <main className="flex-1 px-6 py-8 sm:px-8 lg:px-10">
+          <div className="mx-auto w-full max-w-[1440px]">
+            <div className={`mb-6 inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider ${meta.accent}`}>
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> {meta.label} workspace
+            </div>
+            {children}
           </div>
-          {children}
         </main>
       </div>
     </div>
@@ -77,66 +89,137 @@ export function DashboardLayout({
 
 function Brand() {
   return (
-    <Link to="/" className="flex items-center gap-2">
-      <div className="grid h-8 w-8 place-items-center rounded-md bg-primary">
-        <Sparkles className="h-4 w-4 text-gold" />
-      </div>
-      <span className="font-display text-base font-bold">
-        UM<span className="text-primary">Unity</span>
-      </span>
+    <Link to="/" className="flex items-center gap-3">
+      <BrandLogo size={44} textClassName="text-base text-foreground" />
     </Link>
   );
 }
 
-function SidebarInner({ role, nav, onNav, hideBrand }: { role: Role; nav: NavItem[]; onNav?: () => void; hideBrand?: boolean }) {
+const SIDEBAR_CTA: Record<Role, { title: string; text: string; button: string; to: string }> = {
+  student: {
+    title: "Join more organizations",
+    text: "Discover communities that match your interests.",
+    button: "Explore now",
+    to: "/student/explore",
+  },
+  leader: {
+    title: "Grow your organization",
+    text: "Post updates and engage your members.",
+    button: "Create post",
+    to: "/leader/create-post",
+  },
+  admin: {
+    title: "Review reports",
+    text: "Check flagged posts and comments.",
+    button: "Open moderation",
+    to: "/admin/moderation",
+  },
+};
+
+function SidebarInner({
+  role,
+  nav,
+  onNav,
+  hideBrand,
+  collapsed = false,
+  onToggleCollapse,
+}: {
+  role: Role;
+  nav: NavItem[];
+  onNav?: () => void;
+  hideBrand?: boolean;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
+}) {
   const path = useRouterState({ select: (r) => r.location.pathname });
-  const meta = ROLE_META[role];
+  const cta = SIDEBAR_CTA[role];
+
+  const sections = nav.reduce<Record<string, NavItem[]>>((acc, item) => {
+    const key = item.section ?? "Workspace";
+    acc[key] ??= [];
+    acc[key].push(item);
+    return acc;
+  }, {});
 
   return (
-    <>
+    <div className="flex h-full min-h-0 flex-col">
       {!hideBrand && (
-        <div className="border-b border-border p-4">
-          <Brand />
+        <div className={`flex h-20 items-center border-b border-border px-4 ${collapsed ? "justify-center" : "gap-3"}`}>
+          <button
+            onClick={onToggleCollapse}
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-muted-foreground transition hover:bg-primary/6 hover:text-primary"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <PanelLeft className="h-4 w-4" />
+          </button>
+          {!collapsed && <Brand />}
         </div>
       )}
 
-      <div className="px-3 pb-2 pt-4">
-        <p className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${meta.accent}`}>{meta.label}</p>
-        <p className="mt-0.5 font-display text-sm font-semibold text-foreground">Workspace</p>
-      </div>
-
-      <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-4">
-        {nav.map((n) => {
-          const active = path === n.to || (n.to !== `/${role}` && path.startsWith(n.to));
-          return (
-            <Link
-              key={n.to}
-              to={n.to}
-              onClick={onNav}
-              className={`group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                active
-                  ? "bg-primary/10 text-primary"
-                  : "text-foreground/70 hover:bg-secondary hover:text-foreground"
-              }`}
-            >
-              <n.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
-              <span className="flex-1">{n.label}</span>
-              {n.badge && (
-                <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-                  {n.badge}
-                </span>
-              )}
-            </Link>
-          );
-        })}
+      <nav className={`flex-1 overflow-y-auto px-3 pb-6 ${hideBrand ? "pt-6" : "pt-8"}`}>
+        {Object.entries(sections).map(([section, items]) => (
+          <section key={section} className="mb-6 last:mb-0">
+            {!collapsed && (
+              <div className="mb-2.5 px-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                {section}
+              </div>
+            )}
+            <div className="space-y-2">
+              {items.map((n) => {
+                const active = n.to === "/" ? path === "/" : path === n.to || (n.to !== `/${role}` && path.startsWith(n.to));
+                return (
+                  <Link
+                    key={n.to}
+                    to={n.to}
+                    onClick={onNav}
+                    title={collapsed ? n.label : undefined}
+                    className={`group relative flex h-11 items-center rounded-xl px-3 text-sm font-medium transition-colors ${
+                      active
+                        ? "bg-[color:color-mix(in_oklab,var(--primary)_8%,white)] text-primary"
+                        : "text-foreground/75 hover:bg-primary/6 hover:text-primary"
+                    }`}
+                  >
+                    {active && <span className="absolute left-0 top-2 h-7 w-1 rounded-r-full bg-primary" />}
+                    <div className={`flex w-full items-center ${collapsed ? "justify-center" : "gap-3"}`}>
+                      <n.icon className={`h-4 w-4 shrink-0 ${active ? "text-primary" : "text-muted-foreground group-hover:text-primary"}`} />
+                      {!collapsed && <span className="flex-1">{n.label}</span>}
+                      {!collapsed && n.badge && (
+                        <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[color:color-mix(in_oklab,var(--gold)_28%,white)] px-1.5 py-0.5 text-[10px] font-bold text-foreground">
+                          {n.badge}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        ))}
       </nav>
 
-      <div className="border-t border-border p-3">
-        <Link to="/" className="flex items-center gap-2 rounded-md px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
-          <Sparkles className="h-3.5 w-3.5" /> Back to website
-        </Link>
-      </div>
-    </>
+      {!collapsed && (
+        <div className="border-t border-border px-4 py-4">
+          <div className="rounded-2xl bg-card px-4 py-4">
+            <div className="flex items-start gap-3">
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">{cta.title}</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{cta.text}</p>
+              </div>
+            </div>
+            <Link
+              to={cta.to}
+              onClick={onNav}
+              className="mt-4 inline-flex h-9 items-center rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground transition hover:bg-primary-deep"
+            >
+              {cta.button}
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -166,33 +249,41 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-card px-4 sm:px-6 lg:px-8">
-      <button onClick={onMenu} className="grid h-10 w-10 place-items-center rounded-xl border border-border lg:hidden">
+    <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-border bg-[#FEFDFE] px-4 sm:px-6 lg:px-8">
+      <button onClick={onMenu} className="grid h-10 w-10 place-items-center rounded-xl border border-border md:hidden">
         <Menu className="h-4 w-4" />
       </button>
 
-      <div className="flex max-w-md flex-1 items-center gap-2 rounded-md border border-border bg-background px-3 py-2 transition focus-within:border-primary">
-        <Search className="h-4 w-4 text-muted-foreground" />
-        <input
-          placeholder="Search UMUnity..."
-          className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
-        />
-        <kbd className="hidden rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">⌘K</kbd>
+      <div className="flex flex-1 items-center justify-center">
+        <div className="w-full max-w-[520px]">
+          <div className="flex items-center gap-3 rounded-full border border-border bg-background px-4 py-3 shadow-soft transition focus-within:border-primary focus-within:shadow-soft">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <input
+              placeholder="Search UMUnity..."
+              className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            />
+            <kbd className="hidden rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">Ctrl K</kbd>
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
+        <button className="hidden h-10 items-center gap-2 rounded-full border border-border bg-background px-3 text-sm text-muted-foreground transition hover:bg-secondary lg:inline-flex">
+          <MessageSquare className="h-4 w-4" />
+          Inbox
+        </button>
         <div ref={notifRef} className="relative">
           <button
             onClick={() => { setOpenNotif(!openNotif); setOpenProf(false); }}
-            className="relative grid h-10 w-10 place-items-center rounded-md border border-border bg-background transition hover:bg-secondary"
+            className="relative grid h-10 w-10 place-items-center rounded-lg border border-border bg-background transition hover:bg-secondary"
           >
             <Bell className="h-4 w-4" />
             {unread > 0 && (
-              <span className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-gold text-[10px] font-bold text-primary-deep">{unread}</span>
+              <span className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-destructive text-[10px] font-bold text-white">{unread}</span>
             )}
           </button>
           {openNotif && (
-            <div className="absolute right-0 top-12 w-80 rounded-lg border border-border bg-card p-2 shadow-glow">
+            <div className="absolute right-0 top-14 w-80 rounded-2xl border border-border bg-card p-2 shadow-soft">
               <div className="flex items-center justify-between p-2">
                 <p className="font-display text-sm font-bold">Notifications</p>
                 <span className="text-xs text-muted-foreground">{unread} new</span>
@@ -218,16 +309,19 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
         <div ref={profRef} className="relative">
           <button
             onClick={() => { setOpenProf(!openProf); setOpenNotif(false); }}
-            className="flex items-center gap-2 rounded-md border border-border bg-background p-1 pr-3 transition hover:bg-secondary"
+            className="flex items-center gap-3 rounded-full border border-border bg-background p-1 pr-4 transition hover:bg-secondary"
           >
-            <div className={`grid h-7 w-7 place-items-center rounded-md bg-primary font-display text-xs font-bold text-primary-foreground`}>
+            <div className="grid h-9 w-9 place-items-center rounded-full bg-primary font-display text-xs font-bold text-primary-foreground">
               {session.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
             </div>
-            <span className="hidden text-sm font-semibold sm:block">{session.name.split(" ")[0]}</span>
+            <div className="hidden text-left sm:block">
+              <p className="text-sm font-semibold text-foreground">{session.name.split(" ")[0]}</p>
+              <p className="text-xs text-muted-foreground">{meta.label}</p>
+            </div>
             <ChevronDown className="h-3 w-3 text-muted-foreground" />
           </button>
           {openProf && (
-            <div className="absolute right-0 top-12 w-64 rounded-lg border border-border bg-card p-2 shadow-glow">
+            <div className="absolute right-0 top-12 w-64 rounded-3xl border border-border/70 bg-card p-2 shadow-soft">
               <div className="rounded-xl bg-secondary p-3">
                 <p className="font-display text-sm font-bold">{session.name}</p>
                 <p className="text-xs text-muted-foreground">{session.email}</p>
@@ -256,14 +350,17 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
 
 /* ----------------------- Shared UI primitives ----------------------- */
 
-export function PageHead({ title, sub, action }: { title: string; sub?: string; action?: React.ReactNode }) {
+export function PageHead({ title, sub, action, breadcrumbs }: { title: string; sub?: string; action?: React.ReactNode; breadcrumbs?: React.ReactNode }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight md:text-3xl">{title}</h1>
-        {sub && <p className="mt-1 text-sm text-muted-foreground">{sub}</p>}
+    <div className="mb-8 space-y-4">
+      {breadcrumbs && <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">{breadcrumbs}</div>}
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-2">
+          <h1 className="font-display text-5xl font-bold tracking-tight leading-tight">{title}</h1>
+          {sub && <p className="text-lg text-muted-foreground">{sub}</p>}
+        </div>
+        {action}
       </div>
-      {action}
     </div>
   );
 }
@@ -293,9 +390,9 @@ export function StatCard({ label, value, delta, icon: Icon, tone = "primary" }: 
 
 export function Panel({ title, action, children, className = "" }: { title?: string; action?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`rounded-lg border border-border bg-card p-5 shadow-soft ${className}`}>
+    <div className={`rounded-3xl border border-border bg-card p-5 shadow-soft ${className}`}>
       {(title || action) && (
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           {title && <h3 className="font-display text-base font-semibold">{title}</h3>}
           {action}
         </div>

@@ -6,7 +6,7 @@ export function Modal({ open, onClose, title, children, footer }: { open: boolea
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-foreground/40" onClick={onClose} />
-      <div className="relative w-full max-w-lg rounded-lg border border-border bg-card shadow-glow">
+      <div className="relative w-full max-w-lg rounded-lg border border-border bg-card shadow-soft">
         <div className="flex items-center justify-between border-b border-border px-5 py-3">
           <h3 className="font-display text-base font-semibold">{title}</h3>
           <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-md hover:bg-secondary"><X className="h-4 w-4" /></button>

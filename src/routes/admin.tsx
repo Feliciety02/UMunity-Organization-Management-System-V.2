@@ -1,19 +1,19 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
-import { LayoutDashboard, Users, Building2, Calendar, BarChart3, Megaphone, ScrollText, Settings, Shield, Flag, MessageSquare } from "lucide-react";
+import { LayoutDashboard, Users, Building2, Calendar, BarChart3, Megaphone, ScrollText, User, Flag, MessageSquare, ClipboardList } from "lucide-react";
 
 const nav: NavItem[] = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/admin/users", label: "Users", icon: Users },
-  { to: "/admin/organizations", label: "Organizations", icon: Building2, badge: "5" },
-  { to: "/admin/events", label: "Events", icon: Calendar },
-  { to: "/admin/moderation", label: "Moderation", icon: Shield, badge: "9" },
-  { to: "/admin/reported-posts", label: "Reported Posts", icon: Flag },
-  { to: "/admin/reported-comments", label: "Reported Comments", icon: MessageSquare },
-  { to: "/admin/reports", label: "Analytics", icon: BarChart3 },
-  { to: "/admin/announcements", label: "Announcements", icon: Megaphone },
-  { to: "/admin/logs", label: "Activity Logs", icon: ScrollText },
-  { to: "/admin/profile", label: "Profile Settings", icon: Settings },
+  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, section: "OVERVIEW" },
+  { to: "/admin/analytics", label: "Analytics", icon: BarChart3, section: "OVERVIEW" },
+  { to: "/admin/reports", label: "Reports", icon: ClipboardList, section: "OVERVIEW" },
+  { to: "/admin/users", label: "Users", icon: Users, section: "MANAGEMENT" },
+  { to: "/admin/organizations", label: "Organizations", icon: Building2, badge: "5", section: "MANAGEMENT" },
+  { to: "/admin/events", label: "Events", icon: Calendar, section: "MANAGEMENT" },
+  { to: "/admin/announcements", label: "Announcements", icon: Megaphone, section: "MANAGEMENT" },
+  { to: "/admin/reported-posts", label: "Reported Posts", icon: Flag, badge: "4", section: "MODERATION" },
+  { to: "/admin/reported-comments", label: "Reported Comments", icon: MessageSquare, badge: "5", section: "MODERATION" },
+  { to: "/admin/logs", label: "Activity Logs", icon: ScrollText, section: "MODERATION" },
+  { to: "/admin/profile", label: "Profile", icon: User, section: "SETTINGS" },
 ];
 
 export const notifs: Notif[] = [

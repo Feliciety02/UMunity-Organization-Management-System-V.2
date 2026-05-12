@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Sparkles, Mail, Lock, ArrowRight, User as UserIcon } from "lucide-react";
+import { Mail, Lock, ArrowRight, User as UserIcon } from "lucide-react";
 import { useState } from "react";
 import { login, homeFor, DEMO_USERS } from "@/lib/auth";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -95,10 +96,7 @@ export function AuthLayout({ title, sub, footer, children }: { title: string; su
         <div className="absolute inset-0 bg-hero opacity-60" />
         <div className="absolute -left-32 top-32 h-96 w-96 rounded-full bg-gold/20 blur-3xl" />
         <Link to="/" className="relative flex items-center gap-2">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/10">
-            <Sparkles className="h-5 w-5 text-gold" />
-          </div>
-          <span className="font-display text-xl font-bold">UMUnity</span>
+          <BrandLogo size={46} textClassName="text-xl text-primary-foreground" />
         </Link>
         <div className="relative">
           <h2 className="font-display text-4xl font-bold leading-tight">
@@ -114,10 +112,7 @@ export function AuthLayout({ title, sub, footer, children }: { title: string; su
       <div className="flex items-center justify-center bg-background px-4 py-12 sm:px-6">
         <div className="w-full max-w-md">
           <Link to="/" className="mb-8 inline-flex items-center gap-2 lg:hidden">
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-maroon">
-              <Sparkles className="h-4 w-4 text-gold" />
-            </div>
-            <span className="font-display text-lg font-bold">UMUnity</span>
+            <BrandLogo size={40} textClassName="text-lg text-foreground" />
           </Link>
           <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">{title}</h1>
           <p className="mt-2 text-muted-foreground">{sub}</p>

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Sparkles, Instagram, Facebook, Twitter } from "lucide-react";
+import { Instagram, Facebook, Twitter } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export function SiteFooter() {
   return (
@@ -9,10 +10,11 @@ export function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-gold/20">
-                <Sparkles className="h-5 w-5 text-gold" />
-              </div>
-              <span className="font-display text-xl font-bold">UMUnity</span>
+              <BrandLogo
+                size={48}
+                textClassName="text-xl text-primary-foreground"
+                imageClassName="drop-shadow-[0_8px_18px_rgba(0,0,0,0.22)]"
+              />
             </div>
             <p className="mt-4 max-w-sm text-sm text-primary-foreground/80">
               One platform for every student organization at the University of Mindanao. Discover, connect, and thrive.

@@ -39,9 +39,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Subtle neutral shadows — no maroon glow */
-  --shadow-soft: 0 1px 2px rgba(30, 27, 22, 0.04), 0 1px 1px rgba(30, 27, 22, 0.03);
-  --shadow-glow: 0 6px 16px -8px rgba(30, 27, 22, 0.08), 0 2px 4px rgba(30, 27, 22, 0.04);
+  /* Subtle shadows per design spec — no glow effects */
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 1px 2px rgba(30, 27, 22, 0.04), 0 1px 1px rgba(30, 27, 22, 0.03);
 
   /* Calm hero — solid maroon with one soft gold accent */
   --gradient-hero: radial-gradient(at 85% 15%, color-mix(in oklab, var(--gold) 28%, transparent) 0%, transparent 55%),
@@ -53,33 +53,34 @@
 :root {
   --radius: 0.875rem;
 
-  /* Brand */
-  --primary: oklch(0.36 0.14 18);
+  /* Brand Colors — per design spec */
+  --primary: oklch(0.36 0.14 18);          /* UM Maroon #7A0019 */
   --primary-deep: oklch(0.27 0.12 18);
   --primary-foreground: oklch(0.99 0.01 90);
-  --gold: oklch(0.82 0.16 85);
+  --gold: oklch(0.82 0.16 85);             /* #F4B000 */
   --gold-warm: oklch(0.85 0.17 82);
-  --cream: oklch(0.985 0.022 88);          /* #FFF8E7 */
+  --cream: oklch(0.985 0.022 88);          /* Warm cream secondary */
 
-  --background: oklch(0.972 0.014 86);     /* #F8F5EF page */
-  --foreground: oklch(0.18 0.012 60);      /* #1E1B16 text */
+  /* Background & Elevation — design spec values */
+  --background: #F9F9F8;                   /* Main page background */
+  --foreground: oklch(0.18 0.012 60);      /* Text: #111111 */
 
-  --card: oklch(1 0 0);
+  --card: oklch(1 0 0);                    /* Card: #FFFFFF pure white */
   --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
 
-  --secondary: oklch(0.955 0.018 86);
+  --secondary: oklch(0.98 0.01 88);        /* Sidebar: #FCFBF8 slightly warmer white */
   --secondary-foreground: var(--primary-deep);
   --muted: oklch(0.945 0.016 86);
-  --muted-foreground: oklch(0.46 0.012 60); /* #6B6258 */
+  --muted-foreground: oklch(0.46 0.012 60); /* Metadata text: #6B6258 */
   --accent: var(--gold);
   --accent-foreground: var(--primary-deep);
 
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
 
-  --border: oklch(0.89 0.028 82);          /* #E7DCC8 */
+  --border: oklch(0.89 0.028 82);          /* Border: #E8E1D7 soft contrast */
   --input: oklch(0.91 0.022 82);
   --ring: var(--primary);
 }
