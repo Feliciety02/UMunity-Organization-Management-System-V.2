@@ -184,11 +184,11 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
         <div ref={notifRef} className="relative">
           <button
             onClick={() => { setOpenNotif(!openNotif); setOpenProf(false); }}
-            className="relative grid h-10 w-10 place-items-center rounded-xl border border-border bg-card transition hover:border-primary"
+            className="relative grid h-10 w-10 place-items-center rounded-md border border-border bg-background transition hover:bg-secondary"
           >
             <Bell className="h-4 w-4" />
             {unread > 0 && (
-              <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-gradient-gold text-[10px] font-bold text-primary-deep">{unread}</span>
+              <span className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-gold text-[10px] font-bold text-primary-deep">{unread}</span>
             )}
           </button>
           {openNotif && (
