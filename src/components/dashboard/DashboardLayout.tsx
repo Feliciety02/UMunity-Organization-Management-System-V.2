@@ -78,11 +78,11 @@ export function DashboardLayout({
 function Brand() {
   return (
     <Link to="/" className="flex items-center gap-2">
-      <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-maroon">
+      <div className="grid h-8 w-8 place-items-center rounded-md bg-primary">
         <Sparkles className="h-4 w-4 text-gold" />
       </div>
-      <span className="font-display text-lg font-bold">
-        UM<span className="text-gradient-maroon">Unity</span>
+      <span className="font-display text-base font-bold">
+        UM<span className="text-primary">Unity</span>
       </span>
     </Link>
   );
@@ -95,18 +95,17 @@ function SidebarInner({ role, nav, onNav, hideBrand }: { role: Role; nav: NavIte
   return (
     <>
       {!hideBrand && (
-        <div className="p-5">
+        <div className="border-b border-border p-4">
           <Brand />
         </div>
       )}
 
-      <div className={`mx-3 mb-4 rounded-2xl bg-gradient-to-br ${meta.bg} p-4 text-primary-foreground shadow-soft`}>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gold/90">{meta.label} Console</p>
-        <p className="mt-1 font-display text-sm font-bold">Welcome to UMUnity</p>
-        <p className="mt-1 text-xs text-primary-foreground/75">Your role-based workspace.</p>
+      <div className="px-3 pb-2 pt-4">
+        <p className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${meta.accent}`}>{meta.label}</p>
+        <p className="mt-0.5 font-display text-sm font-semibold text-foreground">Workspace</p>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3">
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-4">
         {nav.map((n) => {
           const active = path === n.to || (n.to !== `/${role}` && path.startsWith(n.to));
           return (
@@ -114,16 +113,16 @@ function SidebarInner({ role, nav, onNav, hideBrand }: { role: Role; nav: NavIte
               key={n.to}
               to={n.to}
               onClick={onNav}
-              className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+              className={`group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-gradient-maroon text-primary-foreground shadow-soft"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  ? "bg-primary/10 text-primary"
+                  : "text-foreground/70 hover:bg-secondary hover:text-foreground"
               }`}
             >
-              <n.icon className={`h-4 w-4 ${active ? "text-gold" : ""}`} />
+              <n.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
               <span className="flex-1">{n.label}</span>
               {n.badge && (
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${active ? "bg-gold text-primary-deep" : "bg-primary/10 text-primary"}`}>
+                <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
                   {n.badge}
                 </span>
               )}
@@ -132,8 +131,8 @@ function SidebarInner({ role, nav, onNav, hideBrand }: { role: Role; nav: NavIte
         })}
       </nav>
 
-      <div className="border-t border-border p-4">
-        <Link to="/" className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-muted-foreground hover:bg-secondary">
+      <div className="border-t border-border p-3">
+        <Link to="/" className="flex items-center gap-2 rounded-md px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
           <Sparkles className="h-3.5 w-3.5" /> Back to website
         </Link>
       </div>
