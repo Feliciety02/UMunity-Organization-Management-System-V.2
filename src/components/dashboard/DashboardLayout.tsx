@@ -218,16 +218,16 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
         <div ref={profRef} className="relative">
           <button
             onClick={() => { setOpenProf(!openProf); setOpenNotif(false); }}
-            className="flex items-center gap-2 rounded-full border border-border bg-card p-1 pr-3 transition hover:border-primary"
+            className="flex items-center gap-2 rounded-md border border-border bg-background p-1 pr-3 transition hover:bg-secondary"
           >
-            <div className={`grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br ${session.avatarColor} font-display text-xs font-bold text-primary-foreground`}>
+            <div className={`grid h-7 w-7 place-items-center rounded-md bg-primary font-display text-xs font-bold text-primary-foreground`}>
               {session.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
             </div>
             <span className="hidden text-sm font-semibold sm:block">{session.name.split(" ")[0]}</span>
             <ChevronDown className="h-3 w-3 text-muted-foreground" />
           </button>
           {openProf && (
-            <div className="absolute right-0 top-12 w-64 rounded-2xl border border-border bg-card p-2 shadow-glow">
+            <div className="absolute right-0 top-12 w-64 rounded-lg border border-border bg-card p-2 shadow-glow">
               <div className="rounded-xl bg-secondary p-3">
                 <p className="font-display text-sm font-bold">{session.name}</p>
                 <p className="text-xs text-muted-foreground">{session.email}</p>
