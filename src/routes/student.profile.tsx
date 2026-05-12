@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
+import { Award, Calendar, Camera, Heart, Link as LinkIcon, Mail, MapPin, MessageCircle } from "lucide-react";
+import { PageHead, Badge } from "@/components/dashboard/DashboardLayout";
+import { AppButton } from "@/components/ui/app-button";
+import { ProfileHeader } from "@/components/profile/profile-header";
+import { InfoCard } from "@/components/profile/info-card";
 import { getSession } from "@/lib/auth";
 import { organizations, posts } from "@/data/site";
 import { OrgAvatar } from "@/components/social/PostCard";
 import { Modal, Field, TextArea, useToggle } from "@/components/social/Modal";
-import { Pencil, Camera, MapPin, Mail, Link as LinkIcon, Calendar, Award, Heart, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/student/profile")({
@@ -16,210 +19,203 @@ const tabs = ["About", "Organizations", "Activity", "Events", "Badges"] as const
 type Tab = (typeof tabs)[number];
 
 function Profile() {
-  const s = getSession();
+  const session = getSession();
   const [tab, setTab] = useState<Tab>("About");
   const edit = useToggle();
   const photo = useToggle();
 
-  const initials = s?.name.split(" ").slice(0, 2).map((w) => w[0]).join("") ?? "AD";
+  const initials = session?.name
+    .split(" ")
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("") ?? "AD";
   const joined = organizations.slice(0, 3);
 
   return (
     <>
       <PageHead title="My profile" sub="Manage your student profile and activity settings." />
-      {/* Cover + header */}
-      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-soft">
-        <div className="relative h-44 bg-gradient-to-br from-primary-deep via-primary to-amber-700 sm:h-56">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(244,176,0,0.35),transparent_55%)]" />
-          <button onClick={photo.on} className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-md border border-white/30 bg-black/30 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur hover:bg-black/50">
-            <Camera className="h-3.5 w-3.5" /> Edit cover
-          </button>
-        </div>
-        <div className="relative px-6 pb-5">
-          <div className="-mt-14 flex items-end gap-4 sm:-mt-16">
-            <div className="relative">
-              <div className="grid h-28 w-28 place-items-center rounded-full border-4 border-card bg-gradient-to-br from-primary to-primary-deep font-display text-3xl font-bold text-primary-foreground sm:h-32 sm:w-32">
-                {initials}
-              </div>
-              <button onClick={photo.on} className="absolute bottom-1 right-1 grid h-8 w-8 place-items-center rounded-full border border-border bg-card text-foreground shadow-soft hover:bg-secondary">
-                <Camera className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <div className="min-w-0 flex-1 pb-2">
-              <h1 className="font-display text-2xl font-bold leading-tight">{s?.name}</h1>
-              <p className="text-sm text-muted-foreground">{s?.program}</p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                <Badge tone="success">Verified UM Student</Badge>
-                <Badge>3 Organizations</Badge>
-                <Badge tone="gold">Top Contributor</Badge>
-              </div>
-            </div>
-            <div className="hidden gap-2 pb-2 sm:flex">
-              <button onClick={edit.on} className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep">
-                <Pencil className="h-3.5 w-3.5" /> Edit profile
-              </button>
-            </div>
-          </div>
 
-          {/* Tabs */}
-          <div className="-mb-px mt-5 flex gap-1 border-b border-border">
-            {tabs.map((t) => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`relative px-4 py-2.5 text-sm font-semibold transition ${tab === t ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                {t}
-                {tab === t && <span className="absolute inset-x-3 -bottom-px h-0.5 bg-primary" />}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+      <div className="mx-auto max-w-[1180px]">
+        <ProfileHeader
+          initials={initials}
+          name={session?.name ?? "Student"}
+          subtitle={`${session?.program ?? "BS CS"} · 3rd Year`}
+          tabs={tabs}
+          tab={tab}
+          onTabChange={setTab}
+          badges={[
+            { label: "Verified UM Student", tone: "success" },
+            { label: "3 Organizations" },
+            { label: "Top Contributor", tone: "gold" },
+          ]}
+          onEditCover={photo.on}
+          onEditProfile={edit.on}
+          onEditAvatar={photo.on}
+        />
 
-      {/* Content */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-3">
-        <div className="space-y-5 lg:col-span-2">
-          {tab === "About" && (
-            <Panel title="About">
-              <p className="text-sm leading-relaxed text-foreground/90">
-                Third-year CS student passionate about open-source, accessible design, and campus-led tech for good.
-                Currently building <span className="font-semibold">UMUnity</span> and helping organize the Innovation Summit.
-              </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <Row icon={Mail} label={s?.email ?? ""} />
-                <Row icon={MapPin} label="Davao City, Philippines" />
-                <Row icon={Calendar} label="Joined March 2024" />
-                <Row icon={LinkIcon} label="github.com/althea-dev" link />
-              </div>
-            </Panel>
-          )}
-
-          {tab === "Organizations" && (
-            <Panel title="Joined organizations">
-              <div className="grid gap-3 sm:grid-cols-2">
-                {joined.map((o) => (
-                  <div key={o.slug} className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
-                    <OrgAvatar org={o} size={44} />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{o.name}</p>
-                      <p className="text-xs text-muted-foreground">{o.category}</p>
-                    </div>
-                    <Badge tone="success">Active</Badge>
-                  </div>
-                ))}
-              </div>
-            </Panel>
-          )}
-
-          {tab === "Activity" && (
-            <Panel title="Recent activity">
-              <ul className="space-y-3">
-                {[
-                  { icon: Heart, text: "Liked a post from UM CS Society", time: "2h" },
-                  { icon: MessageCircle, text: "Commented on Eco Warriors' Plastic-Free May recap", time: "1d" },
-                  { icon: Calendar, text: "RSVP'd to UM Innovation Summit 2026", time: "2d" },
-                  { icon: Award, text: "Earned the 'Active Member' badge", time: "1w" },
-                ].map((a, i) => (
-                  <li key={i} className="flex items-start gap-3 rounded-md p-2 hover:bg-secondary">
-                    <div className="grid h-8 w-8 place-items-center rounded-md bg-primary/10 text-primary"><a.icon className="h-4 w-4" /></div>
-                    <p className="flex-1 text-sm">{a.text}</p>
-                    <span className="text-xs text-muted-foreground">{a.time}</span>
-                  </li>
-                ))}
-              </ul>
-            </Panel>
-          )}
-
-          {tab === "Events" && (
-            <Panel title="Attended events">
-              <ul className="divide-y divide-border">
-                {[
-                  { e: "Welcome Mixer 2026", date: "Apr 12" },
-                  { e: "Coding Bootcamp Day 1", date: "Apr 22" },
-                  { e: "Eco Cleanup Drive", date: "May 02" },
-                ].map((a) => (
-                  <li key={a.e} className="flex items-center justify-between py-3">
-                    <p className="text-sm font-medium">{a.e}</p>
-                    <span className="text-xs text-muted-foreground">{a.date}</span>
-                  </li>
-                ))}
-              </ul>
-            </Panel>
-          )}
-
-          {tab === "Badges" && (
-            <Panel title="Badges & achievements">
-              <div className="grid gap-3 sm:grid-cols-3">
-                {[
-                  { t: "Active Member", d: "30+ days active" },
-                  { t: "Volunteer", d: "5 community events" },
-                  { t: "First Comment", d: "Joined the conversation" },
-                ].map((b) => (
-                  <div key={b.t} className="rounded-lg border border-border bg-card p-4 text-center">
-                    <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-gold/20 text-primary-deep">
-                      <Award className="h-5 w-5" />
-                    </div>
-                    <p className="mt-2 text-sm font-semibold">{b.t}</p>
-                    <p className="text-xs text-muted-foreground">{b.d}</p>
-                  </div>
-                ))}
-              </div>
-            </Panel>
-          )}
-
-          {/* Posts feed */}
-          <Panel title="Your activity feed">
-            <div className="space-y-3">
-              {posts.slice(0, 2).map((p) => (
-                <div key={p.id} className="rounded-md border border-border bg-card p-3 text-sm">
-                  <p className="text-xs text-muted-foreground">You liked · {p.time}</p>
-                  <p className="mt-1 line-clamp-2">{p.content}</p>
+        <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,2fr)_340px]">
+          <div className="space-y-6">
+            {tab === "About" ? (
+              <InfoCard title="About">
+                <p className="text-sm leading-7 text-foreground/90">
+                  Third-year CS student passionate about open-source, accessible design, and campus-led tech for good.
+                  Currently building <span className="font-semibold">UMUnity</span> and helping organize the Innovation Summit.
+                </p>
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <Row icon={Mail} label={session?.email ?? ""} />
+                  <Row icon={MapPin} label="Davao City, Philippines" />
+                  <Row icon={Calendar} label="Joined March 2024" />
+                  <Row icon={LinkIcon} label="github.com/althea-dev" link />
                 </div>
-              ))}
-            </div>
-          </Panel>
-        </div>
+              </InfoCard>
+            ) : null}
 
-        <div className="space-y-5">
-          <Panel title="Intro">
-            <ul className="space-y-2.5 text-sm">
-              <Row icon={MapPin} label="Davao City" />
-              <Row icon={Calendar} label="3rd Year · BS CS" />
-              <Row icon={Mail} label={s?.email ?? ""} small />
-              <Row icon={LinkIcon} label="@altheacodes" link />
-            </ul>
-          </Panel>
+            {tab === "Organizations" ? (
+              <InfoCard title="Joined organizations">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {joined.map((org) => (
+                    <div key={org.slug} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4">
+                      <OrgAvatar org={org} size={44} />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold">{org.name}</p>
+                        <p className="text-xs text-muted-foreground">{org.category}</p>
+                      </div>
+                      <Badge tone="success">Active</Badge>
+                    </div>
+                  ))}
+                </div>
+              </InfoCard>
+            ) : null}
 
-          <Panel title="Photos">
-            <div className="grid grid-cols-3 gap-1.5">
-              {[1,2,3,4,5,6].map((i) => (
-                <div key={i} className={`aspect-square rounded-md bg-gradient-to-br ${i%2 ? "from-primary/30 to-gold/30" : "from-gold/30 to-primary/30"}`} />
-              ))}
-            </div>
-          </Panel>
+            {tab === "Activity" ? (
+              <InfoCard title="Recent activity">
+                <ul className="space-y-3">
+                  {[
+                    { icon: Heart, text: "Liked a post from UM CS Society", time: "2h" },
+                    { icon: MessageCircle, text: "Commented on Eco Warriors' Plastic-Free May recap", time: "1d" },
+                    { icon: Calendar, text: "RSVP'd to UM Innovation Summit 2026", time: "2d" },
+                    { icon: Award, text: "Earned the 'Active Member' badge", time: "1w" },
+                  ].map((activity) => (
+                    <li key={activity.text} className="flex items-start gap-3 rounded-2xl border border-transparent p-3 transition hover:border-border hover:bg-secondary/60">
+                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                        <activity.icon className="h-4 w-4" />
+                      </div>
+                      <p className="flex-1 text-sm leading-6">{activity.text}</p>
+                      <span className="pt-0.5 text-xs text-muted-foreground">{activity.time}</span>
+                    </li>
+                  ))}
+                </ul>
+              </InfoCard>
+            ) : null}
+
+            {tab === "Events" ? (
+              <InfoCard title="Attended events">
+                <ul className="divide-y divide-border">
+                  {[
+                    { event: "Welcome Mixer 2026", date: "Apr 12" },
+                    { event: "Coding Bootcamp Day 1", date: "Apr 22" },
+                    { event: "Eco Cleanup Drive", date: "May 02" },
+                  ].map((entry) => (
+                    <li key={entry.event} className="flex items-center justify-between gap-4 py-4">
+                      <p className="text-sm font-medium">{entry.event}</p>
+                      <span className="shrink-0 text-xs text-muted-foreground">{entry.date}</span>
+                    </li>
+                  ))}
+                </ul>
+              </InfoCard>
+            ) : null}
+
+            {tab === "Badges" ? (
+              <InfoCard title="Badges & achievements">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {[
+                    { title: "Active Member", desc: "30+ days active" },
+                    { title: "Volunteer", desc: "5 community events" },
+                    { title: "First Comment", desc: "Joined the conversation" },
+                  ].map((badge) => (
+                    <div key={badge.title} className="rounded-2xl border border-border bg-card p-5 text-center">
+                      <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-gold/20 text-primary-deep">
+                        <Award className="h-5 w-5" />
+                      </div>
+                      <p className="mt-3 text-sm font-semibold">{badge.title}</p>
+                      <p className="mt-1 text-xs leading-5 text-muted-foreground">{badge.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </InfoCard>
+            ) : null}
+
+            <InfoCard title="Your activity feed">
+              <div className="space-y-3">
+                {posts.slice(0, 2).map((post) => (
+                  <div key={post.id} className="rounded-2xl border border-border bg-card p-4 text-sm">
+                    <p className="text-xs text-muted-foreground">You liked · {post.time}</p>
+                    <p className="mt-2 line-clamp-2 leading-6">{post.content}</p>
+                  </div>
+                ))}
+              </div>
+            </InfoCard>
+          </div>
+
+          <div className="space-y-6">
+            <InfoCard title="Intro">
+              <ul className="space-y-3 text-sm">
+                <Row icon={MapPin} label="Davao City" />
+                <Row icon={Calendar} label="3rd Year · BS CS" />
+                <Row icon={Mail} label={session?.email ?? ""} small />
+                <Row icon={LinkIcon} label="@altheacodes" link />
+              </ul>
+            </InfoCard>
+
+            <InfoCard title="Photos">
+              <div className="grid grid-cols-3 gap-2">
+                {[1, 2, 3, 4, 5, 6].map((item) => (
+                  <div
+                    key={item}
+                    className={`aspect-square rounded-2xl border border-border/60 bg-gradient-to-br ${
+                      item % 2 ? "from-primary/30 to-gold/30" : "from-gold/30 to-primary/30"
+                    }`}
+                  />
+                ))}
+              </div>
+            </InfoCard>
+          </div>
         </div>
       </div>
 
-      {/* Edit profile modal */}
       <Modal
         open={edit.open}
         onClose={edit.off}
         title="Edit profile"
         footer={
           <>
-            <button onClick={edit.off} className="rounded-md border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-secondary">Cancel</button>
-            <button onClick={() => { edit.off(); toast.success("Profile updated"); }} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep">Save changes</button>
+            <AppButton onClick={edit.off} variant="secondary" shape="soft">
+              Cancel
+            </AppButton>
+            <AppButton
+              onClick={() => {
+                edit.off();
+                toast.success("Profile updated");
+              }}
+              variant="primary"
+              shape="soft"
+            >
+              Save changes
+            </AppButton>
           </>
         }
       >
         <div className="space-y-4">
-          <Field label="Full name" defaultValue={s?.name ?? ""} />
-          <TextArea label="Bio" rows={3} defaultValue="Third-year CS student passionate about open-source, accessible design, and campus-led tech for good." />
+          <Field label="Full name" defaultValue={session?.name ?? ""} />
+          <TextArea
+            label="Bio"
+            rows={3}
+            defaultValue="Third-year CS student passionate about open-source, accessible design, and campus-led tech for good."
+          />
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Course" defaultValue="BS Computer Science" />
             <Field label="Year level" defaultValue="3rd Year" />
-            <Field label="UM Email" defaultValue={s?.email ?? ""} />
+            <Field label="UM Email" defaultValue={session?.email ?? ""} />
             <Field label="Phone" defaultValue="+63 917 ••• ••••" />
             <Field label="Twitter / X" defaultValue="@altheacodes" />
             <Field label="GitHub" defaultValue="althea-dev" />
@@ -227,11 +223,28 @@ function Profile() {
         </div>
       </Modal>
 
-      <Modal open={photo.open} onClose={photo.off} title="Upload photo"
-        footer={<>
-          <button onClick={photo.off} className="rounded-md border border-border bg-card px-4 py-2 text-sm">Cancel</button>
-          <button onClick={() => { photo.off(); toast.success("Photo uploaded"); }} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Upload</button>
-        </>}>
+      <Modal
+        open={photo.open}
+        onClose={photo.off}
+        title="Upload photo"
+        footer={
+          <>
+            <AppButton onClick={photo.off} variant="secondary" shape="soft">
+              Cancel
+            </AppButton>
+            <AppButton
+              onClick={() => {
+                photo.off();
+                toast.success("Photo uploaded");
+              }}
+              variant="primary"
+              shape="soft"
+            >
+              Upload
+            </AppButton>
+          </>
+        }
+      >
         <div className="flex h-44 flex-col items-center justify-center rounded-md border-2 border-dashed border-border bg-secondary/50 text-center">
           <Camera className="mb-2 h-6 w-6 text-muted-foreground" />
           <p className="text-sm font-medium">Drag a photo here</p>

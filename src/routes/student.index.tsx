@@ -1,12 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Calendar, ImageIcon, PenSquare, Sparkles, Vote } from "lucide-react";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
+import { EventCard } from "@/components/events/event-card";
+import { PostCard } from "@/components/social/PostCard";
+import { Composer } from "@/components/social/composer";
+import { OrgSuggestionCard } from "@/components/social/org-suggestion-card";
 import { organizations, events, posts } from "@/data/site";
-import { PostCard, OrgAvatar } from "@/components/social/PostCard";
-import { Calendar, MapPin, Sparkles, TrendingUp } from "lucide-react";
+import { AppButton } from "@/components/ui/app-button";
+import { AppTabs } from "@/components/ui/app-tabs";
 
 export const Route = createFileRoute("/student/")({
   component: StudentFeed,
 });
+
+const feedTabs = ["All", "Following", "Events"] as const;
 
 function StudentFeed() {
   const orgBySlug = Object.fromEntries(organizations.map((o) => [o.slug, o]));
@@ -16,95 +23,127 @@ function StudentFeed() {
   return (
     <>
       <PageHead title="Home feed" sub="See the latest updates from your organizations and campus community." />
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-primary/10 text-primary">AD</span>
-          <div>What's happening on campus, <span className="font-semibold">Althea</span>?</div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {['All', 'Following', 'Events', 'Announcements'].map((label) => (
-            <button key={label} className="rounded-full border border-border bg-white px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-secondary">
-              {label}
-            </button>
-          ))}
+
+      <div className="mx-auto max-w-[1520px]">
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,1.18fr)_380px]">
+          <div className="min-w-0 space-y-6">
+            <Composer
+              initials="AD"
+              prompt="Share an update, event, or question with your campus community..."
+              ctaTo="/student/explore"
+              actions={[
+                { label: "Create post", icon: PenSquare },
+                { label: "Event", icon: Calendar },
+                { label: "Poll", icon: Vote },
+                { label: "Photo", icon: ImageIcon },
+              ]}
+            />
+
+            <AppTabs items={feedTabs} value="All" onChange={() => undefined} />
+
+            <div className="space-y-5">
+              {posts.map((post) => (
+                <PostCard key={post.id} post={post} org={orgBySlug[post.orgSlug]} />
+              ))}
+            </div>
+          </div>
+
+          <aside className="min-w-0">
+            <div className="space-y-6 xl:sticky xl:top-24">
+              <Panel
+                title="Upcoming events"
+                action={<Link to="/student/events" className="text-sm font-semibold text-primary">View all</Link>}
+                className="rounded-[28px] bg-white/96 p-6"
+              >
+                <div className="space-y-4">
+                  {upcoming.map((event) => (
+                    <EventCard
+                      key={event.title}
+                      event={event}
+                      cover={eventVisuals[event.title] ?? defaultEventVisual}
+                      compact
+                      badge={<Badge tone={event.status === "Open" ? "success" : event.status === "Soon" ? "info" : "warning"}>{event.status}</Badge>}
+                      footerAction={<AppButton variant="gold" size="sm">RSVP</AppButton>}
+                    />
+                  ))}
+                </div>
+
+                <AppButton asChild variant="secondary" className="mt-5 w-full">
+                  <Link to="/student/events">View all events</Link>
+                </AppButton>
+              </Panel>
+
+              <Panel
+                title="Suggested for you"
+                action={<Sparkles className="h-4 w-4 text-gold" />}
+                className="rounded-[28px] bg-white/96 p-6"
+              >
+                <div className="space-y-4">
+                  {recommended.map((org, index) => (
+                    <OrgSuggestionCard
+                      key={org.slug}
+                      org={org}
+                      coverTone={suggestedCoverTones[index % suggestedCoverTones.length]}
+                      reason={suggestedReasons[org.slug] ?? "Shared interests in campus events and student communities."}
+                    />
+                  ))}
+                </div>
+
+                <AppButton asChild variant="secondary" className="mt-5 w-full">
+                  <Link to="/student/explore">See more organizations</Link>
+                </AppButton>
+              </Panel>
+            </div>
+          </aside>
         </div>
       </div>
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-      <div className="min-w-0 space-y-4">
-        {/* Composer prompt */}
-        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 shadow-soft">
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">AD</div>
-          <Link
-            to="/student/explore"
-            className="flex-1 rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground hover:bg-secondary"
-          >
-            What's happening on campus, Althea?
-          </Link>
-        </div>
-
-        {/* Feed */}
-        <div className="space-y-4">
-          {posts.map((p) => (
-            <PostCard key={p.id} post={p} org={orgBySlug[p.orgSlug]} />
-          ))}
-        </div>
-      </div>
-
-      {/* Right rail */}
-      <aside className="space-y-4">
-        <Panel title="Upcoming events" action={<Link to="/student/events" className="text-xs font-semibold text-primary">All</Link>}>
-          <ul className="space-y-3">
-            {upcoming.map((e) => (
-              <li key={e.title} className="flex items-start gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
-                  <Calendar className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{e.title}</p>
-                  <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <span>{e.date}</span> · <MapPin className="h-3 w-3" /> <span className="truncate">{e.venue}</span>
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Panel>
-
-        <Panel title="Suggested for you" action={<Sparkles className="h-4 w-4 text-gold" />}>
-          <ul className="space-y-3">
-            {recommended.map((o) => (
-              <li key={o.slug} className="flex items-center gap-3">
-                <Link to="/org/$slug" params={{ slug: o.slug }}>
-                  <OrgAvatar org={o} />
-                </Link>
-                <div className="min-w-0 flex-1">
-                  <Link to="/org/$slug" params={{ slug: o.slug }} className="block truncate text-sm font-semibold hover:underline">{o.name}</Link>
-                  <p className="text-xs text-muted-foreground">{o.category} · {o.members}</p>
-                </div>
-                <button className="rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground hover:bg-primary-deep">Join</button>
-              </li>
-            ))}
-          </ul>
-        </Panel>
-
-        <Panel title="Trending" action={<TrendingUp className="h-4 w-4 text-primary" />}>
-          <ul className="space-y-2 text-sm">
-            {["#InnovationSummit", "#PlasticFreeMay", "#BattleOfBards", "#CulturalNight"].map((t) => (
-              <li key={t}>
-                <Link to="/student/explore" className="block rounded-md px-2 py-1.5 font-medium text-foreground hover:bg-secondary">
-                  {t}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Panel>
-
-        <div className="rounded-lg border border-border bg-cream p-4 text-xs text-muted-foreground">
-          <Badge tone="gold">Tip</Badge>
-          <p className="mt-2 leading-relaxed">Complete your profile to get better org recommendations. <Link to="/student/profile" className="font-semibold text-primary underline">Edit profile</Link></p>
-        </div>
-      </aside>
-    </div>
-  </>
+    </>
   );
 }
+
+function svgToDataUri(svg: string) {
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+const eventVisuals: Record<string, string> = {
+  [events[0].title]: svgToDataUri(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420">
+      <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4b0014"/><stop offset="100%" stop-color="#c33652"/></linearGradient></defs>
+      <rect width="1200" height="420" fill="url(#a)"/><ellipse cx="840" cy="40" rx="320" ry="150" fill="#ffd29f" opacity="0.22"/>
+      <path d="M0 320 C170 250 360 340 540 305 C760 262 910 356 1200 280 L1200 420 L0 420 Z" fill="#130105"/>
+    </svg>
+  `),
+  [events[1].title]: svgToDataUri(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420">
+      <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#193d1f"/><stop offset="100%" stop-color="#9fd45b"/></linearGradient></defs>
+      <rect width="1200" height="420" fill="url(#a)"/><circle cx="920" cy="80" r="120" fill="#fff6c0" opacity="0.3"/>
+      <circle cx="620" cy="220" r="70" fill="#4fb662"/><path d="M580 205 C600 175 660 178 688 196 C666 230 666 255 686 280 C642 282 608 270 587 248 C576 236 574 219 580 205 Z" fill="#2f79b7"/>
+    </svg>
+  `),
+  [events[2].title]: svgToDataUri(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420">
+      <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a100d"/><stop offset="100%" stop-color="#9b744c"/></linearGradient></defs>
+      <rect width="1200" height="420" fill="url(#a)"/><ellipse cx="780" cy="70" rx="260" ry="130" fill="#f4d8a7" opacity="0.24"/>
+      <rect y="320" width="1200" height="100" fill="#1b120f"/><rect x="760" y="120" width="74" height="140" fill="#432d21"/><rect x="724" y="148" width="146" height="18" fill="#5c3c2d"/>
+    </svg>
+  `),
+};
+
+const defaultEventVisual = svgToDataUri(`
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420">
+    <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f4efe5"/><stop offset="100%" stop-color="#efe7da"/></linearGradient></defs>
+    <rect width="1200" height="420" fill="url(#a)"/><circle cx="930" cy="90" r="120" fill="#7A0019" opacity="0.08"/>
+  </svg>
+`);
+
+const suggestedCoverTones = [
+  "from-rose-100 via-amber-50 to-white",
+  "from-emerald-100 via-lime-50 to-white",
+  "from-sky-100 via-orange-50 to-white",
+];
+
+const suggestedReasons: Record<string, string> = {
+  "theatre-guild": "Because you engage with arts events and student showcases.",
+  "student-council": "Recommended for active students interested in campus leadership.",
+  athletics: "A match for students following large campus events and team activities.",
+};
