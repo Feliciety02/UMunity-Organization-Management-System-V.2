@@ -166,7 +166,7 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-card px-4 sm:px-6 lg:px-8">
       <button onClick={onMenu} className="grid h-10 w-10 place-items-center rounded-xl border border-border lg:hidden">
         <Menu className="h-4 w-4" />
       </button>
