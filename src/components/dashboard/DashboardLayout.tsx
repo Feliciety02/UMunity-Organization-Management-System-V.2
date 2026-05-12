@@ -171,10 +171,10 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
         <Menu className="h-4 w-4" />
       </button>
 
-      <div className="flex max-w-md flex-1 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 transition focus-within:border-primary">
+      <div className="flex max-w-md flex-1 items-center gap-2 rounded-md border border-border bg-background px-3 py-2 transition focus-within:border-primary">
         <Search className="h-4 w-4 text-muted-foreground" />
         <input
-          placeholder={`Search ${meta.label.toLowerCase()} workspace...`}
+          placeholder="Search UMUnity..."
           className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
         />
         <kbd className="hidden rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">⌘K</kbd>
