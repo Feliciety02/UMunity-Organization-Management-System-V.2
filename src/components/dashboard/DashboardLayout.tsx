@@ -1,11 +1,16 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import {
-  Bell, Search, Menu, PanelLeft, X, ChevronDown, LogOut, MessageSquare, Settings, User as UserIcon,
+  Bell, Menu, PanelLeft, X, ChevronDown, LogOut, MessageSquare, Settings, User as UserIcon,
   Sparkles, type LucideIcon,
 } from "lucide-react";
 import { getSession, logout, ROLE_META, type Role } from "@/lib/auth";
 import { BrandLogo } from "@/components/BrandLogo";
+import { PageHeader } from "@/components/layout/page-header";
+import { AppButton } from "@/components/ui/app-button";
+import { AppCard, AppCardHeader } from "@/components/ui/app-card";
+import { AppBadge } from "@/components/ui/app-badge";
+import { SearchBar } from "@/components/ui/search-bar";
 
 export type NavItem = { to: string; label: string; icon: LucideIcon; badge?: string; section?: string };
 
@@ -209,13 +214,11 @@ function SidebarInner({
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">{cta.text}</p>
               </div>
             </div>
-            <Link
-              to={cta.to}
-              onClick={onNav}
-              className="mt-4 inline-flex h-9 items-center rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground transition hover:bg-primary-deep"
-            >
-              {cta.button}
-            </Link>
+            <AppButton asChild variant="primary" size="sm" className="mt-4">
+              <Link to={cta.to} onClick={onNav}>
+                {cta.button}
+              </Link>
+            </AppButton>
           </div>
         </div>
       )}
@@ -256,14 +259,7 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
 
       <div className="flex flex-1 items-center justify-center">
         <div className="w-full max-w-[520px]">
-          <div className="flex items-center gap-3 rounded-full border border-border bg-background px-4 py-3 shadow-soft transition focus-within:border-primary focus-within:shadow-soft">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <input
-              placeholder="Search UMUnity..."
-              className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-            />
-            <kbd className="hidden rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">Ctrl K</kbd>
-          </div>
+          <SearchBar placeholder="Search UMUnity..." shortcut="Ctrl K" className="transition focus-within:border-primary" />
         </div>
       </div>
 
@@ -351,18 +347,7 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
 /* ----------------------- Shared UI primitives ----------------------- */
 
 export function PageHead({ title, sub, action, breadcrumbs }: { title: string; sub?: string; action?: React.ReactNode; breadcrumbs?: React.ReactNode }) {
-  return (
-    <div className="mb-8 space-y-4">
-      {breadcrumbs && <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">{breadcrumbs}</div>}
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-2">
-          <h1 className="font-display text-5xl font-bold tracking-tight leading-tight">{title}</h1>
-          {sub && <p className="text-lg text-muted-foreground">{sub}</p>}
-        </div>
-        {action}
-      </div>
-    </div>
-  );
+  return <PageHeader title={title} sub={sub} action={action} breadcrumbs={breadcrumbs} />;
 }
 
 export function StatCard({ label, value, delta, icon: Icon, tone = "primary" }: { label: string; value: string; delta?: string; icon: LucideIcon; tone?: "primary" | "gold" | "rose" | "emerald" }) {
@@ -390,28 +375,15 @@ export function StatCard({ label, value, delta, icon: Icon, tone = "primary" }: 
 
 export function Panel({ title, action, children, className = "" }: { title?: string; action?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`rounded-3xl border border-border bg-card p-5 shadow-soft ${className}`}>
-      {(title || action) && (
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          {title && <h3 className="font-display text-base font-semibold">{title}</h3>}
-          {action}
-        </div>
-      )}
+    <AppCard className={`rounded-3xl ${className}`}>
+      <AppCardHeader title={title} action={action} />
       {children}
-    </div>
+    </AppCard>
   );
 }
 
 export function Badge({ children, tone = "neutral" }: { children: React.ReactNode; tone?: "neutral" | "success" | "warning" | "danger" | "info" | "gold" }) {
-  const cls = {
-    neutral: "bg-secondary text-foreground",
-    success: "bg-emerald-100 text-emerald-700",
-    warning: "bg-amber-100 text-amber-800",
-    danger: "bg-rose-100 text-rose-700",
-    info: "bg-sky-100 text-sky-700",
-    gold: "bg-gold/20 text-primary-deep",
-  }[tone];
-  return <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${cls}`}>{children}</span>;
+  return <AppBadge tone={tone}>{children}</AppBadge>;
 }
 
 export function MiniBarChart({ data, color = "var(--primary)" }: { data: number[]; color?: string }) {
