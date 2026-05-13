@@ -1,9 +1,9 @@
 import { Bookmark, Clock, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import { AppBadge } from "@/components/ui/app-badge";
-import { AppButton } from "@/components/ui/app-button";
 import { AppCard } from "@/components/ui/app-card";
 import { IconButton } from "@/components/ui/icon-button";
+import { RsvpButton } from "@/components/events/rsvp-button";
 
 type EventData = {
   title: string;
@@ -19,7 +19,7 @@ export function EventCard({
   cover,
   badge,
   floatingDate = true,
-  actionLabel = "RSVP",
+  actionLabel: _actionLabel = "RSVP",
   compact = false,
   footerAction,
 }: {
@@ -55,7 +55,7 @@ export function EventCard({
           <p className="flex items-center gap-1.5"><Clock className="h-3 w-3" /> {event.time}</p>
           <p className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> {event.venue}</p>
         </div>
-        {footerAction ?? <AppButton variant="gold" size="md" className="mt-4 w-full">{actionLabel}</AppButton>}
+        <div className="mt-4">{footerAction ?? <RsvpButton eventTitle={event.title} size={compact ? "sm" : "md"} />}</div>
       </div>
     </AppCard>
   );
