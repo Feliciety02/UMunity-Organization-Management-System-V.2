@@ -391,7 +391,7 @@ export function EventCard({ title, date, time, venue, host, status }: { title: s
           <div>🕐 {time} · {date}</div>
           <div>📍 {venue}</div>
         </div>
-        <button className="mt-5 w-full rounded-full bg-gradient-gold py-2.5 text-sm font-semibold text-primary-deep transition-transform hover:scale-[1.02]">RSVP</button>
+        <div className="mt-5"><RsvpButton eventTitle={title} /></div>
       </div>
     </div>
   );
