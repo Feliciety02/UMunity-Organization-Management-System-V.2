@@ -17,7 +17,7 @@ function Preview() {
     <>
       <PageHead
         title="Public preview"
-        sub="See how students view your organization on UMUnity."
+        sub="See how students view your organization on UMunity."
         action={
           <div className="flex flex-wrap gap-2">
             <AppButton asChild variant="secondary">

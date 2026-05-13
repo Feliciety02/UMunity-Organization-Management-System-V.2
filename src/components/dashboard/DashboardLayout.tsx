@@ -310,7 +310,7 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
 
       <div className="flex flex-1 items-center justify-center">
         <div className="w-full max-w-[520px]">
-          <SearchBar placeholder="Search UMUnity..." className="transition focus-within:border-primary" />
+          <SearchBar placeholder="Search UMunity..." className="transition focus-within:border-primary" />
         </div>
       </div>
 

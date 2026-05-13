@@ -3,12 +3,13 @@ import { Mail, Lock, ArrowRight, User as UserIcon } from "lucide-react";
 import { useState } from "react";
 import { login, homeFor, DEMO_USERS } from "@/lib/auth";
 import { BrandLogo } from "@/components/BrandLogo";
+import umCampusHero from "@/assets/um-campus-hero.svg";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Login — UMUnity" },
-      { name: "description", content: "Sign in to your UMUnity account." },
+      { title: "Login — UMunity" },
+      { name: "description", content: "Sign in to your UMunity account." },
     ],
   }),
   component: Login,
@@ -41,7 +42,7 @@ function Login() {
   return (
     <AuthLayout
       title="Welcome back."
-      sub="Sign in to continue your UMUnity journey."
+      sub="Sign in to continue your UMunity journey."
       footer={
         <>Don't have an account?{" "}
           <Link to="/register" className="font-semibold text-gold hover:underline">Create one</Link>
@@ -93,7 +94,12 @@ export function AuthLayout({ title, sub, footer, children }: { title: string; su
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden overflow-hidden bg-gradient-maroon text-primary-foreground lg:flex lg:flex-col lg:justify-between lg:p-12">
-        <div className="absolute inset-0 bg-hero opacity-60" />
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-42"
+          style={{ backgroundImage: `url(${umCampusHero})` }}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(75,0,16,0.68)_0%,rgba(122,0,25,0.58)_48%,rgba(75,0,16,0.78)_100%)]" />
+        <div className="absolute inset-0 bg-hero opacity-28" />
         <div className="absolute -left-32 top-32 h-96 w-96 rounded-full bg-gold/20 blur-3xl" />
         <Link to="/" className="relative flex items-center gap-2">
           <BrandLogo size={46} textClassName="text-xl text-primary-foreground" />
@@ -103,14 +109,14 @@ export function AuthLayout({ title, sub, footer, children }: { title: string; su
             One platform for every <span className="text-gradient-gold">student organization.</span>
           </h2>
           <p className="mt-4 max-w-md text-primary-foreground/80">
-            Join 18,000+ Mindanaoans already building their college story on UMUnity.
+            Join 18,000+ Mindanaoans already building their college story on UMunity.
           </p>
         </div>
-        <p className="relative text-xs text-primary-foreground/60">© {new Date().getFullYear()} UMUnity · University of Mindanao</p>
+        <p className="relative text-xs text-primary-foreground/60">© {new Date().getFullYear()} UMunity · University of Mindanao</p>
       </div>
 
       <div className="flex items-center justify-center bg-background px-4 py-12 sm:px-6">
-        <div className="w-full max-w-md">
+        <div className="flex min-h-[680px] w-full max-w-md flex-col justify-center">
           <Link to="/" className="mb-8 inline-flex items-center gap-2 lg:hidden">
             <BrandLogo size={40} textClassName="text-lg text-foreground" />
           </Link>

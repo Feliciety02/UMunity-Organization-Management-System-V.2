@@ -6,7 +6,7 @@ import { events } from "@/data/site";
 export const Route = createFileRoute("/events")({
   head: () => ({
     meta: [
-      { title: "Events — UMUnity" },
+      { title: "Events — UMunity" },
       { name: "description", content: "RSVP to upcoming University of Mindanao student organization events." },
     ],
   }),
