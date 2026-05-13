@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Globe, Lock, MoreHorizontal, Pin, Send } from "lucide-react";
+import { Calendar, Globe, Lock, MoreHorizontal, Pin, Send } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import type { Comment, Org, Post } from "@/data/site";
 import { Badge } from "@/components/dashboard/DashboardLayout";
 import { EngagementBar } from "@/components/social/engagement-bar";
+import { RsvpButton } from "@/components/events/rsvp-button";
 import { AppButton } from "@/components/ui/app-button";
 import { AppCard } from "@/components/ui/app-card";
 import { IconButton } from "@/components/ui/icon-button";
