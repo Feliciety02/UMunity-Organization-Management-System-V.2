@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Globe, Lock, MoreHorizontal, Pin, Send } from "lucide-react";
+import { Calendar, Globe, Lock, MoreHorizontal, Pin, Send } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import type { Comment, Org, Post } from "@/data/site";
 import { Badge } from "@/components/dashboard/DashboardLayout";
 import { EngagementBar } from "@/components/social/engagement-bar";
+import { RsvpButton } from "@/components/events/rsvp-button";
 import { AppButton } from "@/components/ui/app-button";
 import { AppCard } from "@/components/ui/app-card";
 import { IconButton } from "@/components/ui/icon-button";
@@ -88,6 +89,17 @@ export function PostCard({ post, org, manage }: { post: Post; org: Org; manage?:
             style={{ backgroundImage: `url("${visual}")` }}
           >
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(17,17,17,0.02),rgba(17,17,17,0.12))]" />
+          </div>
+        </div>
+      ) : null}
+
+      {post.type === "event" && post.title ? (
+        <div className="mx-5 mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-secondary/40 px-4 py-3">
+          <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+            <Calendar className="h-3.5 w-3.5 text-primary" /> Event RSVP
+          </div>
+          <div className="min-w-[150px]">
+            <RsvpButton eventTitle={post.title} size="sm" />
           </div>
         </div>
       ) : null}

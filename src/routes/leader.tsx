@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
-import { LayoutDashboard, Building2, Users, UserPlus, Calendar, PenSquare, MessageSquare, FileText, User, Eye, Newspaper } from "lucide-react";
+import { LayoutDashboard, Building2, Users, UserPlus, Calendar, PenSquare, MessageSquare, FileText, User, Eye, Newspaper, ClipboardList } from "lucide-react";
 
 const nav: NavItem[] = [
   { to: "/leader", label: "Dashboard", icon: LayoutDashboard, section: "WORKSPACE" },
@@ -10,6 +10,7 @@ const nav: NavItem[] = [
   { to: "/leader/members", label: "Members", icon: Users, section: "MANAGEMENT" },
   { to: "/leader/requests", label: "Membership Requests", icon: UserPlus, badge: "12", section: "MANAGEMENT" },
   { to: "/leader/manage-events", label: "Events", icon: Calendar, section: "MANAGEMENT" },
+  { to: "/leader/attendees", label: "Attendees", icon: ClipboardList, section: "MANAGEMENT" },
   { to: "/leader/create-post", label: "Create Post", icon: PenSquare, section: "MANAGEMENT" },
   { to: "/leader/posts", label: "Manage Posts", icon: FileText, section: "MANAGEMENT" },
   { to: "/leader/comments", label: "Comments", icon: MessageSquare, badge: "8", section: "MANAGEMENT" },

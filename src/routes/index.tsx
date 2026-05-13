@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/PageShell";
 import { EventCard as SharedEventCard } from "@/components/events/event-card";
+import { RsvpButton } from "@/components/events/rsvp-button";
 import { defaultEventCover, eventCovers } from "@/components/events/event-covers";
 import { organizations, events, stats } from "@/data/site";
 import umCampusHero from "@/assets/um-campus-hero.svg";
@@ -391,7 +392,7 @@ export function EventCard({ title, date, time, venue, host, status }: { title: s
           <div>🕐 {time} · {date}</div>
           <div>📍 {venue}</div>
         </div>
-        <button className="mt-5 w-full rounded-full bg-gradient-gold py-2.5 text-sm font-semibold text-primary-deep transition-transform hover:scale-[1.02]">RSVP</button>
+        <div className="mt-5"><RsvpButton eventTitle={title} /></div>
       </div>
     </div>
   );

@@ -46,6 +46,7 @@ import { Route as LeaderFeedRouteImport } from './routes/leader.feed'
 import { Route as LeaderCreatePostRouteImport } from './routes/leader.create-post'
 import { Route as LeaderCreateEventRouteImport } from './routes/leader.create-event'
 import { Route as LeaderCommentsRouteImport } from './routes/leader.comments'
+import { Route as LeaderAttendeesRouteImport } from './routes/leader.attendees'
 import { Route as LeaderAttendanceRouteImport } from './routes/leader.attendance'
 import { Route as LeaderAnnouncementsRouteImport } from './routes/leader.announcements'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
@@ -245,6 +246,11 @@ const LeaderCommentsRoute = LeaderCommentsRouteImport.update({
   path: '/comments',
   getParentRoute: () => LeaderRoute,
 } as any)
+const LeaderAttendeesRoute = LeaderAttendeesRouteImport.update({
+  id: '/attendees',
+  path: '/attendees',
+  getParentRoute: () => LeaderRoute,
+} as any)
 const LeaderAttendanceRoute = LeaderAttendanceRouteImport.update({
   id: '/attendance',
   path: '/attendance',
@@ -335,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AdminUsersRoute
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
+  '/leader/attendees': typeof LeaderAttendeesRoute
   '/leader/comments': typeof LeaderCommentsRoute
   '/leader/create-event': typeof LeaderCreateEventRoute
   '/leader/create-post': typeof LeaderCreatePostRoute
@@ -384,6 +391,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AdminUsersRoute
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
+  '/leader/attendees': typeof LeaderAttendeesRoute
   '/leader/comments': typeof LeaderCommentsRoute
   '/leader/create-event': typeof LeaderCreateEventRoute
   '/leader/create-post': typeof LeaderCreatePostRoute
@@ -437,6 +445,7 @@ export interface FileRoutesById {
   '/admin/users': typeof AdminUsersRoute
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
+  '/leader/attendees': typeof LeaderAttendeesRoute
   '/leader/comments': typeof LeaderCommentsRoute
   '/leader/create-event': typeof LeaderCreateEventRoute
   '/leader/create-post': typeof LeaderCreatePostRoute
@@ -491,6 +500,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/leader/announcements'
     | '/leader/attendance'
+    | '/leader/attendees'
     | '/leader/comments'
     | '/leader/create-event'
     | '/leader/create-post'
@@ -540,6 +550,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/leader/announcements'
     | '/leader/attendance'
+    | '/leader/attendees'
     | '/leader/comments'
     | '/leader/create-event'
     | '/leader/create-post'
@@ -592,6 +603,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/leader/announcements'
     | '/leader/attendance'
+    | '/leader/attendees'
     | '/leader/comments'
     | '/leader/create-event'
     | '/leader/create-post'
@@ -896,6 +908,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderCommentsRouteImport
       parentRoute: typeof LeaderRoute
     }
+    '/leader/attendees': {
+      id: '/leader/attendees'
+      path: '/attendees'
+      fullPath: '/leader/attendees'
+      preLoaderRoute: typeof LeaderAttendeesRouteImport
+      parentRoute: typeof LeaderRoute
+    }
     '/leader/attendance': {
       id: '/leader/attendance'
       path: '/attendance'
@@ -1025,6 +1044,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 interface LeaderRouteChildren {
   LeaderAnnouncementsRoute: typeof LeaderAnnouncementsRoute
   LeaderAttendanceRoute: typeof LeaderAttendanceRoute
+  LeaderAttendeesRoute: typeof LeaderAttendeesRoute
   LeaderCommentsRoute: typeof LeaderCommentsRoute
   LeaderCreateEventRoute: typeof LeaderCreateEventRoute
   LeaderCreatePostRoute: typeof LeaderCreatePostRoute
@@ -1042,6 +1062,7 @@ interface LeaderRouteChildren {
 const LeaderRouteChildren: LeaderRouteChildren = {
   LeaderAnnouncementsRoute: LeaderAnnouncementsRoute,
   LeaderAttendanceRoute: LeaderAttendanceRoute,
+  LeaderAttendeesRoute: LeaderAttendeesRoute,
   LeaderCommentsRoute: LeaderCommentsRoute,
   LeaderCreateEventRoute: LeaderCreateEventRoute,
   LeaderCreatePostRoute: LeaderCreatePostRoute,
@@ -1110,13 +1131,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
