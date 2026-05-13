@@ -1,9 +1,9 @@
 import { Bookmark, Clock, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import { AppBadge } from "@/components/ui/app-badge";
-import { AppButton } from "@/components/ui/app-button";
 import { AppCard } from "@/components/ui/app-card";
 import { IconButton } from "@/components/ui/icon-button";
+import { RsvpButton } from "@/components/events/rsvp-button";
 
 type EventData = {
   title: string;
