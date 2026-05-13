@@ -93,6 +93,17 @@ export function PostCard({ post, org, manage }: { post: Post; org: Org; manage?:
         </div>
       ) : null}
 
+      {post.type === "event" && post.title ? (
+        <div className="mx-5 mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-secondary/40 px-4 py-3">
+          <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+            <Calendar className="h-3.5 w-3.5 text-primary" /> Event RSVP
+          </div>
+          <div className="min-w-[150px]">
+            <RsvpButton eventTitle={post.title} size="sm" />
+          </div>
+        </div>
+      ) : null}
+
       <div className="px-5 pb-3">
         <div className="flex items-center justify-between border-t border-border/80 pt-3 text-xs text-muted-foreground">
           <span>{likes} reactions</span>
