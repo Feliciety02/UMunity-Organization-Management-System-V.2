@@ -63,7 +63,6 @@ function StudentFeed() {
                       cover={eventVisuals[event.title] ?? defaultEventVisual}
                       compact
                       badge={<Badge tone={event.status === "Open" ? "success" : event.status === "Soon" ? "info" : "warning"}>{event.status}</Badge>}
-                      footerAction={<AppButton variant="gold" size="sm">RSVP</AppButton>}
                     />
                   ))}
                 </div>
