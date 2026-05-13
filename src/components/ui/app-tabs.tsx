@@ -46,12 +46,15 @@ export function UnderlineTabs<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-wrap items-center gap-6", className)}>
+    <div className={cn("flex flex-wrap items-stretch gap-6", className)}>
       {items.map((item) => (
         <button
           key={item}
           onClick={() => onChange(item)}
-          className={cn("relative pb-3 text-sm font-semibold transition", value === item ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+          className={cn(
+            "relative inline-flex h-14 items-center justify-center px-1 text-sm font-semibold transition",
+            value === item ? "text-primary" : "text-muted-foreground hover:text-foreground",
+          )}
         >
           {item}
           {value === item ? <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-primary" /> : null}
