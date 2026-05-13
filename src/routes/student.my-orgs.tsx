@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 import { organizations } from "@/data/site";
 import { Users, MessageSquare } from "lucide-react";
@@ -39,10 +39,16 @@ function MyOrgs() {
                 </div>
               ))}
             </div>
-            <div className="mt-4 flex gap-2">
-              <button className="flex-1 rounded-full bg-gradient-maroon py-2 text-xs font-semibold text-primary-foreground">View org</button>
-              <button className="grid h-9 w-9 place-items-center rounded-full border border-border"><MessageSquare className="h-4 w-4" /></button>
-              <button className="grid h-9 w-9 place-items-center rounded-full border border-border"><Users className="h-4 w-4" /></button>
+            <div className="mt-4 flex flex-wrap gap-2 sm:flex-nowrap">
+              <Link
+                to="/student/org/$slug"
+                params={{ slug: o.slug }}
+                className="flex h-11 min-w-[220px] flex-1 items-center justify-center rounded-full bg-gradient-maroon px-4 text-sm font-semibold text-primary-foreground transition hover:brightness-95"
+              >
+                View org
+              </Link>
+              <button className="grid h-11 w-11 place-items-center rounded-full border border-border"><MessageSquare className="h-4 w-4" /></button>
+              <button className="grid h-11 w-11 place-items-center rounded-full border border-border"><Users className="h-4 w-4" /></button>
             </div>
           </div>
         ))}

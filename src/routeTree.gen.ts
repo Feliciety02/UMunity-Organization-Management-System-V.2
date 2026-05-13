@@ -60,6 +60,7 @@ import { Route as AdminLogsRouteImport } from './routes/admin.logs'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as StudentOrgSlugRouteImport } from './routes/student.org.$slug'
 
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
@@ -316,6 +317,11 @@ const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AdminRoute,
 } as any)
+const StudentOrgSlugRoute = StudentOrgSlugRouteImport.update({
+  id: '/org/$slug',
+  path: '/org/$slug',
+  getParentRoute: () => StudentRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -369,6 +375,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/student/org/$slug': typeof StudentOrgSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -419,6 +426,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/leader': typeof LeaderIndexRoute
   '/student': typeof StudentIndexRoute
+  '/student/org/$slug': typeof StudentOrgSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -473,6 +481,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/student/org/$slug': typeof StudentOrgSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -528,6 +537,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/leader/'
     | '/student/'
+    | '/student/org/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -578,6 +588,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/leader'
     | '/student'
+    | '/student/org/$slug'
   id:
     | '__root__'
     | '/'
@@ -631,6 +642,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/leader/'
     | '/student/'
+    | '/student/org/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1006,6 +1018,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/student/org/$slug': {
+      id: '/student/org/$slug'
+      path: '/org/$slug'
+      fullPath: '/student/org/$slug'
+      preLoaderRoute: typeof StudentOrgSlugRouteImport
+      parentRoute: typeof StudentRoute
+    }
   }
 }
 
@@ -1094,6 +1113,7 @@ interface StudentRouteChildren {
   StudentTopEventsRoute: typeof StudentTopEventsRoute
   StudentTopOrganizationsRoute: typeof StudentTopOrganizationsRoute
   StudentIndexRoute: typeof StudentIndexRoute
+  StudentOrgSlugRoute: typeof StudentOrgSlugRoute
 }
 
 const StudentRouteChildren: StudentRouteChildren = {
@@ -1110,6 +1130,7 @@ const StudentRouteChildren: StudentRouteChildren = {
   StudentTopEventsRoute: StudentTopEventsRoute,
   StudentTopOrganizationsRoute: StudentTopOrganizationsRoute,
   StudentIndexRoute: StudentIndexRoute,
+  StudentOrgSlugRoute: StudentOrgSlugRoute,
 }
 
 const StudentRouteWithChildren =

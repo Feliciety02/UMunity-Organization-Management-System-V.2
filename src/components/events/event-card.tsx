@@ -32,7 +32,7 @@ export function EventCard({
   footerAction?: ReactNode;
 }) {
   return (
-    <AppCard className="group overflow-hidden rounded-3xl transition hover:-translate-y-0.5 hover:shadow-soft" padded={false}>
+    <AppCard className="group relative overflow-visible rounded-3xl transition hover:z-20 hover:-translate-y-0.5 hover:shadow-soft focus-within:z-20" padded={false}>
       <div className="relative h-36 rounded-t-3xl bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url("${cover}")` }}>
         <div className="absolute inset-0 bg-gradient-to-r from-black/16 via-transparent to-black/12" />
         <IconButton tone="soft" className="absolute right-3 top-3 h-8 w-8">
