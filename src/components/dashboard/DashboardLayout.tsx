@@ -52,40 +52,51 @@ export function DashboardLayout({
 
   if (!session) return null;
 
-  const meta = ROLE_META[role];
-
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className={`sticky top-0 hidden h-screen shrink-0 border-r border-border bg-[#FEFDFE] md:flex ${sidebarCollapsed ? "w-20" : "w-[280px]"}`}>
+      <aside
+        className={`sticky top-0 hidden h-screen shrink-0 border-r border-border bg-[#FEFDFE] transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex ${
+          sidebarCollapsed ? "w-20" : "w-[280px]"
+        }`}
+      >
         <SidebarInner role={role} nav={nav} collapsed={sidebarCollapsed} onToggleCollapse={() => setSidebarCollapsed((v) => !v)} />
       </aside>
 
-      {mobileOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-foreground/40" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 flex h-full w-[280px] max-w-[calc(100vw-2rem)] flex-col border-r border-border bg-[#FEFDFE]">
+      <div
+        className={`fixed inset-0 z-50 transition-[visibility] duration-300 md:hidden ${
+          mobileOpen ? "visible" : "invisible"
+        }`}
+      >
+        <div
+          className={`absolute inset-0 bg-foreground/40 transition-opacity duration-300 ease-out ${
+            mobileOpen ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={() => setMobileOpen(false)}
+        />
+        <aside
+          className={`absolute left-0 top-0 flex h-full w-[280px] max-w-[calc(100vw-2rem)] flex-col border-r border-border bg-[#FEFDFE] shadow-[0_22px_60px_rgba(15,23,42,0.16)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            mobileOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
             <div className="flex h-20 items-center justify-between border-b border-border px-4">
               <div className="flex items-center gap-3">
-                <button onClick={() => setMobileOpen(false)} className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground transition hover:bg-primary/6 hover:text-primary">
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground transition hover:bg-primary/6 hover:text-primary"
+                >
                   <X className="h-4 w-4" />
                 </button>
                 <Brand />
               </div>
             </div>
             <SidebarInner role={role} nav={nav} onNav={() => setMobileOpen(false)} hideBrand />
-          </aside>
-        </div>
-      )}
+        </aside>
+      </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar role={role} session={session} notifs={notifs} onMenu={() => setMobileOpen(true)} />
         <main className="flex-1 px-6 py-8 sm:px-8 lg:px-10">
-          <div className="mx-auto w-full max-w-[1440px]">
-            <div className={`mb-6 inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider ${meta.accent}`}>
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> {meta.label} workspace
-            </div>
-            {children}
-          </div>
+          <div className="mx-auto w-full max-w-[1440px]">{children}</div>
         </main>
       </div>
     </div>
@@ -149,26 +160,44 @@ function SidebarInner({
   return (
     <div className="flex h-full min-h-0 flex-col">
       {!hideBrand && (
-        <div className={`flex h-20 items-center border-b border-border px-4 ${collapsed ? "justify-center" : "gap-3"}`}>
+        <div
+          className={`flex h-20 items-center border-b border-border px-4 transition-[padding,gap,justify-content] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            collapsed ? "justify-center" : "gap-3"
+          }`}
+        >
           <button
             onClick={onToggleCollapse}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-muted-foreground transition hover:bg-primary/6 hover:text-primary"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-muted-foreground transition-all duration-200 hover:bg-primary/6 hover:text-primary"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <PanelLeft className="h-4 w-4" />
+            <PanelLeft className={`h-4 w-4 transition-transform duration-300 ${collapsed ? "" : "rotate-180"}`} />
           </button>
-          {!collapsed && <Brand />}
+          <div
+            className={`overflow-hidden transition-[max-width,opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              collapsed ? "max-w-0 translate-x-2 opacity-0" : "max-w-[220px] translate-x-0 opacity-100"
+            }`}
+          >
+            {!collapsed && <Brand />}
+          </div>
         </div>
       )}
 
-      <nav className={`flex-1 overflow-y-auto px-3 pb-6 ${hideBrand ? "pt-6" : "pt-8"}`}>
+      <nav
+        className={`flex-1 overflow-y-auto px-3 pb-6 transition-[padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          hideBrand ? "pt-6" : "pt-8"
+        }`}
+      >
         {Object.entries(sections).map(([section, items]) => (
           <section key={section} className="mb-6 last:mb-0">
-            {!collapsed && (
-              <div className="mb-2.5 px-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            <div
+              className={`overflow-hidden transition-[max-height,opacity,transform,margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                collapsed ? "mb-0 max-h-0 -translate-y-1 opacity-0" : "mb-2.5 max-h-10 translate-y-0 opacity-100"
+              }`}
+            >
+              <div className="px-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 {section}
               </div>
-            )}
+            </div>
             <div className="space-y-2">
               {items.map((n) => {
                 const active = n.to === "/" ? path === "/" : path === n.to || (n.to !== `/${role}` && path.startsWith(n.to));
@@ -178,21 +207,39 @@ function SidebarInner({
                     to={n.to}
                     onClick={onNav}
                     title={collapsed ? n.label : undefined}
-                    className={`group relative flex h-11 items-center rounded-xl px-3 text-sm font-medium transition-colors ${
+                    className={`group relative flex h-11 items-center rounded-xl px-3 text-sm font-medium transition-[background-color,color,transform] duration-200 ${
                       active
                         ? "bg-[color:color-mix(in_oklab,var(--primary)_8%,white)] text-primary"
                         : "text-foreground/75 hover:bg-primary/6 hover:text-primary"
                     }`}
                   >
-                    {active && <span className="absolute left-0 top-2 h-7 w-1 rounded-r-full bg-primary" />}
+                    <span
+                      className={`absolute left-0 top-2 h-7 w-1 rounded-r-full bg-primary transition-[opacity,transform] duration-300 ${
+                        active ? "scale-y-100 opacity-100" : "scale-y-75 opacity-0"
+                      }`}
+                    />
                     <div className={`flex w-full items-center ${collapsed ? "justify-center" : "gap-3"}`}>
-                      <n.icon className={`h-4 w-4 shrink-0 ${active ? "text-primary" : "text-muted-foreground group-hover:text-primary"}`} />
-                      {!collapsed && <span className="flex-1">{n.label}</span>}
-                      {!collapsed && n.badge && (
+                      <n.icon
+                        className={`h-4 w-4 shrink-0 transition-colors duration-200 ${
+                          active ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                        }`}
+                      />
+                      <span
+                        className={`min-w-0 flex-1 overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                          collapsed ? "max-w-0 translate-x-2 opacity-0" : "max-w-[160px] translate-x-0 opacity-100"
+                        }`}
+                      >
+                        {n.label}
+                      </span>
+                      <span
+                        className={`overflow-hidden transition-[max-width,opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                          collapsed || !n.badge ? "max-w-0 translate-x-2 opacity-0" : "max-w-12 translate-x-0 opacity-100"
+                        }`}
+                      >
                         <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[color:color-mix(in_oklab,var(--gold)_28%,white)] px-1.5 py-0.5 text-[10px] font-bold text-foreground">
                           {n.badge}
                         </span>
-                      )}
+                      </span>
                     </div>
                   </Link>
                 );
@@ -202,8 +249,12 @@ function SidebarInner({
         ))}
       </nav>
 
-      {!collapsed && (
-        <div className="border-t border-border px-4 py-4">
+      <div
+        className={`overflow-hidden border-t border-border transition-[max-height,opacity,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          collapsed ? "max-h-0 px-4 py-0 opacity-0" : "max-h-48 px-4 py-4 opacity-100"
+        }`}
+      >
+        {!collapsed && (
           <div className="rounded-2xl bg-card px-4 py-4">
             <div className="flex items-start gap-3">
               <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
@@ -220,8 +271,8 @@ function SidebarInner({
               </Link>
             </AppButton>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -259,7 +310,7 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
 
       <div className="flex flex-1 items-center justify-center">
         <div className="w-full max-w-[520px]">
-          <SearchBar placeholder="Search UMUnity..." shortcut="Ctrl K" className="transition focus-within:border-primary" />
+          <SearchBar placeholder="Search UMUnity..." className="transition focus-within:border-primary" />
         </div>
       </div>
 
