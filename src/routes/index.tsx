@@ -1,7 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/PageShell";
+import { EventCard as SharedEventCard } from "@/components/events/event-card";
+import { defaultEventCover, eventCovers } from "@/components/events/event-covers";
 import { organizations, events, stats } from "@/data/site";
-import { ArrowRight, Users, Calendar, Megaphone, BarChart3, Bell, LayoutDashboard, Sparkles, Search, UserPlus, Rocket, Star, Quote } from "lucide-react";
+import umCampusHero from "@/assets/um-campus-hero.svg";
+import {
+  ArrowRight,
+  Users,
+  Calendar,
+  Megaphone,
+  BarChart3,
+  Bell,
+  LayoutDashboard,
+  Search,
+  UserPlus,
+  Rocket,
+  Star,
+  Quote,
+  MessageSquare,
+  CheckCircle2,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -17,95 +35,166 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   return (
-    <PageShell>
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-hero opacity-95" />
-        <div className="absolute -left-32 top-32 h-96 w-96 rounded-full bg-gold/20 blur-3xl animate-float" />
-        <div className="absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-primary/40 blur-3xl" />
+    <PageShell overlayHeader>
+      <section className="hero-section relative left-1/2 flex min-h-screen w-screen max-w-none -translate-x-1/2 items-center overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${umCampusHero})` }}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(75,0,16,0.92)_0%,rgba(75,0,16,0.78)_36%,rgba(75,0,16,0.44)_68%,rgba(20,6,9,0.62)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,199,44,0.18),transparent_30%),radial-gradient(circle_at_78%_24%,rgba(255,255,255,0.14),transparent_24%),linear-gradient(180deg,rgba(0,0,0,0.38),rgba(0,0,0,0.14))]" />
+        <div className="absolute -left-20 top-24 h-72 w-72 rounded-full bg-[rgba(244,176,0,0.12)] blur-3xl" />
+        <div className="absolute bottom-8 right-0 h-80 w-80 rounded-full bg-[rgba(122,0,25,0.24)] blur-3xl" />
 
-        <div className="relative mx-auto max-w-7xl px-4 pt-20 pb-28 sm:px-6 lg:pt-28 lg:pb-36">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div className="animate-fade-up">
-              <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-white/5 px-4 py-1.5 text-xs font-medium text-gold backdrop-blur">
-                <Sparkles className="h-3.5 w-3.5" /> Built for the University of Mindanao
-              </span>
-              <h1 className="mt-6 font-display text-4xl font-bold leading-[1.05] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl">
+        <div className="hero-content relative mx-auto max-w-[1400px] px-4 pb-16 pt-32 sm:px-6 lg:px-8 lg:pb-20 lg:pt-40">
+          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.08fr)_460px] xl:grid-cols-[minmax(0,1.08fr)_520px]">
+            <div className="max-w-3xl text-[#FFFDF7]">
+              <h1 className="max-w-4xl font-display text-5xl font-bold leading-[0.96] tracking-[-0.04em] text-[#FFFDF7] sm:text-6xl lg:text-7xl">
                 One Platform for{" "}
-                <span className="text-gradient-gold">Every Student Organization.</span>
+                <span className="bg-[linear-gradient(180deg,#FFC72C_0%,#F4B000_100%)] bg-clip-text text-transparent">
+                  Every Student Organization.
+                </span>
               </h1>
-              <p className="mt-6 max-w-xl text-lg text-primary-foreground/80">
-                Discover organizations, join communities, manage events, and stay connected across the University of Mindanao.
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-[#FFFDF7]/78 sm:text-xl">
+                Discover organizations, join communities, manage events, and stay connected across the University of Mindanao with one student-focused platform.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link to="/organizations" className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold px-6 py-3 text-sm font-semibold text-primary-deep shadow-soft transition-transform hover:scale-105">
+              <div className="mt-9 flex flex-wrap gap-4">
+                <Link
+                  to="/organizations"
+                  className="group inline-flex items-center gap-2 rounded-full bg-[#F4B000] px-7 py-3.5 text-sm font-semibold text-[#4B0010] shadow-[0_16px_40px_rgba(244,176,0,0.22)] transition hover:bg-[#FFC72C]"
+                >
                   Explore Organizations
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
-                <Link to="/register" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-primary-foreground backdrop-blur transition hover:bg-white/20">
-                  Get Started
+                <Link
+                  to="/about"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-7 py-3.5 text-sm font-semibold text-[#FFFDF7] backdrop-blur-lg transition hover:bg-white/16"
+                >
+                  Learn More
                 </Link>
               </div>
-              <div className="mt-10 flex items-center gap-4 text-primary-foreground/80">
+              <div className="mt-10 flex flex-wrap items-center gap-4 text-[#FFFDF7]/82">
                 <div className="flex -space-x-3">
-                  {[0,1,2,3].map(i => (
-                    <div key={i} className={`h-9 w-9 rounded-full border-2 border-primary-deep bg-gradient-to-br ${["from-gold to-amber-600","from-rose-400 to-primary","from-emerald-400 to-primary-deep","from-gold-warm to-gold"][i]}`} />
+                  {[
+                    "from-[#f8d8a7] to-[#b66a4b]",
+                    "from-[#f7b8b6] to-[#7A0019]",
+                    "from-[#d6e8bf] to-[#496c36]",
+                    "from-[#ffe59a] to-[#F4B000]",
+                    "from-[#f1d0c7] to-[#7d3f3d]",
+                  ].map((tone, index) => (
+                    <div
+                      key={tone}
+                      className={`grid h-11 w-11 place-items-center rounded-full border-2 border-[rgba(255,253,247,0.85)] bg-gradient-to-br ${tone} text-[11px] font-bold text-[#4B0010] shadow-[0_10px_24px_rgba(0,0,0,0.18)]`}
+                    >
+                      {["AL", "MR", "JS", "KL", "+"][index]}
+                    </div>
                   ))}
                 </div>
-                <p className="text-sm">Trusted by <span className="font-semibold text-gold">18,000+</span> Mindanaoan students</p>
+                <p className="text-sm leading-6 sm:text-base">
+                  Trusted by <span className="font-semibold text-[#FFC72C]">18,000+</span> Mindanaoan students
+                </p>
               </div>
             </div>
 
-            {/* Visual */}
-            <div className="relative animate-fade-up [animation-delay:200ms]">
-              <div className="glass-dark relative rounded-3xl p-6 shadow-soft">
-                <div className="flex items-center justify-between">
+            <div className="relative">
+              <div className="rounded-[2rem] border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.08))] p-5 text-[#FFFDF7] shadow-[0_28px_80px_rgba(18,6,10,0.42)] backdrop-blur-2xl">
+                <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-xs uppercase tracking-wider text-gold">Live Now</p>
-                    <h3 className="mt-1 font-display text-lg font-bold text-primary-foreground">Student Dashboard</h3>
+                    <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#FFC72C]">
+                      <span className="h-2 w-2 rounded-full bg-[#F4B000]" />
+                      Live Now
+                    </p>
+                    <h3 className="mt-2 font-display text-2xl font-bold">Student Dashboard</h3>
                   </div>
-                  <span className="rounded-full bg-gold/20 px-3 py-1 text-xs font-medium text-gold">3 new</span>
+                  <span className="rounded-full border border-[rgba(255,199,44,0.25)] bg-[rgba(244,176,0,0.14)] px-3 py-1 text-xs font-semibold text-[#FFC72C]">
+                    3 new
+                  </span>
                 </div>
-                <div className="mt-5 space-y-3">
+
+                <div className="mt-6 space-y-3">
                   {[
-                    { icon: Users, label: "Joined UM CS Society", meta: "412 members" },
-                    { icon: Calendar, label: "Innovation Summit", meta: "May 24" },
-                    { icon: Megaphone, label: "New announcement", meta: "Just now" },
-                  ].map((r, i) => (
-                    <div key={i} className="flex items-center gap-3 rounded-2xl bg-white/5 p-3 transition hover:bg-white/10">
-                      <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-gold text-primary-deep">
-                        <r.icon className="h-4 w-4" />
+                    { icon: Users, label: "Joined UM CS Society", meta: "412 members", time: "2h ago" },
+                    { icon: Calendar, label: "Innovation Summit", meta: "May 24, 2026", time: "5h ago" },
+                    { icon: Megaphone, label: "New announcement", meta: "Just now", time: "10m ago" },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className="flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-[rgba(255,255,255,0.07)] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                    >
+                      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(180deg,#FFC72C_0%,#F4B000_100%)] text-[#4B0010] shadow-[0_10px_24px_rgba(244,176,0,0.16)]">
+                        <item.icon className="h-5 w-5" />
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-primary-foreground">{r.label}</p>
-                        <p className="text-xs text-primary-foreground/60">{r.meta}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-[#FFFDF7]">{item.label}</p>
+                        <p className="text-xs text-[#FFFDF7]/64">{item.meta}</p>
                       </div>
+                      <span className="text-xs text-[#FFFDF7]/56">{item.time}</span>
                     </div>
                   ))}
                 </div>
+
                 <div className="mt-5 grid grid-cols-3 gap-3">
-                  {[["12","Orgs"],["7","Events"],["4","Posts"]].map(([v,l]) => (
-                    <div key={l} className="rounded-2xl border border-gold/20 bg-white/5 p-3 text-center">
-                      <div className="font-display text-xl font-bold text-gold">{v}</div>
-                      <div className="text-[10px] uppercase tracking-wider text-primary-foreground/60">{l}</div>
+                  {[
+                    ["12", "Organizations"],
+                    ["7", "Events"],
+                    ["4", "Posts"],
+                  ].map(([value, label]) => (
+                    <div
+                      key={label}
+                      className="rounded-[1.35rem] border border-white/10 bg-[rgba(255,255,255,0.05)] px-3 py-4 text-center"
+                    >
+                      <div className="font-display text-3xl font-bold text-[#FFC72C]">{value}</div>
+                      <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#FFFDF7]/60">
+                        {label}
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="absolute -bottom-6 -left-6 hidden rounded-2xl bg-gradient-gold p-4 shadow-soft animate-float sm:block">
-                <div className="flex items-center gap-2 text-primary-deep">
-                  <Star className="h-4 w-4 fill-current" />
-                  <span className="text-xs font-bold">98% Student Satisfaction</span>
-                </div>
-              </div>
+
             </div>
+          </div>
+
+          <div className="mt-12 grid gap-3 rounded-[2rem] border border-white/14 bg-[rgba(255,255,255,0.08)] p-3 shadow-[0_20px_50px_rgba(25,7,10,0.32)] backdrop-blur-2xl md:grid-cols-4">
+            {[
+              {
+                title: "Discover",
+                text: "Browse recognized organizations by interest, mission, and campus culture.",
+                icon: Search,
+              },
+              {
+                title: "Participate",
+                text: "Join events, RSVP quickly, and stay updated on what happens next.",
+                icon: CheckCircle2,
+              },
+              {
+                title: "Connect",
+                text: "Follow communities, receive announcements, and keep conversations moving.",
+                icon: MessageSquare,
+              },
+              {
+                title: "Lead",
+                text: "Manage members, publish updates, and run your organization with confidence.",
+                icon: LayoutDashboard,
+              },
+            ].map((feature) => (
+              <div
+                key={feature.title}
+                className="rounded-[1.5rem] border border-white/10 bg-[rgba(255,255,255,0.05)] px-5 py-5 text-[#FFFDF7] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+              >
+                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[rgba(244,176,0,0.15)] text-[#FFC72C]">
+                  <feature.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-4 font-display text-lg font-bold">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-[#FFFDF7]/68">{feature.text}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* STATS */}
-      <section className="relative -mt-12 px-4 sm:px-6">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 rounded-3xl bg-card p-6 shadow-soft md:grid-cols-4 md:p-8">
+      <section className="relative mx-auto -mt-6 px-4 sm:px-6">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 rounded-[2rem] border border-[rgba(122,0,25,0.08)] bg-[linear-gradient(180deg,rgba(255,253,247,0.98),rgba(255,250,242,0.94))] p-6 shadow-[0_24px_60px_rgba(75,0,16,0.08)] md:grid-cols-4 md:p-8">
           {stats.map((s) => (
             <div key={s.label} className="text-center">
               <div className="font-display text-3xl font-bold text-gradient-maroon md:text-4xl">{s.value}</div>
@@ -134,11 +223,15 @@ function Home() {
       <section className="bg-secondary/60">
         <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
           <SectionHeader eyebrow="Upcoming Events" title="Don't miss what's next." sub="From summits to sportsfest, your campus calendar lives here." />
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {events.slice(0, 3).map((e) => (
-              <EventCard key={e.title} {...e} />
-            ))}
-          </div>
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {events.slice(0, 3).map((e) => (
+            <SharedEventCard
+              key={e.title}
+              event={e}
+              cover={eventCovers[e.title] ?? defaultEventCover}
+            />
+          ))}
+        </div>
           <div className="mt-10 text-center">
             <Link to="/events" className="inline-flex items-center gap-2 rounded-full bg-gradient-maroon px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-105">
               See all events <ArrowRight className="h-4 w-4" />

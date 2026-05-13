@@ -1,12 +1,26 @@
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
 
-export function PageShell({ children }: { children: React.ReactNode }) {
+export function PageShell({
+  children,
+  overlayHeader = false,
+  mainClassName = "",
+  contentClassName = "",
+}: {
+  children: React.ReactNode;
+  overlayHeader?: boolean;
+  mainClassName?: string;
+  contentClassName?: string;
+}) {
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      <main className="flex-1">
-        <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-10">{children}</div>
+      <main className={`flex-1 ${overlayHeader ? "pt-0" : "pt-28"} ${mainClassName}`.trim()}>
+        <div
+          className={`mx-auto w-full ${overlayHeader ? "max-w-none px-0 py-0" : "max-w-7xl px-4 py-8 sm:px-6 lg:px-10"} ${contentClassName}`.trim()}
+        >
+          {children}
+        </div>
       </main>
       <SiteFooter />
     </div>
