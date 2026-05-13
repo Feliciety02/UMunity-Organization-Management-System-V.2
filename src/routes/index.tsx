@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/PageShell";
 import { EventCard as SharedEventCard } from "@/components/events/event-card";
+import { RsvpButton } from "@/components/events/rsvp-button";
 import { defaultEventCover, eventCovers } from "@/components/events/event-covers";
 import { organizations, events, stats } from "@/data/site";
 import umCampusHero from "@/assets/um-campus-hero.svg";
