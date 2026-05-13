@@ -5,8 +5,8 @@ import { Search, UserPlus, Calendar, Bell, MessageSquare, FileText, Users, BarCh
 export const Route = createFileRoute("/features")({
   head: () => ({
     meta: [
-      { title: "Features — UMUnity" },
-      { name: "description", content: "Powerful features for students, organization leaders, and admins on the UMUnity platform." },
+      { title: "Features — UMunity" },
+      { name: "description", content: "Powerful features for students, organization leaders, and admins on the UMunity platform." },
     ],
   }),
   component: Features,
@@ -61,7 +61,7 @@ function Features() {
             Built for <span className="text-gradient-gold">every role.</span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-primary-foreground/80">
-            Whether you're discovering, leading, or governing — UMUnity has you covered.
+            Whether you're discovering, leading, or governing — UMunity has you covered.
           </p>
         </div>
       </section>

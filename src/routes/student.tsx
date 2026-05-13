@@ -23,7 +23,7 @@ export const notifs: Notif[] = [
   { title: "UM CS Society pinned a new announcement", meta: "2h ago · Organization", unread: true },
   { title: "Innovation Summit RSVP confirmed", meta: "4h ago · Event", unread: true },
   { title: "New announcement from UM Eco Warriors", meta: "Yesterday", unread: true },
-  { title: "Welcome to UMUnity", meta: "3 days ago", unread: false },
+  { title: "Welcome to UMunity", meta: "3 days ago", unread: false },
 ];
 
 export const Route = createFileRoute("/student")({

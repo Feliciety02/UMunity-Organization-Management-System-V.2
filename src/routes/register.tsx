@@ -5,8 +5,8 @@ import { Mail, Lock, User, GraduationCap, ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/register")({
   head: () => ({
     meta: [
-      { title: "Register — UMUnity" },
-      { name: "description", content: "Create your UMUnity account and join campus life." },
+      { title: "Register — UMunity" },
+      { name: "description", content: "Create your UMunity account and join campus life." },
     ],
   }),
   component: Register,
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/register")({
 function Register() {
   return (
     <AuthLayout
-      title="Join UMUnity."
+      title="Join UMunity."
       sub="Create your free student account in seconds."
       footer={
         <>Already have an account?{" "}
@@ -30,7 +30,7 @@ function Register() {
         <Field icon={Lock} type="password" label="Password" placeholder="At least 8 characters" />
         <label className="flex items-start gap-2 text-xs text-muted-foreground">
           <input type="checkbox" className="mt-0.5 h-4 w-4 rounded border-border accent-[var(--primary)]" />
-          I agree to the UMUnity Terms of Service and acknowledge the Privacy Policy.
+          I agree to the UMunity Terms of Service and acknowledge the Privacy Policy.
         </label>
         <button type="submit" className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-maroon py-3 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.02]">
           Create account <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

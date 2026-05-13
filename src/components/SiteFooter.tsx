@@ -48,10 +48,11 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-primary-foreground/70 md:flex-row">
-          <p>© {new Date().getFullYear()} UMUnity. Built for the University of Mindanao community.</p>
+          <p>© {new Date().getFullYear()} UMunity. Built for the University of Mindanao community.</p>
           <p>One Platform for Every Student Organization.</p>
         </div>
       </div>
     </footer>
   );
 }
+

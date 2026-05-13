@@ -23,7 +23,7 @@ function AdminAnnouncements() {
 
       <div className="grid gap-4">
         {[
-          { t: "Maintenance window: May 18, 11 PM – 1 AM", body: "UMUnity will undergo scheduled maintenance.", reach: "18.4K users", time: "1d ago", tag: "Urgent", tone: "danger" as const },
+          { t: "Maintenance window: May 18, 11 PM – 1 AM", body: "UMunity will undergo scheduled maintenance.", reach: "18.4K users", time: "1d ago", tag: "Urgent", tone: "danger" as const },
           { t: "New org applications now open", body: "Submit your organization charter via the new wizard.", reach: "All leaders", time: "3d ago", tag: "Important", tone: "warning" as const },
           { t: "Welcome week 2026 recap", body: "Thanks to all orgs who participated! Highlights inside.", reach: "All users", time: "1w ago", tag: "Update", tone: "info" as const },
         ].map((a) => (

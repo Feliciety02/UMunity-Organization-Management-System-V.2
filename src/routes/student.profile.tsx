@@ -59,7 +59,7 @@ function Profile() {
               <InfoCard title="About">
                 <p className="text-sm leading-7 text-foreground/90">
                   Third-year CS student passionate about open-source, accessible design, and campus-led tech for good.
-                  Currently building <span className="font-semibold">UMUnity</span> and helping organize the Innovation Summit.
+                  Currently building <span className="font-semibold">UMunity</span> and helping organize the Innovation Summit.
                 </p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <Row icon={Mail} label={session?.email ?? ""} />

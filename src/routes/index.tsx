@@ -25,9 +25,9 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "UMUnity — One Platform for Every Student Organization" },
+      { title: "UMunity — One Platform for Every Student Organization" },
       { name: "description", content: "Discover organizations, join communities, manage events, and stay connected across the University of Mindanao." },
-      { property: "og:title", content: "UMUnity — One Platform for Every Student Organization" },
+      { property: "og:title", content: "UMunity — One Platform for Every Student Organization" },
       { property: "og:description", content: "The premium campus platform for UM student organizations." },
     ],
   }),
@@ -293,10 +293,10 @@ function Home() {
 
       {/* TESTIMONIALS */}
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
-        <SectionHeader eyebrow="Loved by Students" title="Real voices from campus." sub="UMUnity is shaping how Mindanaoans connect, lead, and grow." />
+        <SectionHeader eyebrow="Loved by Students" title="Real voices from campus." sub="UMunity is shaping how Mindanaoans connect, lead, and grow." />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {[
-            { n: "Althea D.", r: "BS Computer Science • 3rd Year", q: "I joined three orgs in one week. UMUnity completely changed how I experience campus." },
+            { n: "Althea D.", r: "BS Computer Science • 3rd Year", q: "I joined three orgs in one week. UMunity completely changed how I experience campus." },
             { n: "Marco R.", r: "President, UM Debate Council", q: "Managing memberships and events used to take days. Now it's minutes — and our team loves it." },
             { n: "Prof. Liana K.", r: "OSA Coordinator", q: "Finally, a single source of truth for every recognized organization at UM." },
           ].map((t) => (
@@ -325,7 +325,7 @@ function Home() {
               Your campus journey, <span className="text-gradient-gold">amplified.</span>
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-primary-foreground/80">
-              Join thousands of UM students already building their college story on UMUnity.
+              Join thousands of UM students already building their college story on UMunity.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link to="/register" className="rounded-full bg-gradient-gold px-7 py-3 text-sm font-bold text-primary-deep shadow-soft transition-transform hover:scale-105">Create your account</Link>

@@ -15,7 +15,7 @@ const items = [
 function ReportedComments() {
   return (
     <>
-      <PageHead title="Reported comments" sub="Take action on flagged comments across UMUnity." />
+      <PageHead title="Reported comments" sub="Take action on flagged comments across UMunity." />
       <Panel>
         <div className="divide-y divide-border">
           {items.map((c, i) => (

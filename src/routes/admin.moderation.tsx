@@ -9,7 +9,7 @@ export const Route = createFileRoute("/admin/moderation")({
 function Moderation() {
   return (
     <>
-      <PageHead title="Content moderation" sub="Review reports, verify orgs, and keep UMUnity safe." />
+      <PageHead title="Content moderation" sub="Review reports, verify orgs, and keep UMunity safe." />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Reported posts" value="9" delta="+3 today" icon={Flag} tone="rose" />
         <StatCard label="Reported comments" value="14" icon={MessageSquare} tone="gold" />
