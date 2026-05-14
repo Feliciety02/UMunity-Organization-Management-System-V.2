@@ -14,6 +14,7 @@ const nav: NavItem[] = [
   { to: "/leader/create-post", label: "Create Post", icon: PenSquare, section: "MANAGEMENT" },
   { to: "/leader/posts", label: "Manage Posts", icon: FileText, section: "MANAGEMENT" },
   { to: "/leader/comments", label: "Comments", icon: MessageSquare, badge: "8", section: "MANAGEMENT" },
+  { to: "/leader/notifications", label: "Notifications", icon: Bell, section: "SETTINGS" },
   { to: "/leader/profile", label: "Profile", icon: User, section: "SETTINGS" },
 ];
 
