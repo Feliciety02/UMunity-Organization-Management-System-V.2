@@ -40,6 +40,7 @@ import { Route as LeaderProfileRouteImport } from './routes/leader.profile'
 import { Route as LeaderPreviewRouteImport } from './routes/leader.preview'
 import { Route as LeaderPostsRouteImport } from './routes/leader.posts'
 import { Route as LeaderOrganizationRouteImport } from './routes/leader.organization'
+import { Route as LeaderNotificationsRouteImport } from './routes/leader.notifications'
 import { Route as LeaderMembersRouteImport } from './routes/leader.members'
 import { Route as LeaderManageEventsRouteImport } from './routes/leader.manage-events'
 import { Route as LeaderFeedRouteImport } from './routes/leader.feed'
@@ -217,6 +218,11 @@ const LeaderOrganizationRoute = LeaderOrganizationRouteImport.update({
   path: '/organization',
   getParentRoute: () => LeaderRoute,
 } as any)
+const LeaderNotificationsRoute = LeaderNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => LeaderRoute,
+} as any)
 const LeaderMembersRoute = LeaderMembersRouteImport.update({
   id: '/members',
   path: '/members',
@@ -354,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/leader/feed': typeof LeaderFeedRoute
   '/leader/manage-events': typeof LeaderManageEventsRoute
   '/leader/members': typeof LeaderMembersRoute
+  '/leader/notifications': typeof LeaderNotificationsRoute
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/posts': typeof LeaderPostsRoute
   '/leader/preview': typeof LeaderPreviewRoute
@@ -405,6 +412,7 @@ export interface FileRoutesByTo {
   '/leader/feed': typeof LeaderFeedRoute
   '/leader/manage-events': typeof LeaderManageEventsRoute
   '/leader/members': typeof LeaderMembersRoute
+  '/leader/notifications': typeof LeaderNotificationsRoute
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/posts': typeof LeaderPostsRoute
   '/leader/preview': typeof LeaderPreviewRoute
@@ -460,6 +468,7 @@ export interface FileRoutesById {
   '/leader/feed': typeof LeaderFeedRoute
   '/leader/manage-events': typeof LeaderManageEventsRoute
   '/leader/members': typeof LeaderMembersRoute
+  '/leader/notifications': typeof LeaderNotificationsRoute
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/posts': typeof LeaderPostsRoute
   '/leader/preview': typeof LeaderPreviewRoute
@@ -516,6 +525,7 @@ export interface FileRouteTypes {
     | '/leader/feed'
     | '/leader/manage-events'
     | '/leader/members'
+    | '/leader/notifications'
     | '/leader/organization'
     | '/leader/posts'
     | '/leader/preview'
@@ -567,6 +577,7 @@ export interface FileRouteTypes {
     | '/leader/feed'
     | '/leader/manage-events'
     | '/leader/members'
+    | '/leader/notifications'
     | '/leader/organization'
     | '/leader/posts'
     | '/leader/preview'
@@ -621,6 +632,7 @@ export interface FileRouteTypes {
     | '/leader/feed'
     | '/leader/manage-events'
     | '/leader/members'
+    | '/leader/notifications'
     | '/leader/organization'
     | '/leader/posts'
     | '/leader/preview'
@@ -878,6 +890,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderOrganizationRouteImport
       parentRoute: typeof LeaderRoute
     }
+    '/leader/notifications': {
+      id: '/leader/notifications'
+      path: '/notifications'
+      fullPath: '/leader/notifications'
+      preLoaderRoute: typeof LeaderNotificationsRouteImport
+      parentRoute: typeof LeaderRoute
+    }
     '/leader/members': {
       id: '/leader/members'
       path: '/members'
@@ -1070,6 +1089,7 @@ interface LeaderRouteChildren {
   LeaderFeedRoute: typeof LeaderFeedRoute
   LeaderManageEventsRoute: typeof LeaderManageEventsRoute
   LeaderMembersRoute: typeof LeaderMembersRoute
+  LeaderNotificationsRoute: typeof LeaderNotificationsRoute
   LeaderOrganizationRoute: typeof LeaderOrganizationRoute
   LeaderPostsRoute: typeof LeaderPostsRoute
   LeaderPreviewRoute: typeof LeaderPreviewRoute
@@ -1088,6 +1108,7 @@ const LeaderRouteChildren: LeaderRouteChildren = {
   LeaderFeedRoute: LeaderFeedRoute,
   LeaderManageEventsRoute: LeaderManageEventsRoute,
   LeaderMembersRoute: LeaderMembersRoute,
+  LeaderNotificationsRoute: LeaderNotificationsRoute,
   LeaderOrganizationRoute: LeaderOrganizationRoute,
   LeaderPostsRoute: LeaderPostsRoute,
   LeaderPreviewRoute: LeaderPreviewRoute,
