@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Bell, Calendar, Megaphone, MessageSquare, Sparkles, Check, Trash2, Inbox } from "lucide-react";
 import { PageHead, Panel, Badge, EmptyState } from "@/components/dashboard/DashboardLayout";
