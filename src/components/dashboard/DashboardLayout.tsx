@@ -298,7 +298,11 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
   const liveNotifs = useNotifications();
   const displayNotifs = liveNotifs.length > 0 ? liveNotifs : notifs.map((n, i) => ({ id: `static-${i}`, title: n.title, meta: n.meta, unread: !!n.unread, href: undefined as string | undefined }));
   const unread = displayNotifs.filter((n) => n.unread).length;
-  const meta = ROLE_META[role];
+  const profileLink = role === "student" ? "/student/profile" : role === "leader" ? "/leader/profile" : "/admin/profile";
+  function doLogout() {
+    logout();
+    navigate({ to: "/login" });
+  }
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
