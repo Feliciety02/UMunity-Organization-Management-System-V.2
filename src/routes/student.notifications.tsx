@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Bell, Calendar, Megaphone, MessageSquare, Sparkles, Check, Trash2, Inbox } from "lucide-react";
 import { PageHead, Panel, Badge, EmptyState } from "@/components/dashboard/DashboardLayout";
@@ -132,7 +132,17 @@ function NotifRow({ notif }: { notif: AppNotif }) {
           <Badge tone={TONES[notif.category]}>{labelFor(notif.category)}</Badge>
           {notif.unread ? <span className="text-[10px] font-bold uppercase tracking-wider text-primary">New</span> : null}
         </div>
-        <p className="mt-1 text-sm font-medium text-foreground">{notif.title}</p>
+        {notif.href ? (
+          <Link
+            to={notif.href as string}
+            onClick={() => markRead(notif.id)}
+            className="mt-1 block text-sm font-medium text-foreground hover:text-primary hover:underline"
+          >
+            {notif.title}
+          </Link>
+        ) : (
+          <p className="mt-1 text-sm font-medium text-foreground">{notif.title}</p>
+        )}
         <p className="text-xs text-muted-foreground">{notif.meta}</p>
       </div>
       <div className="flex items-center gap-1">
