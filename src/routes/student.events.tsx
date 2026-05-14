@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 import { EventCard } from "@/components/events/event-card";
@@ -7,15 +7,46 @@ import { defaultEventCover, eventCovers } from "@/components/events/event-covers
 import { events } from "@/data/site";
 import { AppTabs } from "@/components/ui/app-tabs";
 import { IconButton } from "@/components/ui/icon-button";
+import { getSession } from "@/lib/auth";
+import { slugify, useRsvps, type RsvpStatus } from "@/lib/rsvp";
 
 export const Route = createFileRoute("/student/events")({
+  validateSearch: (s: Record<string, unknown>) => ({ event: typeof s.event === "string" ? s.event : undefined }),
   component: Events,
 });
 
 const tabs = ["All", "RSVP'd", "Saved", "Past"] as const;
 
+const STATUS_TONE: Record<RsvpStatus, "success" | "warning" | "danger"> = {
+  going: "success",
+  maybe: "warning",
+  cancelled: "danger",
+};
+const STATUS_LABEL: Record<RsvpStatus, string> = {
+  going: "You're going",
+  maybe: "You're a Maybe",
+  cancelled: "RSVP cancelled",
+};
+
 function Events() {
   const [tab, setTab] = useState<typeof tabs[number]>("All");
+  const { event: eventSlug } = useSearch({ from: "/student/events" });
+  const rsvps = useRsvps();
+  const session = typeof window !== "undefined" ? getSession() : null;
+  const refs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const myRsvpByTitle = useMemo(() => {
+    const map = new Map<string, RsvpStatus>();
+    if (!session) return map;
+    for (const r of rsvps) if (r.attendeeEmail === session.email) map.set(r.eventTitle, r.status);
+    return map;
+  }, [rsvps, session]);
+
+  useEffect(() => {
+    if (!eventSlug) return;
+    const node = refs.current[eventSlug];
+    if (node) node.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [eventSlug]);
 
   return (
     <>
@@ -26,14 +57,31 @@ function Events() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {events.map((event, index) => (
-          <EventCard
-            key={event.title}
-            event={event}
-            cover={eventCovers[event.title] ?? defaultEventCover}
-            badge={<Badge tone={index === 0 ? "success" : index === 1 ? "warning" : "info"}>{index === 0 ? "RSVP'd" : index === 1 ? "Saved" : event.status}</Badge>}
-          />
-        ))}
+        {events.map((event, index) => {
+          const slug = slugify(event.title);
+          const isHighlighted = eventSlug === slug;
+          const myStatus = myRsvpByTitle.get(event.title);
+          const badgeNode = myStatus ? (
+            <Badge tone={STATUS_TONE[myStatus]}>{STATUS_LABEL[myStatus]}</Badge>
+          ) : (
+            <Badge tone={index === 0 ? "success" : index === 1 ? "warning" : "info"}>
+              {index === 0 ? "RSVP'd" : index === 1 ? "Saved" : event.status}
+            </Badge>
+          );
+          return (
+            <div
+              key={event.title}
+              ref={(el) => { refs.current[slug] = el; }}
+              className={`rounded-3xl transition ${isHighlighted ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""}`}
+            >
+              <EventCard
+                event={event}
+                cover={eventCovers[event.title] ?? defaultEventCover}
+                badge={badgeNode}
+              />
+            </div>
+          );
+        })}
       </div>
 
       <Panel className="mt-8">
