@@ -354,7 +354,7 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
                     return (
                       <Link
                         key={n.id}
-                        to={n.href}
+                        to={n.href as string}
                         onClick={() => { markRead(n.id); setOpenNotif(false); }}
                         className={cls}
                       >
