@@ -72,9 +72,13 @@ export function setRsvp(record: Omit<RsvpRecord, "updatedAt">) {
           : `RSVP cancelled: ${record.eventTitle}`,
     meta: "Just now",
     category: "rsvp",
-    href: "/student/events",
+    href: `/student/events?event=${encodeURIComponent(slugify(record.eventTitle))}`,
   });
   return next;
+}
+
+export function slugify(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
 export function cancelRsvp(eventTitle: string, email: string) {
