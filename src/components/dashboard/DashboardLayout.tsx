@@ -5,6 +5,7 @@ import {
   Sparkles, type LucideIcon,
 } from "lucide-react";
 import { getSession, logout, ROLE_META, type Role } from "@/lib/auth";
+import { markRead, useNotifications } from "@/lib/notifications";
 import { BrandLogo } from "@/components/BrandLogo";
 import { PageHeader } from "@/components/layout/page-header";
 import { AppButton } from "@/components/ui/app-button";
