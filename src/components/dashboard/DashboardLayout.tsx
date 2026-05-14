@@ -295,28 +295,19 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
-  const unread = notifs.filter((n) => n.unread).length;
-  const profileLink = `/${role}/profile`;
-
-  function doLogout() {
-    logout();
-    navigate({ to: "/login" });
-  }
+  const liveNotifs = useNotifications();
+  const displayNotifs = liveNotifs.length > 0 ? liveNotifs : notifs.map((n, i) => ({ id: `static-${i}`, title: n.title, meta: n.meta, unread: !!n.unread, href: undefined as string | undefined }));
+  const unread = displayNotifs.filter((n) => n.unread).length;
+  const meta = ROLE_META[role];
 
   return (
-    <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-border bg-[#FEFDFE] px-4 sm:px-6 lg:px-8">
-      <button onClick={onMenu} className="grid h-10 w-10 place-items-center rounded-xl border border-border md:hidden">
-        <Menu className="h-4 w-4" />
-      </button>
-
-      <div className="flex flex-1 items-center justify-center">
-        <div className="w-full max-w-[520px]">
-          <SearchBar placeholder="Search UMunity..." className="transition focus-within:border-primary" />
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <button className="hidden h-10 items-center gap-2 rounded-full border border-border bg-background px-3 text-sm text-muted-foreground transition hover:bg-secondary lg:inline-flex">
+    <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="flex items-center gap-4 px-4 py-3 md:px-8">
+        <button onClick={onMenu} className="grid h-10 w-10 place-items-center rounded-lg border border-border bg-background md:hidden">
+          <Menu className="h-4 w-4" />
+        </button>
+        <SearchBar placeholder="Search organizations, events, members..." className="hidden flex-1 md:block" />
+        <button className="ml-auto hidden h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-semibold text-foreground/85 hover:bg-secondary md:inline-flex">
           <MessageSquare className="h-4 w-4" />
           Inbox
         </button>
@@ -334,12 +325,18 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
             <div className="absolute right-0 top-14 w-80 rounded-2xl border border-border bg-card p-2 shadow-soft">
               <div className="flex items-center justify-between p-2">
                 <p className="font-display text-sm font-bold">Notifications</p>
-                <span className="text-xs text-muted-foreground">{unread} new</span>
+                <Link
+                  to="/student/notifications"
+                  onClick={() => setOpenNotif(false)}
+                  className="text-xs font-semibold text-primary hover:underline"
+                >
+                  View all
+                </Link>
               </div>
               <div className="max-h-80 space-y-1 overflow-y-auto">
-                {notifs.length === 0 && <p className="p-4 text-center text-xs text-muted-foreground">You're all caught up</p>}
-                {notifs.map((n, i) => (
-                  <div key={i} className={`rounded-md p-3 text-sm transition hover:bg-secondary ${n.unread ? "bg-secondary/60" : ""}`}>
+                {displayNotifs.length === 0 && <p className="p-4 text-center text-xs text-muted-foreground">You're all caught up</p>}
+                {displayNotifs.slice(0, 8).map((n) => {
+                  const content = (
                     <div className="flex items-start gap-2">
                       {n.unread && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />}
                       <div className="min-w-0">
@@ -347,8 +344,30 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
                         <p className="truncate text-xs text-muted-foreground">{n.meta}</p>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                  const cls = `block rounded-md p-3 text-sm transition hover:bg-secondary ${n.unread ? "bg-secondary/60" : ""}`;
+                  if (n.href) {
+                    return (
+                      <Link
+                        key={n.id}
+                        to={n.href}
+                        onClick={() => { markRead(n.id); setOpenNotif(false); }}
+                        className={cls}
+                      >
+                        {content}
+                      </Link>
+                    );
+                  }
+                  return (
+                    <button
+                      key={n.id}
+                      onClick={() => markRead(n.id)}
+                      className={`${cls} w-full text-left`}
+                    >
+                      {content}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
