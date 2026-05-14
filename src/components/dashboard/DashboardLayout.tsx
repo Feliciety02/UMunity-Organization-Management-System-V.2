@@ -330,7 +330,7 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
               <div className="flex items-center justify-between p-2">
                 <p className="font-display text-sm font-bold">Notifications</p>
                 <Link
-                  to="/student/notifications"
+                  to={role === "leader" ? "/leader/notifications" : role === "admin" ? "/admin/logs" : "/student/notifications"}
                   onClick={() => setOpenNotif(false)}
                   className="text-xs font-semibold text-primary hover:underline"
                 >
