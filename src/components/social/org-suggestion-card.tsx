@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import type { Org } from "@/data/site";
+import { OrgLink, type OrgLinkMode } from "@/components/org/OrgLink";
 import { OrgAvatar } from "@/components/social/PostCard";
 import { AppButton } from "@/components/ui/app-button";
 import { AppCard } from "@/components/ui/app-card";
@@ -8,10 +8,12 @@ export function OrgSuggestionCard({
   org,
   coverTone,
   reason,
+  orgLinkMode = "public",
 }: {
   org: Org;
   coverTone: string;
   reason: string;
+  orgLinkMode?: OrgLinkMode;
 }) {
   return (
     <AppCard className="overflow-hidden rounded-[24px] transition duration-200 hover:-translate-y-0.5 hover:shadow-soft" padded={false}>
@@ -21,9 +23,9 @@ export function OrgSuggestionCard({
           <OrgAvatar org={org} size={52} />
         </div>
         <div className="min-w-0 flex-1">
-          <Link to="/org/$slug" params={{ slug: org.slug }} className="block truncate text-sm font-semibold hover:underline">
+          <OrgLink slug={org.slug} mode={orgLinkMode} className="block truncate text-sm font-semibold hover:underline">
             {org.name}
-          </Link>
+          </OrgLink>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {org.category} · {org.members} members
           </p>
