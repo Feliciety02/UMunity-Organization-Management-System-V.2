@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Calendar, Globe, Lock, MoreHorizontal, Pin, Send } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import type { Comment, Org, Post } from "@/data/site";
 import { Badge } from "@/components/dashboard/DashboardLayout";
+import { OrgLink, type OrgLinkMode } from "@/components/org/OrgLink";
 import { EngagementBar } from "@/components/social/engagement-bar";
 import { RsvpButton } from "@/components/events/rsvp-button";
 import { AppButton } from "@/components/ui/app-button";
@@ -21,7 +21,17 @@ export function OrgAvatar({ org, size = 40 }: { org: Pick<Org, "color" | "initia
   );
 }
 
-export function PostCard({ post, org, manage }: { post: Post; org: Org; manage?: boolean }) {
+export function PostCard({
+  post,
+  org,
+  manage,
+  orgLinkMode = "public",
+}: {
+  post: Post;
+  org: Org;
+  manage?: boolean;
+  orgLinkMode?: OrgLinkMode;
+}) {
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes);
   const [saved, setSaved] = useState(false);
@@ -50,16 +60,16 @@ export function PostCard({ post, org, manage }: { post: Post; org: Org; manage?:
   return (
     <AppCard className="overflow-hidden rounded-[24px] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(17,17,17,0.08)]" padded={false}>
       <header className="flex items-start gap-3 px-5 pb-4 pt-5">
-        <Link to="/org/$slug" params={{ slug: org.slug }}>
+        <OrgLink slug={org.slug} mode={orgLinkMode}>
           <div className="rounded-[18px] bg-[linear-gradient(180deg,rgba(122,0,25,0.09),rgba(122,0,25,0.03))] p-0.5">
             <OrgAvatar org={org} size={48} />
           </div>
-        </Link>
+        </OrgLink>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2.5">
-            <Link to="/org/$slug" params={{ slug: org.slug }} className="font-display text-[15px] font-semibold hover:underline">
+            <OrgLink slug={org.slug} mode={orgLinkMode} className="font-display text-[15px] font-semibold hover:underline">
               {org.name}
-            </Link>
+            </OrgLink>
             {post.pinned ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-gold/20 px-2 py-0.5 text-[10px] font-semibold text-primary-deep">
                 <Pin className="h-3 w-3" /> Pinned
