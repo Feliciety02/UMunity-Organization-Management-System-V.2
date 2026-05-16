@@ -6,6 +6,19 @@ import { SiteHeader } from "@/components/SiteHeader";
 
 export const Route = createFileRoute("/org/$slug")({
   component: OrgPage,
+  head: ({ params }) => {
+    const org = organizations.find((o) => o.slug === params.slug);
+    const title = org ? `${org.name} — UMunity` : "Organization — UMunity";
+    const description = org?.desc ?? "Discover student organizations at the University of Mindanao.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+      ],
+    };
+  },
 });
 
 function OrgPage() {

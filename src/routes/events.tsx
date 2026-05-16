@@ -8,6 +8,8 @@ export const Route = createFileRoute("/events")({
     meta: [
       { title: "Events — UMunity" },
       { name: "description", content: "RSVP to upcoming University of Mindanao student organization events." },
+      { property: "og:title", content: "Events — UMunity" },
+      { property: "og:description", content: "RSVP to upcoming University of Mindanao student organization events." },
     ],
   }),
   component: Events,

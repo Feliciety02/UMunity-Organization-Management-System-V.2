@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /student/
+Disallow: /leader/
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+
+Sitemap: https://umunity-campus-hub.lovable.app/sitemap.xml

@@ -7,6 +7,8 @@ export const Route = createFileRoute("/features")({
     meta: [
       { title: "Features — UMunity" },
       { name: "description", content: "Powerful features for students, organization leaders, and admins on the UMunity platform." },
+      { property: "og:title", content: "Features — UMunity" },
+      { property: "og:description", content: "Powerful features for students, organization leaders, and admins on the UMunity platform." },
     ],
   }),
   component: Features,
