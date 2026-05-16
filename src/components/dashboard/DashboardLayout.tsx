@@ -25,12 +25,14 @@ export function DashboardLayout({
   nav,
   notifs,
   resolveNotifHref,
+  bottomNav,
   children,
 }: {
   role: Role;
   nav: NavItem[];
   notifs: Notif[];
   resolveNotifHref?: (href?: string) => string | undefined;
+  bottomNav?: BottomNavItem[];
   children: React.ReactNode;
 }) {
   const navigate = useNavigate();
@@ -101,10 +103,11 @@ export function DashboardLayout({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar role={role} session={session} notifs={notifs} resolveNotifHref={resolveNotifHref} onMenu={() => setMobileOpen(true)} />
-        <main className="flex-1 px-6 py-8 sm:px-8 lg:px-10">
+        <main className={`flex-1 px-6 py-8 sm:px-8 lg:px-10 ${bottomNav ? "pb-24 md:pb-8" : ""}`}>
           <div className="mx-auto w-full max-w-[1440px]">{children}</div>
         </main>
       </div>
+      {bottomNav ? <MobileBottomNav items={bottomNav} /> : null}
     </div>
   );
 }
