@@ -327,22 +327,33 @@ function Topbar({
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="flex items-center gap-4 px-4 py-3 md:px-8">
-        <button onClick={onMenu} className="grid h-10 w-10 place-items-center rounded-lg border border-border bg-background md:hidden">
-          <Menu className="h-4 w-4" />
+        <button
+          onClick={onMenu}
+          aria-label="Open menu"
+          className="grid h-10 w-10 place-items-center rounded-lg border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
+        >
+          <Menu className="h-4 w-4" aria-hidden="true" />
         </button>
         <SearchBar placeholder="Search organizations, events, members..." className="hidden flex-1 md:block" />
-        <button className="ml-auto hidden h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-semibold text-foreground/85 hover:bg-secondary md:inline-flex">
-          <MessageSquare className="h-4 w-4" />
+        <button
+          aria-label="Open inbox"
+          className="ml-auto hidden h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-semibold text-foreground/85 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:inline-flex"
+        >
+          <MessageSquare className="h-4 w-4" aria-hidden="true" />
           Inbox
         </button>
+        <ThemeToggle className="ml-auto md:ml-0" />
         <div ref={notifRef} className="relative">
           <button
             onClick={() => { setOpenNotif(!openNotif); setOpenProf(false); }}
-            className="relative grid h-10 w-10 place-items-center rounded-lg border border-border bg-background transition hover:bg-secondary"
+            aria-label={`Notifications${unread > 0 ? ` (${unread} unread)` : ""}`}
+            aria-haspopup="menu"
+            aria-expanded={openNotif}
+            className="relative grid h-10 w-10 place-items-center rounded-lg border border-border bg-background transition hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <Bell className="h-4 w-4" />
+            <Bell className="h-4 w-4" aria-hidden="true" />
             {unread > 0 && (
-              <span className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-destructive text-[10px] font-bold text-white">{unread}</span>
+              <span className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-destructive text-[10px] font-bold text-white" aria-hidden="true">{unread}</span>
             )}
           </button>
           {openNotif && (
