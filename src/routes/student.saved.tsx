@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead, Panel, EmptyState } from "@/components/dashboard/DashboardLayout";
+import { AppButton } from "@/components/ui/app-button";
 import { posts, organizations } from "@/data/site";
 import { PostCard } from "@/components/social/PostCard";
-import { Bookmark } from "lucide-react";
+import { Bookmark, Compass } from "lucide-react";
 
 export const Route = createFileRoute("/student/saved")({
   component: Saved,
@@ -16,7 +17,20 @@ function Saved() {
     <div className="mx-auto max-w-2xl space-y-4">
       <PageHead title="Saved posts" sub="Things you bookmarked for later." />
       {saved.length === 0 ? (
-        <Panel><EmptyState icon={Bookmark} title="Nothing saved yet" sub="Tap the bookmark icon on any post to save it here." /></Panel>
+        <Panel>
+          <EmptyState
+            icon={Bookmark}
+            title="Nothing saved yet"
+            sub="Tap the bookmark icon on any post to save it here."
+            action={
+              <AppButton asChild variant="primary" size="sm">
+                <Link to="/student/explore">
+                  <Compass className="h-4 w-4" aria-hidden="true" /> Discover posts
+                </Link>
+              </AppButton>
+            }
+          />
+        </Panel>
       ) : (
         saved.map((p) => <PostCard key={p.id} post={p} org={orgBySlug[p.orgSlug]} orgLinkMode="student" />)
       )}

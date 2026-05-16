@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
+import type { BottomNavItem } from "@/components/dashboard/MobileBottomNav";
 import { Home, Compass, Users, Calendar, Bell, User, Bookmark, MessageSquare, Grid2x2, Trophy, Settings, LifeBuoy, CalendarDays } from "lucide-react";
 import { resolveStudentNotificationHref } from "@/lib/notifications";
 
@@ -19,6 +20,14 @@ const nav: NavItem[] = [
   { to: "/student/settings", label: "Settings", icon: Settings, section: "Support" },
 ];
 
+const bottomNav: BottomNavItem[] = [
+  { to: "/student", label: "Home", icon: Home },
+  { to: "/student/explore", label: "Explore", icon: Compass },
+  { to: "/student/events", label: "Events", icon: Calendar },
+  { to: "/student/notifications", label: "Alerts", icon: Bell, badge: "4" },
+  { to: "/student/profile", label: "Me", icon: User },
+];
+
 export const notifs: Notif[] = [
   { title: "Marvin Lim commented on your post", meta: "30m ago · Comment", unread: true },
   { title: "UM CS Society pinned a new announcement", meta: "2h ago · Organization", unread: true },
@@ -29,7 +38,7 @@ export const notifs: Notif[] = [
 
 export const Route = createFileRoute("/student")({
   component: () => (
-    <DashboardLayout role="student" nav={nav} notifs={notifs} resolveNotifHref={resolveStudentNotificationHref}>
+    <DashboardLayout role="student" nav={nav} notifs={notifs} resolveNotifHref={resolveStudentNotificationHref} bottomNav={bottomNav}>
       <Outlet />
     </DashboardLayout>
   ),
