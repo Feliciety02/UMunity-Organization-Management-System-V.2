@@ -412,7 +412,10 @@ function Topbar({
         <div ref={profRef} className="relative">
           <button
             onClick={() => { setOpenProf(!openProf); setOpenNotif(false); }}
-            className="flex items-center gap-3 rounded-full border border-border bg-background p-1 pr-4 transition hover:bg-secondary"
+            aria-label={`Account menu for ${session.name}`}
+            aria-haspopup="menu"
+            aria-expanded={openProf}
+            className="flex items-center gap-3 rounded-full border border-border bg-background p-1 pr-4 transition hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <div className="grid h-9 w-9 place-items-center rounded-full bg-primary font-display text-xs font-bold text-primary-foreground">
               {session.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
