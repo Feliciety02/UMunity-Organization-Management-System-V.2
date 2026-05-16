@@ -41,7 +41,15 @@ const TONES: Record<NotifCategory, "gold" | "info" | "success" | "neutral"> = {
   general: "neutral",
 };
 
-export function NotificationsView({ title = "Notifications", sub }: { title?: string; sub?: string }) {
+export function NotificationsView({
+  title = "Notifications",
+  sub,
+  resolveHref,
+}: {
+  title?: string;
+  sub?: string;
+  resolveHref?: (href?: string) => string | undefined;
+}) {
   const list = useNotifications();
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
@@ -127,7 +135,10 @@ export function NotificationsView({ title = "Notifications", sub }: { title?: st
             ) : (
               <div className="divide-y divide-border">
                 {filtered.map((n) => (
-                  <NotifRow key={n.id} notif={n} />
+                  <NotifRow
+                    key={n.id}
+                    notif={resolveHref ? { ...n, href: resolveHref(n.href) } : n}
+                  />
                 ))}
               </div>
             )}

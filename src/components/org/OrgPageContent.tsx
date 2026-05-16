@@ -6,6 +6,7 @@ import { Badge } from "@/components/dashboard/DashboardLayout";
 import { AppCard } from "@/components/ui/app-card";
 import { UnderlineTabs } from "@/components/ui/app-tabs";
 import { PostCard, OrgAvatar } from "@/components/social/PostCard";
+import type { OrgLinkMode } from "@/components/org/OrgLink";
 import { events, officers, organizations, posts, type Org } from "@/data/site";
 import { Users, Calendar, Mail, MapPin, Globe, UserPlus, Check, ArrowLeft } from "lucide-react";
 
@@ -17,11 +18,13 @@ export function OrgPageContent({
   backHref,
   backLabel = "Back",
   relatedOrgRoute = "/org/$slug",
+  orgLinkMode = "public",
 }: {
   org: Org;
   backHref?: "/student/my-orgs" | "/organizations";
   backLabel?: string;
   relatedOrgRoute?: "/org/$slug" | "/student/org/$slug";
+  orgLinkMode?: OrgLinkMode;
 }) {
   const [tab, setTab] = useState<Tab>("Posts");
   const [joined, setJoined] = useState(false);
@@ -49,7 +52,7 @@ export function OrgPageContent({
         </div>
 
         <div className="relative bg-white px-5 pb-5 sm:px-6">
-          <div className="flex flex-col gap-4 border-b border-border/80 pt-5 pb-6 md:flex-row md:items-end md:justify-between">
+          <div className="flex flex-col gap-4 border-b border-border/80 pt-1 pb-5 md:flex-row md:items-end md:justify-between">
             <div className="flex min-w-0 flex-col gap-4 md:min-w-0 md:flex-1 md:flex-row md:items-end md:gap-5">
               <div className="-mt-16 self-center md:-mt-14 md:self-end">
                 <div className={`grid h-[108px] w-[108px] place-items-center rounded-full border-[6px] border-white bg-gradient-to-br ${org.color} font-display text-[2rem] font-bold text-primary-foreground shadow-[0_14px_40px_rgba(17,17,17,0.16)] md:h-[116px] md:w-[116px] md:text-[2.15rem]`}>
@@ -126,7 +129,7 @@ export function OrgPageContent({
                 <p className="text-center text-sm text-muted-foreground">No posts yet.</p>
               </FlatCard>
             ) : (
-              orgPosts.map((p) => <PostCard key={p.id} post={p} org={org} />)
+              orgPosts.map((p) => <PostCard key={p.id} post={p} org={org} orgLinkMode={orgLinkMode} />)
             )
           ) : null}
 

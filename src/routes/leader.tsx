@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
 import { LayoutDashboard, Building2, Users, UserPlus, Calendar, PenSquare, MessageSquare, FileText, User, Eye, Newspaper, ClipboardList, Bell } from "lucide-react";
+import { resolveLeaderNotificationHref } from "@/lib/notifications";
 
 const nav: NavItem[] = [
   { to: "/leader", label: "Dashboard", icon: LayoutDashboard, section: "WORKSPACE" },
@@ -28,7 +29,7 @@ export const notifs: Notif[] = [
 
 export const Route = createFileRoute("/leader")({
   component: () => (
-    <DashboardLayout role="leader" nav={nav} notifs={notifs}>
+    <DashboardLayout role="leader" nav={nav} notifs={notifs} resolveNotifHref={resolveLeaderNotificationHref}>
       <Outlet />
     </DashboardLayout>
   ),

@@ -21,11 +21,13 @@ export function DashboardLayout({
   role,
   nav,
   notifs,
+  resolveNotifHref,
   children,
 }: {
   role: Role;
   nav: NavItem[];
   notifs: Notif[];
+  resolveNotifHref?: (href?: string) => string | undefined;
   children: React.ReactNode;
 }) {
   const navigate = useNavigate();
@@ -95,7 +97,7 @@ export function DashboardLayout({
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar role={role} session={session} notifs={notifs} onMenu={() => setMobileOpen(true)} />
+        <Topbar role={role} session={session} notifs={notifs} resolveNotifHref={resolveNotifHref} onMenu={() => setMobileOpen(true)} />
         <main className="flex-1 px-6 py-8 sm:px-8 lg:px-10">
           <div className="mx-auto w-full max-w-[1440px]">{children}</div>
         </main>
@@ -278,7 +280,19 @@ function SidebarInner({
   );
 }
 
-function Topbar({ role, session, notifs, onMenu }: { role: Role; session: ReturnType<typeof getSession> & {}; notifs: Notif[]; onMenu: () => void }) {
+function Topbar({
+  role,
+  session,
+  notifs,
+  resolveNotifHref,
+  onMenu,
+}: {
+  role: Role;
+  session: ReturnType<typeof getSession> & {};
+  notifs: Notif[];
+  resolveNotifHref?: (href?: string) => string | undefined;
+  onMenu: () => void;
+}) {
   const navigate = useNavigate();
   const meta = ROLE_META[role];
   const [openNotif, setOpenNotif] = useState(false);
@@ -350,11 +364,12 @@ function Topbar({ role, session, notifs, onMenu }: { role: Role; session: Return
                     </div>
                   );
                   const cls = `block rounded-md p-3 text-sm transition hover:bg-secondary ${n.unread ? "bg-secondary/60" : ""}`;
-                  if (n.href) {
+                  const resolvedHref = resolveNotifHref?.(n.href) ?? n.href;
+                  if (resolvedHref) {
                     return (
                       <Link
                         key={n.id}
-                        to={n.href as string}
+                        to={resolvedHref as string}
                         onClick={() => { markRead(n.id); setOpenNotif(false); }}
                         className={cls}
                       >

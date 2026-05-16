@@ -21,5 +21,5 @@ function StudentOrgView() {
     );
   }
 
-  return <OrgPageContent org={org} backHref="/student/my-orgs" backLabel="Back to My Organizations" relatedOrgRoute="/student/org/$slug" />;
+  return <OrgPageContent org={org} backHref="/student/my-orgs" backLabel="Back to My Organizations" relatedOrgRoute="/student/org/$slug" orgLinkMode="student" />;
 }
