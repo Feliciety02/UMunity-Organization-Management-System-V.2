@@ -9,8 +9,10 @@ import { Search, Users, Sparkles, ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/organizations")({
   head: () => ({
     meta: [
-      { title: "UMunity" },
+      { title: "Organizations — UMunity" },
       { name: "description", content: "Discover and join recognized student organizations at the University of Mindanao." },
+      { property: "og:title", content: "Organizations — UMunity" },
+      { property: "og:description", content: "Discover and join recognized student organizations at the University of Mindanao." },
     ],
   }),
   component: Orgs,

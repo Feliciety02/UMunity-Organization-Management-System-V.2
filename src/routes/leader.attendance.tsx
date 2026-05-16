@@ -9,7 +9,10 @@ export const Route = createFileRoute("/leader/attendance")({
 function Attendance() {
   return (
     <>
-      <PageHead title="Event attendance" sub="Track turnout and engagement across events." />
+      <PageHead
+        title="Attendance overview"
+        sub="High-level turnout trends across all events. For per-event RSVP lists and CSV export, see Attendees."
+      />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Avg attendance" value="84%" delta="+3% vs last sem" icon={CheckSquare} tone="primary" />
