@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
+import type { BottomNavItem } from "@/components/dashboard/MobileBottomNav";
 import { LayoutDashboard, Users, Building2, Calendar, BarChart3, Megaphone, ScrollText, User, Flag, MessageSquare, ClipboardList } from "lucide-react";
 import { resolveAdminNotificationHref } from "@/lib/notifications";
 
@@ -17,6 +18,14 @@ const nav: NavItem[] = [
   { to: "/admin/profile", label: "Profile", icon: User, section: "SETTINGS" },
 ];
 
+const bottomNav: BottomNavItem[] = [
+  { to: "/admin", label: "Home", icon: LayoutDashboard },
+  { to: "/admin/analytics", label: "Stats", icon: BarChart3 },
+  { to: "/admin/reported-posts", label: "Reports", icon: Flag, badge: "4" },
+  { to: "/admin/users", label: "Users", icon: Users },
+  { to: "/admin/profile", label: "Me", icon: User },
+];
+
 export const notifs: Notif[] = [
   { title: "9 reported posts awaiting moderation", meta: "20m ago · Moderation", unread: true },
   { title: "5 organizations awaiting verification", meta: "30m ago · Moderation", unread: true },
@@ -27,7 +36,7 @@ export const notifs: Notif[] = [
 
 export const Route = createFileRoute("/admin")({
   component: () => (
-    <DashboardLayout role="admin" nav={nav} notifs={notifs} resolveNotifHref={resolveAdminNotificationHref}>
+    <DashboardLayout role="admin" nav={nav} notifs={notifs} resolveNotifHref={resolveAdminNotificationHref} bottomNav={bottomNav}>
       <Outlet />
     </DashboardLayout>
   ),
