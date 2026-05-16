@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
 import { Home, Compass, Users, Calendar, Bell, User, Bookmark, MessageSquare, Grid2x2, Trophy, Settings, LifeBuoy, CalendarDays } from "lucide-react";
+import { resolveStudentNotificationHref } from "@/lib/notifications";
 
 const nav: NavItem[] = [
   { to: "/student", label: "Home Feed", icon: Home, section: "Student" },
@@ -28,7 +29,7 @@ export const notifs: Notif[] = [
 
 export const Route = createFileRoute("/student")({
   component: () => (
-    <DashboardLayout role="student" nav={nav} notifs={notifs}>
+    <DashboardLayout role="student" nav={nav} notifs={notifs} resolveNotifHref={resolveStudentNotificationHref}>
       <Outlet />
     </DashboardLayout>
   ),

@@ -152,7 +152,7 @@ function Explore() {
 
               <div className="mt-5 flex items-center gap-3">
                 <Link
-                  to="/org/$slug"
+                  to="/student/org/$slug"
                   params={{ slug: o.slug }}
                   className="inline-flex h-10 items-center justify-center rounded-full border border-border bg-card px-4 text-sm font-medium text-foreground transition hover:bg-secondary"
                 >

@@ -4,7 +4,7 @@ import { PageShell } from "@/components/PageShell";
 import { OrgCard } from "@/routes/index";
 import { organizations } from "@/data/site";
 import umOrganizationsHero from "@/assets/um-organizations-hero.svg";
-import { Search, Users, Sparkles } from "lucide-react";
+import { Search, Users, Sparkles, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/organizations")({
   head: () => ({
@@ -70,6 +70,16 @@ function Orgs() {
               </div>
             </div>
 
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-[#FFFDF7]/80">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-4 py-2 backdrop-blur-xl">
+                <Users className="h-4 w-4 text-[#FFC72C]" />
+                Academic, service, arts, and tech communities
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-4 py-2 backdrop-blur-xl">
+                Start exploring
+                <ArrowRight className="h-4 w-4 text-[#FFC72C]" />
+              </span>
+            </div>
           </div>
         </div>
       </section>

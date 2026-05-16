@@ -30,7 +30,7 @@ function ManagePosts() {
             <Panel><p className="py-8 text-center text-sm text-muted-foreground">No posts yet. Create your first one.</p></Panel>
           )}
           {myPosts.map((p) => (
-            <PostCard key={p.id} post={p} org={org} manage />
+            <PostCard key={p.id} post={p} org={org} manage orgLinkMode="leader" />
           ))}
         </div>
         <aside className="space-y-4">

@@ -18,7 +18,7 @@ function Saved() {
       {saved.length === 0 ? (
         <Panel><EmptyState icon={Bookmark} title="Nothing saved yet" sub="Tap the bookmark icon on any post to save it here." /></Panel>
       ) : (
-        saved.map((p) => <PostCard key={p.id} post={p} org={orgBySlug[p.orgSlug]} />)
+        saved.map((p) => <PostCard key={p.id} post={p} org={orgBySlug[p.orgSlug]} orgLinkMode="student" />)
       )}
       <p className="text-center text-xs text-muted-foreground">
         <Link to="/student" className="font-semibold text-primary">Back to feed</Link>

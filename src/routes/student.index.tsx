@@ -43,7 +43,7 @@ function StudentFeed() {
 
             <div className="space-y-5">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} org={orgBySlug[post.orgSlug]} />
+                <PostCard key={post.id} post={post} org={orgBySlug[post.orgSlug]} orgLinkMode="student" />
               ))}
             </div>
           </div>
@@ -84,6 +84,7 @@ function StudentFeed() {
                       org={org}
                       coverTone={suggestedCoverTones[index % suggestedCoverTones.length]}
                       reason={suggestedReasons[org.slug] ?? "Shared interests in campus events and student communities."}
+                      orgLinkMode="student"
                     />
                   ))}
                 </div>

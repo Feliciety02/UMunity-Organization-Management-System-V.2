@@ -81,6 +81,28 @@ export function addNotification(input: Omit<AppNotif, "id" | "createdAt" | "unre
   return n;
 }
 
+export function resolveStudentNotificationHref(href?: string): string | undefined {
+  if (!href) return href;
+  if (href.startsWith("/org/")) return href.replace("/org/", "/student/org/");
+  return href;
+}
+
+export function resolveLeaderNotificationHref(href?: string): string | undefined {
+  if (!href) return href;
+  if (href.startsWith("/org/")) return "/leader/organization";
+  if (href.startsWith("/student/events")) return "/leader/manage-events";
+  if (href === "/student") return "/leader/feed";
+  return href;
+}
+
+export function resolveAdminNotificationHref(href?: string): string | undefined {
+  if (!href) return href;
+  if (href.startsWith("/org/")) return "/admin/organizations";
+  if (href.startsWith("/student/events")) return "/admin/events";
+  if (href === "/student") return "/admin/logs";
+  return href;
+}
+
 function subscribe(cb: () => void) {
   if (typeof window === "undefined") return () => {};
   const handler = () => cb();
