@@ -533,15 +533,35 @@ export function LineSpark({ data }: { data: number[] }) {
   );
 }
 
-export function EmptyState({ title, sub, icon: Icon }: { title: string; sub?: string; icon: LucideIcon }) {
+export function EmptyState({ title, sub, icon: Icon, action }: { title: string; sub?: string; icon: LucideIcon; action?: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-secondary/40 p-10 text-center">
       <div className="grid h-12 w-12 place-items-center rounded-md bg-primary/10 text-primary">
-        <Icon className="h-5 w-5" />
+        <Icon className="h-5 w-5" aria-hidden="true" />
       </div>
-      <p className="mt-4 font-display text-base font-semibold">{title}</p>
-      {sub && <p className="mt-1 max-w-xs text-sm text-muted-foreground">{sub}</p>}
+      <p className="mt-4 font-display text-base font-semibold text-foreground">{title}</p>
+      {sub && <p className="mt-1 max-w-sm text-sm text-muted-foreground">{sub}</p>}
+      {action ? <div className="mt-5">{action}</div> : null}
     </div>
+  );
+}
+
+export function PanelSkeleton({ rows = 3, className = "" }: { rows?: number; className?: string }) {
+  return (
+    <AppCard className={`rounded-3xl ${className}`}>
+      <div className="space-y-3">
+        <Skeleton className="h-5 w-40" />
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-3 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </AppCard>
   );
 }
 
