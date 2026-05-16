@@ -12,6 +12,9 @@ import { AppButton } from "@/components/ui/app-button";
 import { AppCard, AppCardHeader } from "@/components/ui/app-card";
 import { AppBadge } from "@/components/ui/app-badge";
 import { SearchBar } from "@/components/ui/search-bar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { MobileBottomNav, type BottomNavItem } from "@/components/dashboard/MobileBottomNav";
 
 export type NavItem = { to: string; label: string; icon: LucideIcon; badge?: string; section?: string };
 
