@@ -1,4 +1,4 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { OrgPageContent } from "@/components/org/OrgPageContent";
 import { organizations } from "@/data/site";
 
@@ -7,6 +7,7 @@ export const Route = createFileRoute("/student/org/$slug")({
 });
 
 function StudentOrgView() {
+  const navigate = useNavigate();
   const { slug } = useParams({ from: "/student/org/$slug" });
   const org = organizations.find((item) => item.slug === slug);
 
@@ -21,5 +22,20 @@ function StudentOrgView() {
     );
   }
 
-  return <OrgPageContent org={org} backHref="/student/my-orgs" backLabel="Back to My Organizations" relatedOrgRoute="/student/org/$slug" orgLinkMode="student" />;
+  return (
+    <OrgPageContent
+      org={org}
+      backHref="/student/my-orgs"
+      backLabel="Back"
+      relatedOrgRoute="/student/org/$slug"
+      orgLinkMode="student"
+      onBack={() => {
+        if (typeof window !== "undefined" && window.history.length > 1) {
+          window.history.back();
+          return;
+        }
+        navigate({ to: "/student/my-orgs" });
+      }}
+    />
+  );
 }

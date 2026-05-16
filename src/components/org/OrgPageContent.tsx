@@ -19,12 +19,14 @@ export function OrgPageContent({
   backLabel = "Back",
   relatedOrgRoute = "/org/$slug",
   orgLinkMode = "public",
+  onBack,
 }: {
   org: Org;
   backHref?: "/student/my-orgs" | "/organizations";
   backLabel?: string;
   relatedOrgRoute?: "/org/$slug" | "/student/org/$slug";
   orgLinkMode?: OrgLinkMode;
+  onBack?: () => void;
 }) {
   const [tab, setTab] = useState<Tab>("Posts");
   const [joined, setJoined] = useState(false);
@@ -36,7 +38,16 @@ export function OrgPageContent({
 
   return (
     <div className="relative pt-5 sm:pt-6">
-      {backHref ? (
+      {onBack ? (
+        <button
+          type="button"
+          onClick={onBack}
+          className="absolute left-5 top-0 z-10 inline-flex h-11 items-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-semibold text-foreground shadow-[0_8px_20px_rgba(17,24,39,0.08)] transition hover:bg-secondary sm:left-6"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>{backLabel}</span>
+        </button>
+      ) : backHref ? (
         <Link
           to={backHref}
           className="absolute left-5 top-0 z-10 inline-flex h-11 items-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-semibold text-foreground shadow-[0_8px_20px_rgba(17,24,39,0.08)] transition hover:bg-secondary sm:left-6"
