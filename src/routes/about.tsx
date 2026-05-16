@@ -7,6 +7,8 @@ export const Route = createFileRoute("/about")({
     meta: [
       { title: "About — UMunity" },
       { name: "description", content: "UMunity centralizes student organization activities and communication at the University of Mindanao." },
+      { property: "og:title", content: "About — UMunity" },
+      { property: "og:description", content: "UMunity centralizes student organization activities and communication at the University of Mindanao." },
     ],
   }),
   component: About,
