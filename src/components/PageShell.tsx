@@ -1,5 +1,6 @@
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
+import { useForcedTheme } from "@/hooks/use-theme";
 
 export function PageShell({
   children,
@@ -12,6 +13,8 @@ export function PageShell({
   mainClassName?: string;
   contentClassName?: string;
 }) {
+  useForcedTheme("light");
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />

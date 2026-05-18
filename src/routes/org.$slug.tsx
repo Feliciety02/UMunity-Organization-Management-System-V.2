@@ -3,6 +3,7 @@ import { OrgPageContent } from "@/components/org/OrgPageContent";
 import { organizations } from "@/data/site";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { useForcedTheme } from "@/hooks/use-theme";
 
 export const Route = createFileRoute("/org/$slug")({
   component: OrgPage,
@@ -22,6 +23,8 @@ export const Route = createFileRoute("/org/$slug")({
 });
 
 function OrgPage() {
+  useForcedTheme("light");
+
   const { slug } = useParams({ from: "/org/$slug" });
   const org = organizations.find((o) => o.slug === slug);
 
