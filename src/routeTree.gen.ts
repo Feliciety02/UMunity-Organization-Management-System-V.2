@@ -35,6 +35,7 @@ import { Route as StudentExploreRouteImport } from './routes/student.explore'
 import { Route as StudentEventsRouteImport } from './routes/student.events'
 import { Route as StudentCategoriesRouteImport } from './routes/student.categories'
 import { Route as OrgSlugRouteImport } from './routes/org.$slug'
+import { Route as LeaderRequirementsRouteImport } from './routes/leader.requirements'
 import { Route as LeaderRequestsRouteImport } from './routes/leader.requests'
 import { Route as LeaderProfileRouteImport } from './routes/leader.profile'
 import { Route as LeaderPreviewRouteImport } from './routes/leader.preview'
@@ -62,6 +63,7 @@ import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as StudentOrgSlugRouteImport } from './routes/student.org.$slug'
+import { Route as LeaderRequirementsEventIdRouteImport } from './routes/leader.requirements.$eventId'
 
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
@@ -192,6 +194,11 @@ const OrgSlugRoute = OrgSlugRouteImport.update({
   id: '/org/$slug',
   path: '/org/$slug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderRequirementsRoute = LeaderRequirementsRouteImport.update({
+  id: '/requirements',
+  path: '/requirements',
+  getParentRoute: () => LeaderRoute,
 } as any)
 const LeaderRequestsRoute = LeaderRequestsRouteImport.update({
   id: '/requests',
@@ -328,6 +335,12 @@ const StudentOrgSlugRoute = StudentOrgSlugRouteImport.update({
   path: '/org/$slug',
   getParentRoute: () => StudentRoute,
 } as any)
+const LeaderRequirementsEventIdRoute =
+  LeaderRequirementsEventIdRouteImport.update({
+    id: '/$eventId',
+    path: '/$eventId',
+    getParentRoute: () => LeaderRequirementsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -366,6 +379,7 @@ export interface FileRoutesByFullPath {
   '/leader/preview': typeof LeaderPreviewRoute
   '/leader/profile': typeof LeaderProfileRoute
   '/leader/requests': typeof LeaderRequestsRoute
+  '/leader/requirements': typeof LeaderRequirementsRouteWithChildren
   '/org/$slug': typeof OrgSlugRoute
   '/student/categories': typeof StudentCategoriesRoute
   '/student/events': typeof StudentEventsRoute
@@ -382,6 +396,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/leader/requirements/$eventId': typeof LeaderRequirementsEventIdRoute
   '/student/org/$slug': typeof StudentOrgSlugRoute
 }
 export interface FileRoutesByTo {
@@ -418,6 +433,7 @@ export interface FileRoutesByTo {
   '/leader/preview': typeof LeaderPreviewRoute
   '/leader/profile': typeof LeaderProfileRoute
   '/leader/requests': typeof LeaderRequestsRoute
+  '/leader/requirements': typeof LeaderRequirementsRouteWithChildren
   '/org/$slug': typeof OrgSlugRoute
   '/student/categories': typeof StudentCategoriesRoute
   '/student/events': typeof StudentEventsRoute
@@ -434,6 +450,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/leader': typeof LeaderIndexRoute
   '/student': typeof StudentIndexRoute
+  '/leader/requirements/$eventId': typeof LeaderRequirementsEventIdRoute
   '/student/org/$slug': typeof StudentOrgSlugRoute
 }
 export interface FileRoutesById {
@@ -474,6 +491,7 @@ export interface FileRoutesById {
   '/leader/preview': typeof LeaderPreviewRoute
   '/leader/profile': typeof LeaderProfileRoute
   '/leader/requests': typeof LeaderRequestsRoute
+  '/leader/requirements': typeof LeaderRequirementsRouteWithChildren
   '/org/$slug': typeof OrgSlugRoute
   '/student/categories': typeof StudentCategoriesRoute
   '/student/events': typeof StudentEventsRoute
@@ -490,6 +508,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/leader/requirements/$eventId': typeof LeaderRequirementsEventIdRoute
   '/student/org/$slug': typeof StudentOrgSlugRoute
 }
 export interface FileRouteTypes {
@@ -531,6 +550,7 @@ export interface FileRouteTypes {
     | '/leader/preview'
     | '/leader/profile'
     | '/leader/requests'
+    | '/leader/requirements'
     | '/org/$slug'
     | '/student/categories'
     | '/student/events'
@@ -547,6 +567,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/leader/'
     | '/student/'
+    | '/leader/requirements/$eventId'
     | '/student/org/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -583,6 +604,7 @@ export interface FileRouteTypes {
     | '/leader/preview'
     | '/leader/profile'
     | '/leader/requests'
+    | '/leader/requirements'
     | '/org/$slug'
     | '/student/categories'
     | '/student/events'
@@ -599,6 +621,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/leader'
     | '/student'
+    | '/leader/requirements/$eventId'
     | '/student/org/$slug'
   id:
     | '__root__'
@@ -638,6 +661,7 @@ export interface FileRouteTypes {
     | '/leader/preview'
     | '/leader/profile'
     | '/leader/requests'
+    | '/leader/requirements'
     | '/org/$slug'
     | '/student/categories'
     | '/student/events'
@@ -654,6 +678,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/leader/'
     | '/student/'
+    | '/leader/requirements/$eventId'
     | '/student/org/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -855,6 +880,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/leader/requirements': {
+      id: '/leader/requirements'
+      path: '/requirements'
+      fullPath: '/leader/requirements'
+      preLoaderRoute: typeof LeaderRequirementsRouteImport
+      parentRoute: typeof LeaderRoute
+    }
     '/leader/requests': {
       id: '/leader/requests'
       path: '/requests'
@@ -1044,6 +1076,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentOrgSlugRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/leader/requirements/$eventId': {
+      id: '/leader/requirements/$eventId'
+      path: '/$eventId'
+      fullPath: '/leader/requirements/$eventId'
+      preLoaderRoute: typeof LeaderRequirementsEventIdRouteImport
+      parentRoute: typeof LeaderRequirementsRoute
+    }
   }
 }
 
@@ -1079,6 +1118,17 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface LeaderRequirementsRouteChildren {
+  LeaderRequirementsEventIdRoute: typeof LeaderRequirementsEventIdRoute
+}
+
+const LeaderRequirementsRouteChildren: LeaderRequirementsRouteChildren = {
+  LeaderRequirementsEventIdRoute: LeaderRequirementsEventIdRoute,
+}
+
+const LeaderRequirementsRouteWithChildren =
+  LeaderRequirementsRoute._addFileChildren(LeaderRequirementsRouteChildren)
+
 interface LeaderRouteChildren {
   LeaderAnnouncementsRoute: typeof LeaderAnnouncementsRoute
   LeaderAttendanceRoute: typeof LeaderAttendanceRoute
@@ -1095,6 +1145,7 @@ interface LeaderRouteChildren {
   LeaderPreviewRoute: typeof LeaderPreviewRoute
   LeaderProfileRoute: typeof LeaderProfileRoute
   LeaderRequestsRoute: typeof LeaderRequestsRoute
+  LeaderRequirementsRoute: typeof LeaderRequirementsRouteWithChildren
   LeaderIndexRoute: typeof LeaderIndexRoute
 }
 
@@ -1114,6 +1165,7 @@ const LeaderRouteChildren: LeaderRouteChildren = {
   LeaderPreviewRoute: LeaderPreviewRoute,
   LeaderProfileRoute: LeaderProfileRoute,
   LeaderRequestsRoute: LeaderRequestsRoute,
+  LeaderRequirementsRoute: LeaderRequirementsRouteWithChildren,
   LeaderIndexRoute: LeaderIndexRoute,
 }
 
@@ -1173,13 +1225,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
