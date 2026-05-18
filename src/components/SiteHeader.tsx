@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X, ArrowRight, Moon, Sun } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
-import { useTheme } from "@/hooks/use-theme";
+import { useForcedTheme } from "@/hooks/use-theme";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -15,8 +15,7 @@ const nav = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { theme, toggle } = useTheme();
-  const isDark = theme === "dark";
+  useForcedTheme("light");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -61,13 +60,6 @@ export function SiteHeader() {
           </div>
 
           <div className="hidden items-center gap-2 md:flex">
-            <button
-              onClick={toggle}
-              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              className={`grid h-11 w-11 place-items-center rounded-full border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${controlClass}`}
-            >
-              {isDark ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
-            </button>
             <Link
               to="/login"
               className="rounded-full bg-[rgba(122,0,25,0.88)] px-5 py-2.5 text-sm font-semibold text-[#FFFDF7] shadow-[0_10px_24px_rgba(75,0,16,0.16)] transition hover:bg-[rgba(122,0,25,0.96)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gold"

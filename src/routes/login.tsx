@@ -4,6 +4,7 @@ import { useState } from "react";
 import { login, homeFor, DEMO_USERS } from "@/lib/auth";
 import { BrandLogo } from "@/components/BrandLogo";
 import umCampusHero from "@/assets/um-campus-hero.svg";
+import { useForcedTheme } from "@/hooks/use-theme";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -91,6 +92,8 @@ function Login() {
 }
 
 export function AuthLayout({ title, sub, footer, children }: { title: string; sub: string; footer: React.ReactNode; children: React.ReactNode }) {
+  useForcedTheme("light");
+
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden overflow-hidden bg-gradient-maroon text-primary-foreground lg:flex lg:flex-col lg:justify-between lg:p-12">

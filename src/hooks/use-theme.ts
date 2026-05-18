@@ -19,6 +19,12 @@ function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
 }
 
+export function useForcedTheme(theme: Theme) {
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+}
+
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>("light");
 
