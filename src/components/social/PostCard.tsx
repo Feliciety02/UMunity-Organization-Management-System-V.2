@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Calendar, Globe, Lock, MoreHorizontal, Pin, Send } from "lucide-react";
-import { toast } from "sonner";
 import type { Comment, Org, Post } from "@/data/site";
 import { Badge } from "@/components/dashboard/DashboardLayout";
 import { OrgLink, type OrgLinkMode } from "@/components/org/OrgLink";
@@ -9,6 +8,7 @@ import { RsvpButton } from "@/components/events/rsvp-button";
 import { AppButton } from "@/components/ui/app-button";
 import { AppCard } from "@/components/ui/app-card";
 import { IconButton } from "@/components/ui/icon-button";
+import { showImportantActionToast, showStatusToast } from "@/lib/feedback";
 
 export function OrgAvatar({ org, size = 40 }: { org: Pick<Org, "color" | "initials">; size?: number }) {
   return (
@@ -48,20 +48,20 @@ export function PostCard({
     if (!draft.trim()) return;
     setComments((current) => [
       ...current,
-      { id: `local-${Date.now()}`, author: "Althea Dumaguete", program: "BS CS · 3rd Yr", text: draft, time: "now" },
+      { id: `local-${Date.now()}`, author: "Althea Dumaguete", program: "BS CS - 3rd Yr", text: draft, time: "now" },
     ]);
     setDraft("");
-    toast.success("Comment posted");
+    showStatusToast("Comment posted", "Your reply is now visible in the thread.");
   }
 
   const typeLabel = post.type === "event" ? "Event" : post.type === "announcement" ? "Announcement" : null;
   const visual = post.image ? postVisuals[post.id] ?? defaultVisual : null;
 
   return (
-    <AppCard className="overflow-hidden rounded-[24px] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(17,17,17,0.08)]" padded={false}>
+    <AppCard className="overflow-hidden rounded-[24px] transition duration-200 hover:-translate-y-0.5 hover:shadow-soft" padded={false}>
       <header className="flex items-start gap-3 px-5 pb-4 pt-5">
         <OrgLink slug={org.slug} mode={orgLinkMode}>
-          <div className="rounded-[18px] bg-[linear-gradient(180deg,rgba(122,0,25,0.09),rgba(122,0,25,0.03))] p-0.5">
+          <div className="rounded-[18px] bg-secondary/65 p-0.5">
             <OrgAvatar org={org} size={48} />
           </div>
         </OrgLink>
@@ -78,7 +78,7 @@ export function PostCard({
             {typeLabel ? <Badge tone={post.type === "event" ? "gold" : "info"}>{typeLabel}</Badge> : null}
           </div>
           <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span>{post.time}</span> · {post.visibility === "public" ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
+            <span>{post.time}</span> - {post.visibility === "public" ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
             <span>{post.visibility === "public" ? "Public" : "Members only"}</span>
           </p>
         </div>
@@ -129,10 +129,14 @@ export function PostCard({
         saved={saved}
         onLike={toggleLike}
         onComment={() => setShowComments((current) => !current)}
-        onShare={() => toast.success("Post shared")}
+        onShare={() => showStatusToast("Post shared", "This post is ready to send to your circle.")}
         onSave={() => {
           setSaved((current) => !current);
-          toast.success(saved ? "Removed from saved" : "Saved");
+          showImportantActionToast(
+            "save",
+            saved ? "This post has been removed from your saved list." : "You can find this post anytime in Saved posts.",
+            saved ? "Removed from saved" : "Saved for later",
+          );
         }}
       />
 
@@ -183,7 +187,7 @@ function CommentItem({ comment }: { comment: Comment }) {
         <div className="rounded-2xl bg-card px-3 py-2 shadow-soft">
           <p className="text-xs font-semibold">
             {comment.author}
-            {comment.program ? <span className="ml-1 font-normal text-muted-foreground">· {comment.program}</span> : null}
+            {comment.program ? <span className="ml-1 font-normal text-muted-foreground">- {comment.program}</span> : null}
           </p>
           <p className="text-sm">{comment.text}</p>
         </div>
@@ -228,7 +232,7 @@ const postVisuals: Record<string, string> = {
       </g>
       <g fill="#fff" opacity="0.95">
         <text x="90" y="130" font-family="Arial, sans-serif" font-size="36" font-weight="700">UM Innovation Summit 2026</text>
-        <text x="90" y="180" font-family="Arial, sans-serif" font-size="20">Talks • Workshops • Hackathon</text>
+        <text x="90" y="180" font-family="Arial, sans-serif" font-size="20">Talks - Workshops - Hackathon</text>
       </g>
     </svg>
   `),
@@ -274,7 +278,7 @@ const postVisuals: Record<string, string> = {
       <polygon points="875,205 935,160 935,535 875,505" fill="#f3ba17"/>
       <g fill="#fff" opacity="0.96">
         <text x="90" y="118" font-family="Arial, sans-serif" font-size="34" font-weight="700">Cultural Night Auditions</text>
-        <text x="90" y="164" font-family="Arial, sans-serif" font-size="20">Music • Dance • Stagecraft</text>
+        <text x="90" y="164" font-family="Arial, sans-serif" font-size="20">Music - Dance - Stagecraft</text>
       </g>
     </svg>
   `),

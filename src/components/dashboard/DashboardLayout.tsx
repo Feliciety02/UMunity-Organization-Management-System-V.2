@@ -13,6 +13,7 @@ import { AppCard, AppCardHeader } from "@/components/ui/app-card";
 import { AppBadge } from "@/components/ui/app-badge";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState as SharedEmptyState } from "@/components/ui/empty-state";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { MobileBottomNav, type BottomNavItem } from "@/components/dashboard/MobileBottomNav";
 
@@ -49,21 +50,12 @@ export function DashboardLayout({
     }
   }, [navigate, role]);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const media = window.matchMedia("(min-width: 768px) and (max-width: 1279px)");
-    const sync = () => setSidebarCollapsed(media.matches);
-    sync();
-    media.addEventListener("change", sync);
-    return () => media.removeEventListener("change", sync);
-  }, []);
-
   if (!session) return null;
 
   return (
     <div className="flex min-h-screen bg-background">
       <aside
-        className={`sticky top-0 hidden h-screen shrink-0 border-r border-border bg-[#FEFDFE] transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex ${
+        className={`sticky top-0 hidden h-screen shrink-0 border-r border-border/80 bg-card/95 backdrop-blur transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:flex ${
           sidebarCollapsed ? "w-20" : "w-[280px]"
         }`}
       >
@@ -71,7 +63,7 @@ export function DashboardLayout({
       </aside>
 
       <div
-        className={`fixed inset-0 z-50 transition-[visibility] duration-300 md:hidden ${
+        className={`fixed inset-0 z-50 transition-[visibility] duration-300 lg:hidden ${
           mobileOpen ? "visible" : "invisible"
         }`}
       >
@@ -82,7 +74,7 @@ export function DashboardLayout({
           onClick={() => setMobileOpen(false)}
         />
         <aside
-          className={`absolute left-0 top-0 flex h-full w-[280px] max-w-[calc(100vw-2rem)] flex-col border-r border-border bg-[#FEFDFE] shadow-[0_22px_60px_rgba(15,23,42,0.16)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          className={`absolute left-0 top-0 flex h-full w-[280px] max-w-[calc(100vw-2rem)] flex-col border-r border-border/80 bg-card/98 shadow-[0_22px_60px_rgba(15,23,42,0.28)] backdrop-blur transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -103,7 +95,7 @@ export function DashboardLayout({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar role={role} session={session} notifs={notifs} resolveNotifHref={resolveNotifHref} onMenu={() => setMobileOpen(true)} />
-        <main className={`flex-1 px-6 py-8 sm:px-8 lg:px-10 ${bottomNav ? "pb-24 md:pb-8" : ""}`}>
+        <main className={`flex-1 px-6 py-8 sm:px-8 lg:px-10 ${bottomNav ? "pb-24 lg:pb-8" : ""}`}>
           <div className="mx-auto w-full max-w-[1440px]">{children}</div>
         </main>
       </div>
@@ -170,13 +162,13 @@ function SidebarInner({
     <div className="flex h-full min-h-0 flex-col">
       {!hideBrand && (
         <div
-          className={`flex h-20 items-center border-b border-border px-4 transition-[padding,gap,justify-content] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-            collapsed ? "justify-center" : "gap-3"
+          className={`flex h-20 items-center border-b border-border/70 px-4 transition-[padding,gap,justify-content] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            collapsed ? "justify-center px-3" : "gap-3"
           }`}
         >
           <button
             onClick={onToggleCollapse}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-muted-foreground transition-all duration-200 hover:bg-primary/6 hover:text-primary"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-transparent text-muted-foreground transition-all duration-200 hover:border-border hover:bg-secondary hover:text-foreground"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             <PanelLeft className={`h-4 w-4 transition-transform duration-300 ${collapsed ? "" : "rotate-180"}`} />
@@ -192,22 +184,22 @@ function SidebarInner({
       )}
 
       <nav
-        className={`flex-1 overflow-y-auto px-3 pb-6 transition-[padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`scrollbar-none flex-1 overflow-y-auto px-3 pb-6 pt-4 transition-[padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           hideBrand ? "pt-6" : "pt-8"
         }`}
       >
         {Object.entries(sections).map(([section, items]) => (
-          <section key={section} className="mb-6 last:mb-0">
+          <section key={section} className="mb-7 last:mb-0">
             <div
               className={`overflow-hidden transition-[max-height,opacity,transform,margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                 collapsed ? "mb-0 max-h-0 -translate-y-1 opacity-0" : "mb-2.5 max-h-10 translate-y-0 opacity-100"
               }`}
             >
-              <div className="px-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              <div className="px-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground/80">
                 {section}
               </div>
             </div>
-            <div className="space-y-2">
+            <div className={`space-y-1.5 ${collapsed ? "flex flex-col items-center" : ""}`}>
               {items.map((n) => {
                 const active = n.to === "/" ? path === "/" : path === n.to || (n.to !== `/${role}` && path.startsWith(n.to));
                 return (
@@ -216,21 +208,20 @@ function SidebarInner({
                     to={n.to}
                     onClick={onNav}
                     title={collapsed ? n.label : undefined}
-                    className={`group relative flex h-11 items-center rounded-xl px-3 text-sm font-medium transition-[background-color,color,transform] duration-200 ${
+                    className={`group relative flex items-center text-sm font-medium transition-[background-color,border-color,color,transform,box-shadow] duration-200 ${
+                      collapsed
+                        ? "h-12 w-12 justify-center rounded-2xl border px-0"
+                        : "h-11 rounded-2xl border px-3"
+                    } ${
                       active
-                        ? "bg-[color:color-mix(in_oklab,var(--primary)_8%,white)] text-primary"
-                        : "text-foreground/75 hover:bg-primary/6 hover:text-primary"
+                        ? "border-border bg-secondary text-foreground shadow-soft"
+                        : "border-transparent text-foreground/72 hover:border-border/70 hover:bg-secondary/70 hover:text-foreground"
                     }`}
                   >
-                    <span
-                      className={`absolute left-0 top-2 h-7 w-1 rounded-r-full bg-primary transition-[opacity,transform] duration-300 ${
-                        active ? "scale-y-100 opacity-100" : "scale-y-75 opacity-0"
-                      }`}
-                    />
                     <div className={`flex w-full items-center ${collapsed ? "justify-center" : "gap-3"}`}>
                       <n.icon
                         className={`h-4 w-4 shrink-0 transition-colors duration-200 ${
-                          active ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                          active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                         }`}
                       />
                       <span
@@ -245,7 +236,7 @@ function SidebarInner({
                           collapsed || !n.badge ? "max-w-0 translate-x-2 opacity-0" : "max-w-12 translate-x-0 opacity-100"
                         }`}
                       >
-                        <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[color:color-mix(in_oklab,var(--gold)_28%,white)] px-1.5 py-0.5 text-[10px] font-bold text-foreground">
+                        <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-primary/12 px-1.5 py-0.5 text-[10px] font-bold text-primary">
                           {n.badge}
                         </span>
                       </span>
@@ -259,14 +250,14 @@ function SidebarInner({
       </nav>
 
       <div
-        className={`overflow-hidden border-t border-border transition-[max-height,opacity,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`overflow-hidden border-t border-border/70 transition-[max-height,opacity,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           collapsed ? "max-h-0 px-4 py-0 opacity-0" : "max-h-48 px-4 py-4 opacity-100"
         }`}
       >
         {!collapsed && (
-          <div className="rounded-2xl bg-card px-4 py-4">
+          <div className="rounded-3xl border border-border/70 bg-background/70 px-4 py-4">
             <div className="flex items-start gap-3">
-              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary">
                 <Sparkles className="h-4 w-4" />
               </div>
               <div>
@@ -326,18 +317,21 @@ function Topbar({
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="flex items-center gap-4 px-4 py-3 md:px-8">
+      <div className="flex items-center gap-4 px-4 py-3 md:px-6 lg:px-8">
         <button
           onClick={onMenu}
           aria-label="Open menu"
-          className="grid h-10 w-10 place-items-center rounded-lg border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
+          className="grid h-10 w-10 place-items-center rounded-lg border border-border bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
         >
           <Menu className="h-4 w-4" aria-hidden="true" />
         </button>
-        <SearchBar placeholder="Search organizations, events, members..." className="hidden flex-1 md:block" />
+        <SearchBar
+          placeholder="Search"
+          className="hidden w-full max-w-[360px] lg:flex lg:max-w-[420px]"
+        />
         <button
           aria-label="Open inbox"
-          className="ml-auto hidden h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-semibold text-foreground/85 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:inline-flex"
+          className="ml-auto hidden h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-semibold text-foreground/85 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:inline-flex"
         >
           <MessageSquare className="h-4 w-4" aria-hidden="true" />
           Inbox
@@ -368,7 +362,7 @@ function Topbar({
                   View all
                 </Link>
               </div>
-              <div className="max-h-80 space-y-1 overflow-y-auto">
+              <div className="scrollbar-none max-h-80 space-y-1 overflow-y-auto">
                 {displayNotifs.length === 0 && <p className="p-4 text-center text-xs text-muted-foreground">You're all caught up</p>}
                 {displayNotifs.slice(0, 8).map((n) => {
                   const content = (
@@ -533,18 +527,7 @@ export function LineSpark({ data }: { data: number[] }) {
   );
 }
 
-export function EmptyState({ title, sub, icon: Icon, action }: { title: string; sub?: string; icon: LucideIcon; action?: React.ReactNode }) {
-  return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-secondary/40 p-10 text-center">
-      <div className="grid h-12 w-12 place-items-center rounded-md bg-primary/10 text-primary">
-        <Icon className="h-5 w-5" aria-hidden="true" />
-      </div>
-      <p className="mt-4 font-display text-base font-semibold text-foreground">{title}</p>
-      {sub && <p className="mt-1 max-w-sm text-sm text-muted-foreground">{sub}</p>}
-      {action ? <div className="mt-5">{action}</div> : null}
-    </div>
-  );
-}
+export const EmptyState = SharedEmptyState;
 
 export function PanelSkeleton({ rows = 3, className = "" }: { rows?: number; className?: string }) {
   return (

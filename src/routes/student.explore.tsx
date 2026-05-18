@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { PageHead, Panel } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
+import { AppButton } from "@/components/ui/app-button";
 import { organizations } from "@/data/site";
+import { showImportantActionToast, useDashboardPageLoading } from "@/lib/feedback";
 import { ArrowUpDown, ChevronRight, Search, SlidersHorizontal, Users } from "lucide-react";
 
 export const Route = createFileRoute("/student/explore")({
@@ -9,6 +11,7 @@ export const Route = createFileRoute("/student/explore")({
 });
 
 function Explore() {
+  const loading = useDashboardPageLoading();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const [sort, setSort] = useState<"Popular" | "A-Z">("Popular");
@@ -32,6 +35,20 @@ function Explore() {
       return b.members - a.members;
     });
   }, [cat, q, sort]);
+
+  if (loading) {
+    return (
+      <>
+        <PageHead title="Explore Organizations" sub="Loading communities that match your passions." />
+        <PanelSkeleton rows={3} className="mb-6" />
+        <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(380px,1fr))]">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <PanelSkeleton key={index} rows={4} />
+          ))}
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -101,8 +118,8 @@ function Explore() {
                 onClick={() => setCat(c)}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                   cat === c
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-[#F4F1EA] text-foreground hover:bg-secondary"
+                  ? "bg-primary text-primary-foreground"
+                    : "bg-secondary/70 text-foreground hover:bg-secondary"
                 }`}
               >
                 {c}
@@ -121,10 +138,10 @@ function Explore() {
             <div className={`relative h-44 bg-gradient-to-br ${coverTone[o.slug] ?? o.color}`}>
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.28),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.08),rgba(0,0,0,0.12))]" />
               <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/10 to-transparent" />
-              <span className="absolute left-5 top-5 inline-flex rounded-full bg-white/88 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-deep backdrop-blur">
+              <span className="absolute left-5 top-5 inline-flex rounded-full bg-card/88 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-deep backdrop-blur">
                 {o.category}
               </span>
-              <div className="absolute -bottom-7 left-6 z-10 grid h-16 w-16 place-items-center rounded-[20px] border-4 border-card bg-white shadow-soft">
+              <div className="absolute -bottom-7 left-6 z-10 grid h-16 w-16 place-items-center rounded-[20px] border-4 border-card bg-card shadow-soft">
                 <div className={`grid h-full w-full place-items-center rounded-2xl bg-gradient-to-br ${o.color} font-display text-lg font-bold text-primary-foreground`}>
                   {o.initials}
                 </div>
@@ -160,6 +177,7 @@ function Explore() {
                 </Link>
                 <button
                   type="button"
+                  onClick={() => showImportantActionToast("apply", `${o.name} will review your application shortly.`)}
                   className="inline-flex h-10 items-center justify-center rounded-full bg-gold px-4 text-sm font-semibold text-primary-deep transition hover:brightness-95"
                 >
                   Apply
@@ -172,10 +190,16 @@ function Explore() {
 
       {filtered.length === 0 && (
         <Panel className="mt-6">
-          <div className="py-12 text-center">
-            <p className="text-base font-semibold text-foreground">No organizations match your current search.</p>
-            <p className="mt-2 text-sm text-muted-foreground">Try a broader keyword or switch back to a wider category.</p>
-          </div>
+          <EmptyState
+            icon={Users}
+            title="No organizations match your current search"
+            sub="Try a broader keyword, change the category, or return to your organizations list."
+            action={
+              <AppButton asChild variant="secondary" size="sm">
+                <Link to="/student/my-orgs">Go to my organizations</Link>
+              </AppButton>
+            }
+          />
         </Panel>
       )}
     </>

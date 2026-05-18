@@ -17,11 +17,11 @@ const KEY = "umunity.rsvps.v1";
 const EVENT = "umunity:rsvps";
 
 const seed: RsvpRecord[] = [
-  { eventTitle: "UM Innovation Summit 2026", status: "going", attendeeName: "Althea Dumaguete", attendeeEmail: "student@um.edu.ph", program: "BS CS · 3rd Yr", updatedAt: Date.now() - 86_400_000 },
-  { eventTitle: "UM Innovation Summit 2026", status: "going", attendeeName: "Marvin Lim", attendeeEmail: "marvin@um.edu.ph", program: "BS CS · 1st Yr", updatedAt: Date.now() - 70_000_000 },
-  { eventTitle: "UM Innovation Summit 2026", status: "maybe", attendeeName: "Jana Cruz", attendeeEmail: "jana@um.edu.ph", program: "BS IT · 2nd Yr", updatedAt: Date.now() - 60_000_000 },
-  { eventTitle: "Hack Night Vol. 3", status: "going", attendeeName: "Karl Mendez", attendeeEmail: "karl@um.edu.ph", program: "BS CS · 4th Yr", updatedAt: Date.now() - 50_000_000 },
-  { eventTitle: "Eco Run for the Planet", status: "maybe", attendeeName: "Althea Dumaguete", attendeeEmail: "student@um.edu.ph", program: "BS CS · 3rd Yr", updatedAt: Date.now() - 40_000_000 },
+  { eventTitle: "UM Innovation Summit 2026", status: "going", attendeeName: "Althea Dumaguete", attendeeEmail: "student@um.edu.ph", program: "BS CS - 3rd Yr", updatedAt: Date.now() - 86_400_000 },
+  { eventTitle: "UM Innovation Summit 2026", status: "going", attendeeName: "Marvin Lim", attendeeEmail: "marvin@um.edu.ph", program: "BS CS - 1st Yr", updatedAt: Date.now() - 70_000_000 },
+  { eventTitle: "UM Innovation Summit 2026", status: "maybe", attendeeName: "Jana Cruz", attendeeEmail: "jana@um.edu.ph", program: "BS IT - 2nd Yr", updatedAt: Date.now() - 60_000_000 },
+  { eventTitle: "Hack Night Vol. 3", status: "going", attendeeName: "Karl Mendez", attendeeEmail: "karl@um.edu.ph", program: "BS CS - 4th Yr", updatedAt: Date.now() - 50_000_000 },
+  { eventTitle: "Eco Run for the Planet", status: "maybe", attendeeName: "Althea Dumaguete", attendeeEmail: "student@um.edu.ph", program: "BS CS - 3rd Yr", updatedAt: Date.now() - 40_000_000 },
 ];
 
 function read(): RsvpRecord[] {

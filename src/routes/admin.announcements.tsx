@@ -23,7 +23,7 @@ function AdminAnnouncements() {
 
       <div className="grid gap-4">
         {[
-          { t: "Maintenance window: May 18, 11 PM – 1 AM", body: "UMunity will undergo scheduled maintenance.", reach: "18.4K users", time: "1d ago", tag: "Urgent", tone: "danger" as const },
+          { t: "Maintenance window: May 18, 11 PM - 1 AM", body: "UMunity will undergo scheduled maintenance.", reach: "18.4K users", time: "1d ago", tag: "Urgent", tone: "danger" as const },
           { t: "New org applications now open", body: "Submit your organization charter via the new wizard.", reach: "All leaders", time: "3d ago", tag: "Important", tone: "warning" as const },
           { t: "Welcome week 2026 recap", body: "Thanks to all orgs who participated! Highlights inside.", reach: "All users", time: "1w ago", tag: "Update", tone: "info" as const },
         ].map((a) => (
@@ -35,7 +35,7 @@ function AdminAnnouncements() {
                   <p className="font-display text-base font-bold">{a.t}</p>
                   <Badge tone={a.tone}>{a.tag}</Badge>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">{a.reach} · {a.time}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{a.reach} - {a.time}</p>
                 <p className="mt-3 text-sm text-foreground/85">{a.body}</p>
                 <div className="mt-4 flex gap-4 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1"><Eye className="h-3 w-3" /> 14,210 reads</span>

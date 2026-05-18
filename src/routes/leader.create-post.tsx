@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 import { Image as ImageIcon, Globe, Lock, Pin, Calendar, Megaphone, FileText } from "lucide-react";
-import { toast } from "sonner";
+import { showStatusToast } from "@/lib/feedback";
 
 export const Route = createFileRoute("/leader/create-post")({
   component: CreatePost,
@@ -23,8 +23,11 @@ function CreatePost() {
   ] as const;
 
   function submit() {
-    if (!content.trim()) { toast.error("Add some content first"); return; }
-    toast.success("Post published");
+    if (!content.trim()) {
+      showStatusToast("Add some content first", "Write a caption or announcement before publishing.", "error");
+      return;
+    }
+    showStatusToast("Post published", "Your organization update is now live.");
     navigate({ to: "/leader/posts" });
   }
 
@@ -65,7 +68,7 @@ function CreatePost() {
             <div>
               <ImageIcon className="mx-auto h-6 w-6 text-muted-foreground" />
               <p className="mt-2 text-sm font-medium">Add a photo</p>
-              <p className="text-xs text-muted-foreground">JPG or PNG · up to 8MB</p>
+              <p className="text-xs text-muted-foreground">JPG or PNG - up to 8MB</p>
             </div>
           </div>
 
@@ -89,7 +92,7 @@ function CreatePost() {
                 <div className="grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br from-primary to-primary-deep text-xs font-bold text-primary-foreground">CS</div>
                 <div>
                   <p className="text-xs font-semibold">UM Computer Studies Society</p>
-                  <p className="text-[10px] text-muted-foreground">now · {visibility}</p>
+                  <p className="text-[10px] text-muted-foreground">now - {visibility}</p>
                 </div>
               </div>
               {title && <p className="text-sm font-semibold">{title}</p>}
@@ -102,9 +105,9 @@ function CreatePost() {
           </Panel>
           <Panel title="Posting tips">
             <ul className="space-y-2 text-xs text-muted-foreground">
-              <li>• Keep titles clear and under 60 characters.</li>
-              <li>• Add a photo — posts with images get 2x more engagement.</li>
-              <li>• Use members-only for sensitive updates.</li>
+              <li>* Keep titles clear and under 60 characters.</li>
+              <li>* Add a photo - posts with images get 2x more engagement.</li>
+              <li>* Use members-only for sensitive updates.</li>
             </ul>
           </Panel>
         </aside>

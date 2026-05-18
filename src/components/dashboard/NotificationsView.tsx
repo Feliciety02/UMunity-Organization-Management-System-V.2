@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Bell, Calendar, Megaphone, MessageSquare, Sparkles, Check, Trash2, Inbox, Search } from "lucide-react";
-import { PageHead, Panel, Badge, EmptyState } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, Badge, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
+import { useDashboardPageLoading } from "@/lib/feedback";
 import {
   markAllRead,
   markRead,
@@ -45,14 +46,17 @@ export function NotificationsView({
   title = "Notifications",
   sub,
   resolveHref,
+  emptyAction,
 }: {
   title?: string;
   sub?: string;
   resolveHref?: (href?: string) => string | undefined;
+  emptyAction?: React.ReactNode;
 }) {
   const list = useNotifications();
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  const loading = useDashboardPageLoading();
 
   const counts = useMemo(() => {
     const total = list.length;
@@ -72,6 +76,21 @@ export function NotificationsView({
     }
     return out;
   }, [list, filter, query]);
+
+  if (loading) {
+    return (
+      <>
+        <PageHead title={title} sub={sub ?? "Checking your latest updates."} />
+        <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+          <PanelSkeleton rows={6} className="h-fit" />
+          <div className="space-y-4">
+            <PanelSkeleton rows={1} />
+            <PanelSkeleton rows={5} />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -131,6 +150,15 @@ export function NotificationsView({
                 title={query ? "No matches" : "You're all caught up"}
                 sub={query ? "Try a different search or clear the filter." : "New notifications will show up here."}
                 icon={Inbox}
+                action={
+                  query ? (
+                    <AppButton variant="secondary" size="sm" onClick={() => { setQuery(""); setFilter("all"); }}>
+                      Clear search
+                    </AppButton>
+                  ) : (
+                    emptyAction
+                  )
+                }
               />
             ) : (
               <div className="divide-y divide-border">

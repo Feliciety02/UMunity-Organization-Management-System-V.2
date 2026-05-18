@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Calendar, Download, Search, Users } from "lucide-react";
-import { PageHead, Panel, Badge, EmptyState } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, Badge, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
+import { useDashboardPageLoading } from "@/lib/feedback";
 import { useRsvps, type RsvpStatus } from "@/lib/rsvp";
 import { events } from "@/data/site";
 
@@ -18,6 +19,7 @@ const statusTone: Record<RsvpStatus, "success" | "warning" | "danger"> = {
 
 function Attendees() {
   const rsvps = useRsvps();
+  const loading = useDashboardPageLoading();
   const eventTitles = useMemo(() => {
     const set = new Set<string>(events.map((e) => e.title));
     rsvps.forEach((r) => set.add(r.eventTitle));
@@ -49,6 +51,25 @@ function Attendees() {
     const cancelled = eventRsvps.filter((r) => r.status === "cancelled").length;
     return { going, maybe, cancelled, total: eventRsvps.length };
   }, [eventRsvps]);
+
+  if (loading) {
+    return (
+      <>
+        <PageHead title="Attendees" sub="Loading your latest RSVP activity." />
+        <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+          <PanelSkeleton rows={5} className="h-fit" />
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <PanelSkeleton key={index} rows={2} />
+              ))}
+            </div>
+            <PanelSkeleton rows={6} />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   function exportCsv() {
     const rows = [
@@ -139,7 +160,16 @@ function Attendees() {
             </div>
 
             {filtered.length === 0 ? (
-              <EmptyState title="No attendees match" sub="Try a different filter or wait for more RSVPs." icon={Users} />
+              <EmptyState
+                title="No attendees match"
+                sub="Try a different filter or open your events to publish or promote one."
+                icon={Users}
+                action={
+                  <AppButton asChild variant="secondary" size="sm">
+                    <Link to="/leader/manage-events">Open events</Link>
+                  </AppButton>
+                }
+              />
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">

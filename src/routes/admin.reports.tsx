@@ -34,7 +34,7 @@ function Reports() {
           ].map(([n, m]) => (
             <div key={n as string} className="flex items-center gap-3 py-2 text-sm">
               <span className="flex-1 truncate">{n}</span>
-              <div className="h-2 w-32 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-gradient-maroon" style={{ width: `${((m as number)/510)*100}%` }} /></div>
+              <div className="h-2 w-32 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-gradient-maroon" style={{ width: `${((m as number) / 510) * 100}%` }} /></div>
               <span className="w-10 text-right text-xs font-semibold">{m}</span>
             </div>
           ))}
@@ -65,7 +65,7 @@ function Reports() {
               return <div key={i} className="aspect-square rounded-sm" style={{ background: `color-mix(in oklab, var(--primary) ${Math.round(v * 100)}%, var(--secondary))` }} />;
             })}
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">Peak: Wed 4–6 PM</p>
+          <p className="mt-3 text-xs text-muted-foreground">Peak: Wed 4-6 PM</p>
         </Panel>
       </div>
     </>

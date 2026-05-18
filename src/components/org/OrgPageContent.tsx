@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { toast } from "sonner";
 import { Badge } from "@/components/dashboard/DashboardLayout";
+import { RsvpButton } from "@/components/events/rsvp-button";
 import { AppCard } from "@/components/ui/app-card";
 import { UnderlineTabs } from "@/components/ui/app-tabs";
 import { PostCard, OrgAvatar } from "@/components/social/PostCard";
 import type { OrgLinkMode } from "@/components/org/OrgLink";
+import { showImportantActionToast } from "@/lib/feedback";
 import { events, officers, organizations, posts, type Org } from "@/data/site";
-import { Users, Calendar, Mail, MapPin, Globe, UserPlus, Check, ArrowLeft } from "lucide-react";
+import { Users, Calendar, Mail, MapPin, Globe, UserPlus, Check, ArrowLeft, Compass } from "lucide-react";
 
 const tabs = ["Posts", "About", "Events", "Officers", "Photos"] as const;
 type Tab = (typeof tabs)[number];
@@ -42,7 +43,7 @@ export function OrgPageContent({
         <button
           type="button"
           onClick={onBack}
-          className="absolute left-5 top-0 z-10 inline-flex h-11 items-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-semibold text-foreground shadow-[0_8px_20px_rgba(17,24,39,0.08)] transition hover:bg-secondary sm:left-6"
+          className="absolute left-5 top-0 z-10 inline-flex h-11 items-center gap-2 rounded-full border border-border bg-card px-4 text-sm font-semibold text-foreground shadow-soft transition hover:bg-secondary sm:left-6"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>{backLabel}</span>
@@ -50,23 +51,23 @@ export function OrgPageContent({
       ) : backHref ? (
         <Link
           to={backHref}
-          className="absolute left-5 top-0 z-10 inline-flex h-11 items-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-semibold text-foreground shadow-[0_8px_20px_rgba(17,24,39,0.08)] transition hover:bg-secondary sm:left-6"
+          className="absolute left-5 top-0 z-10 inline-flex h-11 items-center gap-2 rounded-full border border-border bg-card px-4 text-sm font-semibold text-foreground shadow-soft transition hover:bg-secondary sm:left-6"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>{backLabel}</span>
         </Link>
       ) : null}
 
-      <section className="overflow-hidden rounded-[24px] border border-[rgba(122,0,25,0.08)] bg-white shadow-[0_10px_24px_rgba(17,24,39,0.04)]">
+      <section className="overflow-hidden rounded-[24px] border border-border/70 bg-card shadow-soft">
         <div className={`relative h-44 bg-gradient-to-br ${org.color} sm:h-56`}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_20%,rgba(244,176,0,0.22),transparent_32%),radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.10),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.10))]" />
         </div>
 
-        <div className="relative bg-white px-5 pb-5 sm:px-6">
-          <div className="flex flex-col gap-4 border-b border-border/80 pt-1 pb-5 md:flex-row md:items-end md:justify-between">
+        <div className="relative bg-card px-5 pb-5 sm:px-6">
+          <div className="flex flex-col gap-4 border-b border-border/80 pb-5 pt-1 md:flex-row md:items-end md:justify-between">
             <div className="flex min-w-0 flex-col gap-4 md:min-w-0 md:flex-1 md:flex-row md:items-end md:gap-5">
               <div className="-mt-16 self-center md:-mt-14 md:self-end">
-                <div className={`grid h-[108px] w-[108px] place-items-center rounded-full border-[6px] border-white bg-gradient-to-br ${org.color} font-display text-[2rem] font-bold text-primary-foreground shadow-[0_14px_40px_rgba(17,17,17,0.16)] md:h-[116px] md:w-[116px] md:text-[2.15rem]`}>
+                <div className={`grid h-[108px] w-[108px] place-items-center rounded-full border-[6px] border-card bg-gradient-to-br ${org.color} font-display text-[2rem] font-bold text-primary-foreground shadow-soft md:h-[116px] md:w-[116px] md:text-[2.15rem]`}>
                   {org.initials}
                 </div>
               </div>
@@ -94,11 +95,17 @@ export function OrgPageContent({
                 <button
                   onClick={() => {
                     setJoined((current) => !current);
-                    toast.success(joined ? "Left organization" : "Membership requested");
+                    showImportantActionToast(
+                      joined ? "apply" : "join",
+                      joined
+                        ? `You can reapply to ${org.name} anytime from its organization page.`
+                        : `${org.name} will review your membership request soon.`,
+                      joined ? "Left organization" : "Membership request sent",
+                    );
                   }}
                   className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
                     joined
-                      ? "border border-border bg-white text-foreground hover:bg-secondary"
+                      ? "border border-border bg-card text-foreground hover:bg-secondary"
                       : "bg-primary text-primary-foreground hover:bg-primary-deep"
                   }`}
                 >
@@ -114,7 +121,7 @@ export function OrgPageContent({
                     </>
                   )}
                 </button>
-                <button className="rounded-xl border border-border bg-white px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-secondary">
+                <button className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-secondary">
                   Follow
                 </button>
               </div>
@@ -136,8 +143,21 @@ export function OrgPageContent({
         <div className="min-w-0 space-y-4">
           {tab === "Posts" ? (
             orgPosts.length === 0 ? (
-              <FlatCard>
-                <p className="text-center text-sm text-muted-foreground">No posts yet.</p>
+              <FlatCard title="Posts">
+                <div className="rounded-[24px] border border-dashed border-border bg-secondary/35 p-8 text-center">
+                  <p className="font-semibold text-foreground">No posts yet</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Check upcoming events or browse related organizations while this page is still quiet.</p>
+                  <div className="mt-5 flex justify-center">
+                    <Link
+                      to={relatedOrgRoute}
+                      params={{ slug: relatedOrgs[0]?.slug ?? org.slug }}
+                      className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary-deep"
+                    >
+                      <Compass className="h-4 w-4" />
+                      Discover related orgs
+                    </Link>
+                  </div>
+                </div>
               </FlatCard>
             ) : (
               orgPosts.map((p) => <PostCard key={p.id} post={p} org={org} orgLinkMode={orgLinkMode} />)
@@ -163,16 +183,16 @@ export function OrgPageContent({
               ) : (
                 <div className="space-y-3">
                   {orgEvents.map((e) => (
-                    <div key={e.title} className="rounded-[18px] border border-border/70 bg-[#fafafb] p-4">
+                    <div key={e.title} className="rounded-[18px] border border-border/70 bg-secondary/35 p-4">
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <p className="text-sm font-semibold text-foreground">{e.title}</p>
-                          <p className="mt-1 text-sm text-muted-foreground">{e.date} · {e.time}</p>
+                          <p className="mt-1 text-sm text-muted-foreground">{e.date} - {e.time}</p>
                           <p className="mt-1 text-sm text-muted-foreground">{e.venue}</p>
                         </div>
-                        <button className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition hover:bg-primary-deep">
-                          RSVP
-                        </button>
+                        <div className="w-[140px]">
+                          <RsvpButton eventTitle={e.title} size="sm" />
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -190,7 +210,7 @@ export function OrgPageContent({
                       { name: "President TBA", role: "President" },
                       { name: "VP TBA", role: "Vice President" },
                     ]).map((o) => (
-                  <div key={o.name} className="flex items-center gap-3 rounded-[18px] border border-border/70 bg-[#fafafb] p-4">
+                  <div key={o.name} className="flex items-center gap-3 rounded-[18px] border border-border/70 bg-secondary/35 p-4">
                     <div className="grid h-11 w-11 place-items-center rounded-full bg-secondary text-xs font-bold text-primary-deep">
                       {o.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
                     </div>
@@ -263,7 +283,7 @@ function FlatCard({
   children: ReactNode;
 }) {
   return (
-    <AppCard className="rounded-[20px] border border-border/80 bg-white shadow-[0_6px_16px_rgba(17,24,39,0.04)]">
+    <AppCard className="rounded-[20px] border border-border/80 bg-card shadow-soft">
       {title ? <h2 className="mb-4 font-display text-lg font-semibold text-foreground">{title}</h2> : null}
       {children}
     </AppCard>
@@ -288,5 +308,5 @@ function InfoItem({
 
   if (asList) return <li className="flex items-center gap-2">{content}</li>;
 
-  return <div className="flex items-center gap-2 rounded-[16px] border border-border/70 bg-[#fafafb] px-4 py-3">{content}</div>;
+  return <div className="flex items-center gap-2 rounded-[16px] border border-border/70 bg-secondary/35 px-4 py-3">{content}</div>;
 }

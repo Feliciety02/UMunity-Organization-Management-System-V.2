@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageHead, Panel, EmptyState } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { posts, organizations } from "@/data/site";
 import { PostCard } from "@/components/social/PostCard";
+import { useDashboardPageLoading } from "@/lib/feedback";
 import { Bookmark, Compass } from "lucide-react";
 
 export const Route = createFileRoute("/student/saved")({
@@ -10,8 +11,19 @@ export const Route = createFileRoute("/student/saved")({
 });
 
 function Saved() {
+  const loading = useDashboardPageLoading();
   const orgBySlug = Object.fromEntries(organizations.map((o) => [o.slug, o]));
   const saved = posts.slice(0, 2);
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-2xl space-y-4">
+        <PageHead title="Saved posts" sub="Loading your bookmarked posts." />
+        <PanelSkeleton rows={4} />
+        <PanelSkeleton rows={4} />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
