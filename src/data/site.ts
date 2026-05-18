@@ -1,4 +1,4 @@
-// Barrel — kept for backwards compatibility.
+// Barrel - kept for backwards compatibility.
 // Prefer importing directly from the per-domain modules.
 export * from "./orgs";
 export * from "./events";

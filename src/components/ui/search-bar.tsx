@@ -11,13 +11,13 @@ export function SearchBar({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-center gap-3 rounded-full border border-border bg-background px-4 py-3 shadow-soft", className)}>
-      <Search className="h-4 w-4 text-muted-foreground" />
+    <div className={cn("flex h-11 items-center gap-2.5 rounded-2xl border border-border bg-card/88 px-3.5 shadow-soft", className)}>
+      <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
       <input
         placeholder={placeholder}
-        className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+        className="min-w-0 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
       />
-      {shortcut ? <kbd className="hidden rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">{shortcut}</kbd> : null}
+      {shortcut ? <kbd className="hidden rounded-md bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">{shortcut}</kbd> : null}
     </div>
   );
 }

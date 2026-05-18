@@ -17,7 +17,7 @@ export const DEMO_USERS: DemoUser[] = [
     password: "student123",
     role: "student",
     name: "Althea Dumaguete",
-    program: "BS Computer Science · 3rd Year",
+    program: "BS Computer Science - 3rd Year",
     avatarColor: "from-rose-400 to-primary",
   },
   {
@@ -25,7 +25,7 @@ export const DEMO_USERS: DemoUser[] = [
     password: "leader123",
     role: "leader",
     name: "Marco Reyes",
-    program: "President · UM CS Society",
+    program: "President - UM CS Society",
     org: "UM Computer Studies Society",
     avatarColor: "from-amber-500 to-primary",
   },
@@ -34,7 +34,7 @@ export const DEMO_USERS: DemoUser[] = [
     password: "admin123",
     role: "admin",
     name: "Dr. Liana Kintanar",
-    program: "OSA Coordinator · UM",
+    program: "OSA Coordinator - UM",
     avatarColor: "from-primary-deep to-rose-700",
   },
 ];

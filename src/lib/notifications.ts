@@ -23,7 +23,7 @@ const seed: AppNotif[] = [
   { id: "n4", title: "New event: Eco Run for the Planet", meta: "Yesterday", category: "event", unread: true, createdAt: Date.now() - 86_400_000, href: "/student/events" },
   { id: "n5", title: "UM Eco Warriors posted a campus update", meta: "Yesterday", category: "announcement", unread: false, createdAt: Date.now() - 86_400_000, href: "/org/eco-warriors" },
   { id: "n6", title: "Jana Cruz replied to your comment", meta: "2 days ago", category: "comment-reply", unread: false, createdAt: Date.now() - 2 * 86_400_000, href: "/student" },
-  { id: "n7", title: "Welcome to UMUnity 🎉", meta: "3 days ago", category: "general", unread: false, createdAt: Date.now() - 3 * 86_400_000 },
+  { id: "n7", title: "Welcome to UMUnity!", meta: "3 days ago", category: "general", unread: false, createdAt: Date.now() - 3 * 86_400_000 },
 ];
 
 function read(): AppNotif[] {

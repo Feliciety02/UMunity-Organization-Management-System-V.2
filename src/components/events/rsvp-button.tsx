@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { Check, ChevronDown, X, HelpCircle } from "lucide-react";
-import { toast } from "sonner";
+import { Check, ChevronDown, HelpCircle, X } from "lucide-react";
 import { AppButton } from "@/components/ui/app-button";
 import { getSession } from "@/lib/auth";
+import { showImportantActionToast, showStatusToast } from "@/lib/feedback";
 import { setRsvp, useRsvps, type RsvpStatus } from "@/lib/rsvp";
 
 const labels: Record<RsvpStatus | "none", { label: string; icon: typeof Check; tone: "gold" | "secondary" | "ghost" }> = {
@@ -25,9 +25,10 @@ export function RsvpButton({ eventTitle, size = "md" }: { eventTitle: string; si
 
   function handle(next: RsvpStatus) {
     if (!session) {
-      toast.error("Sign in to RSVP");
+      showStatusToast("Sign in to RSVP", "You need an account before reserving a slot.", "error");
       return;
     }
+
     setRsvp({
       eventTitle,
       status: next,
@@ -35,8 +36,14 @@ export function RsvpButton({ eventTitle, size = "md" }: { eventTitle: string; si
       attendeeEmail: session.email,
       program: session.program,
     });
-    toast.success(
-      next === "going" ? "You're going! 🎉" : next === "maybe" ? "Marked as Maybe" : "RSVP cancelled",
+
+    showImportantActionToast(
+      "rsvp",
+      next === "going"
+        ? `You're on the list for ${eventTitle}.`
+        : next === "maybe"
+          ? `We'll keep ${eventTitle} handy while you decide.`
+          : `${eventTitle} has been removed from your RSVP list.`,
     );
   }
 

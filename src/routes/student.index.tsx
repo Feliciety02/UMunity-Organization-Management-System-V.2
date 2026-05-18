@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Calendar, ImageIcon, PenSquare, Sparkles, Vote } from "lucide-react";
-import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, Badge, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
 import { EventCard } from "@/components/events/event-card";
 import { PostCard } from "@/components/social/PostCard";
 import { Composer } from "@/components/social/composer";
@@ -8,6 +8,7 @@ import { OrgSuggestionCard } from "@/components/social/org-suggestion-card";
 import { organizations, events, posts } from "@/data/site";
 import { AppButton } from "@/components/ui/app-button";
 import { AppTabs } from "@/components/ui/app-tabs";
+import { useDashboardPageLoading } from "@/lib/feedback";
 
 export const Route = createFileRoute("/student/")({
   component: StudentFeed,
@@ -16,9 +17,31 @@ export const Route = createFileRoute("/student/")({
 const feedTabs = ["All", "Following", "Events"] as const;
 
 function StudentFeed() {
+  const loading = useDashboardPageLoading();
   const orgBySlug = Object.fromEntries(organizations.map((o) => [o.slug, o]));
   const upcoming = events.slice(0, 3);
   const recommended = organizations.slice(3, 6);
+
+  if (loading) {
+    return (
+      <>
+        <PageHead title="Home feed" sub="Loading the latest activity from your campus community." />
+        <div className="mx-auto max-w-[1520px]">
+          <div className="grid gap-8 xl:grid-cols-[minmax(0,1.18fr)_380px]">
+            <div className="space-y-6">
+              <PanelSkeleton rows={3} />
+              <PanelSkeleton rows={5} />
+              <PanelSkeleton rows={5} />
+            </div>
+            <div className="space-y-6">
+              <PanelSkeleton rows={4} />
+              <PanelSkeleton rows={4} />
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -53,7 +76,7 @@ function StudentFeed() {
               <Panel
                 title="Upcoming events"
                 action={<Link to="/student/events" className="text-sm font-semibold text-primary">View all</Link>}
-                className="rounded-[28px] bg-white/96 p-6"
+                className="rounded-[28px] bg-card/96 p-6"
               >
                 <div className="space-y-4">
                   {upcoming.map((event) => (
@@ -75,7 +98,7 @@ function StudentFeed() {
               <Panel
                 title="Suggested for you"
                 action={<Sparkles className="h-4 w-4 text-gold" />}
-                className="rounded-[28px] bg-white/96 p-6"
+                className="rounded-[28px] bg-card/96 p-6"
               >
                 <div className="space-y-4">
                   {recommended.map((org, index) => (

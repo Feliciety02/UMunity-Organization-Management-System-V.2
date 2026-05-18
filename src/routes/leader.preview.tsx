@@ -59,14 +59,14 @@ function Preview() {
         </AppCard>
 
         <AppCard className="overflow-hidden rounded-[28px] p-0">
-          <div className="border-b border-border bg-[#FEFDFE] px-5 py-4">
+          <div className="border-b border-border bg-card px-5 py-4">
             <div className="rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground">
               {`/org/${slug}`}
             </div>
           </div>
 
           <div className="bg-background p-4 sm:p-5">
-            <div className="overflow-hidden rounded-[22px] border border-border/70 bg-white">
+            <div className="overflow-hidden rounded-[22px] border border-border/70 bg-card">
               <iframe src={`/org/${slug}`} title="Org preview" className="h-[calc(100vh-260px)] min-h-[780px] w-full" />
             </div>
           </div>

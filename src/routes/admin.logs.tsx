@@ -27,7 +27,7 @@ function Logs() {
             <div key={i} className="flex items-center gap-3 rounded-2xl bg-secondary/40 px-4 py-3 text-sm">
               <Badge tone={l.t}>{l.a}</Badge>
               <div className="min-w-0 flex-1">
-                <p className="truncate"><span className="font-mono text-xs text-muted-foreground">{l.who}</span> — {l.d}</p>
+                <p className="truncate"><span className="font-mono text-xs text-muted-foreground">{l.who}</span> - {l.d}</p>
               </div>
               <span className="shrink-0 text-xs text-muted-foreground">{l.time}</span>
             </div>

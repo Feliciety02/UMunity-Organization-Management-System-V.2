@@ -8,7 +8,7 @@ import umCampusHero from "@/assets/um-campus-hero.svg";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Login — UMunity" },
+      { title: "Login - UMunity" },
       { name: "description", content: "Sign in to your UMunity account." },
     ],
   }),
@@ -51,7 +51,7 @@ function Login() {
     >
       <form className="space-y-4" onSubmit={submit}>
         <Field icon={Mail} type="email" label="UM Email" placeholder="you@umindanao.edu.ph" value={email} onChange={setEmail} />
-        <Field icon={Lock} type="password" label="Password" placeholder="••••••••" value={password} onChange={setPassword} />
+        <Field icon={Lock} type="password" label="Password" placeholder="********" value={password} onChange={setPassword} />
         {error && <p className="rounded-xl bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">{error}</p>}
         <div className="flex items-center justify-between text-sm">
           <label className="flex items-center gap-2 text-muted-foreground">
@@ -79,7 +79,7 @@ function Login() {
             >
               <div>
                 <p className="font-semibold capitalize text-foreground">{u.role}</p>
-                <p className="text-muted-foreground">{u.email} · <span className="font-mono">{u.password}</span></p>
+                <p className="text-muted-foreground">{u.email} - <span className="font-mono">{u.password}</span></p>
               </div>
               <ArrowRight className="h-4 w-4 text-primary" />
             </button>
@@ -112,7 +112,7 @@ export function AuthLayout({ title, sub, footer, children }: { title: string; su
             Join 18,000+ Mindanaoans already building their college story on UMunity.
           </p>
         </div>
-        <p className="relative text-xs text-primary-foreground/60">© {new Date().getFullYear()} UMunity · University of Mindanao</p>
+        <p className="relative text-xs text-primary-foreground/60">(c) {new Date().getFullYear()} UMunity - University of Mindanao</p>
       </div>
 
       <div className="flex items-center justify-center bg-background px-4 py-12 sm:px-6">

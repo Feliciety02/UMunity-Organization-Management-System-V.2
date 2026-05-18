@@ -1,13 +1,14 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, Badge, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
 import { EventCard } from "@/components/events/event-card";
 import { defaultEventCover, eventCovers } from "@/components/events/event-covers";
 import { events } from "@/data/site";
 import { AppTabs } from "@/components/ui/app-tabs";
 import { IconButton } from "@/components/ui/icon-button";
 import { getSession } from "@/lib/auth";
+import { useDashboardPageLoading } from "@/lib/feedback";
 import { slugify, useRsvps, type RsvpStatus } from "@/lib/rsvp";
 
 export const Route = createFileRoute("/student/events")({
@@ -31,6 +32,7 @@ const STATUS_LABEL: Record<RsvpStatus, string> = {
 function Events() {
   const [tab, setTab] = useState<typeof tabs[number]>("All");
   const { event: eventSlug } = useSearch({ from: "/student/events" });
+  const loading = useDashboardPageLoading();
   const rsvps = useRsvps();
   const session = typeof window !== "undefined" ? getSession() : null;
   const refs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -47,6 +49,23 @@ function Events() {
     const node = refs.current[eventSlug];
     if (node) node.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [eventSlug]);
+
+  if (loading) {
+    return (
+      <>
+        <PageHead title="Events" sub="Loading the campus calendar." />
+        <div className="mb-5">
+          <AppTabs items={tabs} value={tab} onChange={setTab} />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <PanelSkeleton key={index} rows={4} />
+          ))}
+        </div>
+        <PanelSkeleton rows={6} className="mt-8" />
+      </>
+    );
+  }
 
   return (
     <>
@@ -100,7 +119,7 @@ function Events() {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-border bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(249,249,248,0.96))] p-4 shadow-soft sm:p-5">
+        <div className="rounded-[28px] border border-border bg-card/95 p-4 shadow-soft sm:p-5">
           <div className="grid grid-cols-7 gap-2 text-center">
             {weekdayLabels.map((day) => (
               <p key={day} className="pb-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -118,7 +137,7 @@ function Events() {
                   className={`group flex aspect-[0.95] flex-col rounded-2xl border p-2.5 text-left transition ${
                     event
                       ? "border-primary/15 bg-[color:color-mix(in_oklab,var(--primary)_7%,white)] shadow-soft"
-                      : "border-transparent bg-white/70 hover:border-border hover:bg-white"
+                      : "border-transparent bg-card/70 hover:border-border hover:bg-card"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">

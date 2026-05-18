@@ -22,7 +22,7 @@ function AdminEvents() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">{e.title}</p>
-                <p className="text-xs text-muted-foreground">{e.host} · {e.venue}</p>
+                <p className="text-xs text-muted-foreground">{e.host} - {e.venue}</p>
               </div>
               <button className="inline-flex items-center gap-1 rounded-full bg-gradient-maroon px-3 py-1.5 text-xs font-bold text-primary-foreground"><CheckCircle2 className="h-3.5 w-3.5" /> Approve</button>
               <button className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs font-semibold"><Eye className="h-3.5 w-3.5" /> Review</button>

@@ -14,7 +14,7 @@ function Profile() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Panel className="lg:col-span-1">
           <div className={`grid h-24 w-24 place-items-center rounded-full bg-gradient-to-br ${s?.avatarColor ?? "from-primary-deep to-rose-700"} text-2xl font-bold text-primary-foreground`}>
-            {s?.name.split(" ").slice(0,2).map(w=>w[0]).join("")}
+            {s?.name.split(" ").slice(0, 2).map(w => w[0]).join("")}
           </div>
           <p className="mt-4 font-display text-lg font-bold">{s?.name}</p>
           <p className="text-sm text-muted-foreground">{s?.program}</p>
@@ -32,7 +32,7 @@ function Profile() {
               ["Email", s?.email ?? ""],
               ["Role", "OSA Coordinator"],
               ["Department", "Office of Student Affairs"],
-              ["Phone", "+63 917 ••• ••••"],
+              ["Phone", "+63 917 *** ****"],
               ["Last login", "Today, 9:14 AM"],
             ].map(([l, v]) => (
               <label key={l} className="block">

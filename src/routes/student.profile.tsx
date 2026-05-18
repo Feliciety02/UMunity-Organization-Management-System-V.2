@@ -9,7 +9,7 @@ import { getSession } from "@/lib/auth";
 import { organizations, posts } from "@/data/site";
 import { OrgAvatar } from "@/components/social/PostCard";
 import { Modal, Field, TextArea, useToggle } from "@/components/social/Modal";
-import { toast } from "sonner";
+import { showStatusToast } from "@/lib/feedback";
 
 export const Route = createFileRoute("/student/profile")({
   component: Profile,
@@ -39,7 +39,7 @@ function Profile() {
         <ProfileHeader
           initials={initials}
           name={session?.name ?? "Student"}
-          subtitle={`${session?.program ?? "BS CS"} · 3rd Year`}
+          subtitle={`${session?.program ?? "BS CS"} - 3rd Year`}
           tabs={tabs}
           tab={tab}
           onTabChange={setTab}
@@ -149,7 +149,7 @@ function Profile() {
               <div className="space-y-3">
                 {posts.slice(0, 2).map((post) => (
                   <div key={post.id} className="rounded-2xl border border-border bg-card p-4 text-sm">
-                    <p className="text-xs text-muted-foreground">You liked · {post.time}</p>
+                    <p className="text-xs text-muted-foreground">You liked - {post.time}</p>
                     <p className="mt-2 line-clamp-2 leading-6">{post.content}</p>
                   </div>
                 ))}
@@ -161,7 +161,7 @@ function Profile() {
             <InfoCard title="Intro">
               <ul className="space-y-3 text-sm">
                 <Row icon={MapPin} label="Davao City" />
-                <Row icon={Calendar} label="3rd Year · BS CS" />
+                <Row icon={Calendar} label="3rd Year - BS CS" />
                 <Row icon={Mail} label={session?.email ?? ""} small />
                 <Row icon={LinkIcon} label="@altheacodes" link />
               </ul>
@@ -195,7 +195,7 @@ function Profile() {
             <AppButton
               onClick={() => {
                 edit.off();
-                toast.success("Profile updated");
+                showStatusToast("Profile updated", "Your student profile changes have been saved.");
               }}
               variant="primary"
               shape="soft"
@@ -216,7 +216,7 @@ function Profile() {
             <Field label="Course" defaultValue="BS Computer Science" />
             <Field label="Year level" defaultValue="3rd Year" />
             <Field label="UM Email" defaultValue={session?.email ?? ""} />
-            <Field label="Phone" defaultValue="+63 917 ••• ••••" />
+            <Field label="Phone" defaultValue="+63 917 *** ****" />
             <Field label="Twitter / X" defaultValue="@altheacodes" />
             <Field label="GitHub" defaultValue="althea-dev" />
           </div>
@@ -235,7 +235,7 @@ function Profile() {
             <AppButton
               onClick={() => {
                 photo.off();
-                toast.success("Photo uploaded");
+                showStatusToast("Photo uploaded", "Your new profile image is now ready to use.");
               }}
               variant="primary"
               shape="soft"
@@ -248,7 +248,7 @@ function Profile() {
         <div className="flex h-44 flex-col items-center justify-center rounded-md border-2 border-dashed border-border bg-secondary/50 text-center">
           <Camera className="mb-2 h-6 w-6 text-muted-foreground" />
           <p className="text-sm font-medium">Drag a photo here</p>
-          <p className="text-xs text-muted-foreground">or click to browse · max 5MB</p>
+          <p className="text-xs text-muted-foreground">or click to browse - max 5MB</p>
         </div>
       </Modal>
     </>

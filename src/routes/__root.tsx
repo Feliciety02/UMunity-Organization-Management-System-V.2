@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { brandLogoUrl } from "@/components/BrandLogo";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -108,6 +109,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <Toaster />
         <Scripts />
       </body>
     </html>

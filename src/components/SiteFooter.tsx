@@ -5,7 +5,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 export function SiteFooter() {
   return (
     <footer className="relative mt-24 overflow-hidden bg-gradient-maroon text-primary-foreground">
-      <div className="absolute inset-0 opacity-30 bg-hero" />
+      <div className="absolute inset-0 bg-hero opacity-30" />
       <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
@@ -48,11 +48,10 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-primary-foreground/70 md:flex-row">
-          <p>© {new Date().getFullYear()} UMunity. Built for the University of Mindanao community.</p>
+          <p>(c) {new Date().getFullYear()} UMunity. Built for the University of Mindanao community.</p>
           <p>One Platform for Every Student Organization.</p>
         </div>
       </div>
     </footer>
   );
 }
-

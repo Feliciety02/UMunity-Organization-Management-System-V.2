@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageHead, Panel } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, EmptyState } from "@/components/dashboard/DashboardLayout";
 import { posts, organizations } from "@/data/site";
 import { PostCard } from "@/components/social/PostCard";
+import { AppButton } from "@/components/ui/app-button";
 import { PenSquare } from "lucide-react";
 
 export const Route = createFileRoute("/leader/posts")({
@@ -27,7 +28,18 @@ function ManagePosts() {
       <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
         <div className="space-y-4">
           {myPosts.length === 0 && (
-            <Panel><p className="py-8 text-center text-sm text-muted-foreground">No posts yet. Create your first one.</p></Panel>
+            <Panel>
+              <EmptyState
+                title="No posts yet"
+                sub="Publish your first update to start filling this feed for members."
+                icon={PenSquare}
+                action={
+                  <AppButton asChild variant="primary" size="sm">
+                    <Link to="/leader/create-post">Create a post</Link>
+                  </AppButton>
+                }
+              />
+            </Panel>
           )}
           {myPosts.map((p) => (
             <PostCard key={p.id} post={p} org={org} manage orgLinkMode="leader" />

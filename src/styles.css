@@ -86,22 +86,40 @@
 }
 
 .dark {
-  --background: oklch(0.18 0.03 18);
-  --foreground: oklch(0.98 0.01 90);
-  --card: oklch(0.22 0.04 18);
-  --card-foreground: oklch(0.98 0.01 90);
-  --popover: oklch(0.22 0.04 18);
-  --popover-foreground: oklch(0.98 0.01 90);
-  --secondary: oklch(0.28 0.05 18);
-  --secondary-foreground: oklch(0.98 0.01 90);
-  --muted: oklch(0.28 0.04 18);
-  --muted-foreground: oklch(0.75 0.02 80);
-  --border: oklch(0.35 0.05 18);
-  --input: oklch(0.35 0.05 18);
+  --primary: #8ab4f8;
+  --primary-deep: #669df6;
+  --primary-foreground: #202124;
+  --background: #202124;
+  --foreground: #e8eaed;
+  --card: #292a2d;
+  --card-foreground: #e8eaed;
+  --popover: #292a2d;
+  --popover-foreground: #e8eaed;
+  --secondary: #303134;
+  --secondary-foreground: #e8eaed;
+  --muted: #2b2c2f;
+  --muted-foreground: #9aa0a6;
+  --accent: #8ab4f8;
+  --accent-foreground: #202124;
+  --border: #3c4043;
+  --input: #3c4043;
+  --ring: #8ab4f8;
+  --gradient-hero: radial-gradient(at 85% 15%, color-mix(in oklab, #8ab4f8 20%, transparent) 0%, transparent 52%),
+                   linear-gradient(160deg, #1f1f1f, #202124 55%, #26282b);
+  --gradient-maroon: linear-gradient(160deg, #1f1f1f, #202124 55%, #26282b);
 }
 
 @layer base {
   * { border-color: var(--color-border); }
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
   html {
     margin: 0;
     padding: 0;
@@ -150,6 +168,15 @@
   }
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .shadow-glow { box-shadow: var(--shadow-glow); }
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
 
   @keyframes float {
     0%, 100% { transform: translateY(0); }

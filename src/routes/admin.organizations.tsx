@@ -18,7 +18,7 @@ const pending = [
 function AdminOrgs() {
   return (
     <>
-      <PageHead title="Manage organizations" sub="120 active · 5 pending verification" />
+      <PageHead title="Manage organizations" sub="120 active - 5 pending verification" />
 
       <Panel title="Pending verification" className="mb-6">
         <div className="space-y-3">
@@ -27,7 +27,7 @@ function AdminOrgs() {
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-maroon text-xs font-bold text-primary-foreground">{o.n.split(" ")[1][0]}{o.n.split(" ")[2]?.[0] ?? ""}</div>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">{o.n}</p>
-                <p className="text-xs text-muted-foreground">{o.c} · submitted by {o.who} on {o.submitted}</p>
+                <p className="text-xs text-muted-foreground">{o.c} - submitted by {o.who} on {o.submitted}</p>
               </div>
               <button className="inline-flex items-center gap-1 rounded-full bg-gradient-maroon px-3 py-1.5 text-xs font-bold text-primary-foreground"><CheckCircle2 className="h-3.5 w-3.5" /> Approve</button>
               <button className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs font-semibold"><Eye className="h-3.5 w-3.5" /> Review</button>
@@ -50,7 +50,7 @@ function AdminOrgs() {
                 <tr key={o.name} className="hover:bg-secondary/40">
                   <td className="py-3">
                     <div className="flex items-center gap-3">
-                      <div className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${o.color} text-xs font-bold text-primary-foreground`}>{o.name.split(" ").filter(w=>w!=="UM").slice(0,2).map(w=>w[0]).join("")}</div>
+                      <div className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${o.color} text-xs font-bold text-primary-foreground`}>{o.name.split(" ").filter(w => w !== "UM").slice(0, 2).map(w => w[0]).join("")}</div>
                       <span className="font-semibold">{o.name}</span>
                     </div>
                   </td>
