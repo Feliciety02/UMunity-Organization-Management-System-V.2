@@ -103,6 +103,26 @@ export function resolveAdminNotificationHref(href?: string): string | undefined 
   return href;
 }
 
+export function resolveAdviserNotificationHref(href?: string): string | undefined {
+  if (!href) return href;
+  if (href.startsWith("/org/")) return "/adviser";
+  if (href.startsWith("/leader/workflows/")) return href;
+  if (href.startsWith("/adviser/workflows/")) return href;
+  return "/adviser";
+}
+
+export function resolveAdmin2NotificationHref(href?: string): string | undefined {
+  if (!href) return href;
+  if (href.startsWith("/admin2/workflows/")) return href;
+  return "/admin2";
+}
+
+export function resolveAdmin1NotificationHref(href?: string): string | undefined {
+  if (!href) return href;
+  if (href.startsWith("/admin1/workflows/")) return href;
+  return "/admin1";
+}
+
 function subscribe(cb: () => void) {
   if (typeof window === "undefined") return () => {};
   const handler = () => cb();

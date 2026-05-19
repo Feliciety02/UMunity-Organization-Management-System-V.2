@@ -1,0 +1,707 @@
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { addNotification } from "@/lib/notifications";
+
+export type WorkflowStatus =
+  | "draft"
+  | "pending_adviser"
+  | "revision_requested"
+  | "pending_admin2"
+  | "pending_admin1"
+  | "approved"
+  | "completed";
+
+export type WorkflowActorRole = "leader" | "adviser" | "admin2" | "admin1";
+
+export type WorkflowActor = {
+  role: WorkflowActorRole;
+  name: string;
+};
+
+export type ProposalBudgetItem = {
+  id: string;
+  label: string;
+  amount: number;
+  notes?: string;
+};
+
+export type ProposalTimelineItem = {
+  id: string;
+  phase: string;
+  detail: string;
+};
+
+export type EventProposalData = {
+  title: string;
+  category: string;
+  objective: string;
+  description: string;
+  venue: string;
+  date: string;
+  time: string;
+  collaborators: string[];
+  sdgs: string[];
+  attachments: string[];
+  budgetItems: ProposalBudgetItem[];
+  timeline: ProposalTimelineItem[];
+};
+
+export type WorkflowComment = {
+  id: string;
+  authorRole: WorkflowActorRole;
+  authorName: string;
+  message: string;
+  createdAt: number;
+  sectionId?: string;
+};
+
+export type WorkflowHistoryEntry = {
+  id: string;
+  action:
+    | "created"
+    | "draft_saved"
+    | "submitted"
+    | "commented"
+    | "revision_requested"
+    | "resubmitted"
+    | "approved"
+    | "completed";
+  byRole: WorkflowActorRole;
+  byName: string;
+  note?: string;
+  createdAt: number;
+};
+
+export type EventWorkflow = {
+  id: string;
+  orgName: string;
+  orgShort: string;
+  ay: string;
+  createdAt: number;
+  updatedAt: number;
+  createdBy: string;
+  ownerRole: WorkflowActorRole;
+  status: WorkflowStatus;
+  currentStage: string;
+  proposal: EventProposalData;
+  comments: WorkflowComment[];
+  history: WorkflowHistoryEntry[];
+};
+
+const KEY = "umunity.workflows.v1";
+const EVENT = "umunity:workflows";
+
+function nowId(prefix: string) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function currentAy() {
+  const year = new Date().getFullYear();
+  return `${year}-${year + 1}`;
+}
+
+function seedWorkflows(): EventWorkflow[] {
+  const baseTime = Date.now() - 3 * 86_400_000;
+  return [
+    {
+      id: "workflow-innovation-summit",
+      orgName: "UM Computer Studies Society",
+      orgShort: "UMCSS",
+      ay: currentAy(),
+      createdAt: baseTime,
+      updatedAt: Date.now() - 4 * 60 * 60 * 1000,
+      createdBy: "Marco Reyes",
+      ownerRole: "leader",
+      status: "pending_adviser",
+      currentStage: "Adviser approval",
+      proposal: {
+        title: "UM Innovation Summit 2026",
+        category: "Conference",
+        objective: "Connect student innovators with mentors and alumni through a one-day showcase.",
+        description: "A campus-wide summit with keynote talks, startup booths, and project demos.",
+        venue: "DPT Building Auditorium",
+        date: "2026-05-24",
+        time: "09:00",
+        collaborators: ["College of Computer Studies", "UM Alumni Tech Circle"],
+        sdgs: ["Quality Education", "Industry, Innovation and Infrastructure"],
+        attachments: ["concept-note.pdf", "venue-layout.png"],
+        budgetItems: [
+          { id: "b1", label: "Stage and AV", amount: 18000, notes: "Shared package quote" },
+          { id: "b2", label: "Speaker hospitality", amount: 8500 },
+          { id: "b3", label: "Publicity materials", amount: 4200 },
+        ],
+        timeline: [
+          { id: "t1", phase: "Pre-event", detail: "Registration launch and speaker confirmations" },
+          { id: "t2", phase: "Event day", detail: "Program proper, project exhibits, and attendance check-in" },
+          { id: "t3", phase: "Post-event", detail: "Reflection form, liquidation, and documentation wrap-up" },
+        ],
+      },
+      comments: [
+        {
+          id: "c1",
+          authorRole: "adviser",
+          authorName: "Prof. Elena Tan",
+          message: "Please clarify the fallback venue plan if the auditorium reaches capacity.",
+          createdAt: Date.now() - 2 * 60 * 60 * 1000,
+          sectionId: "activity",
+        },
+      ],
+      history: [
+        {
+          id: "h1",
+          action: "created",
+          byRole: "leader",
+          byName: "Marco Reyes",
+          note: "Initial event workflow draft created.",
+          createdAt: baseTime,
+        },
+        {
+          id: "h2",
+          action: "submitted",
+          byRole: "leader",
+          byName: "Marco Reyes",
+          note: "Submitted to adviser for first review.",
+          createdAt: Date.now() - 10 * 60 * 60 * 1000,
+        },
+        {
+          id: "h3",
+          action: "commented",
+          byRole: "adviser",
+          byName: "Prof. Elena Tan",
+          note: "Asked for a venue contingency note before approval.",
+          createdAt: Date.now() - 2 * 60 * 60 * 1000,
+        },
+      ],
+    },
+    {
+      id: "workflow-hack-night",
+      orgName: "UM Computer Studies Society",
+      orgShort: "UMCSS",
+      ay: currentAy(),
+      createdAt: baseTime - 5 * 86_400_000,
+      updatedAt: Date.now() - 18 * 60 * 60 * 1000,
+      createdBy: "Marco Reyes",
+      ownerRole: "leader",
+      status: "pending_admin2",
+      currentStage: "Admin 2 review",
+      proposal: {
+        title: "Hack Night Vol. 3",
+        category: "Workshop",
+        objective: "Run a practical coding lab to improve peer project readiness.",
+        description: "Late afternoon workshop with mentor stations and challenge prompts.",
+        venue: "CCS Laboratory 3",
+        date: "2026-06-02",
+        time: "16:00",
+        collaborators: ["Google Developer Student Club"],
+        sdgs: ["Quality Education"],
+        attachments: ["mentor-lineup.pdf"],
+        budgetItems: [
+          { id: "b4", label: "Snacks", amount: 3500 },
+          { id: "b5", label: "Extension cables", amount: 1200 },
+        ],
+        timeline: [
+          { id: "t4", phase: "Planning", detail: "Mentor alignment and registration push" },
+          { id: "t5", phase: "Workshop", detail: "Coding sprints and project clinics" },
+          { id: "t6", phase: "Closeout", detail: "Feedback form and attendance export" },
+        ],
+      },
+      comments: [],
+      history: [
+        {
+          id: "h4",
+          action: "created",
+          byRole: "leader",
+          byName: "Marco Reyes",
+          note: "Workflow started from leader dashboard.",
+          createdAt: baseTime - 5 * 86_400_000,
+        },
+        {
+          id: "h5",
+          action: "submitted",
+          byRole: "leader",
+          byName: "Marco Reyes",
+          note: "Sent to adviser review.",
+          createdAt: Date.now() - 40 * 60 * 60 * 1000,
+        },
+        {
+          id: "h6",
+          action: "approved",
+          byRole: "adviser",
+          byName: "Prof. Elena Tan",
+          note: "Cleared for secondary compliance review.",
+          createdAt: Date.now() - 20 * 60 * 60 * 1000,
+        },
+      ],
+    },
+    {
+      id: "workflow-cultural-night",
+      orgName: "UM Cultural Guild",
+      orgShort: "UMCG",
+      ay: currentAy(),
+      createdAt: baseTime - 10 * 86_400_000,
+      updatedAt: Date.now() - 26 * 60 * 60 * 1000,
+      createdBy: "Angela Bautista",
+      ownerRole: "leader",
+      status: "pending_admin1",
+      currentStage: "Admin 1 approval",
+      proposal: {
+        title: "Cultural Night 2026",
+        category: "Cultural",
+        objective: "Celebrate student identity through performances and storytelling.",
+        description: "A night program with inter-college performances and partner community guests.",
+        venue: "UM Gymnasium",
+        date: "2026-06-18",
+        time: "18:30",
+        collaborators: ["College of Education", "UM Theatre Guild"],
+        sdgs: ["Reduced Inequalities", "Peace, Justice and Strong Institutions"],
+        attachments: ["program-flow.pdf", "security-plan.pdf"],
+        budgetItems: [
+          { id: "b6", label: "Stage lights", amount: 22000 },
+          { id: "b7", label: "Documentation team", amount: 6000 },
+        ],
+        timeline: [
+          { id: "t7", phase: "Preparation", detail: "Casting, rehearsals, and venue coordination" },
+          { id: "t8", phase: "Main event", detail: "Performances, backstage management, and ushering" },
+          { id: "t9", phase: "Aftercare", detail: "Narrative report and archive curation" },
+        ],
+      },
+      comments: [],
+      history: [
+        {
+          id: "h7",
+          action: "created",
+          byRole: "leader",
+          byName: "Angela Bautista",
+          note: "Created by organization leader.",
+          createdAt: baseTime - 10 * 86_400_000,
+        },
+        {
+          id: "h8",
+          action: "submitted",
+          byRole: "leader",
+          byName: "Angela Bautista",
+          note: "Submitted to adviser review.",
+          createdAt: Date.now() - 70 * 60 * 60 * 1000,
+        },
+        {
+          id: "h9",
+          action: "approved",
+          byRole: "adviser",
+          byName: "Prof. Maya Flores",
+          note: "Approved and passed to Admin 2.",
+          createdAt: Date.now() - 52 * 60 * 60 * 1000,
+        },
+        {
+          id: "h10",
+          action: "approved",
+          byRole: "admin2",
+          byName: "Dr. Miguel Soriano",
+          note: "Compliance confirmed. Sent for final authority review.",
+          createdAt: Date.now() - 26 * 60 * 60 * 1000,
+        },
+      ],
+    },
+  ];
+}
+
+function read(): EventWorkflow[] {
+  if (typeof window === "undefined") return seedWorkflows();
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) {
+      const seeded = seedWorkflows();
+      localStorage.setItem(KEY, JSON.stringify(seeded));
+      return seeded;
+    }
+    return JSON.parse(raw) as EventWorkflow[];
+  } catch {
+    return seedWorkflows();
+  }
+}
+
+function write(list: EventWorkflow[]) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(KEY, JSON.stringify(list));
+  window.dispatchEvent(new Event(EVENT));
+}
+
+function cloneWorkflow(workflow: EventWorkflow) {
+  return JSON.parse(JSON.stringify(workflow)) as EventWorkflow;
+}
+
+function updateWorkflow(id: string, updater: (workflow: EventWorkflow) => EventWorkflow) {
+  const next = read().map((workflow) => (workflow.id === id ? updater(cloneWorkflow(workflow)) : workflow));
+  write(next);
+  return next.find((workflow) => workflow.id === id) ?? null;
+}
+
+function nextStageFor(status: WorkflowStatus) {
+  switch (status) {
+    case "draft":
+      return "Planning";
+    case "pending_adviser":
+      return "Adviser approval";
+    case "revision_requested":
+      return "Leader revisions";
+    case "pending_admin2":
+      return "Admin 2 review";
+    case "pending_admin1":
+      return "Admin 1 approval";
+    case "approved":
+      return "Preparation";
+    case "completed":
+      return "Completed";
+  }
+}
+
+function stageIndexFor(status: WorkflowStatus) {
+  switch (status) {
+    case "draft":
+      return 0;
+    case "pending_adviser":
+    case "revision_requested":
+      return 1;
+    case "pending_admin2":
+      return 2;
+    case "pending_admin1":
+      return 3;
+    case "approved":
+      return 4;
+    case "completed":
+      return 5;
+  }
+}
+
+export function getWorkflowStages(status: WorkflowStatus) {
+  const currentIndex = stageIndexFor(status);
+  return [
+    { id: "planning", label: "Planning", description: "Build the proposal form and draft the event scope." },
+    { id: "adviser", label: "Adviser approval", description: "First review for content, officer readiness, and activity details." },
+    { id: "admin2", label: "Admin 2 review", description: "Secondary compliance and monitoring check." },
+    { id: "admin1", label: "Admin 1 approval", description: "Final university authority review." },
+    { id: "prep", label: "Preparation", description: "Checklist, forms, and implementation readiness." },
+    { id: "post", label: "Post-event", description: "Reflections, documentation, and final closeout." },
+  ].map((stage, index) => ({
+    ...stage,
+    state: index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming",
+  }));
+}
+
+export function getWorkflows() {
+  return read().sort((a, b) => b.updatedAt - a.updatedAt);
+}
+
+export function getWorkflow(id: string) {
+  return read().find((workflow) => workflow.id === id) ?? null;
+}
+
+export function createWorkflow(input: {
+  orgName: string;
+  orgShort: string;
+  createdBy: string;
+  proposal: EventProposalData;
+  submit?: boolean;
+}) {
+  const status: WorkflowStatus = input.submit ? "pending_adviser" : "draft";
+  const workflow: EventWorkflow = {
+    id: nowId("workflow"),
+    orgName: input.orgName,
+    orgShort: input.orgShort,
+    ay: currentAy(),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    createdBy: input.createdBy,
+    ownerRole: "leader",
+    status,
+    currentStage: nextStageFor(status),
+    proposal: input.proposal,
+    comments: [],
+    history: [
+      {
+        id: nowId("history"),
+        action: "created",
+        byRole: "leader",
+        byName: input.createdBy,
+        note: input.submit ? "Workflow created and submitted to adviser." : "Workflow draft created.",
+        createdAt: Date.now(),
+      },
+    ],
+  };
+  const list = [workflow, ...read()];
+  write(list);
+  if (input.submit) {
+    addNotification({
+      title: `${workflow.proposal.title} is pending adviser approval`,
+      meta: "Workflow routing started",
+      category: "event",
+      href: `/adviser/workflows/${workflow.id}`,
+    });
+  }
+  return workflow;
+}
+
+export function saveWorkflowDraft(id: string, proposal: EventProposalData, actorName: string) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    proposal,
+    updatedAt: Date.now(),
+    history: [
+      {
+        id: nowId("history"),
+        action: "draft_saved",
+        byRole: "leader",
+        byName: actorName,
+        note: "Draft saved from the smart form builder.",
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
+export function submitWorkflow(id: string, actor: WorkflowActor) {
+  return updateWorkflow(id, (workflow) => {
+    const status = "pending_adviser";
+    addNotification({
+      title: `${workflow.proposal.title} needs adviser review`,
+      meta: "Pending adviser",
+      category: "event",
+      href: `/adviser/workflows/${workflow.id}`,
+    });
+    return {
+      ...workflow,
+      status,
+      currentStage: nextStageFor(status),
+      updatedAt: Date.now(),
+      history: [
+        {
+          id: nowId("history"),
+          action: workflow.status === "revision_requested" ? "resubmitted" : "submitted",
+          byRole: actor.role,
+          byName: actor.name,
+          note: "Sent to adviser review.",
+          createdAt: Date.now(),
+        },
+        ...workflow.history,
+      ],
+    };
+  });
+}
+
+export function addWorkflowComment(
+  id: string,
+  actor: WorkflowActor,
+  message: string,
+  sectionId?: string,
+) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    updatedAt: Date.now(),
+    comments: [
+      {
+        id: nowId("comment"),
+        authorRole: actor.role,
+        authorName: actor.name,
+        message,
+        createdAt: Date.now(),
+        sectionId,
+      },
+      ...workflow.comments,
+    ],
+    history: [
+      {
+        id: nowId("history"),
+        action: "commented",
+        byRole: actor.role,
+        byName: actor.name,
+        note: message,
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
+export function requestWorkflowRevision(id: string, actor: WorkflowActor, note: string) {
+  return updateWorkflow(id, (workflow) => {
+    addNotification({
+      title: `${workflow.proposal.title} needs revisions`,
+      meta: `${actor.name} returned the workflow`,
+      category: "event",
+      href: `/leader/workflows/${workflow.id}`,
+    });
+    return {
+      ...workflow,
+      status: "revision_requested",
+      currentStage: nextStageFor("revision_requested"),
+      updatedAt: Date.now(),
+      comments: [
+        {
+          id: nowId("comment"),
+          authorRole: actor.role,
+          authorName: actor.name,
+          message: note,
+          createdAt: Date.now(),
+        },
+        ...workflow.comments,
+      ],
+      history: [
+        {
+          id: nowId("history"),
+          action: "revision_requested",
+          byRole: actor.role,
+          byName: actor.name,
+          note,
+          createdAt: Date.now(),
+        },
+        ...workflow.history,
+      ],
+    };
+  });
+}
+
+export function approveWorkflow(id: string, actor: WorkflowActor, note?: string) {
+  return updateWorkflow(id, (workflow) => {
+    let nextStatus: WorkflowStatus = workflow.status;
+    let href = "";
+    if (actor.role === "adviser") {
+      nextStatus = "pending_admin2";
+      href = `/admin2/workflows/${workflow.id}`;
+    } else if (actor.role === "admin2") {
+      nextStatus = "pending_admin1";
+      href = `/admin1/workflows/${workflow.id}`;
+    } else if (actor.role === "admin1") {
+      nextStatus = "approved";
+      href = `/leader/workflows/${workflow.id}`;
+    }
+
+    addNotification({
+      title: `${workflow.proposal.title} moved to ${nextStageFor(nextStatus)}`,
+      meta: note ?? "Workflow updated",
+      category: "event",
+      href,
+    });
+
+    return {
+      ...workflow,
+      status: nextStatus,
+      currentStage: nextStageFor(nextStatus),
+      updatedAt: Date.now(),
+      history: [
+        {
+          id: nowId("history"),
+          action: "approved",
+          byRole: actor.role,
+          byName: actor.name,
+          note: note ?? `Moved to ${nextStageFor(nextStatus)}.`,
+          createdAt: Date.now(),
+        },
+        ...workflow.history,
+      ],
+    };
+  });
+}
+
+export function markWorkflowCompleted(id: string, actor: WorkflowActor, note?: string) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    status: "completed",
+    currentStage: nextStageFor("completed"),
+    updatedAt: Date.now(),
+    history: [
+      {
+        id: nowId("history"),
+        action: "completed",
+        byRole: actor.role,
+        byName: actor.name,
+        note: note ?? "Workflow marked complete.",
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
+export function formatWorkflowStatus(status: WorkflowStatus) {
+  switch (status) {
+    case "draft":
+      return "Draft";
+    case "pending_adviser":
+      return "Pending Adviser";
+    case "revision_requested":
+      return "Revision Requested";
+    case "pending_admin2":
+      return "Pending Admin 2";
+    case "pending_admin1":
+      return "Pending Admin 1";
+    case "approved":
+      return "Approved";
+    case "completed":
+      return "Completed";
+  }
+}
+
+export function statusTone(status: WorkflowStatus): "neutral" | "warning" | "info" | "danger" | "success" {
+  switch (status) {
+    case "draft":
+      return "neutral";
+    case "pending_adviser":
+      return "info";
+    case "revision_requested":
+      return "danger";
+    case "pending_admin2":
+    case "pending_admin1":
+      return "warning";
+    case "approved":
+    case "completed":
+      return "success";
+  }
+}
+
+export function proposalCompletion(proposal: EventProposalData) {
+  const checks = [
+    proposal.title.trim(),
+    proposal.category.trim(),
+    proposal.objective.trim(),
+    proposal.description.trim(),
+    proposal.venue.trim(),
+    proposal.date.trim(),
+    proposal.time.trim(),
+    proposal.collaborators.length > 0,
+    proposal.sdgs.length > 0,
+    proposal.budgetItems.length > 0,
+    proposal.timeline.length > 0,
+  ];
+  const done = checks.filter(Boolean).length;
+  const total = checks.length;
+  return {
+    done,
+    total,
+    pct: Math.round((done / total) * 100),
+  };
+}
+
+function subscribe(cb: () => void) {
+  if (typeof window === "undefined") return () => {};
+  const handler = () => cb();
+  window.addEventListener(EVENT, handler);
+  window.addEventListener("storage", handler);
+  return () => {
+    window.removeEventListener(EVENT, handler);
+    window.removeEventListener("storage", handler);
+  };
+}
+
+export function useWorkflows() {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+  const snapshot = useSyncExternalStore(
+    subscribe,
+    () => JSON.stringify(getWorkflows()),
+    () => JSON.stringify(seedWorkflows()),
+  );
+  return hydrated ? (JSON.parse(snapshot) as EventWorkflow[]) : seedWorkflows();
+}
+
+export function useWorkflow(id: string) {
+  return useWorkflows().find((workflow) => workflow.id === id) ?? null;
+}
