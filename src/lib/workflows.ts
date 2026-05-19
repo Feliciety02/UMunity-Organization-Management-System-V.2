@@ -45,6 +45,38 @@ export type EventProposalData = {
   timeline: ProposalTimelineItem[];
 };
 
+export type WorkflowChecklistItem = {
+  id: string;
+  title: string;
+  detail: string;
+  done: boolean;
+};
+
+export type WorkflowEventDayData = {
+  attendanceTarget: number;
+  attendanceActual: number;
+  mediaUploads: string[];
+  participationLogs: string[];
+};
+
+export type WorkflowPostEventData = {
+  reflection: string;
+  outcomes: string;
+  achievements: string[];
+  documentation: string[];
+  finalSummary: string;
+};
+
+export type WorkflowOperations = {
+  preparationChecklist: WorkflowChecklistItem[];
+  forms: {
+    requirementsTrackerReady: boolean;
+    attendeeCollectionReady: boolean;
+  };
+  eventDay: WorkflowEventDayData;
+  postEvent: WorkflowPostEventData;
+};
+
 export type WorkflowComment = {
   id: string;
   authorRole: WorkflowActorRole;
@@ -64,7 +96,8 @@ export type WorkflowHistoryEntry = {
     | "revision_requested"
     | "resubmitted"
     | "approved"
-    | "completed";
+    | "completed"
+    | "operations_updated";
   byRole: WorkflowActorRole;
   byName: string;
   note?: string;
@@ -83,6 +116,7 @@ export type EventWorkflow = {
   status: WorkflowStatus;
   currentStage: string;
   proposal: EventProposalData;
+  operations: WorkflowOperations;
   comments: WorkflowComment[];
   history: WorkflowHistoryEntry[];
 };
@@ -99,10 +133,97 @@ function currentAy() {
   return `${year}-${year + 1}`;
 }
 
+function defaultOperations(title: string): WorkflowOperations {
+  return {
+    preparationChecklist: [
+      {
+        id: nowId("check"),
+        title: "Finalize event workflow fields",
+        detail: `Confirm ${title} details, venue, and activity scope before execution.`,
+        done: true,
+      },
+      {
+        id: nowId("check"),
+        title: "Open requirements tracker",
+        detail: "Translate remaining paperwork into a guided checklist and track clear owners.",
+        done: false,
+      },
+      {
+        id: nowId("check"),
+        title: "Prepare attendance and participation forms",
+        detail: "Ready the check-in, QR, and participation log flow for event day.",
+        done: false,
+      },
+      {
+        id: nowId("check"),
+        title: "Set up post-event reflection blocks",
+        detail: "Pre-create the report and narrative prompts for faster closeout.",
+        done: false,
+      },
+    ],
+    forms: {
+      requirementsTrackerReady: false,
+      attendeeCollectionReady: false,
+    },
+    eventDay: {
+      attendanceTarget: 150,
+      attendanceActual: 0,
+      mediaUploads: [],
+      participationLogs: [],
+    },
+    postEvent: {
+      reflection: "",
+      outcomes: "",
+      achievements: [],
+      documentation: [],
+      finalSummary: "",
+    },
+  };
+}
+
+function normalizeOperations(title: string, input?: Partial<WorkflowOperations> | null): WorkflowOperations {
+  const fallback = defaultOperations(title);
+  return {
+    preparationChecklist:
+      input?.preparationChecklist?.length
+        ? input.preparationChecklist.map((item, index) => ({
+            id: item.id || `legacy-check-${index}`,
+            title: item.title || fallback.preparationChecklist[index % fallback.preparationChecklist.length].title,
+            detail: item.detail || "",
+            done: !!item.done,
+          }))
+        : fallback.preparationChecklist,
+    forms: {
+      requirementsTrackerReady: !!input?.forms?.requirementsTrackerReady,
+      attendeeCollectionReady: !!input?.forms?.attendeeCollectionReady,
+    },
+    eventDay: {
+      attendanceTarget: input?.eventDay?.attendanceTarget ?? fallback.eventDay.attendanceTarget,
+      attendanceActual: input?.eventDay?.attendanceActual ?? 0,
+      mediaUploads: input?.eventDay?.mediaUploads ?? [],
+      participationLogs: input?.eventDay?.participationLogs ?? [],
+    },
+    postEvent: {
+      reflection: input?.postEvent?.reflection ?? "",
+      outcomes: input?.postEvent?.outcomes ?? "",
+      achievements: input?.postEvent?.achievements ?? [],
+      documentation: input?.postEvent?.documentation ?? [],
+      finalSummary: input?.postEvent?.finalSummary ?? "",
+    },
+  };
+}
+
+function normalizeWorkflow(workflow: EventWorkflow): EventWorkflow {
+  return {
+    ...workflow,
+    operations: normalizeOperations(workflow.proposal.title, workflow.operations),
+  };
+}
+
 function seedWorkflows(): EventWorkflow[] {
   const baseTime = Date.now() - 3 * 86_400_000;
   return [
-    {
+    normalizeWorkflow({
       id: "workflow-innovation-summit",
       orgName: "UM Computer Studies Society",
       orgShort: "UMCSS",
@@ -134,6 +255,16 @@ function seedWorkflows(): EventWorkflow[] {
           { id: "t2", phase: "Event day", detail: "Program proper, project exhibits, and attendance check-in" },
           { id: "t3", phase: "Post-event", detail: "Reflection form, liquidation, and documentation wrap-up" },
         ],
+      },
+      operations: {
+        ...defaultOperations("UM Innovation Summit 2026"),
+        forms: { requirementsTrackerReady: true, attendeeCollectionReady: true },
+        eventDay: {
+          attendanceTarget: 300,
+          attendanceActual: 0,
+          mediaUploads: ["event-stage-layout.png"],
+          participationLogs: ["Volunteer briefing scheduled for 7:30 AM."],
+        },
       },
       comments: [
         {
@@ -171,8 +302,8 @@ function seedWorkflows(): EventWorkflow[] {
           createdAt: Date.now() - 2 * 60 * 60 * 1000,
         },
       ],
-    },
-    {
+    }),
+    normalizeWorkflow({
       id: "workflow-hack-night",
       orgName: "UM Computer Studies Society",
       orgShort: "UMCSS",
@@ -204,6 +335,20 @@ function seedWorkflows(): EventWorkflow[] {
           { id: "t6", phase: "Closeout", detail: "Feedback form and attendance export" },
         ],
       },
+      operations: {
+        ...defaultOperations("Hack Night Vol. 3"),
+        preparationChecklist: defaultOperations("Hack Night Vol. 3").preparationChecklist.map((item, index) => ({
+          ...item,
+          done: index < 2,
+        })),
+        forms: { requirementsTrackerReady: true, attendeeCollectionReady: true },
+        eventDay: {
+          attendanceTarget: 80,
+          attendanceActual: 0,
+          mediaUploads: [],
+          participationLogs: ["Mentor station assignments drafted."],
+        },
+      },
       comments: [],
       history: [
         {
@@ -231,8 +376,8 @@ function seedWorkflows(): EventWorkflow[] {
           createdAt: Date.now() - 20 * 60 * 60 * 1000,
         },
       ],
-    },
-    {
+    }),
+    normalizeWorkflow({
       id: "workflow-cultural-night",
       orgName: "UM Cultural Guild",
       orgShort: "UMCG",
@@ -263,6 +408,20 @@ function seedWorkflows(): EventWorkflow[] {
           { id: "t8", phase: "Main event", detail: "Performances, backstage management, and ushering" },
           { id: "t9", phase: "Aftercare", detail: "Narrative report and archive curation" },
         ],
+      },
+      operations: {
+        ...defaultOperations("Cultural Night 2026"),
+        preparationChecklist: defaultOperations("Cultural Night 2026").preparationChecklist.map((item, index) => ({
+          ...item,
+          done: index < 3,
+        })),
+        forms: { requirementsTrackerReady: true, attendeeCollectionReady: true },
+        eventDay: {
+          attendanceTarget: 500,
+          attendanceActual: 0,
+          mediaUploads: ["security-zones-map.pdf"],
+          participationLogs: ["Backstage marshal list prepared."],
+        },
       },
       comments: [],
       history: [
@@ -299,7 +458,7 @@ function seedWorkflows(): EventWorkflow[] {
           createdAt: Date.now() - 26 * 60 * 60 * 1000,
         },
       ],
-    },
+    }),
   ];
 }
 
@@ -312,7 +471,7 @@ function read(): EventWorkflow[] {
       localStorage.setItem(KEY, JSON.stringify(seeded));
       return seeded;
     }
-    return JSON.parse(raw) as EventWorkflow[];
+    return (JSON.parse(raw) as EventWorkflow[]).map(normalizeWorkflow);
   } catch {
     return seedWorkflows();
   }
@@ -329,7 +488,7 @@ function cloneWorkflow(workflow: EventWorkflow) {
 }
 
 function updateWorkflow(id: string, updater: (workflow: EventWorkflow) => EventWorkflow) {
-  const next = read().map((workflow) => (workflow.id === id ? updater(cloneWorkflow(workflow)) : workflow));
+  const next = read().map((workflow) => (workflow.id === id ? normalizeWorkflow(updater(cloneWorkflow(workflow))) : workflow));
   write(next);
   return next.find((workflow) => workflow.id === id) ?? null;
 }
@@ -402,7 +561,7 @@ export function createWorkflow(input: {
   submit?: boolean;
 }) {
   const status: WorkflowStatus = input.submit ? "pending_adviser" : "draft";
-  const workflow: EventWorkflow = {
+  const workflow: EventWorkflow = normalizeWorkflow({
     id: nowId("workflow"),
     orgName: input.orgName,
     orgShort: input.orgShort,
@@ -414,6 +573,7 @@ export function createWorkflow(input: {
     status,
     currentStage: nextStageFor(status),
     proposal: input.proposal,
+    operations: defaultOperations(input.proposal.title),
     comments: [],
     history: [
       {
@@ -425,7 +585,7 @@ export function createWorkflow(input: {
         createdAt: Date.now(),
       },
     ],
-  };
+  });
   const list = [workflow, ...read()];
   write(list);
   if (input.submit) {
@@ -601,6 +761,198 @@ export function approveWorkflow(id: string, actor: WorkflowActor, note?: string)
   });
 }
 
+export function toggleWorkflowChecklistItem(id: string, itemId: string, actor: WorkflowActor) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    updatedAt: Date.now(),
+    operations: {
+      ...workflow.operations,
+      preparationChecklist: workflow.operations.preparationChecklist.map((item) =>
+        item.id === itemId ? { ...item, done: !item.done } : item,
+      ),
+    },
+    history: [
+      {
+        id: nowId("history"),
+        action: "operations_updated",
+        byRole: actor.role,
+        byName: actor.name,
+        note: "Updated a preparation checklist item.",
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
+export function setWorkflowFormReady(
+  id: string,
+  field: "requirementsTrackerReady" | "attendeeCollectionReady",
+  value: boolean,
+  actor: WorkflowActor,
+) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    updatedAt: Date.now(),
+    operations: {
+      ...workflow.operations,
+      forms: {
+        ...workflow.operations.forms,
+        [field]: value,
+      },
+    },
+    history: [
+      {
+        id: nowId("history"),
+        action: "operations_updated",
+        byRole: actor.role,
+        byName: actor.name,
+        note: `Marked ${field === "requirementsTrackerReady" ? "requirements tracker" : "attendance collection"} as ${value ? "ready" : "not ready"}.`,
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
+export function updateWorkflowEventDay(
+  id: string,
+  actor: WorkflowActor,
+  patch: Partial<WorkflowEventDayData>,
+) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    updatedAt: Date.now(),
+    operations: {
+      ...workflow.operations,
+      eventDay: {
+        ...workflow.operations.eventDay,
+        ...patch,
+      },
+    },
+    history: [
+      {
+        id: nowId("history"),
+        action: "operations_updated",
+        byRole: actor.role,
+        byName: actor.name,
+        note: "Updated event day metrics and logs.",
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
+export function addWorkflowEventDayMedia(id: string, actor: WorkflowActor, name: string) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    updatedAt: Date.now(),
+    operations: {
+      ...workflow.operations,
+      eventDay: {
+        ...workflow.operations.eventDay,
+        mediaUploads: [...workflow.operations.eventDay.mediaUploads, name],
+      },
+    },
+    history: [
+      {
+        id: nowId("history"),
+        action: "operations_updated",
+        byRole: actor.role,
+        byName: actor.name,
+        note: `Added event day media: ${name}.`,
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
+export function addWorkflowParticipationLog(id: string, actor: WorkflowActor, entry: string) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    updatedAt: Date.now(),
+    operations: {
+      ...workflow.operations,
+      eventDay: {
+        ...workflow.operations.eventDay,
+        participationLogs: [...workflow.operations.eventDay.participationLogs, entry],
+      },
+    },
+    history: [
+      {
+        id: nowId("history"),
+        action: "operations_updated",
+        byRole: actor.role,
+        byName: actor.name,
+        note: "Added a participation log entry.",
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
+export function updateWorkflowPostEvent(
+  id: string,
+  actor: WorkflowActor,
+  patch: Partial<WorkflowPostEventData>,
+) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    updatedAt: Date.now(),
+    operations: {
+      ...workflow.operations,
+      postEvent: {
+        ...workflow.operations.postEvent,
+        ...patch,
+      },
+    },
+    history: [
+      {
+        id: nowId("history"),
+        action: "operations_updated",
+        byRole: actor.role,
+        byName: actor.name,
+        note: "Updated post-event reporting fields.",
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
+export function addWorkflowPostEventAsset(
+  id: string,
+  actor: WorkflowActor,
+  field: "achievements" | "documentation",
+  value: string,
+) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    updatedAt: Date.now(),
+    operations: {
+      ...workflow.operations,
+      postEvent: {
+        ...workflow.operations.postEvent,
+        [field]: [...workflow.operations.postEvent[field], value],
+      },
+    },
+    history: [
+      {
+        id: nowId("history"),
+        action: "operations_updated",
+        byRole: actor.role,
+        byName: actor.name,
+        note: `Added ${field === "achievements" ? "achievement" : "documentation"} item.`,
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
 export function markWorkflowCompleted(id: string, actor: WorkflowActor, note?: string) {
   return updateWorkflow(id, (workflow) => ({
     ...workflow,
@@ -677,6 +1029,28 @@ export function proposalCompletion(proposal: EventProposalData) {
     done,
     total,
     pct: Math.round((done / total) * 100),
+  };
+}
+
+export function operationsCompletion(workflow: EventWorkflow) {
+  const checklist = workflow.operations.preparationChecklist;
+  const checklistDone = checklist.filter((item) => item.done).length;
+  const checklistTotal = checklist.length || 1;
+  const formsReady = Number(workflow.operations.forms.requirementsTrackerReady) + Number(workflow.operations.forms.attendeeCollectionReady);
+  const logsReady = Number(workflow.operations.eventDay.participationLogs.length > 0) + Number(workflow.operations.eventDay.mediaUploads.length > 0);
+  const postReady =
+    Number(Boolean(workflow.operations.postEvent.reflection.trim())) +
+    Number(Boolean(workflow.operations.postEvent.outcomes.trim())) +
+    Number(workflow.operations.postEvent.achievements.length > 0) +
+    Number(workflow.operations.postEvent.documentation.length > 0);
+  const done = checklistDone + formsReady + logsReady + postReady;
+  const total = checklistTotal + 2 + 2 + 4;
+  return {
+    done,
+    total,
+    pct: Math.round((done / total) * 100),
+    checklistDone,
+    checklistTotal,
   };
 }
 

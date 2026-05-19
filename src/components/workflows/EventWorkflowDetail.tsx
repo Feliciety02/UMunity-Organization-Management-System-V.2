@@ -3,31 +3,42 @@ import { useMemo, useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
+  CheckSquare,
   ClipboardCheck,
   Clock3,
   FileText,
+  ImagePlus,
   MessageSquareText,
   Send,
   Sparkles,
+  Target,
   Users,
 } from "lucide-react";
+import { toast } from "sonner";
 import { AppButton } from "@/components/ui/app-button";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 import {
   addWorkflowComment,
+  addWorkflowEventDayMedia,
+  addWorkflowParticipationLog,
+  addWorkflowPostEventAsset,
   approveWorkflow,
   formatWorkflowStatus,
   getWorkflowStages,
   markWorkflowCompleted,
+  operationsCompletion,
   proposalCompletion,
   requestWorkflowRevision,
+  setWorkflowFormReady,
   statusTone,
   submitWorkflow,
+  toggleWorkflowChecklistItem,
+  updateWorkflowEventDay,
+  updateWorkflowPostEvent,
   type EventWorkflow,
   type WorkflowActor,
   type WorkflowActorRole,
 } from "@/lib/workflows";
-import { toast } from "sonner";
 
 function money(amount: number) {
   return new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP", maximumFractionDigits: 0 }).format(amount);
@@ -75,8 +86,17 @@ export function EventWorkflowDetail({
   backLabel: string;
 }) {
   const [comment, setComment] = useState("");
+  const [logEntry, setLogEntry] = useState("");
+  const [mediaEntry, setMediaEntry] = useState("");
+  const [achievementEntry, setAchievementEntry] = useState("");
+  const [documentationEntry, setDocumentationEntry] = useState("");
+  const [reflection, setReflection] = useState(workflow.operations.postEvent.reflection);
+  const [outcomes, setOutcomes] = useState(workflow.operations.postEvent.outcomes);
+  const [summary, setSummary] = useState(workflow.operations.postEvent.finalSummary);
+
   const stages = useMemo(() => getWorkflowStages(workflow.status), [workflow.status]);
   const completion = useMemo(() => proposalCompletion(workflow.proposal), [workflow.proposal]);
+  const lifecycle = useMemo(() => operationsCompletion(workflow), [workflow]);
   const totalBudget = useMemo(
     () => workflow.proposal.budgetItems.reduce((sum, item) => sum + item.amount, 0),
     [workflow.proposal.budgetItems],
@@ -87,6 +107,7 @@ export function EventWorkflowDetail({
     (viewer.role === "adviser" && workflow.status === "pending_adviser") ||
     (viewer.role === "admin2" && workflow.status === "pending_admin2") ||
     (viewer.role === "admin1" && workflow.status === "pending_admin1");
+  const canOperate = viewer.role === "leader" && (workflow.status === "approved" || workflow.status === "completed");
   const canComplete = viewer.role === "leader" && workflow.status === "approved";
 
   function handleComment() {
@@ -122,6 +143,15 @@ export function EventWorkflowDetail({
   function handleComplete() {
     markWorkflowCompleted(workflow.id, viewer, "Leader marked the workflow as post-event complete.");
     toast.success("Workflow marked complete");
+  }
+
+  function savePostEventFields() {
+    updateWorkflowPostEvent(workflow.id, viewer, {
+      reflection,
+      outcomes,
+      finalSummary: summary,
+    });
+    toast.success("Post-event report updated");
   }
 
   return (
@@ -165,13 +195,17 @@ export function EventWorkflowDetail({
                 </div>
                 <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">{workflow.proposal.description}</p>
               </div>
-              <div className="min-w-[200px] rounded-2xl border border-border bg-secondary/35 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Proposal completion</p>
-                <p className="mt-2 font-display text-3xl font-bold">{completion.pct}%</p>
-                <p className="text-xs text-muted-foreground">{completion.done} of {completion.total} sections filled</p>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-secondary">
-                  <div className="h-full bg-primary" style={{ width: `${completion.pct}%` }} />
-                </div>
+              <div className="grid min-w-[240px] gap-3">
+                <MetricCard
+                  label="Proposal completion"
+                  value={`${completion.pct}%`}
+                  sub={`${completion.done} of ${completion.total} structured sections filled`}
+                />
+                <MetricCard
+                  label="Lifecycle completion"
+                  value={`${lifecycle.pct}%`}
+                  sub={`${lifecycle.done} of ${lifecycle.total} workflow tasks completed`}
+                />
               </div>
             </div>
           </Panel>
@@ -281,6 +315,219 @@ export function EventWorkflowDetail({
               )}
             </Panel>
           </div>
+
+          <Panel title="Preparation dashboard">
+            <div className="grid gap-4 lg:grid-cols-[1.25fr_0.9fr]">
+              <div className="space-y-3">
+                {workflow.operations.preparationChecklist.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => canOperate && toggleWorkflowChecklistItem(workflow.id, item.id, viewer)}
+                    className={`flex w-full items-start gap-3 rounded-2xl border p-3 text-left ${
+                      item.done ? "border-emerald-500/25 bg-emerald-500/10" : "border-border bg-card"
+                    } ${canOperate ? "transition hover:border-primary/30" : "cursor-default"}`}
+                  >
+                    <div className={`mt-0.5 grid h-6 w-6 place-items-center rounded-lg ${item.done ? "bg-emerald-500 text-white" : "bg-secondary text-muted-foreground"}`}>
+                      <CheckSquare className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold">{item.title}</p>
+                      <p className="text-xs leading-5 text-muted-foreground">{item.detail}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <div className="space-y-3 rounded-3xl border border-border bg-secondary/30 p-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Smart forms and tools</p>
+                  <div className="mt-3 space-y-2">
+                    <ToggleRow
+                      label="Requirements tracker linked"
+                      active={workflow.operations.forms.requirementsTrackerReady}
+                      canToggle={canOperate}
+                      onToggle={() =>
+                        setWorkflowFormReady(
+                          workflow.id,
+                          "requirementsTrackerReady",
+                          !workflow.operations.forms.requirementsTrackerReady,
+                          viewer,
+                        )
+                      }
+                    />
+                    <ToggleRow
+                      label="Attendance collection ready"
+                      active={workflow.operations.forms.attendeeCollectionReady}
+                      canToggle={canOperate}
+                      onToggle={() =>
+                        setWorkflowFormReady(
+                          workflow.id,
+                          "attendeeCollectionReady",
+                          !workflow.operations.forms.attendeeCollectionReady,
+                          viewer,
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <AppButton asChild variant="secondary" size="sm">
+                    <Link to="/leader/requirements">
+                      <ClipboardCheck className="h-4 w-4" /> Open requirements tracker
+                    </Link>
+                  </AppButton>
+                  <AppButton asChild variant="ghost" size="sm">
+                    <Link to="/leader/attendees">
+                      <Users className="h-4 w-4" /> Open attendance tools
+                    </Link>
+                  </AppButton>
+                </div>
+              </div>
+            </div>
+          </Panel>
+
+          <Panel title="Event day dashboard">
+            <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+              <div className="space-y-3">
+                <label className="block">
+                  <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attendance target</span>
+                  <input
+                    type="number"
+                    value={workflow.operations.eventDay.attendanceTarget}
+                    disabled={!canOperate}
+                    onChange={(e) =>
+                      updateWorkflowEventDay(workflow.id, viewer, {
+                        attendanceTarget: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none disabled:opacity-70"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actual attendance</span>
+                  <input
+                    type="number"
+                    value={workflow.operations.eventDay.attendanceActual}
+                    disabled={!canOperate}
+                    onChange={(e) =>
+                      updateWorkflowEventDay(workflow.id, viewer, {
+                        attendanceActual: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none disabled:opacity-70"
+                  />
+                </label>
+                <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
+                  This stage is meant to replace scattered attendance sheets and post-event catch-up notes with one live operations log.
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <InlineComposer
+                  label="Participation log"
+                  value={logEntry}
+                  onChange={setLogEntry}
+                  placeholder="Add an event-day note, attendance checkpoint, or volunteer handoff."
+                  buttonLabel="Add log"
+                  icon={Target}
+                  disabled={!canOperate}
+                  onSubmit={() => {
+                    if (!logEntry.trim()) return;
+                    addWorkflowParticipationLog(workflow.id, viewer, logEntry.trim());
+                    toast.success("Participation log added");
+                    setLogEntry("");
+                  }}
+                />
+                <InlineComposer
+                  label="Media upload block"
+                  value={mediaEntry}
+                  onChange={setMediaEntry}
+                  placeholder="Add a media filename or coverage set"
+                  buttonLabel="Add media"
+                  icon={ImagePlus}
+                  disabled={!canOperate}
+                  onSubmit={() => {
+                    if (!mediaEntry.trim()) return;
+                    addWorkflowEventDayMedia(workflow.id, viewer, mediaEntry.trim());
+                    toast.success("Media entry added");
+                    setMediaEntry("");
+                  }}
+                />
+                <div className="grid gap-3 md:grid-cols-2">
+                  <ListPanel title="Participation logs" items={workflow.operations.eventDay.participationLogs} empty="No event-day logs yet." />
+                  <ListPanel title="Media uploads" items={workflow.operations.eventDay.mediaUploads} empty="No media coverage entries yet." />
+                </div>
+              </div>
+            </div>
+          </Panel>
+
+          <Panel title="Post-event closeout">
+            <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+              <div className="space-y-3">
+                <TextAreaRow
+                  label="Reflection"
+                  value={reflection}
+                  onChange={setReflection}
+                  disabled={!canOperate}
+                  placeholder="What worked, what failed, and what should change next time?"
+                />
+                <TextAreaRow
+                  label="Outcomes"
+                  value={outcomes}
+                  onChange={setOutcomes}
+                  disabled={!canOperate}
+                  placeholder="Document the measurable outcomes, impact, and participant response."
+                />
+                <TextAreaRow
+                  label="Final summary"
+                  value={summary}
+                  onChange={setSummary}
+                  disabled={!canOperate}
+                  placeholder="Capture the concise final narrative that reviewers should see."
+                />
+                {canOperate ? (
+                  <AppButton variant="secondary" size="sm" onClick={savePostEventFields}>
+                    Save post-event report
+                  </AppButton>
+                ) : null}
+              </div>
+              <div className="space-y-4">
+                <InlineComposer
+                  label="Achievement summary"
+                  value={achievementEntry}
+                  onChange={setAchievementEntry}
+                  placeholder="Add a key achievement or milestone"
+                  buttonLabel="Add achievement"
+                  icon={Sparkles}
+                  disabled={!canOperate}
+                  onSubmit={() => {
+                    if (!achievementEntry.trim()) return;
+                    addWorkflowPostEventAsset(workflow.id, viewer, "achievements", achievementEntry.trim());
+                    toast.success("Achievement added");
+                    setAchievementEntry("");
+                  }}
+                />
+                <InlineComposer
+                  label="Documentation block"
+                  value={documentationEntry}
+                  onChange={setDocumentationEntry}
+                  placeholder="Add a documentation reference, album, or report file"
+                  buttonLabel="Add doc"
+                  icon={FileText}
+                  disabled={!canOperate}
+                  onSubmit={() => {
+                    if (!documentationEntry.trim()) return;
+                    addWorkflowPostEventAsset(workflow.id, viewer, "documentation", documentationEntry.trim());
+                    toast.success("Documentation entry added");
+                    setDocumentationEntry("");
+                  }}
+                />
+                <div className="grid gap-3 md:grid-cols-2">
+                  <ListPanel title="Achievements" items={workflow.operations.postEvent.achievements} empty="No achievements recorded yet." />
+                  <ListPanel title="Documentation" items={workflow.operations.postEvent.documentation} empty="No documentation items yet." />
+                </div>
+              </div>
+            </div>
+          </Panel>
         </div>
 
         <div className="space-y-4">
@@ -290,7 +537,18 @@ export function EventWorkflowDetail({
               <LaneRow label="Adviser" detail="Prof. Elena Tan" active={workflow.status === "pending_adviser"} />
               <LaneRow label="Admin 2" detail="OSA Compliance Review" active={workflow.status === "pending_admin2"} />
               <LaneRow label="Admin 1" detail="University Final Authority" active={workflow.status === "pending_admin1"} />
-              <LaneRow label="Preparation" detail="Checklists, attendance, media, and post-event reporting" active={workflow.status === "approved" || workflow.status === "completed"} />
+              <LaneRow label="Execution" detail="Preparation, event-day tracking, and final closeout" active={workflow.status === "approved" || workflow.status === "completed"} />
+            </div>
+          </Panel>
+
+          <Panel title="Execution snapshot">
+            <div className="space-y-3">
+              <SnapshotRow label="Preparation checklist" value={`${lifecycle.checklistDone}/${lifecycle.checklistTotal}`} />
+              <SnapshotRow label="Requirements tracker" value={workflow.operations.forms.requirementsTrackerReady ? "Ready" : "Pending"} />
+              <SnapshotRow label="Attendance tools" value={workflow.operations.forms.attendeeCollectionReady ? "Ready" : "Pending"} />
+              <SnapshotRow label="Event-day logs" value={`${workflow.operations.eventDay.participationLogs.length}`} />
+              <SnapshotRow label="Media blocks" value={`${workflow.operations.eventDay.mediaUploads.length}`} />
+              <SnapshotRow label="Documentation entries" value={`${workflow.operations.postEvent.documentation.length}`} />
             </div>
           </Panel>
 
@@ -355,29 +613,19 @@ export function EventWorkflowDetail({
               ))}
             </div>
           </Panel>
-
-          {workflow.status === "approved" || workflow.status === "completed" ? (
-            <Panel title="Next operational tools">
-              <div className="space-y-3">
-                <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
-                  Once the proposal is cleared, the organization can move into checklist execution, attendance, media capture, and final post-event reporting.
-                </div>
-                <AppButton asChild variant="secondary" size="sm">
-                  <Link to="/leader/requirements">
-                    <ClipboardCheck className="h-4 w-4" /> Open requirements tracker
-                  </Link>
-                </AppButton>
-                <AppButton asChild variant="ghost" size="sm">
-                  <Link to="/leader/attendees">
-                    <Users className="h-4 w-4" /> Review attendance tools
-                  </Link>
-                </AppButton>
-              </div>
-            </Panel>
-          ) : null}
         </div>
       </div>
     </>
+  );
+}
+
+function MetricCard({ label, value, sub }: { label: string; value: string; sub: string }) {
+  return (
+    <div className="rounded-2xl border border-border bg-secondary/35 p-4">
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="mt-2 font-display text-3xl font-bold">{value}</p>
+      <p className="text-xs text-muted-foreground">{sub}</p>
+    </div>
   );
 }
 
@@ -398,6 +646,127 @@ function LaneRow({ label, detail, active }: { label: string; detail: string; act
         {active ? <Badge tone="info">Current</Badge> : <ArrowRight className="h-4 w-4 text-muted-foreground" />}
       </div>
       <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
+    </div>
+  );
+}
+
+function ToggleRow({
+  label,
+  active,
+  canToggle,
+  onToggle,
+}: {
+  label: string;
+  active: boolean;
+  canToggle: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      disabled={!canToggle}
+      className={`flex w-full items-center justify-between rounded-2xl border px-3 py-2 text-left text-sm ${
+        active ? "border-emerald-500/25 bg-emerald-500/10" : "border-border bg-card"
+      } ${canToggle ? "transition hover:border-primary/30" : "cursor-default opacity-80"}`}
+    >
+      <span>{label}</span>
+      <Badge tone={active ? "success" : "neutral"}>{active ? "Ready" : "Pending"}</Badge>
+    </button>
+  );
+}
+
+function InlineComposer({
+  label,
+  value,
+  onChange,
+  placeholder,
+  buttonLabel,
+  icon: Icon,
+  disabled,
+  onSubmit,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  buttonLabel: string;
+  icon: typeof FileText;
+  disabled?: boolean;
+  onSubmit: () => void;
+}) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-3">
+      <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <Icon className="h-3.5 w-3.5" /> {label}
+      </p>
+      <div className="flex gap-2">
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none disabled:opacity-70"
+        />
+        <AppButton variant="secondary" size="sm" onClick={onSubmit} disabled={disabled || !value.trim()}>
+          {buttonLabel}
+        </AppButton>
+      </div>
+    </div>
+  );
+}
+
+function TextAreaRow({
+  label,
+  value,
+  onChange,
+  disabled,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+  placeholder: string;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
+      <textarea
+        rows={4}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        placeholder={placeholder}
+        className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none disabled:opacity-70"
+      />
+    </label>
+  );
+}
+
+function ListPanel({ title, items, empty }: { title: string; items: string[]; empty: string }) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-3">
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{title}</p>
+      <div className="mt-2 space-y-2">
+        {items.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{empty}</p>
+        ) : (
+          items.map((item, index) => (
+            <div key={`${title}-${index}`} className="rounded-xl bg-secondary/35 px-3 py-2 text-sm">
+              {item}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SnapshotRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between rounded-2xl bg-secondary/35 px-3 py-2 text-sm">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-semibold">{value}</span>
     </div>
   );
 }
