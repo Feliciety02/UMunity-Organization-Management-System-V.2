@@ -1,5 +1,5 @@
 // Simple client-side hardcoded auth (demo only)
-export type Role = "student" | "leader" | "admin";
+export type Role = "student" | "leader" | "adviser" | "admin2" | "admin1" | "admin";
 
 export type DemoUser = {
   email: string;
@@ -30,11 +30,36 @@ export const DEMO_USERS: DemoUser[] = [
     avatarColor: "from-amber-500 to-primary",
   },
   {
+    email: "adviser@um.edu.ph",
+    password: "adviser123",
+    role: "adviser",
+    name: "Prof. Elena Tan",
+    program: "Organization Adviser - UM CS Society",
+    org: "UM Computer Studies Society",
+    avatarColor: "from-sky-500 to-primary",
+  },
+  {
+    email: "admin2@um.edu.ph",
+    password: "admin2123",
+    role: "admin2",
+    name: "Dr. Miguel Soriano",
+    program: "OSA Compliance Officer",
+    avatarColor: "from-violet-500 to-primary",
+  },
+  {
+    email: "admin1@um.edu.ph",
+    password: "admin1123",
+    role: "admin1",
+    name: "Dr. Liana Kintanar",
+    program: "Director of Student Affairs",
+    avatarColor: "from-primary-deep to-rose-700",
+  },
+  {
     email: "admin@um.edu.ph",
     password: "admin123",
     role: "admin",
-    name: "Dr. Liana Kintanar",
-    program: "OSA Coordinator - UM",
+    name: "Legacy Admin",
+    program: "Backward Compatibility Account",
     avatarColor: "from-primary-deep to-rose-700",
   },
 ];
@@ -70,7 +95,20 @@ export function getSession(): Session | null {
 }
 
 export function homeFor(role: Role) {
-  return role === "student" ? "/student" : role === "leader" ? "/leader" : "/admin";
+  switch (role) {
+    case "student":
+      return "/student";
+    case "leader":
+      return "/leader";
+    case "adviser":
+      return "/adviser";
+    case "admin2":
+      return "/admin2";
+    case "admin1":
+      return "/admin1";
+    default:
+      return "/admin";
+  }
 }
 
 export const ROLE_META: Record<Role, { label: string; accent: string; bg: string; ring: string }> = {
@@ -85,6 +123,24 @@ export const ROLE_META: Record<Role, { label: string; accent: string; bg: string
     accent: "text-amber-600",
     bg: "from-amber-500 to-primary",
     ring: "ring-amber-200",
+  },
+  adviser: {
+    label: "Adviser",
+    accent: "text-sky-600",
+    bg: "from-sky-500 to-primary",
+    ring: "ring-sky-200",
+  },
+  admin2: {
+    label: "Admin 2",
+    accent: "text-violet-600",
+    bg: "from-violet-500 to-primary",
+    ring: "ring-violet-200",
+  },
+  admin1: {
+    label: "Admin 1",
+    accent: "text-primary",
+    bg: "from-primary-deep to-rose-700",
+    ring: "ring-primary/30",
   },
   admin: {
     label: "Admin",

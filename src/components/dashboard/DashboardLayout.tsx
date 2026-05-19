@@ -125,6 +125,24 @@ const SIDEBAR_CTA: Record<Role, { title: string; text: string; button: string; t
     button: "Create post",
     to: "/leader/create-post",
   },
+  adviser: {
+    title: "Review active workflows",
+    text: "Clear proposal blockers before they reach university review.",
+    button: "Open queue",
+    to: "/adviser",
+  },
+  admin2: {
+    title: "Validate compliance",
+    text: "Process adviser-cleared requests and keep records moving.",
+    button: "Review queue",
+    to: "/admin2",
+  },
+  admin1: {
+    title: "Oversee final approvals",
+    text: "Manage final authority decisions and yearly governance.",
+    button: "Open command view",
+    to: "/admin1",
+  },
   admin: {
     title: "Review reports",
     text: "Check flagged posts and comments.",
@@ -309,7 +327,28 @@ function Topbar({
   const liveNotifs = useNotifications();
   const displayNotifs = liveNotifs.length > 0 ? liveNotifs : notifs.map((n, i) => ({ id: `static-${i}`, title: n.title, meta: n.meta, unread: !!n.unread, href: undefined as string | undefined }));
   const unread = displayNotifs.filter((n) => n.unread).length;
-  const profileLink = role === "student" ? "/student/profile" : role === "leader" ? "/leader/profile" : "/admin/profile";
+  const profileLink = role === "student"
+    ? "/student/profile"
+    : role === "leader"
+      ? "/leader/profile"
+      : role === "adviser"
+        ? "/adviser/profile"
+        : role === "admin2"
+          ? "/admin2/profile"
+          : role === "admin1"
+            ? "/admin1/profile"
+            : "/admin/profile";
+  const notificationsLink = role === "leader"
+    ? "/leader/notifications"
+    : role === "student"
+      ? "/student/notifications"
+      : role === "adviser"
+        ? "/adviser/notifications"
+        : role === "admin2"
+          ? "/admin2/notifications"
+          : role === "admin1"
+            ? "/admin1/notifications"
+            : "/admin/logs";
   function doLogout() {
     logout();
     navigate({ to: "/login" });
@@ -355,7 +394,7 @@ function Topbar({
               <div className="flex items-center justify-between p-2">
                 <p className="font-display text-sm font-bold">Notifications</p>
                 <Link
-                  to={role === "leader" ? "/leader/notifications" : role === "admin" ? "/admin/logs" : "/student/notifications"}
+                  to={notificationsLink as string}
                   onClick={() => setOpenNotif(false)}
                   className="text-xs font-semibold text-primary hover:underline"
                 >
