@@ -48,6 +48,7 @@ import { Route as LeaderProfileRouteImport } from './routes/leader.profile'
 import { Route as LeaderPreviewRouteImport } from './routes/leader.preview'
 import { Route as LeaderPostsRouteImport } from './routes/leader.posts'
 import { Route as LeaderOrganizationRouteImport } from './routes/leader.organization'
+import { Route as LeaderOfficerTransitionRouteImport } from './routes/leader.officer-transition'
 import { Route as LeaderNotificationsRouteImport } from './routes/leader.notifications'
 import { Route as LeaderMembersRouteImport } from './routes/leader.members'
 import { Route as LeaderManageEventsRouteImport } from './routes/leader.manage-events'
@@ -58,6 +59,7 @@ import { Route as LeaderCommentsRouteImport } from './routes/leader.comments'
 import { Route as LeaderAttendeesRouteImport } from './routes/leader.attendees'
 import { Route as LeaderAttendanceRouteImport } from './routes/leader.attendance'
 import { Route as LeaderAnnouncementsRouteImport } from './routes/leader.announcements'
+import { Route as AdviserTransitionsRouteImport } from './routes/adviser.transitions'
 import { Route as AdviserProfileRouteImport } from './routes/adviser.profile'
 import { Route as AdviserNotificationsRouteImport } from './routes/adviser.notifications'
 import { Route as AdviserMembersRouteImport } from './routes/adviser.members'
@@ -65,6 +67,7 @@ import { Route as AdviserAnalyticsRouteImport } from './routes/adviser.analytics
 import { Route as Admin2ProfileRouteImport } from './routes/admin2.profile'
 import { Route as Admin2NotificationsRouteImport } from './routes/admin2.notifications'
 import { Route as Admin2ComplianceRouteImport } from './routes/admin2.compliance'
+import { Route as Admin1TransitionsRouteImport } from './routes/admin1.transitions'
 import { Route as Admin1ProfileRouteImport } from './routes/admin1.profile'
 import { Route as Admin1NotificationsRouteImport } from './routes/admin1.notifications'
 import { Route as Admin1GovernanceRouteImport } from './routes/admin1.governance'
@@ -82,9 +85,12 @@ import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as StudentOrgSlugRouteImport } from './routes/student.org.$slug'
 import { Route as LeaderWorkflowsWorkflowIdRouteImport } from './routes/leader.workflows.$workflowId'
 import { Route as LeaderRequirementsEventIdRouteImport } from './routes/leader.requirements.$eventId'
+import { Route as LeaderOfficerTransitionTransitionIdRouteImport } from './routes/leader.officer-transition.$transitionId'
 import { Route as AdviserWorkflowsWorkflowIdRouteImport } from './routes/adviser.workflows.$workflowId'
+import { Route as AdviserTransitionsTransitionIdRouteImport } from './routes/adviser.transitions.$transitionId'
 import { Route as Admin2WorkflowsWorkflowIdRouteImport } from './routes/admin2.workflows.$workflowId'
 import { Route as Admin1WorkflowsWorkflowIdRouteImport } from './routes/admin1.workflows.$workflowId'
+import { Route as Admin1TransitionsTransitionIdRouteImport } from './routes/admin1.transitions.$transitionId'
 
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
@@ -281,6 +287,11 @@ const LeaderOrganizationRoute = LeaderOrganizationRouteImport.update({
   path: '/organization',
   getParentRoute: () => LeaderRoute,
 } as any)
+const LeaderOfficerTransitionRoute = LeaderOfficerTransitionRouteImport.update({
+  id: '/officer-transition',
+  path: '/officer-transition',
+  getParentRoute: () => LeaderRoute,
+} as any)
 const LeaderNotificationsRoute = LeaderNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -331,6 +342,11 @@ const LeaderAnnouncementsRoute = LeaderAnnouncementsRouteImport.update({
   path: '/announcements',
   getParentRoute: () => LeaderRoute,
 } as any)
+const AdviserTransitionsRoute = AdviserTransitionsRouteImport.update({
+  id: '/transitions',
+  path: '/transitions',
+  getParentRoute: () => AdviserRoute,
+} as any)
 const AdviserProfileRoute = AdviserProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -365,6 +381,11 @@ const Admin2ComplianceRoute = Admin2ComplianceRouteImport.update({
   id: '/compliance',
   path: '/compliance',
   getParentRoute: () => Admin2Route,
+} as any)
+const Admin1TransitionsRoute = Admin1TransitionsRouteImport.update({
+  id: '/transitions',
+  path: '/transitions',
+  getParentRoute: () => Admin1Route,
 } as any)
 const Admin1ProfileRoute = Admin1ProfileRouteImport.update({
   id: '/profile',
@@ -453,11 +474,23 @@ const LeaderRequirementsEventIdRoute =
     path: '/$eventId',
     getParentRoute: () => LeaderRequirementsRoute,
   } as any)
+const LeaderOfficerTransitionTransitionIdRoute =
+  LeaderOfficerTransitionTransitionIdRouteImport.update({
+    id: '/$transitionId',
+    path: '/$transitionId',
+    getParentRoute: () => LeaderOfficerTransitionRoute,
+  } as any)
 const AdviserWorkflowsWorkflowIdRoute =
   AdviserWorkflowsWorkflowIdRouteImport.update({
     id: '/workflows/$workflowId',
     path: '/workflows/$workflowId',
     getParentRoute: () => AdviserRoute,
+  } as any)
+const AdviserTransitionsTransitionIdRoute =
+  AdviserTransitionsTransitionIdRouteImport.update({
+    id: '/$transitionId',
+    path: '/$transitionId',
+    getParentRoute: () => AdviserTransitionsRoute,
   } as any)
 const Admin2WorkflowsWorkflowIdRoute =
   Admin2WorkflowsWorkflowIdRouteImport.update({
@@ -470,6 +503,12 @@ const Admin1WorkflowsWorkflowIdRoute =
     id: '/workflows/$workflowId',
     path: '/workflows/$workflowId',
     getParentRoute: () => Admin1Route,
+  } as any)
+const Admin1TransitionsTransitionIdRoute =
+  Admin1TransitionsTransitionIdRouteImport.update({
+    id: '/$transitionId',
+    path: '/$transitionId',
+    getParentRoute: () => Admin1TransitionsRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -500,6 +539,7 @@ export interface FileRoutesByFullPath {
   '/admin1/governance': typeof Admin1GovernanceRoute
   '/admin1/notifications': typeof Admin1NotificationsRoute
   '/admin1/profile': typeof Admin1ProfileRoute
+  '/admin1/transitions': typeof Admin1TransitionsRouteWithChildren
   '/admin2/compliance': typeof Admin2ComplianceRoute
   '/admin2/notifications': typeof Admin2NotificationsRoute
   '/admin2/profile': typeof Admin2ProfileRoute
@@ -507,6 +547,7 @@ export interface FileRoutesByFullPath {
   '/adviser/members': typeof AdviserMembersRoute
   '/adviser/notifications': typeof AdviserNotificationsRoute
   '/adviser/profile': typeof AdviserProfileRoute
+  '/adviser/transitions': typeof AdviserTransitionsRouteWithChildren
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
   '/leader/attendees': typeof LeaderAttendeesRoute
@@ -517,6 +558,7 @@ export interface FileRoutesByFullPath {
   '/leader/manage-events': typeof LeaderManageEventsRoute
   '/leader/members': typeof LeaderMembersRoute
   '/leader/notifications': typeof LeaderNotificationsRoute
+  '/leader/officer-transition': typeof LeaderOfficerTransitionRouteWithChildren
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/posts': typeof LeaderPostsRoute
   '/leader/preview': typeof LeaderPreviewRoute
@@ -543,9 +585,12 @@ export interface FileRoutesByFullPath {
   '/adviser/': typeof AdviserIndexRoute
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/admin1/transitions/$transitionId': typeof Admin1TransitionsTransitionIdRoute
   '/admin1/workflows/$workflowId': typeof Admin1WorkflowsWorkflowIdRoute
   '/admin2/workflows/$workflowId': typeof Admin2WorkflowsWorkflowIdRoute
+  '/adviser/transitions/$transitionId': typeof AdviserTransitionsTransitionIdRoute
   '/adviser/workflows/$workflowId': typeof AdviserWorkflowsWorkflowIdRoute
+  '/leader/officer-transition/$transitionId': typeof LeaderOfficerTransitionTransitionIdRoute
   '/leader/requirements/$eventId': typeof LeaderRequirementsEventIdRoute
   '/leader/workflows/$workflowId': typeof LeaderWorkflowsWorkflowIdRoute
   '/student/org/$slug': typeof StudentOrgSlugRoute
@@ -572,6 +617,7 @@ export interface FileRoutesByTo {
   '/admin1/governance': typeof Admin1GovernanceRoute
   '/admin1/notifications': typeof Admin1NotificationsRoute
   '/admin1/profile': typeof Admin1ProfileRoute
+  '/admin1/transitions': typeof Admin1TransitionsRouteWithChildren
   '/admin2/compliance': typeof Admin2ComplianceRoute
   '/admin2/notifications': typeof Admin2NotificationsRoute
   '/admin2/profile': typeof Admin2ProfileRoute
@@ -579,6 +625,7 @@ export interface FileRoutesByTo {
   '/adviser/members': typeof AdviserMembersRoute
   '/adviser/notifications': typeof AdviserNotificationsRoute
   '/adviser/profile': typeof AdviserProfileRoute
+  '/adviser/transitions': typeof AdviserTransitionsRouteWithChildren
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
   '/leader/attendees': typeof LeaderAttendeesRoute
@@ -589,6 +636,7 @@ export interface FileRoutesByTo {
   '/leader/manage-events': typeof LeaderManageEventsRoute
   '/leader/members': typeof LeaderMembersRoute
   '/leader/notifications': typeof LeaderNotificationsRoute
+  '/leader/officer-transition': typeof LeaderOfficerTransitionRouteWithChildren
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/posts': typeof LeaderPostsRoute
   '/leader/preview': typeof LeaderPreviewRoute
@@ -615,9 +663,12 @@ export interface FileRoutesByTo {
   '/adviser': typeof AdviserIndexRoute
   '/leader': typeof LeaderIndexRoute
   '/student': typeof StudentIndexRoute
+  '/admin1/transitions/$transitionId': typeof Admin1TransitionsTransitionIdRoute
   '/admin1/workflows/$workflowId': typeof Admin1WorkflowsWorkflowIdRoute
   '/admin2/workflows/$workflowId': typeof Admin2WorkflowsWorkflowIdRoute
+  '/adviser/transitions/$transitionId': typeof AdviserTransitionsTransitionIdRoute
   '/adviser/workflows/$workflowId': typeof AdviserWorkflowsWorkflowIdRoute
+  '/leader/officer-transition/$transitionId': typeof LeaderOfficerTransitionTransitionIdRoute
   '/leader/requirements/$eventId': typeof LeaderRequirementsEventIdRoute
   '/leader/workflows/$workflowId': typeof LeaderWorkflowsWorkflowIdRoute
   '/student/org/$slug': typeof StudentOrgSlugRoute
@@ -651,6 +702,7 @@ export interface FileRoutesById {
   '/admin1/governance': typeof Admin1GovernanceRoute
   '/admin1/notifications': typeof Admin1NotificationsRoute
   '/admin1/profile': typeof Admin1ProfileRoute
+  '/admin1/transitions': typeof Admin1TransitionsRouteWithChildren
   '/admin2/compliance': typeof Admin2ComplianceRoute
   '/admin2/notifications': typeof Admin2NotificationsRoute
   '/admin2/profile': typeof Admin2ProfileRoute
@@ -658,6 +710,7 @@ export interface FileRoutesById {
   '/adviser/members': typeof AdviserMembersRoute
   '/adviser/notifications': typeof AdviserNotificationsRoute
   '/adviser/profile': typeof AdviserProfileRoute
+  '/adviser/transitions': typeof AdviserTransitionsRouteWithChildren
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
   '/leader/attendees': typeof LeaderAttendeesRoute
@@ -668,6 +721,7 @@ export interface FileRoutesById {
   '/leader/manage-events': typeof LeaderManageEventsRoute
   '/leader/members': typeof LeaderMembersRoute
   '/leader/notifications': typeof LeaderNotificationsRoute
+  '/leader/officer-transition': typeof LeaderOfficerTransitionRouteWithChildren
   '/leader/organization': typeof LeaderOrganizationRoute
   '/leader/posts': typeof LeaderPostsRoute
   '/leader/preview': typeof LeaderPreviewRoute
@@ -694,9 +748,12 @@ export interface FileRoutesById {
   '/adviser/': typeof AdviserIndexRoute
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/admin1/transitions/$transitionId': typeof Admin1TransitionsTransitionIdRoute
   '/admin1/workflows/$workflowId': typeof Admin1WorkflowsWorkflowIdRoute
   '/admin2/workflows/$workflowId': typeof Admin2WorkflowsWorkflowIdRoute
+  '/adviser/transitions/$transitionId': typeof AdviserTransitionsTransitionIdRoute
   '/adviser/workflows/$workflowId': typeof AdviserWorkflowsWorkflowIdRoute
+  '/leader/officer-transition/$transitionId': typeof LeaderOfficerTransitionTransitionIdRoute
   '/leader/requirements/$eventId': typeof LeaderRequirementsEventIdRoute
   '/leader/workflows/$workflowId': typeof LeaderWorkflowsWorkflowIdRoute
   '/student/org/$slug': typeof StudentOrgSlugRoute
@@ -731,6 +788,7 @@ export interface FileRouteTypes {
     | '/admin1/governance'
     | '/admin1/notifications'
     | '/admin1/profile'
+    | '/admin1/transitions'
     | '/admin2/compliance'
     | '/admin2/notifications'
     | '/admin2/profile'
@@ -738,6 +796,7 @@ export interface FileRouteTypes {
     | '/adviser/members'
     | '/adviser/notifications'
     | '/adviser/profile'
+    | '/adviser/transitions'
     | '/leader/announcements'
     | '/leader/attendance'
     | '/leader/attendees'
@@ -748,6 +807,7 @@ export interface FileRouteTypes {
     | '/leader/manage-events'
     | '/leader/members'
     | '/leader/notifications'
+    | '/leader/officer-transition'
     | '/leader/organization'
     | '/leader/posts'
     | '/leader/preview'
@@ -774,9 +834,12 @@ export interface FileRouteTypes {
     | '/adviser/'
     | '/leader/'
     | '/student/'
+    | '/admin1/transitions/$transitionId'
     | '/admin1/workflows/$workflowId'
     | '/admin2/workflows/$workflowId'
+    | '/adviser/transitions/$transitionId'
     | '/adviser/workflows/$workflowId'
+    | '/leader/officer-transition/$transitionId'
     | '/leader/requirements/$eventId'
     | '/leader/workflows/$workflowId'
     | '/student/org/$slug'
@@ -803,6 +866,7 @@ export interface FileRouteTypes {
     | '/admin1/governance'
     | '/admin1/notifications'
     | '/admin1/profile'
+    | '/admin1/transitions'
     | '/admin2/compliance'
     | '/admin2/notifications'
     | '/admin2/profile'
@@ -810,6 +874,7 @@ export interface FileRouteTypes {
     | '/adviser/members'
     | '/adviser/notifications'
     | '/adviser/profile'
+    | '/adviser/transitions'
     | '/leader/announcements'
     | '/leader/attendance'
     | '/leader/attendees'
@@ -820,6 +885,7 @@ export interface FileRouteTypes {
     | '/leader/manage-events'
     | '/leader/members'
     | '/leader/notifications'
+    | '/leader/officer-transition'
     | '/leader/organization'
     | '/leader/posts'
     | '/leader/preview'
@@ -846,9 +912,12 @@ export interface FileRouteTypes {
     | '/adviser'
     | '/leader'
     | '/student'
+    | '/admin1/transitions/$transitionId'
     | '/admin1/workflows/$workflowId'
     | '/admin2/workflows/$workflowId'
+    | '/adviser/transitions/$transitionId'
     | '/adviser/workflows/$workflowId'
+    | '/leader/officer-transition/$transitionId'
     | '/leader/requirements/$eventId'
     | '/leader/workflows/$workflowId'
     | '/student/org/$slug'
@@ -881,6 +950,7 @@ export interface FileRouteTypes {
     | '/admin1/governance'
     | '/admin1/notifications'
     | '/admin1/profile'
+    | '/admin1/transitions'
     | '/admin2/compliance'
     | '/admin2/notifications'
     | '/admin2/profile'
@@ -888,6 +958,7 @@ export interface FileRouteTypes {
     | '/adviser/members'
     | '/adviser/notifications'
     | '/adviser/profile'
+    | '/adviser/transitions'
     | '/leader/announcements'
     | '/leader/attendance'
     | '/leader/attendees'
@@ -898,6 +969,7 @@ export interface FileRouteTypes {
     | '/leader/manage-events'
     | '/leader/members'
     | '/leader/notifications'
+    | '/leader/officer-transition'
     | '/leader/organization'
     | '/leader/posts'
     | '/leader/preview'
@@ -924,9 +996,12 @@ export interface FileRouteTypes {
     | '/adviser/'
     | '/leader/'
     | '/student/'
+    | '/admin1/transitions/$transitionId'
     | '/admin1/workflows/$workflowId'
     | '/admin2/workflows/$workflowId'
+    | '/adviser/transitions/$transitionId'
     | '/adviser/workflows/$workflowId'
+    | '/leader/officer-transition/$transitionId'
     | '/leader/requirements/$eventId'
     | '/leader/workflows/$workflowId'
     | '/student/org/$slug'
@@ -1224,6 +1299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderOrganizationRouteImport
       parentRoute: typeof LeaderRoute
     }
+    '/leader/officer-transition': {
+      id: '/leader/officer-transition'
+      path: '/officer-transition'
+      fullPath: '/leader/officer-transition'
+      preLoaderRoute: typeof LeaderOfficerTransitionRouteImport
+      parentRoute: typeof LeaderRoute
+    }
     '/leader/notifications': {
       id: '/leader/notifications'
       path: '/notifications'
@@ -1294,6 +1376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderAnnouncementsRouteImport
       parentRoute: typeof LeaderRoute
     }
+    '/adviser/transitions': {
+      id: '/adviser/transitions'
+      path: '/transitions'
+      fullPath: '/adviser/transitions'
+      preLoaderRoute: typeof AdviserTransitionsRouteImport
+      parentRoute: typeof AdviserRoute
+    }
     '/adviser/profile': {
       id: '/adviser/profile'
       path: '/profile'
@@ -1342,6 +1431,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin2/compliance'
       preLoaderRoute: typeof Admin2ComplianceRouteImport
       parentRoute: typeof Admin2Route
+    }
+    '/admin1/transitions': {
+      id: '/admin1/transitions'
+      path: '/transitions'
+      fullPath: '/admin1/transitions'
+      preLoaderRoute: typeof Admin1TransitionsRouteImport
+      parentRoute: typeof Admin1Route
     }
     '/admin1/profile': {
       id: '/admin1/profile'
@@ -1462,12 +1558,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderRequirementsEventIdRouteImport
       parentRoute: typeof LeaderRequirementsRoute
     }
+    '/leader/officer-transition/$transitionId': {
+      id: '/leader/officer-transition/$transitionId'
+      path: '/$transitionId'
+      fullPath: '/leader/officer-transition/$transitionId'
+      preLoaderRoute: typeof LeaderOfficerTransitionTransitionIdRouteImport
+      parentRoute: typeof LeaderOfficerTransitionRoute
+    }
     '/adviser/workflows/$workflowId': {
       id: '/adviser/workflows/$workflowId'
       path: '/workflows/$workflowId'
       fullPath: '/adviser/workflows/$workflowId'
       preLoaderRoute: typeof AdviserWorkflowsWorkflowIdRouteImport
       parentRoute: typeof AdviserRoute
+    }
+    '/adviser/transitions/$transitionId': {
+      id: '/adviser/transitions/$transitionId'
+      path: '/$transitionId'
+      fullPath: '/adviser/transitions/$transitionId'
+      preLoaderRoute: typeof AdviserTransitionsTransitionIdRouteImport
+      parentRoute: typeof AdviserTransitionsRoute
     }
     '/admin2/workflows/$workflowId': {
       id: '/admin2/workflows/$workflowId'
@@ -1482,6 +1592,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin1/workflows/$workflowId'
       preLoaderRoute: typeof Admin1WorkflowsWorkflowIdRouteImport
       parentRoute: typeof Admin1Route
+    }
+    '/admin1/transitions/$transitionId': {
+      id: '/admin1/transitions/$transitionId'
+      path: '/$transitionId'
+      fullPath: '/admin1/transitions/$transitionId'
+      preLoaderRoute: typeof Admin1TransitionsTransitionIdRouteImport
+      parentRoute: typeof Admin1TransitionsRoute
     }
   }
 }
@@ -1518,10 +1635,22 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface Admin1TransitionsRouteChildren {
+  Admin1TransitionsTransitionIdRoute: typeof Admin1TransitionsTransitionIdRoute
+}
+
+const Admin1TransitionsRouteChildren: Admin1TransitionsRouteChildren = {
+  Admin1TransitionsTransitionIdRoute: Admin1TransitionsTransitionIdRoute,
+}
+
+const Admin1TransitionsRouteWithChildren =
+  Admin1TransitionsRoute._addFileChildren(Admin1TransitionsRouteChildren)
+
 interface Admin1RouteChildren {
   Admin1GovernanceRoute: typeof Admin1GovernanceRoute
   Admin1NotificationsRoute: typeof Admin1NotificationsRoute
   Admin1ProfileRoute: typeof Admin1ProfileRoute
+  Admin1TransitionsRoute: typeof Admin1TransitionsRouteWithChildren
   Admin1IndexRoute: typeof Admin1IndexRoute
   Admin1WorkflowsWorkflowIdRoute: typeof Admin1WorkflowsWorkflowIdRoute
 }
@@ -1530,6 +1659,7 @@ const Admin1RouteChildren: Admin1RouteChildren = {
   Admin1GovernanceRoute: Admin1GovernanceRoute,
   Admin1NotificationsRoute: Admin1NotificationsRoute,
   Admin1ProfileRoute: Admin1ProfileRoute,
+  Admin1TransitionsRoute: Admin1TransitionsRouteWithChildren,
   Admin1IndexRoute: Admin1IndexRoute,
   Admin1WorkflowsWorkflowIdRoute: Admin1WorkflowsWorkflowIdRoute,
 }
@@ -1556,11 +1686,23 @@ const Admin2RouteChildren: Admin2RouteChildren = {
 const Admin2RouteWithChildren =
   Admin2Route._addFileChildren(Admin2RouteChildren)
 
+interface AdviserTransitionsRouteChildren {
+  AdviserTransitionsTransitionIdRoute: typeof AdviserTransitionsTransitionIdRoute
+}
+
+const AdviserTransitionsRouteChildren: AdviserTransitionsRouteChildren = {
+  AdviserTransitionsTransitionIdRoute: AdviserTransitionsTransitionIdRoute,
+}
+
+const AdviserTransitionsRouteWithChildren =
+  AdviserTransitionsRoute._addFileChildren(AdviserTransitionsRouteChildren)
+
 interface AdviserRouteChildren {
   AdviserAnalyticsRoute: typeof AdviserAnalyticsRoute
   AdviserMembersRoute: typeof AdviserMembersRoute
   AdviserNotificationsRoute: typeof AdviserNotificationsRoute
   AdviserProfileRoute: typeof AdviserProfileRoute
+  AdviserTransitionsRoute: typeof AdviserTransitionsRouteWithChildren
   AdviserIndexRoute: typeof AdviserIndexRoute
   AdviserWorkflowsWorkflowIdRoute: typeof AdviserWorkflowsWorkflowIdRoute
 }
@@ -1570,12 +1712,28 @@ const AdviserRouteChildren: AdviserRouteChildren = {
   AdviserMembersRoute: AdviserMembersRoute,
   AdviserNotificationsRoute: AdviserNotificationsRoute,
   AdviserProfileRoute: AdviserProfileRoute,
+  AdviserTransitionsRoute: AdviserTransitionsRouteWithChildren,
   AdviserIndexRoute: AdviserIndexRoute,
   AdviserWorkflowsWorkflowIdRoute: AdviserWorkflowsWorkflowIdRoute,
 }
 
 const AdviserRouteWithChildren =
   AdviserRoute._addFileChildren(AdviserRouteChildren)
+
+interface LeaderOfficerTransitionRouteChildren {
+  LeaderOfficerTransitionTransitionIdRoute: typeof LeaderOfficerTransitionTransitionIdRoute
+}
+
+const LeaderOfficerTransitionRouteChildren: LeaderOfficerTransitionRouteChildren =
+  {
+    LeaderOfficerTransitionTransitionIdRoute:
+      LeaderOfficerTransitionTransitionIdRoute,
+  }
+
+const LeaderOfficerTransitionRouteWithChildren =
+  LeaderOfficerTransitionRoute._addFileChildren(
+    LeaderOfficerTransitionRouteChildren,
+  )
 
 interface LeaderRequirementsRouteChildren {
   LeaderRequirementsEventIdRoute: typeof LeaderRequirementsEventIdRoute
@@ -1611,6 +1769,7 @@ interface LeaderRouteChildren {
   LeaderManageEventsRoute: typeof LeaderManageEventsRoute
   LeaderMembersRoute: typeof LeaderMembersRoute
   LeaderNotificationsRoute: typeof LeaderNotificationsRoute
+  LeaderOfficerTransitionRoute: typeof LeaderOfficerTransitionRouteWithChildren
   LeaderOrganizationRoute: typeof LeaderOrganizationRoute
   LeaderPostsRoute: typeof LeaderPostsRoute
   LeaderPreviewRoute: typeof LeaderPreviewRoute
@@ -1632,6 +1791,7 @@ const LeaderRouteChildren: LeaderRouteChildren = {
   LeaderManageEventsRoute: LeaderManageEventsRoute,
   LeaderMembersRoute: LeaderMembersRoute,
   LeaderNotificationsRoute: LeaderNotificationsRoute,
+  LeaderOfficerTransitionRoute: LeaderOfficerTransitionRouteWithChildren,
   LeaderOrganizationRoute: LeaderOrganizationRoute,
   LeaderPostsRoute: LeaderPostsRoute,
   LeaderPreviewRoute: LeaderPreviewRoute,

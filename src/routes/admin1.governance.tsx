@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
+import { AppButton } from "@/components/ui/app-button";
 
 export const Route = createFileRoute("/admin1/governance")({
   component: Admin1Governance,
@@ -29,8 +30,11 @@ function Admin1Governance() {
         </Panel>
         <Panel title="Policy note">
           <div className="space-y-3 text-sm text-muted-foreground">
-            <p>Milestone 1 establishes the approval chain. Officer transition archival and yearly governance workflows are the next layer to build on this foundation.</p>
+            <p>Officer transition archival is now live through a governed workflow. Admin 1 can review, approve, and preserve previous officer records without manual replacement.</p>
             <p>These tools now have a dedicated Admin 1 home instead of living inside a generic admin surface.</p>
+            <AppButton asChild variant="secondary" size="sm">
+              <Link to="/admin1/transitions">Open officer transitions</Link>
+            </AppButton>
           </div>
         </Panel>
       </div>
