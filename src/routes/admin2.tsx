@@ -5,6 +5,7 @@ import {
   ShieldCheck,
   Bell,
   User,
+  Megaphone,
 } from "lucide-react";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
 import type { BottomNavItem } from "@/components/dashboard/MobileBottomNav";
@@ -13,6 +14,7 @@ import { resolveAdmin2NotificationHref } from "@/lib/notifications";
 const nav: NavItem[] = [
   { to: "/admin2", label: "Dashboard", icon: LayoutDashboard, section: "OVERVIEW" },
   { to: "/admin2/compliance", label: "Compliance", icon: ShieldCheck, section: "OVERVIEW" },
+  { to: "/admin2/posts", label: "Post Publishing", icon: Megaphone, section: "REVIEWS" },
   { to: "/admin2/notifications", label: "Notifications", icon: Bell, section: "REVIEWS" },
   { to: "/admin2/profile", label: "Profile", icon: User, section: "SETTINGS" },
 ];
