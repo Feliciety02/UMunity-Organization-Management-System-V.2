@@ -121,11 +121,53 @@ export type EventWorkflow = {
   history: WorkflowHistoryEntry[];
 };
 
+export type OfficerNominee = {
+  id: string;
+  name: string;
+  position: string;
+  program: string;
+  yearLevel: string;
+  email: string;
+};
+
+export type OfficerRecord = {
+  id: string;
+  academicYear: string;
+  officers: OfficerNominee[];
+  archivedAt: number;
+  approvedBy: string;
+};
+
+export type OfficerTransitionWorkflow = {
+  id: string;
+  orgName: string;
+  orgShort: string;
+  submittedBy: string;
+  academicYear: string;
+  status: WorkflowStatus;
+  currentStage: string;
+  createdAt: number;
+  updatedAt: number;
+  adviserName: string;
+  nominees: OfficerNominee[];
+  rationale: string;
+  handoverNotes: string;
+  comments: WorkflowComment[];
+  history: WorkflowHistoryEntry[];
+  archivedOfficers: OfficerRecord[];
+};
+
 const KEY = "umunity.workflows.v1";
 const EVENT = "umunity:workflows";
+const TRANSITION_KEY = "umunity.transitions.v1";
+const TRANSITION_EVENT = "umunity:transitions";
 
 function nowId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+export function newWorkflowId(prefix: string) {
+  return nowId(prefix);
 }
 
 function currentAy() {
@@ -462,6 +504,71 @@ function seedWorkflows(): EventWorkflow[] {
   ];
 }
 
+function seedTransitionWorkflows(): OfficerTransitionWorkflow[] {
+  const previousRoster: OfficerNominee[] = [
+    { id: "off-1", name: "Marco Reyes", position: "President", program: "BS Computer Science", yearLevel: "4th Year", email: "marco.reyes@um.edu.ph" },
+    { id: "off-2", name: "Anna Sy", position: "Vice President", program: "BS Information Technology", yearLevel: "3rd Year", email: "anna.sy@um.edu.ph" },
+    { id: "off-3", name: "Jules Tan", position: "Treasurer", program: "BS Computer Science", yearLevel: "3rd Year", email: "jules.tan@um.edu.ph" },
+  ];
+  return [
+    {
+      id: "transition-umcss-2026",
+      orgName: "UM Computer Studies Society",
+      orgShort: "UMCSS",
+      submittedBy: "Marco Reyes",
+      academicYear: "2026-2027",
+      status: "pending_adviser",
+      currentStage: "Adviser validation",
+      createdAt: Date.now() - 2 * 86_400_000,
+      updatedAt: Date.now() - 90 * 60_000,
+      adviserName: "Prof. Elena Tan",
+      nominees: [
+        { id: "nom-1", name: "Karl Mendez", position: "President", program: "BS Computer Science", yearLevel: "3rd Year", email: "karl.mendez@um.edu.ph" },
+        { id: "nom-2", name: "Pia Lim", position: "Vice President", program: "BS Information Systems", yearLevel: "3rd Year", email: "pia.lim@um.edu.ph" },
+        { id: "nom-3", name: "Mia Cruz", position: "Secretary", program: "BS Computer Science", yearLevel: "2nd Year", email: "mia.cruz@um.edu.ph" },
+      ],
+      rationale: "The organization is preparing its next academic year officer set based on current committee performance and continuity planning.",
+      handoverNotes: "Outgoing officers will transfer shared drive folders, event templates, and sponsor contacts during the final week of June.",
+      comments: [
+        {
+          id: "tc-1",
+          authorRole: "leader",
+          authorName: "Marco Reyes",
+          message: "Included next-year committee leads who already handled major events this semester.",
+          createdAt: Date.now() - 70 * 60_000,
+        },
+      ],
+      history: [
+        {
+          id: "th-1",
+          action: "created",
+          byRole: "leader",
+          byName: "Marco Reyes",
+          note: "Officer transition nomination submitted.",
+          createdAt: Date.now() - 2 * 86_400_000,
+        },
+        {
+          id: "th-2",
+          action: "submitted",
+          byRole: "leader",
+          byName: "Marco Reyes",
+          note: "Sent to adviser for validation.",
+          createdAt: Date.now() - 2 * 86_400_000 + 10 * 60_000,
+        },
+      ],
+      archivedOfficers: [
+        {
+          id: "archive-2025",
+          academicYear: "2025-2026",
+          officers: previousRoster,
+          archivedAt: Date.now() - 30 * 86_400_000,
+          approvedBy: "Admin 1 Archive",
+        },
+      ],
+    },
+  ];
+}
+
 function read(): EventWorkflow[] {
   if (typeof window === "undefined") return seedWorkflows();
   try {
@@ -481,6 +588,27 @@ function write(list: EventWorkflow[]) {
   if (typeof window === "undefined") return;
   localStorage.setItem(KEY, JSON.stringify(list));
   window.dispatchEvent(new Event(EVENT));
+}
+
+function readTransitions(): OfficerTransitionWorkflow[] {
+  if (typeof window === "undefined") return seedTransitionWorkflows();
+  try {
+    const raw = localStorage.getItem(TRANSITION_KEY);
+    if (!raw) {
+      const seeded = seedTransitionWorkflows();
+      localStorage.setItem(TRANSITION_KEY, JSON.stringify(seeded));
+      return seeded;
+    }
+    return JSON.parse(raw) as OfficerTransitionWorkflow[];
+  } catch {
+    return seedTransitionWorkflows();
+  }
+}
+
+function writeTransitions(list: OfficerTransitionWorkflow[]) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(TRANSITION_KEY, JSON.stringify(list));
+  window.dispatchEvent(new Event(TRANSITION_EVENT));
 }
 
 function cloneWorkflow(workflow: EventWorkflow) {
@@ -1078,4 +1206,255 @@ export function useWorkflows() {
 
 export function useWorkflow(id: string) {
   return useWorkflows().find((workflow) => workflow.id === id) ?? null;
+}
+
+function nextTransitionStageFor(status: WorkflowStatus) {
+  switch (status) {
+    case "draft":
+      return "Nomination draft";
+    case "pending_adviser":
+      return "Adviser validation";
+    case "revision_requested":
+      return "Leader revisions";
+    case "pending_admin1":
+      return "Admin 1 approval";
+    case "approved":
+      return "Approved and ready to archive";
+    case "completed":
+      return "Archived";
+    case "pending_admin2":
+      return "Admin 2 review";
+  }
+}
+
+export function getTransitionWorkflows() {
+  return readTransitions().sort((a, b) => b.updatedAt - a.updatedAt);
+}
+
+export function getTransitionWorkflow(id: string) {
+  return readTransitions().find((workflow) => workflow.id === id) ?? null;
+}
+
+export function createTransitionWorkflow(input: {
+  orgName: string;
+  orgShort: string;
+  submittedBy: string;
+  adviserName: string;
+  academicYear: string;
+  rationale: string;
+  handoverNotes: string;
+  nominees: OfficerNominee[];
+}) {
+  const workflow: OfficerTransitionWorkflow = {
+    id: nowId("transition"),
+    orgName: input.orgName,
+    orgShort: input.orgShort,
+    submittedBy: input.submittedBy,
+    academicYear: input.academicYear,
+    status: "pending_adviser",
+    currentStage: nextTransitionStageFor("pending_adviser"),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    adviserName: input.adviserName,
+    nominees: input.nominees,
+    rationale: input.rationale,
+    handoverNotes: input.handoverNotes,
+    comments: [],
+    history: [
+      {
+        id: nowId("history"),
+        action: "created",
+        byRole: "leader",
+        byName: input.submittedBy,
+        note: "Officer transition workflow created.",
+        createdAt: Date.now(),
+      },
+      {
+        id: nowId("history"),
+        action: "submitted",
+        byRole: "leader",
+        byName: input.submittedBy,
+        note: "Submitted to adviser for validation.",
+        createdAt: Date.now(),
+      },
+    ],
+    archivedOfficers: [],
+  };
+  writeTransitions([workflow, ...readTransitions()]);
+  addNotification({
+    title: `${workflow.orgShort} officer transition is pending adviser review`,
+    meta: "Officer transition workflow",
+    category: "general",
+    href: `/adviser/transitions/${workflow.id}`,
+  });
+  return workflow;
+}
+
+export function addTransitionComment(id: string, actor: WorkflowActor, message: string) {
+  const next = readTransitions().map((workflow) =>
+    workflow.id === id
+      ? {
+          ...workflow,
+          updatedAt: Date.now(),
+          comments: [
+            {
+              id: nowId("comment"),
+              authorRole: actor.role,
+              authorName: actor.name,
+              message,
+              createdAt: Date.now(),
+            },
+            ...workflow.comments,
+          ],
+          history: [
+            {
+              id: nowId("history"),
+              action: "commented",
+              byRole: actor.role,
+              byName: actor.name,
+              note: message,
+              createdAt: Date.now(),
+            },
+            ...workflow.history,
+          ],
+        }
+      : workflow,
+  );
+  writeTransitions(next);
+}
+
+export function requestTransitionRevision(id: string, actor: WorkflowActor, note: string) {
+  const next = readTransitions().map((workflow) =>
+    workflow.id === id
+      ? {
+          ...workflow,
+          status: "revision_requested" as WorkflowStatus,
+          currentStage: nextTransitionStageFor("revision_requested"),
+          updatedAt: Date.now(),
+          comments: [
+            {
+              id: nowId("comment"),
+              authorRole: actor.role,
+              authorName: actor.name,
+              message: note,
+              createdAt: Date.now(),
+            },
+            ...workflow.comments,
+          ],
+          history: [
+            {
+              id: nowId("history"),
+              action: "revision_requested",
+              byRole: actor.role,
+              byName: actor.name,
+              note,
+              createdAt: Date.now(),
+            },
+            ...workflow.history,
+          ],
+        }
+      : workflow,
+  );
+  writeTransitions(next);
+  const workflow = next.find((item) => item.id === id);
+  if (workflow) {
+    addNotification({
+      title: `${workflow.orgShort} officer transition needs revisions`,
+      meta: actor.name,
+      category: "general",
+      href: `/leader/officer-transition/${workflow.id}`,
+    });
+  }
+}
+
+export function approveTransitionWorkflow(id: string, actor: WorkflowActor, note?: string) {
+  const next = readTransitions().map((workflow) => {
+    if (workflow.id !== id) return workflow;
+    if (actor.role === "adviser") {
+      return {
+        ...workflow,
+        status: "pending_admin1" as WorkflowStatus,
+        currentStage: nextTransitionStageFor("pending_admin1"),
+        updatedAt: Date.now(),
+        history: [
+          {
+            id: nowId("history"),
+            action: "approved",
+            byRole: actor.role,
+            byName: actor.name,
+            note: note ?? "Validated officer nominees and forwarded to Admin 1.",
+            createdAt: Date.now(),
+          },
+          ...workflow.history,
+        ],
+      };
+    }
+    if (actor.role === "admin1") {
+      const previous = workflow.archivedOfficers.at(-1);
+      const archive: OfficerRecord = {
+        id: nowId("archive"),
+        academicYear: workflow.academicYear,
+        officers: workflow.nominees,
+        archivedAt: Date.now(),
+        approvedBy: actor.name,
+      };
+      return {
+        ...workflow,
+        status: "completed" as WorkflowStatus,
+        currentStage: nextTransitionStageFor("completed"),
+        updatedAt: Date.now(),
+        archivedOfficers: previous ? [...workflow.archivedOfficers, archive] : [...workflow.archivedOfficers, archive],
+        history: [
+          {
+            id: nowId("history"),
+            action: "completed",
+            byRole: actor.role,
+            byName: actor.name,
+            note: note ?? "Approved officer transition and archived previous roster.",
+            createdAt: Date.now(),
+          },
+          ...workflow.history,
+        ],
+      };
+    }
+    return workflow;
+  });
+  writeTransitions(next);
+  const workflow = next.find((item) => item.id === id);
+  if (!workflow) return;
+  addNotification({
+    title:
+      actor.role === "adviser"
+        ? `${workflow.orgShort} officer transition is pending Admin 1`
+        : `${workflow.orgShort} officer transition archived successfully`,
+    meta: note ?? "Officer transition workflow updated",
+    category: "general",
+    href: actor.role === "adviser" ? `/admin1/transitions/${workflow.id}` : `/leader/officer-transition/${workflow.id}`,
+  });
+}
+
+function subscribeTransitions(cb: () => void) {
+  if (typeof window === "undefined") return () => {};
+  const handler = () => cb();
+  window.addEventListener(TRANSITION_EVENT, handler);
+  window.addEventListener("storage", handler);
+  return () => {
+    window.removeEventListener(TRANSITION_EVENT, handler);
+    window.removeEventListener("storage", handler);
+  };
+}
+
+export function useTransitionWorkflows() {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+  const snapshot = useSyncExternalStore(
+    subscribeTransitions,
+    () => JSON.stringify(getTransitionWorkflows()),
+    () => JSON.stringify(seedTransitionWorkflows()),
+  );
+  return hydrated ? (JSON.parse(snapshot) as OfficerTransitionWorkflow[]) : seedTransitionWorkflows();
+}
+
+export function useTransitionWorkflow(id: string) {
+  return useTransitionWorkflows().find((workflow) => workflow.id === id) ?? null;
 }
