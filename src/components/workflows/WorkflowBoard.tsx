@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { CalendarDays, FileStack, MapPin } from "lucide-react";
 import { PageHead, Panel, EmptyState, Badge } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
-import { formatWorkflowStatus, proposalCompletion, type EventWorkflow } from "@/lib/workflows";
+import { closeoutStatusTone, formatCloseoutStatus, formatWorkflowStatus, proposalCompletion, type EventWorkflow } from "@/lib/workflows";
 import { WorkflowStatusBadge } from "@/components/workflows/WorkflowStatusBadge";
 
 export function WorkflowBoard({
@@ -41,6 +41,11 @@ export function WorkflowBoard({
                   <WorkflowStatusBadge status={workflow.status} />
                   <Badge tone="info">{workflow.proposal.category}</Badge>
                   <Badge tone="gold">{workflow.orgShort}</Badge>
+                  {(workflow.status === "approved" || workflow.status === "completed") ? (
+                    <Badge tone={closeoutStatusTone(workflow.operations.postEvent.closeoutStatus)}>
+                      {formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus)}
+                    </Badge>
+                  ) : null}
                 </div>
 
                 <div>

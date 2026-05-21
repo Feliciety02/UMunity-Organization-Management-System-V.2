@@ -23,17 +23,23 @@ import {
   addWorkflowParticipationLog,
   addWorkflowPostEventAsset,
   approveWorkflow,
+  approveWorkflowCloseout,
+  closeoutStatusTone,
+  formatCloseoutStatus,
   formatWorkflowStatus,
   getWorkflowStages,
   markWorkflowCompleted,
   operationsCompletion,
   proposalCompletion,
+  requestWorkflowCloseoutRevision,
   requestWorkflowRevision,
   setWorkflowFormReady,
   statusTone,
   submitWorkflow,
+  submitWorkflowCloseout,
   toggleWorkflowChecklistItem,
   updateWorkflowEventDay,
+  updateWorkflowExpenseItem,
   updateWorkflowPostEvent,
   type EventWorkflow,
   type WorkflowActor,
@@ -108,7 +114,18 @@ export function EventWorkflowDetail({
     (viewer.role === "admin2" && workflow.status === "pending_admin2") ||
     (viewer.role === "admin1" && workflow.status === "pending_admin1");
   const canOperate = viewer.role === "leader" && (workflow.status === "approved" || workflow.status === "completed");
-  const canComplete = viewer.role === "leader" && workflow.status === "approved";
+  const canSubmitCloseout =
+    viewer.role === "leader" &&
+    (workflow.status === "approved" || workflow.status === "completed") &&
+    (workflow.operations.postEvent.closeoutStatus === "draft" || workflow.operations.postEvent.closeoutStatus === "revision_requested");
+  const canReviewCloseout =
+    (viewer.role === "adviser" &&
+      (workflow.status === "approved" || workflow.status === "completed") &&
+      workflow.operations.postEvent.closeoutStatus === "pending_adviser") ||
+    (viewer.role === "admin2" &&
+      (workflow.status === "approved" || workflow.status === "completed") &&
+      workflow.operations.postEvent.closeoutStatus === "pending_admin2");
+  const canComplete = viewer.role === "leader" && workflow.status === "approved" && workflow.operations.postEvent.closeoutStatus === "approved";
 
   function handleComment() {
     if (!comment.trim()) {
@@ -143,6 +160,26 @@ export function EventWorkflowDetail({
   function handleComplete() {
     markWorkflowCompleted(workflow.id, viewer, "Leader marked the workflow as post-event complete.");
     toast.success("Workflow marked complete");
+  }
+
+  function handleCloseoutSubmit() {
+    submitWorkflowCloseout(workflow.id, viewer);
+    toast.success("Closeout submitted to adviser");
+  }
+
+  function handleCloseoutApprove() {
+    approveWorkflowCloseout(workflow.id, viewer);
+    toast.success(viewer.role === "adviser" ? "Closeout approved to Admin 2" : "Closeout approved");
+  }
+
+  function handleCloseoutRevision() {
+    if (!comment.trim()) {
+      toast.error("Write the closeout revision request first.");
+      return;
+    }
+    requestWorkflowCloseoutRevision(workflow.id, viewer, comment.trim());
+    toast.success("Closeout revision requested");
+    setComment("");
   }
 
   function savePostEventFields() {
@@ -463,6 +500,21 @@ export function EventWorkflowDetail({
           <Panel title="Post-event closeout">
             <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
               <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge tone={closeoutStatusTone(workflow.operations.postEvent.closeoutStatus)}>
+                    {formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus)}
+                  </Badge>
+                  {canSubmitCloseout ? (
+                    <AppButton variant="secondary" size="sm" onClick={handleCloseoutSubmit}>
+                      <Send className="h-4 w-4" /> Submit closeout
+                    </AppButton>
+                  ) : null}
+                  {canReviewCloseout ? (
+                    <AppButton variant="primary" size="sm" onClick={handleCloseoutApprove}>
+                      <CheckCircle2 className="h-4 w-4" /> {viewer.role === "adviser" ? "Approve to Admin 2" : "Approve closeout"}
+                    </AppButton>
+                  ) : null}
+                </div>
                 <TextAreaRow
                   label="Reflection"
                   value={reflection}
@@ -491,6 +543,46 @@ export function EventWorkflowDetail({
                 ) : null}
               </div>
               <div className="space-y-4">
+                <div className="rounded-2xl border border-border bg-card p-4">
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold">Financial closeout</p>
+                      <p className="text-xs text-muted-foreground">Dynamic expense lines replace a separate reimbursement packet.</p>
+                    </div>
+                    <Badge tone="neutral">
+                      {money(workflow.operations.postEvent.expenseItems.reduce((sum, item) => sum + item.actualAmount, 0))}
+                    </Badge>
+                  </div>
+                  <div className="space-y-3">
+                    {workflow.operations.postEvent.expenseItems.map((item) => (
+                      <div key={item.id} className="grid gap-2 rounded-2xl border border-border bg-background p-3 md:grid-cols-[1.2fr_0.7fr_0.7fr]">
+                        <div>
+                          <p className="text-sm font-semibold">{item.label}</p>
+                          <p className="text-xs text-muted-foreground">Planned {money(item.plannedAmount)}</p>
+                        </div>
+                        <label className="block">
+                          <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Actual</span>
+                          <input
+                            type="number"
+                            value={item.actualAmount}
+                            disabled={!canOperate}
+                            onChange={(e) => updateWorkflowExpenseItem(workflow.id, viewer, item.id, { actualAmount: Number(e.target.value) || 0 })}
+                            className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-70"
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Receipt</span>
+                          <input
+                            value={item.receiptLabel}
+                            disabled={!canOperate}
+                            onChange={(e) => updateWorkflowExpenseItem(workflow.id, viewer, item.id, { receiptLabel: e.target.value })}
+                            className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-70"
+                          />
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 <InlineComposer
                   label="Achievement summary"
                   value={achievementEntry}
@@ -538,6 +630,11 @@ export function EventWorkflowDetail({
               <LaneRow label="Admin 2" detail="OSA Compliance Review" active={workflow.status === "pending_admin2"} />
               <LaneRow label="Admin 1" detail="University Final Authority" active={workflow.status === "pending_admin1"} />
               <LaneRow label="Execution" detail="Preparation, event-day tracking, and final closeout" active={workflow.status === "approved" || workflow.status === "completed"} />
+              <LaneRow
+                label="Closeout review"
+                detail={formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus)}
+                active={workflow.operations.postEvent.closeoutStatus === "pending_adviser" || workflow.operations.postEvent.closeoutStatus === "pending_admin2"}
+              />
             </div>
           </Panel>
 
@@ -549,6 +646,8 @@ export function EventWorkflowDetail({
               <SnapshotRow label="Event-day logs" value={`${workflow.operations.eventDay.participationLogs.length}`} />
               <SnapshotRow label="Media blocks" value={`${workflow.operations.eventDay.mediaUploads.length}`} />
               <SnapshotRow label="Documentation entries" value={`${workflow.operations.postEvent.documentation.length}`} />
+              <SnapshotRow label="Closeout status" value={formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus)} />
+              <SnapshotRow label="Actual expense total" value={money(workflow.operations.postEvent.expenseItems.reduce((sum, item) => sum + item.actualAmount, 0))} />
             </div>
           </Panel>
 
@@ -568,6 +667,11 @@ export function EventWorkflowDetail({
                 {canReview ? (
                   <AppButton variant="ghost" size="sm" onClick={handleRevision}>
                     Request revision
+                  </AppButton>
+                ) : null}
+                {canReviewCloseout ? (
+                  <AppButton variant="ghost" size="sm" onClick={handleCloseoutRevision}>
+                    Request closeout revision
                   </AppButton>
                 ) : null}
               </div>

@@ -59,12 +59,29 @@ export type WorkflowEventDayData = {
   participationLogs: string[];
 };
 
+export type WorkflowExpenseItem = {
+  id: string;
+  label: string;
+  plannedAmount: number;
+  actualAmount: number;
+  receiptLabel: string;
+};
+
+export type WorkflowCloseoutStatus =
+  | "draft"
+  | "pending_adviser"
+  | "revision_requested"
+  | "pending_admin2"
+  | "approved";
+
 export type WorkflowPostEventData = {
   reflection: string;
   outcomes: string;
   achievements: string[];
   documentation: string[];
   finalSummary: string;
+  expenseItems: WorkflowExpenseItem[];
+  closeoutStatus: WorkflowCloseoutStatus;
 };
 
 export type WorkflowOperations = {
@@ -219,6 +236,8 @@ function defaultOperations(title: string): WorkflowOperations {
       achievements: [],
       documentation: [],
       finalSummary: "",
+      expenseItems: [],
+      closeoutStatus: "draft",
     },
   };
 }
@@ -251,15 +270,36 @@ function normalizeOperations(title: string, input?: Partial<WorkflowOperations> 
       achievements: input?.postEvent?.achievements ?? [],
       documentation: input?.postEvent?.documentation ?? [],
       finalSummary: input?.postEvent?.finalSummary ?? "",
+      expenseItems:
+        input?.postEvent?.expenseItems?.length
+          ? input.postEvent.expenseItems.map((item, index) => ({
+              id: item.id || `legacy-expense-${index}`,
+              label: item.label || `Expense ${index + 1}`,
+              plannedAmount: Number(item.plannedAmount) || 0,
+              actualAmount: Number(item.actualAmount) || 0,
+              receiptLabel: item.receiptLabel || "",
+            }))
+          : fallback.preparationChecklist.slice(0, 0).map(() => ({ id: "", label: "", plannedAmount: 0, actualAmount: 0, receiptLabel: "" })),
+      closeoutStatus: input?.postEvent?.closeoutStatus ?? "draft",
     },
   };
 }
 
 function normalizeWorkflow(workflow: EventWorkflow): EventWorkflow {
-  return {
+  const normalized = {
     ...workflow,
     operations: normalizeOperations(workflow.proposal.title, workflow.operations),
   };
+  if (!normalized.operations.postEvent.expenseItems.length && normalized.proposal.budgetItems.length) {
+    normalized.operations.postEvent.expenseItems = normalized.proposal.budgetItems.map((item, index) => ({
+      id: item.id || `proposal-expense-${index}`,
+      label: item.label,
+      plannedAmount: item.amount,
+      actualAmount: 0,
+      receiptLabel: "",
+    }));
+  }
+  return normalized;
 }
 
 function seedWorkflows(): EventWorkflow[] {
@@ -501,6 +541,187 @@ function seedWorkflows(): EventWorkflow[] {
         },
       ],
     }),
+    normalizeWorkflow({
+      id: "workflow-ai-education",
+      orgName: "UM Computer Studies Society",
+      orgShort: "UMCSS",
+      ay: currentAy(),
+      createdAt: baseTime - 14 * 86_400_000,
+      updatedAt: Date.now() - 5 * 60 * 60 * 1000,
+      createdBy: "Marco Reyes",
+      ownerRole: "leader",
+      status: "approved",
+      currentStage: "Execution and closeout",
+      proposal: {
+        title: "Tech Talk: AI in Education",
+        category: "Seminar",
+        objective: "Translate practical AI use cases into a faculty and student learning session.",
+        description: "Mid-sized seminar with a panel discussion, Q&A, and digital feedback collection.",
+        venue: "Audio Visual Room 2",
+        date: "2026-06-14",
+        time: "13:30",
+        collaborators: ["College of Education"],
+        sdgs: ["Quality Education"],
+        attachments: [],
+        budgetItems: [
+          { id: "b10", label: "Speaker tokens", amount: 5000 },
+          { id: "b11", label: "Printed kits", amount: 1800 },
+        ],
+        timeline: [
+          { id: "t10", phase: "Planning", detail: "Finalize speaker deck and registration flow" },
+          { id: "t11", phase: "Event day", detail: "Run panel session and feedback collection" },
+          { id: "t12", phase: "Closeout", detail: "Submit reflection, outcomes, and expense wrap-up" },
+        ],
+      },
+      operations: {
+        ...defaultOperations("Tech Talk: AI in Education"),
+        preparationChecklist: defaultOperations("Tech Talk: AI in Education").preparationChecklist.map((item) => ({ ...item, done: true })),
+        forms: { requirementsTrackerReady: true, attendeeCollectionReady: true },
+        eventDay: {
+          attendanceTarget: 150,
+          attendanceActual: 132,
+          mediaUploads: ["ai-talk-gallery-drive"],
+          participationLogs: ["Check-in QR closed at 2:05 PM."],
+        },
+        postEvent: {
+          reflection: "Audience questions were strongest when the speaker used local classroom scenarios.",
+          outcomes: "Collected 132 attendees and 87 feedback responses.",
+          achievements: ["High faculty turnout", "Strong feedback completion rate"],
+          documentation: ["session-album", "feedback-export.csv"],
+          finalSummary: "Event delivered strong participation and should be repeated with a workshop follow-up.",
+          expenseItems: [
+            { id: "e1", label: "Speaker tokens", plannedAmount: 5000, actualAmount: 5000, receiptLabel: "token-receipt.pdf" },
+            { id: "e2", label: "Printed kits", plannedAmount: 1800, actualAmount: 1650, receiptLabel: "print-shop-receipt.pdf" },
+          ],
+          closeoutStatus: "pending_adviser",
+        },
+      },
+      comments: [],
+      history: [
+        {
+          id: "h11",
+          action: "created",
+          byRole: "leader",
+          byName: "Marco Reyes",
+          createdAt: baseTime - 14 * 86_400_000,
+        },
+        {
+          id: "h12",
+          action: "approved",
+          byRole: "admin1",
+          byName: "Dr. Lucia Del Rosario",
+          note: "Proposal approved for execution.",
+          createdAt: Date.now() - 8 * 86_400_000,
+        },
+        {
+          id: "h13",
+          action: "submitted",
+          byRole: "leader",
+          byName: "Marco Reyes",
+          note: "Submitted the post-event closeout packet for adviser review.",
+          createdAt: Date.now() - 5 * 60 * 60 * 1000,
+        },
+      ],
+    }),
+    normalizeWorkflow({
+      id: "workflow-student-leadership-forum",
+      orgName: "UM Student Leaders Council",
+      orgShort: "SLC",
+      ay: currentAy(),
+      createdAt: baseTime - 18 * 86_400_000,
+      updatedAt: Date.now() - 3 * 60 * 60 * 1000,
+      createdBy: "Rina Delgado",
+      ownerRole: "leader",
+      status: "approved",
+      currentStage: "Execution and closeout",
+      proposal: {
+        title: "Student Leadership Forum",
+        category: "Forum",
+        objective: "Train incoming officers on governance, handoff, and documentation standards.",
+        description: "Workshop forum with role-based breakouts and moderated reflection blocks.",
+        venue: "Student Center Hall",
+        date: "2026-05-09",
+        time: "10:00",
+        collaborators: ["OSA"],
+        sdgs: ["Quality Education", "Peace, Justice and Strong Institutions"],
+        attachments: [],
+        budgetItems: [
+          { id: "b12", label: "Workshop materials", amount: 4200 },
+          { id: "b13", label: "Refreshments", amount: 3500 },
+        ],
+        timeline: [
+          { id: "t13", phase: "Preparation", detail: "Facilitator alignment and breakout planning" },
+          { id: "t14", phase: "Forum", detail: "Leadership sessions and role-based planning" },
+          { id: "t15", phase: "Closeout", detail: "Reports, receipts, and participant outcomes" },
+        ],
+      },
+      operations: {
+        ...defaultOperations("Student Leadership Forum"),
+        preparationChecklist: defaultOperations("Student Leadership Forum").preparationChecklist.map((item) => ({ ...item, done: true })),
+        forms: { requirementsTrackerReady: true, attendeeCollectionReady: true },
+        eventDay: {
+          attendanceTarget: 120,
+          attendanceActual: 116,
+          mediaUploads: ["leadership-forum-album"],
+          participationLogs: ["Officer role breakout completed by 11:45 AM."],
+        },
+        postEvent: {
+          reflection: "Breakout format improved the quality of officer handover discussion.",
+          outcomes: "Forum equipped 116 student leaders with the new annual governance process.",
+          achievements: ["Completed officer role templates"],
+          documentation: ["forum-report-draft.docx"],
+          finalSummary: "Ready for final administrative closeout approval.",
+          expenseItems: [
+            { id: "e3", label: "Workshop materials", plannedAmount: 4200, actualAmount: 4000, receiptLabel: "materials-receipt.pdf" },
+            { id: "e4", label: "Refreshments", plannedAmount: 3500, actualAmount: 3500, receiptLabel: "refreshments-receipt.pdf" },
+          ],
+          closeoutStatus: "pending_admin2",
+        },
+      },
+      comments: [
+        {
+          id: "c2",
+          authorRole: "adviser",
+          authorName: "Prof. Anne Cruz",
+          message: "Closeout packet looks complete. Forwarding to Admin 2.",
+          createdAt: Date.now() - 3 * 60 * 60 * 1000,
+          sectionId: "post-event-closeout",
+        },
+      ],
+      history: [
+        {
+          id: "h14",
+          action: "created",
+          byRole: "leader",
+          byName: "Rina Delgado",
+          createdAt: baseTime - 18 * 86_400_000,
+        },
+        {
+          id: "h15",
+          action: "approved",
+          byRole: "admin1",
+          byName: "Dr. Lucia Del Rosario",
+          note: "Proposal approved for execution.",
+          createdAt: Date.now() - 12 * 86_400_000,
+        },
+        {
+          id: "h16",
+          action: "submitted",
+          byRole: "leader",
+          byName: "Rina Delgado",
+          note: "Submitted the post-event closeout packet for adviser review.",
+          createdAt: Date.now() - 6 * 60 * 60 * 1000,
+        },
+        {
+          id: "h17",
+          action: "approved",
+          byRole: "adviser",
+          byName: "Prof. Anne Cruz",
+          note: "Approved the closeout packet and forwarded it to Admin 2.",
+          createdAt: Date.now() - 3 * 60 * 60 * 1000,
+        },
+      ],
+    }),
   ];
 }
 
@@ -578,7 +799,14 @@ function read(): EventWorkflow[] {
       localStorage.setItem(KEY, JSON.stringify(seeded));
       return seeded;
     }
-    return (JSON.parse(raw) as EventWorkflow[]).map(normalizeWorkflow);
+    const parsed = (JSON.parse(raw) as EventWorkflow[]).map(normalizeWorkflow);
+    const seeded = seedWorkflows();
+    const knownIds = new Set(parsed.map((workflow) => workflow.id));
+    const merged = [...parsed, ...seeded.filter((workflow) => !knownIds.has(workflow.id))];
+    if (merged.length !== parsed.length) {
+      localStorage.setItem(KEY, JSON.stringify(merged));
+    }
+    return merged;
   } catch {
     return seedWorkflows();
   }
@@ -1081,6 +1309,167 @@ export function addWorkflowPostEventAsset(
   }));
 }
 
+export function updateWorkflowExpenseItem(
+  id: string,
+  actor: WorkflowActor,
+  itemId: string,
+  patch: Partial<WorkflowExpenseItem>,
+) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    updatedAt: Date.now(),
+    operations: {
+      ...workflow.operations,
+      postEvent: {
+        ...workflow.operations.postEvent,
+        expenseItems: workflow.operations.postEvent.expenseItems.map((item) =>
+          item.id === itemId ? { ...item, ...patch } : item,
+        ),
+      },
+    },
+    history: [
+      {
+        id: nowId("history"),
+        action: "operations_updated",
+        byRole: actor.role,
+        byName: actor.name,
+        note: "Updated a closeout expense item.",
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
+export function submitWorkflowCloseout(id: string, actor: WorkflowActor) {
+  return updateWorkflow(id, (workflow) => {
+    const closeoutStatus =
+      workflow.operations.postEvent.closeoutStatus === "revision_requested" ? "pending_adviser" : "pending_adviser";
+    addNotification({
+      title: `${workflow.proposal.title} closeout is pending adviser review`,
+      meta: "Post-event final review",
+      category: "system",
+      href: `/adviser/workflows/${workflow.id}`,
+    });
+    return {
+      ...workflow,
+      updatedAt: Date.now(),
+      operations: {
+        ...workflow.operations,
+        postEvent: {
+          ...workflow.operations.postEvent,
+          closeoutStatus,
+        },
+      },
+      history: [
+        {
+          id: nowId("history"),
+          action: "submitted",
+          byRole: actor.role,
+          byName: actor.name,
+          note: "Submitted the post-event closeout packet for adviser review.",
+          createdAt: Date.now(),
+        },
+        ...workflow.history,
+      ],
+    };
+  });
+}
+
+export function requestWorkflowCloseoutRevision(id: string, actor: WorkflowActor, note: string) {
+  return updateWorkflow(id, (workflow) => {
+    addNotification({
+      title: `${workflow.proposal.title} closeout needs revisions`,
+      meta: actor.name,
+      category: "system",
+      href: `/leader/workflows/${workflow.id}`,
+    });
+    return {
+      ...workflow,
+      updatedAt: Date.now(),
+      operations: {
+        ...workflow.operations,
+        postEvent: {
+          ...workflow.operations.postEvent,
+          closeoutStatus: "revision_requested",
+        },
+      },
+      comments: [
+        {
+          id: nowId("comment"),
+          authorRole: actor.role,
+          authorName: actor.name,
+          message: note,
+          createdAt: Date.now(),
+          sectionId: "post-event-closeout",
+        },
+        ...workflow.comments,
+      ],
+      history: [
+        {
+          id: nowId("history"),
+          action: "revision_requested",
+          byRole: actor.role,
+          byName: actor.name,
+          note: `Requested closeout revisions: ${note}`,
+          createdAt: Date.now(),
+        },
+        ...workflow.history,
+      ],
+    };
+  });
+}
+
+export function approveWorkflowCloseout(id: string, actor: WorkflowActor, note?: string) {
+  return updateWorkflow(id, (workflow) => {
+    const nextCloseoutStatus: WorkflowCloseoutStatus = actor.role === "adviser" ? "pending_admin2" : "approved";
+    if (actor.role === "adviser") {
+      addNotification({
+        title: `${workflow.proposal.title} closeout is pending Admin 2 review`,
+        meta: "Post-event final review",
+        category: "system",
+        href: `/admin2/workflows/${workflow.id}`,
+      });
+    }
+    if (actor.role === "admin2") {
+      addNotification({
+        title: `${workflow.proposal.title} closeout has been approved`,
+        meta: "Workflow completed",
+        category: "system",
+        href: `/leader/workflows/${workflow.id}`,
+      });
+    }
+    return {
+      ...workflow,
+      status: actor.role === "admin2" ? "completed" : workflow.status,
+      currentStage: actor.role === "admin2" ? nextStageFor("completed") : workflow.currentStage,
+      updatedAt: Date.now(),
+      operations: {
+        ...workflow.operations,
+        postEvent: {
+          ...workflow.operations.postEvent,
+          closeoutStatus: nextCloseoutStatus,
+        },
+      },
+      history: [
+        {
+          id: nowId("history"),
+          action: actor.role === "admin2" ? "completed" : "approved",
+          byRole: actor.role,
+          byName: actor.name,
+          note:
+            note ??
+            (actor.role === "adviser"
+              ? "Approved the closeout packet and forwarded it to Admin 2."
+              : "Approved the closeout packet and completed the workflow."),
+          createdAt: Date.now(),
+        },
+        ...workflow.history,
+      ],
+    };
+  });
+}
+
 export function markWorkflowCompleted(id: string, actor: WorkflowActor, note?: string) {
   return updateWorkflow(id, (workflow) => ({
     ...workflow,
@@ -1099,6 +1488,36 @@ export function markWorkflowCompleted(id: string, actor: WorkflowActor, note?: s
       ...workflow.history,
     ],
   }));
+}
+
+export function formatCloseoutStatus(status: WorkflowCloseoutStatus) {
+  switch (status) {
+    case "draft":
+      return "Closeout Draft";
+    case "pending_adviser":
+      return "Pending Adviser";
+    case "revision_requested":
+      return "Revision Requested";
+    case "pending_admin2":
+      return "Pending Admin 2";
+    case "approved":
+      return "Approved";
+  }
+}
+
+export function closeoutStatusTone(status: WorkflowCloseoutStatus): "neutral" | "warning" | "info" | "danger" | "success" {
+  switch (status) {
+    case "draft":
+      return "neutral";
+    case "pending_adviser":
+      return "info";
+    case "revision_requested":
+      return "danger";
+    case "pending_admin2":
+      return "warning";
+    case "approved":
+      return "success";
+  }
 }
 
 export function formatWorkflowStatus(status: WorkflowStatus) {
@@ -1166,13 +1585,21 @@ export function operationsCompletion(workflow: EventWorkflow) {
   const checklistTotal = checklist.length || 1;
   const formsReady = Number(workflow.operations.forms.requirementsTrackerReady) + Number(workflow.operations.forms.attendeeCollectionReady);
   const logsReady = Number(workflow.operations.eventDay.participationLogs.length > 0) + Number(workflow.operations.eventDay.mediaUploads.length > 0);
+  const financialReady =
+    Number(workflow.operations.postEvent.expenseItems.length > 0) +
+    Number(
+      workflow.operations.postEvent.expenseItems.some(
+        (item) => item.actualAmount > 0 || Boolean(item.receiptLabel.trim()),
+      ),
+    );
   const postReady =
     Number(Boolean(workflow.operations.postEvent.reflection.trim())) +
     Number(Boolean(workflow.operations.postEvent.outcomes.trim())) +
     Number(workflow.operations.postEvent.achievements.length > 0) +
-    Number(workflow.operations.postEvent.documentation.length > 0);
+    Number(workflow.operations.postEvent.documentation.length > 0) +
+    financialReady;
   const done = checklistDone + formsReady + logsReady + postReady;
-  const total = checklistTotal + 2 + 2 + 4;
+  const total = checklistTotal + 2 + 2 + 6;
   return {
     done,
     total,

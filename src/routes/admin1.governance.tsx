@@ -31,10 +31,15 @@ function Admin1Governance() {
         <Panel title="Policy note">
           <div className="space-y-3 text-sm text-muted-foreground">
             <p>Officer transition archival is now live through a governed workflow. Admin 1 can review, approve, and preserve previous officer records without manual replacement.</p>
-            <p>These tools now have a dedicated Admin 1 home instead of living inside a generic admin surface.</p>
-            <AppButton asChild variant="secondary" size="sm">
-              <Link to="/admin1/transitions">Open officer transitions</Link>
-            </AppButton>
+            <p>Accreditation renewals now use the same workflow language, so final authority decisions no longer depend on scattered document packets.</p>
+            <div className="flex flex-wrap gap-2">
+              <AppButton asChild variant="secondary" size="sm">
+                <Link to="/admin1/transitions">Open officer transitions</Link>
+              </AppButton>
+              <AppButton asChild variant="secondary" size="sm">
+                <Link to="/admin1/accreditation">Open accreditation queue</Link>
+              </AppButton>
+            </div>
           </div>
         </Panel>
       </div>

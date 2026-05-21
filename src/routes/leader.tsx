@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
 import type { BottomNavItem } from "@/components/dashboard/MobileBottomNav";
-import { LayoutDashboard, Building2, Users, UserPlus, Calendar, PenSquare, MessageSquare, FileText, User, Eye, Newspaper, ClipboardList, Bell, ClipboardCheck, Workflow, UserCog } from "lucide-react";
+import { LayoutDashboard, Building2, Users, UserPlus, Calendar, PenSquare, MessageSquare, FileText, User, Eye, Newspaper, ClipboardList, Bell, ClipboardCheck, Workflow, UserCog, ShieldCheck } from "lucide-react";
 import { resolveLeaderNotificationHref } from "@/lib/notifications";
 
 const nav: NavItem[] = [
@@ -9,6 +9,7 @@ const nav: NavItem[] = [
   { to: "/leader/feed", label: "Organization Feed", icon: Newspaper, section: "WORKSPACE" },
   { to: "/leader/preview", label: "Public Preview", icon: Eye, section: "WORKSPACE" },
   { to: "/leader/organization", label: "Edit Organization", icon: Building2, section: "MANAGEMENT" },
+  { to: "/leader/compliance", label: "Accreditation", icon: ShieldCheck, section: "MANAGEMENT" },
   { to: "/leader/members", label: "Members", icon: Users, section: "MANAGEMENT" },
   { to: "/leader/requests", label: "Membership Requests", icon: UserPlus, badge: "12", section: "MANAGEMENT" },
   { to: "/leader/manage-events", label: "Events", icon: Calendar, section: "MANAGEMENT" },
