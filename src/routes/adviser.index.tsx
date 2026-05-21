@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { WorkflowBoard } from "@/components/workflows/WorkflowBoard";
-import { useWorkflows } from "@/lib/workflows";
+import { closeoutStatusTone, formatCloseoutStatus, useWorkflows } from "@/lib/workflows";
 import { usePostApprovals } from "@/lib/post-approvals";
+import { useComplianceSubmissions } from "@/lib/org-compliance";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, Panel } from "@/components/dashboard/DashboardLayout";
 
@@ -12,6 +13,12 @@ export const Route = createFileRoute("/adviser/")({
 function AdviserDashboard() {
   const workflows = useWorkflows().filter((workflow) => workflow.status === "pending_adviser");
   const postApprovals = usePostApprovals().filter((approval) => approval.status === "pending_adviser");
+  const compliance = useComplianceSubmissions().filter((submission) => submission.status === "pending_adviser");
+  const closeoutQueue = useWorkflows().filter(
+    (workflow) =>
+      (workflow.status === "approved" || workflow.status === "completed") &&
+      workflow.operations.postEvent.closeoutStatus === "pending_adviser",
+  );
 
   return (
     <>
@@ -40,6 +47,50 @@ function AdviserDashboard() {
             ))}
             <AppButton asChild variant="secondary" size="sm">
               <Link to="/adviser/posts">Open post queue</Link>
+            </AppButton>
+          </div>
+        )}
+      </Panel>
+      <Panel title="Accreditation reviews" className="mt-6">
+        {compliance.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No organization accreditation reviews are waiting for adviser validation.</p>
+        ) : (
+          <div className="space-y-3">
+            {compliance.slice(0, 3).map((submission) => (
+              <div key={submission.id} className="rounded-2xl border border-border bg-card p-3">
+                <div className="flex items-center gap-2">
+                  <Badge tone="info">{submission.academicYear}</Badge>
+                  <Badge tone="neutral">{submission.data.accreditationScope}</Badge>
+                </div>
+                <p className="mt-2 text-sm font-semibold">{submission.orgName}</p>
+                <p className="text-xs text-muted-foreground">{submission.data.category} - {submission.data.memberCount} members</p>
+              </div>
+            ))}
+            <AppButton asChild variant="secondary" size="sm">
+              <Link to="/adviser/compliance">Open accreditation queue</Link>
+            </AppButton>
+          </div>
+        )}
+      </Panel>
+      <Panel title="Event closeout reviews" className="mt-6">
+        {closeoutQueue.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No post-event packets are waiting for adviser review.</p>
+        ) : (
+          <div className="space-y-3">
+            {closeoutQueue.slice(0, 3).map((workflow) => (
+              <div key={workflow.id} className="rounded-2xl border border-border bg-card p-3">
+                <div className="flex items-center gap-2">
+                  <Badge tone={closeoutStatusTone(workflow.operations.postEvent.closeoutStatus)}>
+                    {formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus)}
+                  </Badge>
+                  <Badge tone="neutral">{workflow.orgShort}</Badge>
+                </div>
+                <p className="mt-2 text-sm font-semibold">{workflow.proposal.title}</p>
+                <p className="text-xs text-muted-foreground">{workflow.orgName}</p>
+              </div>
+            ))}
+            <AppButton asChild variant="secondary" size="sm">
+              <Link to="/adviser">Open workflow queue</Link>
             </AppButton>
           </div>
         )}

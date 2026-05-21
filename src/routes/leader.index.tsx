@@ -1,12 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHead, StatCard, Panel, Badge, MiniBarChart, Avatar } from "@/components/dashboard/DashboardLayout";
 import { Users, UserPlus, Calendar, TrendingUp, ArrowRight, Megaphone, CheckCircle2 } from "lucide-react";
+import { useComplianceSubmissions } from "@/lib/org-compliance";
+import { closeoutStatusTone, formatCloseoutStatus, useWorkflows } from "@/lib/workflows";
 
 export const Route = createFileRoute("/leader/")({
   component: LeaderDashboard,
 });
 
 function LeaderDashboard() {
+  const compliance = useComplianceSubmissions().find((submission) => submission.orgSlug === "cs-society");
+  const closeoutQueue = useWorkflows().filter(
+    (workflow) =>
+      workflow.orgShort === "UMCSS" &&
+      (workflow.status === "approved" || workflow.status === "completed") &&
+      workflow.operations.postEvent.closeoutStatus !== "approved",
+  );
+
   return (
     <>
       <PageHead
@@ -44,8 +54,12 @@ function LeaderDashboard() {
             <p className="flex items-center justify-between"><span className="text-muted-foreground">Status</span><Badge tone="success">Recognized</Badge></p>
             <p className="flex items-center justify-between"><span className="text-muted-foreground">President</span><span className="font-semibold">Marco R.</span></p>
             <p className="flex items-center justify-between"><span className="text-muted-foreground">Adviser</span><span className="font-semibold">Prof. Tan</span></p>
+            {compliance ? <p className="flex items-center justify-between"><span className="text-muted-foreground">Accreditation</span><Badge tone="info">{compliance.status.replaceAll("_", " ")}</Badge></p> : null}
           </div>
-          <Link to="/leader/organization" className="mt-5 block rounded-full bg-secondary py-2 text-center text-xs font-semibold text-primary">Edit org profile</Link>
+          <div className="mt-5 grid gap-2">
+            <Link to="/leader/organization" className="block rounded-full bg-secondary py-2 text-center text-xs font-semibold text-primary">Edit org profile</Link>
+            <Link to="/leader/compliance" className="block rounded-full border border-border bg-card py-2 text-center text-xs font-semibold text-foreground">Open accreditation</Link>
+          </div>
         </Panel>
       </div>
 
@@ -125,6 +139,26 @@ function LeaderDashboard() {
           </ul>
         </Panel>
       </div>
+
+      <Panel title="Post-event closeout queue" className="mt-6" action={<Link to="/leader/workflows" className="text-xs font-semibold text-primary">Open workflows</Link>}>
+        <div className="space-y-3">
+          {closeoutQueue.length === 0 ? (
+            <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">No active closeout packets need leader action right now.</div>
+          ) : closeoutQueue.slice(0, 3).map((item) => (
+            <div key={item.id} className="rounded-2xl bg-secondary/60 p-3">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-semibold">{item.proposal.title}</p>
+                <Badge tone={closeoutStatusTone(item.operations.postEvent.closeoutStatus)}>{formatCloseoutStatus(item.operations.postEvent.closeoutStatus)}</Badge>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {item.operations.postEvent.closeoutStatus === "revision_requested"
+                  ? "Reviewer feedback is waiting in the workflow comments."
+                  : "Finish the post-event report, documentation, and financial wrap-up."}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Panel>
     </>
   );
 }

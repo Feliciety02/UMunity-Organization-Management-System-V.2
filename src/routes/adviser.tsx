@@ -8,6 +8,7 @@ import {
   User,
   UserCog,
   Megaphone,
+  ShieldCheck,
 } from "lucide-react";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
 import type { BottomNavItem } from "@/components/dashboard/MobileBottomNav";
@@ -17,6 +18,7 @@ const nav: NavItem[] = [
   { to: "/adviser", label: "Dashboard", icon: LayoutDashboard, section: "WORKSPACE" },
   { to: "/adviser/transitions", label: "Officer Transitions", icon: UserCog, section: "WORKSPACE" },
   { to: "/adviser/posts", label: "Post Approvals", icon: Megaphone, section: "WORKSPACE" },
+  { to: "/adviser/compliance", label: "Accreditation", icon: ShieldCheck, section: "WORKSPACE" },
   { to: "/adviser/analytics", label: "Analytics", icon: BarChart3, section: "WORKSPACE" },
   { to: "/adviser/members", label: "Member activity", icon: Users, section: "WORKSPACE" },
   { to: "/adviser/notifications", label: "Notifications", icon: Bell, section: "REVIEW" },

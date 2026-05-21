@@ -146,9 +146,14 @@ function Org() {
         <div className="mb-4 rounded-2xl border border-border bg-secondary/35 p-4 text-sm text-muted-foreground">
           Officer replacements are now managed through the annual transition workflow. Use the officer transition page for nominations, adviser validation, and Admin 1 approval.
           <div className="mt-3">
-            <Link to="/leader/officer-transition" className="inline-flex rounded-full bg-card px-4 py-2 text-xs font-semibold text-primary transition hover:bg-background">
-              Open officer transition
-            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link to="/leader/officer-transition" className="inline-flex rounded-full bg-card px-4 py-2 text-xs font-semibold text-primary transition hover:bg-background">
+                Open officer transition
+              </Link>
+              <Link to="/leader/compliance" className="inline-flex rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition hover:bg-card">
+                Open accreditation workflow
+              </Link>
+            </div>
           </div>
         </div>
         <div className="grid gap-3 md:grid-cols-3">
