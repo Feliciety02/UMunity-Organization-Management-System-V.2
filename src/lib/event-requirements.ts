@@ -5,6 +5,8 @@ import { addNotification } from "./notifications";
 
 export type ReqStatus = "pending" | "for-review" | "approved" | "missing";
 export type SectionId = "before" | "during" | "after";
+export type ReqReviewStatus = "draft" | "pending_adviser" | "revision_requested" | "pending_admin2" | "approved";
+export type ReqActorRole = "leader" | "adviser" | "admin2";
 
 export type ReqFile = { name: string; size: number; uploadedAt: number };
 
@@ -38,6 +40,22 @@ export type EventDoc = {
   orgShort: string; // for filenames, e.g. "UMCSS"
   ay: string; // e.g. "AY2025-2026"
   createdAt: number;
+  reviewStatus: ReqReviewStatus;
+  comments: {
+    id: string;
+    authorRole: ReqActorRole;
+    authorName: string;
+    message: string;
+    createdAt: number;
+  }[];
+  history: {
+    id: string;
+    action: "created" | "submitted" | "commented" | "revision_requested" | "approved";
+    byRole: ReqActorRole;
+    byName: string;
+    note?: string;
+    createdAt: number;
+  }[];
   sections: ReqSection[];
 };
 
@@ -45,6 +63,10 @@ const KEY = "umunity.event-requirements.v1";
 const EVENT = "umunity:event-requirements";
 
 const DAY = 86_400_000;
+
+function nowId(prefix: string) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
 
 export function academicYearFor(dateISO: string): string {
   const d = dateISO ? new Date(dateISO) : new Date();
@@ -113,6 +135,36 @@ export function buildSections(eventDate: string, orgShort: string, eventTitle: s
   ];
 }
 
+export function formatReqReviewStatus(status: ReqReviewStatus) {
+  switch (status) {
+    case "draft":
+      return "Draft";
+    case "pending_adviser":
+      return "Pending Adviser";
+    case "revision_requested":
+      return "Revision Requested";
+    case "pending_admin2":
+      return "Pending Admin 2";
+    case "approved":
+      return "Approved";
+  }
+}
+
+export function reqReviewTone(status: ReqReviewStatus): "neutral" | "info" | "warning" | "danger" | "success" {
+  switch (status) {
+    case "draft":
+      return "neutral";
+    case "pending_adviser":
+      return "info";
+    case "revision_requested":
+      return "danger";
+    case "pending_admin2":
+      return "warning";
+    case "approved":
+      return "success";
+  }
+}
+
 // ---------- storage ----------
 const seed: EventDoc[] = [
   (() => {
@@ -130,6 +182,18 @@ const seed: EventDoc[] = [
       orgShort: "UMCSS",
       ay,
       createdAt: Date.now() - 14 * DAY,
+      reviewStatus: "draft",
+      comments: [],
+      history: [
+        {
+          id: "req-history-seed-1",
+          action: "created",
+          byRole: "leader",
+          byName: "Marco Reyes",
+          note: "Requirements tracker created from the event workflow.",
+          createdAt: Date.now() - 14 * DAY,
+        },
+      ],
       sections: buildSections(date, "UMCSS", "UM Innovation Summit 2026", ay).map((s) =>
         s.id === "before"
           ? { ...s, items: s.items.map((i, idx) => (idx < 2 ? { ...i, status: "approved" as ReqStatus } : idx === 2 ? { ...i, status: "for-review" as ReqStatus } : i)) }
@@ -192,6 +256,18 @@ export function createEventDoc(input: {
     orgShort,
     ay,
     createdAt: Date.now(),
+    reviewStatus: "draft",
+    comments: [],
+    history: [
+      {
+        id: nowId("history"),
+        action: "created",
+        byRole: "leader",
+        byName: "Organization Leader",
+        note: "Tracker created from the event setup flow.",
+        createdAt: Date.now(),
+      },
+    ],
     sections: buildSections(input.date, orgShort, input.title, ay),
   };
   write([doc, ...read()]);
@@ -217,6 +293,131 @@ export function updateItemStatus(eventId: string, sectionId: SectionId, itemId: 
           },
     ),
   );
+}
+
+function updateDoc(id: string, updater: (doc: EventDoc) => EventDoc) {
+  const next = read().map((doc) => (doc.id === id ? updater({ ...doc }) : doc));
+  write(next);
+  return next.find((doc) => doc.id === id);
+}
+
+export function submitEventDoc(id: string, actor: { role: ReqActorRole; name: string }) {
+  return updateDoc(id, (doc) => {
+    addNotification({
+      title: `${doc.title} requirements are pending adviser review`,
+      meta: "Requirements tracker",
+      category: "event",
+      href: `/adviser/requirements/${doc.id}`,
+    });
+    return {
+      ...doc,
+      reviewStatus: "pending_adviser",
+      history: [
+        {
+          id: nowId("history"),
+          action: "submitted",
+          byRole: actor.role,
+          byName: actor.name,
+          note: "Submitted requirements tracker for adviser review.",
+          createdAt: Date.now(),
+        },
+        ...doc.history,
+      ],
+    };
+  });
+}
+
+export function addEventDocComment(id: string, actor: { role: ReqActorRole; name: string }, message: string) {
+  return updateDoc(id, (doc) => ({
+    ...doc,
+    comments: [
+      {
+        id: nowId("comment"),
+        authorRole: actor.role,
+        authorName: actor.name,
+        message,
+        createdAt: Date.now(),
+      },
+      ...doc.comments,
+    ],
+    history: [
+      {
+        id: nowId("history"),
+        action: "commented",
+        byRole: actor.role,
+        byName: actor.name,
+        note: message,
+        createdAt: Date.now(),
+      },
+      ...doc.history,
+    ],
+  }));
+}
+
+export function requestEventDocRevision(id: string, actor: { role: ReqActorRole; name: string }, note: string) {
+  return updateDoc(id, (doc) => {
+    addNotification({
+      title: `${doc.title} requirements need revisions`,
+      meta: actor.name,
+      category: "event",
+      href: `/leader/requirements/${doc.id}`,
+    });
+    return {
+      ...doc,
+      reviewStatus: "revision_requested",
+      comments: [
+        {
+          id: nowId("comment"),
+          authorRole: actor.role,
+          authorName: actor.name,
+          message: note,
+          createdAt: Date.now(),
+        },
+        ...doc.comments,
+      ],
+      history: [
+        {
+          id: nowId("history"),
+          action: "revision_requested",
+          byRole: actor.role,
+          byName: actor.name,
+          note,
+          createdAt: Date.now(),
+        },
+        ...doc.history,
+      ],
+    };
+  });
+}
+
+export function approveEventDoc(id: string, actor: { role: ReqActorRole; name: string }) {
+  return updateDoc(id, (doc) => {
+    const nextStatus: ReqReviewStatus = actor.role === "adviser" ? "pending_admin2" : "approved";
+    addNotification({
+      title:
+        actor.role === "adviser"
+          ? `${doc.title} requirements are pending Admin 2 review`
+          : `${doc.title} requirements have been approved`,
+      meta: "Requirements tracker",
+      category: "event",
+      href: actor.role === "adviser" ? `/admin2/requirements/${doc.id}` : `/leader/requirements/${doc.id}`,
+    });
+    return {
+      ...doc,
+      reviewStatus: nextStatus,
+      history: [
+        {
+          id: nowId("history"),
+          action: "approved",
+          byRole: actor.role,
+          byName: actor.name,
+          note: actor.role === "adviser" ? "Approved to Admin 2." : "Tracker fully approved.",
+          createdAt: Date.now(),
+        },
+        ...doc.history,
+      ],
+    };
+  });
 }
 
 export function uploadItemFile(eventId: string, sectionId: SectionId, itemId: string, file: { name: string; size: number }) {

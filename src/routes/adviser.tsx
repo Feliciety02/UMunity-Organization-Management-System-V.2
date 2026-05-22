@@ -18,6 +18,7 @@ const nav: NavItem[] = [
   { to: "/adviser", label: "Dashboard", icon: LayoutDashboard, section: "WORKSPACE" },
   { to: "/adviser/transitions", label: "Officer Transitions", icon: UserCog, section: "WORKSPACE" },
   { to: "/adviser/posts", label: "Post Approvals", icon: Megaphone, section: "WORKSPACE" },
+  { to: "/adviser/requirements", label: "Requirements", icon: ClipboardCheck, section: "WORKSPACE" },
   { to: "/adviser/compliance", label: "Accreditation", icon: ShieldCheck, section: "WORKSPACE" },
   { to: "/adviser/analytics", label: "Analytics", icon: BarChart3, section: "WORKSPACE" },
   { to: "/adviser/members", label: "Member activity", icon: Users, section: "WORKSPACE" },

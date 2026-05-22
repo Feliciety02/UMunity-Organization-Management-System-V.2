@@ -5,12 +5,14 @@ import { AppButton } from "@/components/ui/app-button";
 import { ClipboardCheck, Plus, ArrowRight, CalendarDays } from "lucide-react";
 import { useEventDocs, computeProgress } from "@/lib/event-requirements";
 import { RequirementsTrackerContent } from "@/components/events/RequirementsTrackerContent";
+import { getSession } from "@/lib/auth";
 
 export const Route = createFileRoute("/leader/requirements")({
   component: RequirementsHub,
 });
 
 function RequirementsHub() {
+  const session = getSession();
   const docs = useEventDocs();
   const [selectedDocId, setSelectedDocId] = useState("");
 
@@ -133,13 +135,13 @@ function RequirementsHub() {
         </div>
       )}
 
-      {selectedDoc ? (
+      {selectedDoc && session ? (
         <div className="mt-8">
           <PageHead
             title={`${selectedDoc.title} tracker`}
             sub="Live tracker inside the leader dashboard. Use the full-page view if you need a dedicated route."
           />
-          <RequirementsTrackerContent doc={selectedDoc} />
+          <RequirementsTrackerContent doc={selectedDoc} viewer={{ role: "leader", name: session.name }} />
         </div>
       ) : null}
     </>

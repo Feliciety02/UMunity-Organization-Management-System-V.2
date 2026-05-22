@@ -3,6 +3,7 @@ import { WorkflowBoard } from "@/components/workflows/WorkflowBoard";
 import { closeoutStatusTone, formatCloseoutStatus, useWorkflows } from "@/lib/workflows";
 import { usePostApprovals } from "@/lib/post-approvals";
 import { useComplianceSubmissions } from "@/lib/org-compliance";
+import { useEventDocs } from "@/lib/event-requirements";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, Panel } from "@/components/dashboard/DashboardLayout";
 
@@ -19,6 +20,7 @@ function AdviserDashboard() {
       (workflow.status === "approved" || workflow.status === "completed") &&
       workflow.operations.postEvent.closeoutStatus === "pending_adviser",
   );
+  const requirements = useEventDocs().filter((doc) => doc.reviewStatus === "pending_adviser");
 
   return (
     <>
@@ -68,6 +70,27 @@ function AdviserDashboard() {
             ))}
             <AppButton asChild variant="secondary" size="sm">
               <Link to="/adviser/compliance">Open accreditation queue</Link>
+            </AppButton>
+          </div>
+        )}
+      </Panel>
+      <Panel title="Requirements review" className="mt-6">
+        {requirements.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No event requirement trackers are waiting for adviser review.</p>
+        ) : (
+          <div className="space-y-3">
+            {requirements.slice(0, 3).map((doc) => (
+              <div key={doc.id} className="rounded-2xl border border-border bg-card p-3">
+                <div className="flex items-center gap-2">
+                  <Badge tone="info">{doc.category}</Badge>
+                  <Badge tone="neutral">{doc.date}</Badge>
+                </div>
+                <p className="mt-2 text-sm font-semibold">{doc.title}</p>
+                <p className="text-xs text-muted-foreground">{doc.venue}</p>
+              </div>
+            ))}
+            <AppButton asChild variant="secondary" size="sm">
+              <Link to="/adviser/requirements">Open requirements queue</Link>
             </AppButton>
           </div>
         )}
