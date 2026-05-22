@@ -61,20 +61,24 @@ import { Route as LeaderAttendeesRouteImport } from './routes/leader.attendees'
 import { Route as LeaderAttendanceRouteImport } from './routes/leader.attendance'
 import { Route as LeaderAnnouncementsRouteImport } from './routes/leader.announcements'
 import { Route as AdviserTransitionsRouteImport } from './routes/adviser.transitions'
+import { Route as AdviserRequirementsRouteImport } from './routes/adviser.requirements'
 import { Route as AdviserProfileRouteImport } from './routes/adviser.profile'
 import { Route as AdviserPostsRouteImport } from './routes/adviser.posts'
 import { Route as AdviserNotificationsRouteImport } from './routes/adviser.notifications'
 import { Route as AdviserMembersRouteImport } from './routes/adviser.members'
 import { Route as AdviserComplianceRouteImport } from './routes/adviser.compliance'
 import { Route as AdviserAnalyticsRouteImport } from './routes/adviser.analytics'
+import { Route as Admin2RequirementsRouteImport } from './routes/admin2.requirements'
 import { Route as Admin2ProfileRouteImport } from './routes/admin2.profile'
 import { Route as Admin2PostsRouteImport } from './routes/admin2.posts'
 import { Route as Admin2NotificationsRouteImport } from './routes/admin2.notifications'
+import { Route as Admin2MonitoringRouteImport } from './routes/admin2.monitoring'
 import { Route as Admin2ComplianceRouteImport } from './routes/admin2.compliance'
 import { Route as Admin1TransitionsRouteImport } from './routes/admin1.transitions'
 import { Route as Admin1ProfileRouteImport } from './routes/admin1.profile'
 import { Route as Admin1NotificationsRouteImport } from './routes/admin1.notifications'
 import { Route as Admin1GovernanceRouteImport } from './routes/admin1.governance'
+import { Route as Admin1AuthorityRouteImport } from './routes/admin1.authority'
 import { Route as Admin1AccreditationRouteImport } from './routes/admin1.accreditation'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
@@ -95,9 +99,11 @@ import { Route as LeaderOfficerTransitionTransitionIdRouteImport } from './route
 import { Route as LeaderComplianceSubmissionIdRouteImport } from './routes/leader.compliance.$submissionId'
 import { Route as AdviserWorkflowsWorkflowIdRouteImport } from './routes/adviser.workflows.$workflowId'
 import { Route as AdviserTransitionsTransitionIdRouteImport } from './routes/adviser.transitions.$transitionId'
+import { Route as AdviserRequirementsEventIdRouteImport } from './routes/adviser.requirements.$eventId'
 import { Route as AdviserPostsApprovalIdRouteImport } from './routes/adviser.posts.$approvalId'
 import { Route as AdviserComplianceSubmissionIdRouteImport } from './routes/adviser.compliance.$submissionId'
 import { Route as Admin2WorkflowsWorkflowIdRouteImport } from './routes/admin2.workflows.$workflowId'
+import { Route as Admin2RequirementsEventIdRouteImport } from './routes/admin2.requirements.$eventId'
 import { Route as Admin2PostsApprovalIdRouteImport } from './routes/admin2.posts.$approvalId'
 import { Route as Admin2ComplianceSubmissionIdRouteImport } from './routes/admin2.compliance.$submissionId'
 import { Route as Admin1WorkflowsWorkflowIdRouteImport } from './routes/admin1.workflows.$workflowId'
@@ -364,6 +370,11 @@ const AdviserTransitionsRoute = AdviserTransitionsRouteImport.update({
   path: '/transitions',
   getParentRoute: () => AdviserRoute,
 } as any)
+const AdviserRequirementsRoute = AdviserRequirementsRouteImport.update({
+  id: '/requirements',
+  path: '/requirements',
+  getParentRoute: () => AdviserRoute,
+} as any)
 const AdviserProfileRoute = AdviserProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -394,6 +405,11 @@ const AdviserAnalyticsRoute = AdviserAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AdviserRoute,
 } as any)
+const Admin2RequirementsRoute = Admin2RequirementsRouteImport.update({
+  id: '/requirements',
+  path: '/requirements',
+  getParentRoute: () => Admin2Route,
+} as any)
 const Admin2ProfileRoute = Admin2ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -407,6 +423,11 @@ const Admin2PostsRoute = Admin2PostsRouteImport.update({
 const Admin2NotificationsRoute = Admin2NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => Admin2Route,
+} as any)
+const Admin2MonitoringRoute = Admin2MonitoringRouteImport.update({
+  id: '/monitoring',
+  path: '/monitoring',
   getParentRoute: () => Admin2Route,
 } as any)
 const Admin2ComplianceRoute = Admin2ComplianceRouteImport.update({
@@ -432,6 +453,11 @@ const Admin1NotificationsRoute = Admin1NotificationsRouteImport.update({
 const Admin1GovernanceRoute = Admin1GovernanceRouteImport.update({
   id: '/governance',
   path: '/governance',
+  getParentRoute: () => Admin1Route,
+} as any)
+const Admin1AuthorityRoute = Admin1AuthorityRouteImport.update({
+  id: '/authority',
+  path: '/authority',
   getParentRoute: () => Admin1Route,
 } as any)
 const Admin1AccreditationRoute = Admin1AccreditationRouteImport.update({
@@ -541,6 +567,12 @@ const AdviserTransitionsTransitionIdRoute =
     path: '/$transitionId',
     getParentRoute: () => AdviserTransitionsRoute,
   } as any)
+const AdviserRequirementsEventIdRoute =
+  AdviserRequirementsEventIdRouteImport.update({
+    id: '/$eventId',
+    path: '/$eventId',
+    getParentRoute: () => AdviserRequirementsRoute,
+  } as any)
 const AdviserPostsApprovalIdRoute = AdviserPostsApprovalIdRouteImport.update({
   id: '/$approvalId',
   path: '/$approvalId',
@@ -557,6 +589,12 @@ const Admin2WorkflowsWorkflowIdRoute =
     id: '/workflows/$workflowId',
     path: '/workflows/$workflowId',
     getParentRoute: () => Admin2Route,
+  } as any)
+const Admin2RequirementsEventIdRoute =
+  Admin2RequirementsEventIdRouteImport.update({
+    id: '/$eventId',
+    path: '/$eventId',
+    getParentRoute: () => Admin2RequirementsRoute,
   } as any)
 const Admin2PostsApprovalIdRoute = Admin2PostsApprovalIdRouteImport.update({
   id: '/$approvalId',
@@ -614,20 +652,24 @@ export interface FileRoutesByFullPath {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin1/accreditation': typeof Admin1AccreditationRouteWithChildren
+  '/admin1/authority': typeof Admin1AuthorityRoute
   '/admin1/governance': typeof Admin1GovernanceRoute
   '/admin1/notifications': typeof Admin1NotificationsRoute
   '/admin1/profile': typeof Admin1ProfileRoute
   '/admin1/transitions': typeof Admin1TransitionsRouteWithChildren
   '/admin2/compliance': typeof Admin2ComplianceRouteWithChildren
+  '/admin2/monitoring': typeof Admin2MonitoringRoute
   '/admin2/notifications': typeof Admin2NotificationsRoute
   '/admin2/posts': typeof Admin2PostsRouteWithChildren
   '/admin2/profile': typeof Admin2ProfileRoute
+  '/admin2/requirements': typeof Admin2RequirementsRouteWithChildren
   '/adviser/analytics': typeof AdviserAnalyticsRoute
   '/adviser/compliance': typeof AdviserComplianceRouteWithChildren
   '/adviser/members': typeof AdviserMembersRoute
   '/adviser/notifications': typeof AdviserNotificationsRoute
   '/adviser/posts': typeof AdviserPostsRouteWithChildren
   '/adviser/profile': typeof AdviserProfileRoute
+  '/adviser/requirements': typeof AdviserRequirementsRouteWithChildren
   '/adviser/transitions': typeof AdviserTransitionsRouteWithChildren
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
@@ -672,9 +714,11 @@ export interface FileRoutesByFullPath {
   '/admin1/workflows/$workflowId': typeof Admin1WorkflowsWorkflowIdRoute
   '/admin2/compliance/$submissionId': typeof Admin2ComplianceSubmissionIdRoute
   '/admin2/posts/$approvalId': typeof Admin2PostsApprovalIdRoute
+  '/admin2/requirements/$eventId': typeof Admin2RequirementsEventIdRoute
   '/admin2/workflows/$workflowId': typeof Admin2WorkflowsWorkflowIdRoute
   '/adviser/compliance/$submissionId': typeof AdviserComplianceSubmissionIdRoute
   '/adviser/posts/$approvalId': typeof AdviserPostsApprovalIdRoute
+  '/adviser/requirements/$eventId': typeof AdviserRequirementsEventIdRoute
   '/adviser/transitions/$transitionId': typeof AdviserTransitionsTransitionIdRoute
   '/adviser/workflows/$workflowId': typeof AdviserWorkflowsWorkflowIdRoute
   '/leader/compliance/$submissionId': typeof LeaderComplianceSubmissionIdRoute
@@ -704,20 +748,24 @@ export interface FileRoutesByTo {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin1/accreditation': typeof Admin1AccreditationRouteWithChildren
+  '/admin1/authority': typeof Admin1AuthorityRoute
   '/admin1/governance': typeof Admin1GovernanceRoute
   '/admin1/notifications': typeof Admin1NotificationsRoute
   '/admin1/profile': typeof Admin1ProfileRoute
   '/admin1/transitions': typeof Admin1TransitionsRouteWithChildren
   '/admin2/compliance': typeof Admin2ComplianceRouteWithChildren
+  '/admin2/monitoring': typeof Admin2MonitoringRoute
   '/admin2/notifications': typeof Admin2NotificationsRoute
   '/admin2/posts': typeof Admin2PostsRouteWithChildren
   '/admin2/profile': typeof Admin2ProfileRoute
+  '/admin2/requirements': typeof Admin2RequirementsRouteWithChildren
   '/adviser/analytics': typeof AdviserAnalyticsRoute
   '/adviser/compliance': typeof AdviserComplianceRouteWithChildren
   '/adviser/members': typeof AdviserMembersRoute
   '/adviser/notifications': typeof AdviserNotificationsRoute
   '/adviser/posts': typeof AdviserPostsRouteWithChildren
   '/adviser/profile': typeof AdviserProfileRoute
+  '/adviser/requirements': typeof AdviserRequirementsRouteWithChildren
   '/adviser/transitions': typeof AdviserTransitionsRouteWithChildren
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
@@ -762,9 +810,11 @@ export interface FileRoutesByTo {
   '/admin1/workflows/$workflowId': typeof Admin1WorkflowsWorkflowIdRoute
   '/admin2/compliance/$submissionId': typeof Admin2ComplianceSubmissionIdRoute
   '/admin2/posts/$approvalId': typeof Admin2PostsApprovalIdRoute
+  '/admin2/requirements/$eventId': typeof Admin2RequirementsEventIdRoute
   '/admin2/workflows/$workflowId': typeof Admin2WorkflowsWorkflowIdRoute
   '/adviser/compliance/$submissionId': typeof AdviserComplianceSubmissionIdRoute
   '/adviser/posts/$approvalId': typeof AdviserPostsApprovalIdRoute
+  '/adviser/requirements/$eventId': typeof AdviserRequirementsEventIdRoute
   '/adviser/transitions/$transitionId': typeof AdviserTransitionsTransitionIdRoute
   '/adviser/workflows/$workflowId': typeof AdviserWorkflowsWorkflowIdRoute
   '/leader/compliance/$submissionId': typeof LeaderComplianceSubmissionIdRoute
@@ -801,20 +851,24 @@ export interface FileRoutesById {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin1/accreditation': typeof Admin1AccreditationRouteWithChildren
+  '/admin1/authority': typeof Admin1AuthorityRoute
   '/admin1/governance': typeof Admin1GovernanceRoute
   '/admin1/notifications': typeof Admin1NotificationsRoute
   '/admin1/profile': typeof Admin1ProfileRoute
   '/admin1/transitions': typeof Admin1TransitionsRouteWithChildren
   '/admin2/compliance': typeof Admin2ComplianceRouteWithChildren
+  '/admin2/monitoring': typeof Admin2MonitoringRoute
   '/admin2/notifications': typeof Admin2NotificationsRoute
   '/admin2/posts': typeof Admin2PostsRouteWithChildren
   '/admin2/profile': typeof Admin2ProfileRoute
+  '/admin2/requirements': typeof Admin2RequirementsRouteWithChildren
   '/adviser/analytics': typeof AdviserAnalyticsRoute
   '/adviser/compliance': typeof AdviserComplianceRouteWithChildren
   '/adviser/members': typeof AdviserMembersRoute
   '/adviser/notifications': typeof AdviserNotificationsRoute
   '/adviser/posts': typeof AdviserPostsRouteWithChildren
   '/adviser/profile': typeof AdviserProfileRoute
+  '/adviser/requirements': typeof AdviserRequirementsRouteWithChildren
   '/adviser/transitions': typeof AdviserTransitionsRouteWithChildren
   '/leader/announcements': typeof LeaderAnnouncementsRoute
   '/leader/attendance': typeof LeaderAttendanceRoute
@@ -859,9 +913,11 @@ export interface FileRoutesById {
   '/admin1/workflows/$workflowId': typeof Admin1WorkflowsWorkflowIdRoute
   '/admin2/compliance/$submissionId': typeof Admin2ComplianceSubmissionIdRoute
   '/admin2/posts/$approvalId': typeof Admin2PostsApprovalIdRoute
+  '/admin2/requirements/$eventId': typeof Admin2RequirementsEventIdRoute
   '/admin2/workflows/$workflowId': typeof Admin2WorkflowsWorkflowIdRoute
   '/adviser/compliance/$submissionId': typeof AdviserComplianceSubmissionIdRoute
   '/adviser/posts/$approvalId': typeof AdviserPostsApprovalIdRoute
+  '/adviser/requirements/$eventId': typeof AdviserRequirementsEventIdRoute
   '/adviser/transitions/$transitionId': typeof AdviserTransitionsTransitionIdRoute
   '/adviser/workflows/$workflowId': typeof AdviserWorkflowsWorkflowIdRoute
   '/leader/compliance/$submissionId': typeof LeaderComplianceSubmissionIdRoute
@@ -899,20 +955,24 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/users'
     | '/admin1/accreditation'
+    | '/admin1/authority'
     | '/admin1/governance'
     | '/admin1/notifications'
     | '/admin1/profile'
     | '/admin1/transitions'
     | '/admin2/compliance'
+    | '/admin2/monitoring'
     | '/admin2/notifications'
     | '/admin2/posts'
     | '/admin2/profile'
+    | '/admin2/requirements'
     | '/adviser/analytics'
     | '/adviser/compliance'
     | '/adviser/members'
     | '/adviser/notifications'
     | '/adviser/posts'
     | '/adviser/profile'
+    | '/adviser/requirements'
     | '/adviser/transitions'
     | '/leader/announcements'
     | '/leader/attendance'
@@ -957,9 +1017,11 @@ export interface FileRouteTypes {
     | '/admin1/workflows/$workflowId'
     | '/admin2/compliance/$submissionId'
     | '/admin2/posts/$approvalId'
+    | '/admin2/requirements/$eventId'
     | '/admin2/workflows/$workflowId'
     | '/adviser/compliance/$submissionId'
     | '/adviser/posts/$approvalId'
+    | '/adviser/requirements/$eventId'
     | '/adviser/transitions/$transitionId'
     | '/adviser/workflows/$workflowId'
     | '/leader/compliance/$submissionId'
@@ -989,20 +1051,24 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/users'
     | '/admin1/accreditation'
+    | '/admin1/authority'
     | '/admin1/governance'
     | '/admin1/notifications'
     | '/admin1/profile'
     | '/admin1/transitions'
     | '/admin2/compliance'
+    | '/admin2/monitoring'
     | '/admin2/notifications'
     | '/admin2/posts'
     | '/admin2/profile'
+    | '/admin2/requirements'
     | '/adviser/analytics'
     | '/adviser/compliance'
     | '/adviser/members'
     | '/adviser/notifications'
     | '/adviser/posts'
     | '/adviser/profile'
+    | '/adviser/requirements'
     | '/adviser/transitions'
     | '/leader/announcements'
     | '/leader/attendance'
@@ -1047,9 +1113,11 @@ export interface FileRouteTypes {
     | '/admin1/workflows/$workflowId'
     | '/admin2/compliance/$submissionId'
     | '/admin2/posts/$approvalId'
+    | '/admin2/requirements/$eventId'
     | '/admin2/workflows/$workflowId'
     | '/adviser/compliance/$submissionId'
     | '/adviser/posts/$approvalId'
+    | '/adviser/requirements/$eventId'
     | '/adviser/transitions/$transitionId'
     | '/adviser/workflows/$workflowId'
     | '/leader/compliance/$submissionId'
@@ -1085,20 +1153,24 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/users'
     | '/admin1/accreditation'
+    | '/admin1/authority'
     | '/admin1/governance'
     | '/admin1/notifications'
     | '/admin1/profile'
     | '/admin1/transitions'
     | '/admin2/compliance'
+    | '/admin2/monitoring'
     | '/admin2/notifications'
     | '/admin2/posts'
     | '/admin2/profile'
+    | '/admin2/requirements'
     | '/adviser/analytics'
     | '/adviser/compliance'
     | '/adviser/members'
     | '/adviser/notifications'
     | '/adviser/posts'
     | '/adviser/profile'
+    | '/adviser/requirements'
     | '/adviser/transitions'
     | '/leader/announcements'
     | '/leader/attendance'
@@ -1143,9 +1215,11 @@ export interface FileRouteTypes {
     | '/admin1/workflows/$workflowId'
     | '/admin2/compliance/$submissionId'
     | '/admin2/posts/$approvalId'
+    | '/admin2/requirements/$eventId'
     | '/admin2/workflows/$workflowId'
     | '/adviser/compliance/$submissionId'
     | '/adviser/posts/$approvalId'
+    | '/adviser/requirements/$eventId'
     | '/adviser/transitions/$transitionId'
     | '/adviser/workflows/$workflowId'
     | '/leader/compliance/$submissionId'
@@ -1539,6 +1613,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdviserTransitionsRouteImport
       parentRoute: typeof AdviserRoute
     }
+    '/adviser/requirements': {
+      id: '/adviser/requirements'
+      path: '/requirements'
+      fullPath: '/adviser/requirements'
+      preLoaderRoute: typeof AdviserRequirementsRouteImport
+      parentRoute: typeof AdviserRoute
+    }
     '/adviser/profile': {
       id: '/adviser/profile'
       path: '/profile'
@@ -1581,6 +1662,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdviserAnalyticsRouteImport
       parentRoute: typeof AdviserRoute
     }
+    '/admin2/requirements': {
+      id: '/admin2/requirements'
+      path: '/requirements'
+      fullPath: '/admin2/requirements'
+      preLoaderRoute: typeof Admin2RequirementsRouteImport
+      parentRoute: typeof Admin2Route
+    }
     '/admin2/profile': {
       id: '/admin2/profile'
       path: '/profile'
@@ -1600,6 +1688,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/admin2/notifications'
       preLoaderRoute: typeof Admin2NotificationsRouteImport
+      parentRoute: typeof Admin2Route
+    }
+    '/admin2/monitoring': {
+      id: '/admin2/monitoring'
+      path: '/monitoring'
+      fullPath: '/admin2/monitoring'
+      preLoaderRoute: typeof Admin2MonitoringRouteImport
       parentRoute: typeof Admin2Route
     }
     '/admin2/compliance': {
@@ -1635,6 +1730,13 @@ declare module '@tanstack/react-router' {
       path: '/governance'
       fullPath: '/admin1/governance'
       preLoaderRoute: typeof Admin1GovernanceRouteImport
+      parentRoute: typeof Admin1Route
+    }
+    '/admin1/authority': {
+      id: '/admin1/authority'
+      path: '/authority'
+      fullPath: '/admin1/authority'
+      preLoaderRoute: typeof Admin1AuthorityRouteImport
       parentRoute: typeof Admin1Route
     }
     '/admin1/accreditation': {
@@ -1777,6 +1879,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdviserTransitionsTransitionIdRouteImport
       parentRoute: typeof AdviserTransitionsRoute
     }
+    '/adviser/requirements/$eventId': {
+      id: '/adviser/requirements/$eventId'
+      path: '/$eventId'
+      fullPath: '/adviser/requirements/$eventId'
+      preLoaderRoute: typeof AdviserRequirementsEventIdRouteImport
+      parentRoute: typeof AdviserRequirementsRoute
+    }
     '/adviser/posts/$approvalId': {
       id: '/adviser/posts/$approvalId'
       path: '/$approvalId'
@@ -1797,6 +1906,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin2/workflows/$workflowId'
       preLoaderRoute: typeof Admin2WorkflowsWorkflowIdRouteImport
       parentRoute: typeof Admin2Route
+    }
+    '/admin2/requirements/$eventId': {
+      id: '/admin2/requirements/$eventId'
+      path: '/$eventId'
+      fullPath: '/admin2/requirements/$eventId'
+      preLoaderRoute: typeof Admin2RequirementsEventIdRouteImport
+      parentRoute: typeof Admin2RequirementsRoute
     }
     '/admin2/posts/$approvalId': {
       id: '/admin2/posts/$approvalId'
@@ -1892,6 +2008,7 @@ const Admin1TransitionsRouteWithChildren =
 
 interface Admin1RouteChildren {
   Admin1AccreditationRoute: typeof Admin1AccreditationRouteWithChildren
+  Admin1AuthorityRoute: typeof Admin1AuthorityRoute
   Admin1GovernanceRoute: typeof Admin1GovernanceRoute
   Admin1NotificationsRoute: typeof Admin1NotificationsRoute
   Admin1ProfileRoute: typeof Admin1ProfileRoute
@@ -1902,6 +2019,7 @@ interface Admin1RouteChildren {
 
 const Admin1RouteChildren: Admin1RouteChildren = {
   Admin1AccreditationRoute: Admin1AccreditationRouteWithChildren,
+  Admin1AuthorityRoute: Admin1AuthorityRoute,
   Admin1GovernanceRoute: Admin1GovernanceRoute,
   Admin1NotificationsRoute: Admin1NotificationsRoute,
   Admin1ProfileRoute: Admin1ProfileRoute,
@@ -1936,20 +2054,35 @@ const Admin2PostsRouteWithChildren = Admin2PostsRoute._addFileChildren(
   Admin2PostsRouteChildren,
 )
 
+interface Admin2RequirementsRouteChildren {
+  Admin2RequirementsEventIdRoute: typeof Admin2RequirementsEventIdRoute
+}
+
+const Admin2RequirementsRouteChildren: Admin2RequirementsRouteChildren = {
+  Admin2RequirementsEventIdRoute: Admin2RequirementsEventIdRoute,
+}
+
+const Admin2RequirementsRouteWithChildren =
+  Admin2RequirementsRoute._addFileChildren(Admin2RequirementsRouteChildren)
+
 interface Admin2RouteChildren {
   Admin2ComplianceRoute: typeof Admin2ComplianceRouteWithChildren
+  Admin2MonitoringRoute: typeof Admin2MonitoringRoute
   Admin2NotificationsRoute: typeof Admin2NotificationsRoute
   Admin2PostsRoute: typeof Admin2PostsRouteWithChildren
   Admin2ProfileRoute: typeof Admin2ProfileRoute
+  Admin2RequirementsRoute: typeof Admin2RequirementsRouteWithChildren
   Admin2IndexRoute: typeof Admin2IndexRoute
   Admin2WorkflowsWorkflowIdRoute: typeof Admin2WorkflowsWorkflowIdRoute
 }
 
 const Admin2RouteChildren: Admin2RouteChildren = {
   Admin2ComplianceRoute: Admin2ComplianceRouteWithChildren,
+  Admin2MonitoringRoute: Admin2MonitoringRoute,
   Admin2NotificationsRoute: Admin2NotificationsRoute,
   Admin2PostsRoute: Admin2PostsRouteWithChildren,
   Admin2ProfileRoute: Admin2ProfileRoute,
+  Admin2RequirementsRoute: Admin2RequirementsRouteWithChildren,
   Admin2IndexRoute: Admin2IndexRoute,
   Admin2WorkflowsWorkflowIdRoute: Admin2WorkflowsWorkflowIdRoute,
 }
@@ -1980,6 +2113,17 @@ const AdviserPostsRouteWithChildren = AdviserPostsRoute._addFileChildren(
   AdviserPostsRouteChildren,
 )
 
+interface AdviserRequirementsRouteChildren {
+  AdviserRequirementsEventIdRoute: typeof AdviserRequirementsEventIdRoute
+}
+
+const AdviserRequirementsRouteChildren: AdviserRequirementsRouteChildren = {
+  AdviserRequirementsEventIdRoute: AdviserRequirementsEventIdRoute,
+}
+
+const AdviserRequirementsRouteWithChildren =
+  AdviserRequirementsRoute._addFileChildren(AdviserRequirementsRouteChildren)
+
 interface AdviserTransitionsRouteChildren {
   AdviserTransitionsTransitionIdRoute: typeof AdviserTransitionsTransitionIdRoute
 }
@@ -1998,6 +2142,7 @@ interface AdviserRouteChildren {
   AdviserNotificationsRoute: typeof AdviserNotificationsRoute
   AdviserPostsRoute: typeof AdviserPostsRouteWithChildren
   AdviserProfileRoute: typeof AdviserProfileRoute
+  AdviserRequirementsRoute: typeof AdviserRequirementsRouteWithChildren
   AdviserTransitionsRoute: typeof AdviserTransitionsRouteWithChildren
   AdviserIndexRoute: typeof AdviserIndexRoute
   AdviserWorkflowsWorkflowIdRoute: typeof AdviserWorkflowsWorkflowIdRoute
@@ -2010,6 +2155,7 @@ const AdviserRouteChildren: AdviserRouteChildren = {
   AdviserNotificationsRoute: AdviserNotificationsRoute,
   AdviserPostsRoute: AdviserPostsRouteWithChildren,
   AdviserProfileRoute: AdviserProfileRoute,
+  AdviserRequirementsRoute: AdviserRequirementsRouteWithChildren,
   AdviserTransitionsRoute: AdviserTransitionsRouteWithChildren,
   AdviserIndexRoute: AdviserIndexRoute,
   AdviserWorkflowsWorkflowIdRoute: AdviserWorkflowsWorkflowIdRoute,

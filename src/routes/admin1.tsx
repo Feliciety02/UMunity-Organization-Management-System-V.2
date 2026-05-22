@@ -1,12 +1,12 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import {
   LayoutDashboard,
-  ShieldCheck,
   ScrollText,
   Bell,
   User,
   UserCog,
   Landmark,
+  ShieldCheck,
 } from "lucide-react";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
 import type { BottomNavItem } from "@/components/dashboard/MobileBottomNav";
@@ -14,6 +14,7 @@ import { resolveAdmin1NotificationHref } from "@/lib/notifications";
 
 const nav: NavItem[] = [
   { to: "/admin1", label: "Dashboard", icon: LayoutDashboard, section: "OVERVIEW" },
+  { to: "/admin1/authority", label: "Final Authority", icon: ShieldCheck, section: "OVERVIEW" },
   { to: "/admin1/accreditation", label: "Accreditation", icon: Landmark, section: "OVERVIEW" },
   { to: "/admin1/transitions", label: "Officer Transitions", icon: UserCog, section: "OVERVIEW" },
   { to: "/admin1/governance", label: "Governance", icon: ScrollText, section: "OVERVIEW" },
@@ -23,6 +24,7 @@ const nav: NavItem[] = [
 
 const bottomNav: BottomNavItem[] = [
   { to: "/admin1", label: "Queue", icon: ShieldCheck },
+  { to: "/admin1/authority", label: "Authority", icon: Landmark },
   { to: "/admin1/governance", label: "Records", icon: ScrollText },
   { to: "/admin1/notifications", label: "Alerts", icon: Bell },
   { to: "/admin1/profile", label: "Me", icon: User },

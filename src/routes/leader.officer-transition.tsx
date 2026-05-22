@@ -1,15 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { ArrowRight, Plus, UserCog } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Plus, UserCog, Users, ClipboardList } from "lucide-react";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, EmptyState, PageHead, Panel } from "@/components/dashboard/DashboardLayout";
 import { createTransitionWorkflow, newWorkflowId, useTransitionWorkflows, type OfficerNominee } from "@/lib/workflows";
 import { getSession } from "@/lib/auth";
 import { toast } from "sonner";
+import { SmartField, SmartFormSection, SmartProgressCard, SmartTextArea } from "@/components/workflows/SmartForm";
 
 export const Route = createFileRoute("/leader/officer-transition")({
   component: LeaderOfficerTransitionPage,
 });
+
+const DRAFT_KEY = "umunity.officer-transition-draft";
 
 function LeaderOfficerTransitionPage() {
   const navigate = useNavigate();
@@ -24,10 +27,44 @@ function LeaderOfficerTransitionPage() {
     { id: newWorkflowId("nominee"), name: "", position: "Vice President", program: "", yearLevel: "", email: "" },
   ]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as {
+        academicYear?: string;
+        rationale?: string;
+        handoverNotes?: string;
+        nominees?: OfficerNominee[];
+      };
+      if (parsed.academicYear) setAcademicYear(parsed.academicYear);
+      if (parsed.rationale) setRationale(parsed.rationale);
+      if (parsed.handoverNotes) setHandoverNotes(parsed.handoverNotes);
+      if (parsed.nominees?.length) setNominees(parsed.nominees);
+    } catch {
+      // Ignore malformed demo drafts.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ academicYear, rationale, handoverNotes, nominees }));
+  }, [academicYear, handoverNotes, nominees, rationale]);
+
   const filledNominees = useMemo(
     () => nominees.filter((nominee) => nominee.name.trim() && nominee.position.trim()),
     [nominees],
   );
+  const completion = useMemo(() => {
+    const total = 4;
+    const done =
+      (academicYear.trim() ? 1 : 0) +
+      (rationale.trim() ? 1 : 0) +
+      (handoverNotes.trim() ? 1 : 0) +
+      (filledNominees.length >= 2 ? 1 : 0);
+    return Math.round((done / total) * 100);
+  }, [academicYear, filledNominees.length, handoverNotes, rationale]);
 
   function updateNominee(id: string, field: keyof OfficerNominee, value: string) {
     setNominees((current) => current.map((nominee) => (nominee.id === id ? { ...nominee, [field]: value } : nominee)));
@@ -57,6 +94,7 @@ function LeaderOfficerTransitionPage() {
       nominees: filledNominees,
     });
     toast.success("Officer transition submitted");
+    localStorage.removeItem(DRAFT_KEY);
     navigate({ to: "/leader/officer-transition/$transitionId", params: { transitionId: workflow.id } });
   }
 
@@ -74,28 +112,29 @@ function LeaderOfficerTransitionPage() {
 
       <div className="grid gap-4 xl:grid-cols-[1.5fr_minmax(320px,1fr)]">
         <div className="space-y-4">
-          <Panel title="Nomination form">
+          <SmartFormSection title="Nomination form" description="Annual officer replacement is now governed through one reviewable transition record.">
             <div className="grid gap-4 md:grid-cols-2">
-              <label className="block">
-                <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Academic year</span>
-                <input value={academicYear} onChange={(e) => setAcademicYear(e.target.value)} className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm" />
-              </label>
-              <label className="block">
-                <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Adviser</span>
-                <input value="Prof. Elena Tan" disabled className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm opacity-80" />
-              </label>
-              <label className="block md:col-span-2">
-                <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Nomination rationale</span>
-                <textarea value={rationale} onChange={(e) => setRationale(e.target.value)} rows={4} className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm" />
-              </label>
-              <label className="block md:col-span-2">
-                <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Handover notes</span>
-                <textarea value={handoverNotes} onChange={(e) => setHandoverNotes(e.target.value)} rows={4} className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm" />
-              </label>
+              <SmartField label="Academic year" value={academicYear} onChange={setAcademicYear} icon={ClipboardList} />
+              <SmartField label="Adviser" value="Prof. Elena Tan" disabled icon={Users} />
+              <SmartTextArea label="Nomination rationale" value={rationale} onChange={setRationale} rows={4} className="md:col-span-2" />
+              <SmartTextArea label="Handover notes" value={handoverNotes} onChange={setHandoverNotes} rows={4} className="md:col-span-2" />
             </div>
-          </Panel>
+          </SmartFormSection>
 
-          <Panel title="Nominee slate">
+          <SmartFormSection title="Nominee slate" description="Build the proposed officer set in repeatable rows instead of manual yearly replacement." action={
+            <AppButton
+              variant="secondary"
+              size="sm"
+              onClick={() =>
+                setNominees((current) => [
+                  ...current,
+                  { id: newWorkflowId("nominee"), name: "", position: "", program: "", yearLevel: "", email: "" },
+                ])
+              }
+            >
+              <Plus className="h-4 w-4" /> Add nominee
+            </AppButton>
+          }>
             <div className="space-y-3">
               {nominees.map((nominee) => (
                 <div key={nominee.id} className="grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-2">
@@ -107,23 +146,21 @@ function LeaderOfficerTransitionPage() {
                 </div>
               ))}
             </div>
-            <AppButton
-              variant="secondary"
-              size="sm"
-              className="mt-4"
-              onClick={() =>
-                setNominees((current) => [
-                  ...current,
-                  { id: newWorkflowId("nominee"), name: "", position: "", program: "", yearLevel: "", email: "" },
-                ])
-              }
-            >
-              <Plus className="h-4 w-4" /> Add nominee
-            </AppButton>
-          </Panel>
+          </SmartFormSection>
         </div>
 
         <div className="space-y-4">
+          <SmartProgressCard
+            title="Transition readiness"
+            pct={completion}
+            summary="Drafts now auto-save and route through adviser validation before Admin 1 archives the approved cycle."
+            steps={[
+              { title: "Draft", detail: "Leader prepares the nominee slate and handover notes.", active: true },
+              { title: "Pending Adviser", detail: "Adviser checks eligibility, continuity, and nominations." },
+              { title: "Pending Admin 1", detail: "Final university approval archives the officer cycle." },
+              { title: "Archived", detail: "Previous leadership history is preserved for future records." },
+            ]}
+          />
           <Panel title="Submitted transitions">
             {transitions.length === 0 ? (
               <EmptyState title="No transition workflows yet" sub="Submit the first officer nomination set for adviser review." icon={UserCog} />

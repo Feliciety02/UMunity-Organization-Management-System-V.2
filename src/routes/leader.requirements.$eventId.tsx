@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useEventDoc, deleteEventDoc } from "@/lib/event-requirements";
 import { RequirementsTrackerContent } from "@/components/events/RequirementsTrackerContent";
+import { getSession } from "@/lib/auth";
 
 export const Route = createFileRoute("/leader/requirements/$eventId")({
   component: RequirementsTracker,
@@ -14,8 +15,9 @@ function RequirementsTracker() {
   const { eventId } = Route.useParams();
   const navigate = useNavigate();
   const doc = useEventDoc(eventId);
+  const session = getSession();
 
-  if (!doc) {
+  if (!doc || !session) {
     return (
       <>
         <PageHead title="Requirements" sub="Event not found." />
@@ -56,7 +58,7 @@ function RequirementsTracker() {
           </div>
         }
       />
-      <RequirementsTrackerContent doc={doc} />
+      <RequirementsTrackerContent doc={doc} viewer={{ role: "leader", name: session.name }} />
     </>
   );
 }

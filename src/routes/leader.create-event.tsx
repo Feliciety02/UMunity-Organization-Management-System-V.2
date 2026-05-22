@@ -18,6 +18,7 @@ import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { createWorkflow, proposalCompletion, type EventProposalData } from "@/lib/workflows";
 import { getSession } from "@/lib/auth";
+import { SmartField, SmartFormSection, SmartProgressCard, SmartSelect, SmartTextArea } from "@/components/workflows/SmartForm";
 
 export const Route = createFileRoute("/leader/create-event")({
   component: CreateEventWorkflowPage,
@@ -174,7 +175,7 @@ function CreateEventWorkflowPage() {
         <div className="space-y-4">
           <Panel title="Activity proposal">
             <div className="grid gap-4 md:grid-cols-2">
-              <Field
+              <SmartField
                 label="Event title"
                 icon={FileText}
                 value={proposal.title}
@@ -182,42 +183,42 @@ function CreateEventWorkflowPage() {
                 placeholder="UM Innovation Summit 2026"
                 className="md:col-span-2"
               />
-              <SelectField
+              <SmartSelect
                 label="Category"
                 icon={Tag}
                 value={proposal.category}
                 onChange={(value) => patch("category", value)}
                 options={CATEGORIES}
               />
-              <Field
+              <SmartField
                 label="Venue"
                 icon={MapPin}
                 value={proposal.venue}
                 onChange={(value) => patch("venue", value)}
                 placeholder="DPT Building Auditorium"
               />
-              <Field
+              <SmartField
                 label="Date"
                 icon={Calendar}
                 type="date"
                 value={proposal.date}
                 onChange={(value) => patch("date", value)}
               />
-              <Field
+              <SmartField
                 label="Time"
                 icon={Clock}
                 type="time"
                 value={proposal.time}
                 onChange={(value) => patch("time", value)}
               />
-              <TextAreaField
+              <SmartTextArea
                 label="Event objective"
                 icon={Target}
                 value={proposal.objective}
                 onChange={(value) => patch("objective", value)}
                 placeholder="What problem does this activity solve for the organization and students?"
               />
-              <TextAreaField
+              <SmartTextArea
                 label="Event description"
                 icon={FileText}
                 value={proposal.description}
@@ -434,24 +435,18 @@ function CreateEventWorkflowPage() {
 
         <div className="space-y-4">
           <Panel title="Workflow progress">
-            <div className="space-y-4">
-              <div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Form readiness</span>
-                  <span className="font-semibold text-foreground">{completion.pct}%</span>
-                </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
-                  <div className="h-full bg-primary" style={{ width: `${completion.pct}%` }} />
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <StepCard title="Draft" detail="Leader builds the workflow in a Google Forms style flow." active />
-                <StepCard title="Pending Adviser" detail="Adviser reviews content, activity details, and officer readiness." />
-                <StepCard title="Pending Admin 2" detail="Secondary compliance review after adviser approval." />
-                <StepCard title="Pending Admin 1" detail="Final university authority review." />
-                <StepCard title="Approved" detail="Workflow opens preparation, checklist, and post-event stages." />
-              </div>
-            </div>
+            <SmartProgressCard
+              title="Workflow progress"
+              pct={completion.pct}
+              summary="This draft stays inside the new workflow system and routes through adviser, Admin 2, and Admin 1."
+              steps={[
+                { title: "Draft", detail: "Leader builds the workflow in a Google Forms style flow.", active: true },
+                { title: "Pending Adviser", detail: "Adviser reviews content, activity details, and officer readiness." },
+                { title: "Pending Admin 2", detail: "Secondary compliance review after adviser approval." },
+                { title: "Pending Admin 1", detail: "Final university authority review." },
+                { title: "Approved", detail: "Workflow opens preparation, checklist, and post-event stages." },
+              ]}
+            />
           </Panel>
 
           <Panel title="Smart workflow notes">
@@ -485,113 +480,6 @@ function SectionLabel({ icon: Icon, label }: { icon: typeof Users; label: string
     <div className="flex items-center gap-2">
       <Icon className="h-4 w-4 text-primary" />
       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-
-function Field({
-  label,
-  icon: Icon,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-  className = "",
-}: {
-  label: string;
-  icon: typeof FileText;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  type?: string;
-  className?: string;
-}) {
-  return (
-    <label className={`block ${className}`}>
-      <span className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" /> {label}
-      </span>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none"
-      />
-    </label>
-  );
-}
-
-function SelectField({
-  label,
-  icon: Icon,
-  value,
-  onChange,
-  options,
-}: {
-  label: string;
-  icon: typeof Tag;
-  value: string;
-  onChange: (value: string) => void;
-  options: string[];
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" /> {label}
-      </span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none"
-      >
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
-}
-
-function TextAreaField({
-  label,
-  icon: Icon,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  icon: typeof FileText;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" /> {label}
-      </span>
-      <textarea
-        rows={5}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none"
-      />
-    </label>
-  );
-}
-
-function StepCard({ title, detail, active = false }: { title: string; detail: string; active?: boolean }) {
-  return (
-    <div className={`rounded-2xl border px-4 py-3 ${active ? "border-primary/30 bg-primary/8" : "border-border bg-card"}`}>
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold">{title}</p>
-        {active ? <Badge tone="info">Current</Badge> : <DollarSign className="h-4 w-4 text-muted-foreground" />}
-      </div>
-      <p className="mt-1 text-xs leading-5 text-muted-foreground">{detail}</p>
     </div>
   );
 }

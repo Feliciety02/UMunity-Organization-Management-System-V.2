@@ -15,17 +15,24 @@ import {
   Users,
 } from "lucide-react";
 import {
+  addEventDocComment,
+  approveEventDoc,
+  computeProgress,
+  formatReqReviewStatus,
+  removeItemFile,
+  reqReviewTone,
+  requestEventDocRevision,
+  sectionProgress,
+  submitEventDoc,
+  suggestFilename,
   updateItemStatus,
   uploadItemFile,
-  removeItemFile,
-  computeProgress,
-  sectionProgress,
-  suggestFilename,
-  type ReqStatus,
+  type EventDoc,
+  type ReqActorRole,
   type ReqItem,
   type ReqSection,
+  type ReqStatus,
   type SectionId,
-  type EventDoc,
 } from "@/lib/event-requirements";
 
 const STATUSES: { value: ReqStatus; label: string; tone: "neutral" | "warning" | "success" | "danger" | "info" }[] = [
@@ -50,20 +57,58 @@ function dueLabel(due?: number): { text: string; tone: "neutral" | "warning" | "
   return { text: `Due in ${days}d`, tone: "success" };
 }
 
-export function RequirementsTrackerContent({ doc }: { doc: EventDoc }) {
+export function RequirementsTrackerContent({
+  doc,
+  viewer,
+}: {
+  doc: EventDoc;
+  viewer: { role: ReqActorRole; name: string };
+}) {
   const [activeSection, setActiveSection] = useState<SectionId | "all">("all");
+  const [comment, setComment] = useState("");
   const progress = useMemo(() => computeProgress(doc), [doc]);
   const sections = activeSection === "all" ? doc.sections : doc.sections.filter((s) => s.id === activeSection);
+  const canSubmit = viewer.role === "leader" && (doc.reviewStatus === "draft" || doc.reviewStatus === "revision_requested");
+  const canReview =
+    (viewer.role === "adviser" && doc.reviewStatus === "pending_adviser") ||
+    (viewer.role === "admin2" && doc.reviewStatus === "pending_admin2");
 
   return (
     <>
       <div className="grid gap-4 lg:grid-cols-3">
         <Panel className="lg:col-span-2">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Overall progress</p>
-              <p className="mt-1 font-display text-3xl font-bold">{progress.pct}%</p>
-              <p className="mt-1 text-sm text-muted-foreground">{progress.done} of {progress.total} requirements approved</p>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Overall progress</p>
+                <p className="mt-1 font-display text-3xl font-bold">{progress.pct}%</p>
+                <p className="mt-1 text-sm text-muted-foreground">{progress.done} of {progress.total} requirements approved</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge tone={reqReviewTone(doc.reviewStatus)}>{formatReqReviewStatus(doc.reviewStatus)}</Badge>
+                {canSubmit ? (
+                  <button
+                    onClick={() => {
+                      submitEventDoc(doc.id, viewer);
+                      toast.success("Tracker submitted to adviser");
+                    }}
+                    className="inline-flex items-center rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition hover:opacity-90"
+                  >
+                    Submit for review
+                  </button>
+                ) : null}
+                {canReview ? (
+                  <button
+                    onClick={() => {
+                      approveEventDoc(doc.id, viewer);
+                      toast.success(viewer.role === "adviser" ? "Tracker approved to Admin 2" : "Tracker approved");
+                    }}
+                    className="inline-flex items-center rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition hover:opacity-90"
+                  >
+                    {viewer.role === "adviser" ? "Approve to Admin 2" : "Approve tracker"}
+                  </button>
+                ) : null}
+              </div>
             </div>
             {progress.ready ? (
               <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-emerald-700 dark:text-emerald-300">
@@ -80,10 +125,72 @@ export function RequirementsTrackerContent({ doc }: { doc: EventDoc }) {
             )}
           </div>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
-            <div
-              className={`h-full ${progress.ready ? "bg-emerald-500" : "bg-gradient-gold"}`}
-              style={{ width: `${progress.pct}%` }}
+            <div className={`h-full ${progress.ready ? "bg-emerald-500" : "bg-gradient-gold"}`} style={{ width: `${progress.pct}%` }} />
+          </div>
+        </Panel>
+
+        <Panel title="Review lane">
+          <div className="space-y-3">
+            <div className="rounded-2xl bg-secondary/35 p-3 text-sm text-muted-foreground">
+              Adviser reviews the requirements tracker first. Admin 2 validates the final compliance pass after adviser approval.
+            </div>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              rows={4}
+              placeholder="Leave a tracker note or revision request"
+              className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none"
             />
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => {
+                  if (!comment.trim()) {
+                    toast.error("Add a comment first.");
+                    return;
+                  }
+                  addEventDocComment(doc.id, viewer, comment.trim());
+                  toast.success("Comment added");
+                  setComment("");
+                }}
+                className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold transition hover:bg-secondary"
+              >
+                Add comment
+              </button>
+              {canReview ? (
+                <button
+                  onClick={() => {
+                    if (!comment.trim()) {
+                      toast.error("Write the revision request first.");
+                      return;
+                    }
+                    requestEventDocRevision(doc.id, viewer, comment.trim());
+                    toast.success("Revision requested");
+                    setComment("");
+                  }}
+                  className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold transition hover:bg-secondary"
+                >
+                  Request revision
+                </button>
+              ) : null}
+            </div>
+            <div className="space-y-2">
+              {doc.comments.length === 0 ? (
+                <div className="rounded-2xl bg-secondary/35 p-3 text-xs text-muted-foreground">No tracker comments yet.</div>
+              ) : (
+                doc.comments.slice(0, 4).map((entry) => (
+                  <div key={entry.id} className="rounded-2xl border border-border bg-card p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Badge tone="neutral">{entry.authorRole}</Badge>
+                        <p className="text-sm font-semibold">{entry.authorName}</p>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{new Date(entry.createdAt).toLocaleString()}</p>
+                    </div>
+                    <p className="mt-2 text-sm text-foreground">{entry.message}</p>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </Panel>
 
@@ -118,14 +225,14 @@ export function RequirementsTrackerContent({ doc }: { doc: EventDoc }) {
 
       <div className="mt-4 space-y-6">
         {sections.map((section) => (
-          <SectionBoard key={section.id} doc={doc} section={section} />
+          <SectionBoard key={section.id} doc={doc} section={section} viewer={viewer} />
         ))}
       </div>
     </>
   );
 }
 
-function SectionBoard({ doc, section }: { doc: EventDoc; section: ReqSection }) {
+function SectionBoard({ doc, section, viewer }: { doc: EventDoc; section: ReqSection; viewer: { role: ReqActorRole; name: string } }) {
   const p = sectionProgress(section);
   const icon = section.id === "before" ? Clock : section.id === "during" ? AlertCircle : CheckCircle2;
   const Icon = icon;
@@ -149,14 +256,23 @@ function SectionBoard({ doc, section }: { doc: EventDoc; section: ReqSection }) 
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {section.items.map((item) => (
-          <RequirementCard key={item.id} doc={doc} section={section} item={item} />
+          <RequirementCard key={item.id} doc={doc} section={section} item={item} viewer={viewer} />
         ))}
       </div>
     </Panel>
   );
 }
 
-function RequirementCard({ doc, section, item }: { doc: EventDoc; section: ReqSection; item: ReqItem }) {
+function RequirementCard({
+  doc,
+  section,
+  item,
+}: {
+  doc: EventDoc;
+  section: ReqSection;
+  item: ReqItem;
+  viewer: { role: ReqActorRole; name: string };
+}) {
   const meta = statusMeta(item.status);
   const due = dueLabel(item.dueAt);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -182,22 +298,25 @@ function RequirementCard({ doc, section, item }: { doc: EventDoc; section: ReqSe
           <h3 className="font-semibold leading-tight">{item.title}</h3>
           {item.description ? <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{item.description}</p> : null}
         </div>
-        <button
-          onClick={cycleStatus}
-          title="Click to update status"
-          className="shrink-0"
-          aria-label={`Change status (currently ${meta.label})`}
-        >
+        <button onClick={cycleStatus} title="Click to update status" className="shrink-0" aria-label={`Change status (currently ${meta.label})`}>
           <Badge tone={meta.tone}>{meta.label}</Badge>
         </button>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        <span className={`rounded-full px-2 py-0.5 ${
-          due.tone === "danger" ? "bg-rose-500/10 text-rose-600" :
-          due.tone === "warning" ? "bg-amber-500/10 text-amber-700" :
-          due.tone === "success" ? "bg-emerald-500/10 text-emerald-700" : "bg-secondary text-muted-foreground"
-        }`}>{due.text}</span>
+        <span
+          className={`rounded-full px-2 py-0.5 ${
+            due.tone === "danger"
+              ? "bg-rose-500/10 text-rose-600"
+              : due.tone === "warning"
+                ? "bg-amber-500/10 text-amber-700"
+                : due.tone === "success"
+                  ? "bg-emerald-500/10 text-emerald-700"
+                  : "bg-secondary text-muted-foreground"
+          }`}
+        >
+          {due.text}
+        </span>
         <span className="truncate text-muted-foreground" title={suggested}>
           <FileText className="-mt-0.5 mr-1 inline h-3 w-3" />{suggested}
         </span>
