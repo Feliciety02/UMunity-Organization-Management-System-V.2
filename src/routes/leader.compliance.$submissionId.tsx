@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SearchX } from "lucide-react";
 import { OrgComplianceDetail } from "@/components/workflows/OrgComplianceDetail";
 import { EmptyState, Panel } from "@/components/dashboard/DashboardLayout";
 import { useComplianceSubmission } from "@/lib/org-compliance";
@@ -14,7 +15,11 @@ function LeaderComplianceDetailPage() {
   if (!submission) {
     return (
       <Panel>
-        <EmptyState title="Compliance workspace not found" sub="The accreditation submission may have been removed." />
+        <EmptyState
+          title="Compliance workspace not found"
+          sub="The accreditation submission may have been removed."
+          icon={SearchX}
+        />
       </Panel>
     );
   }

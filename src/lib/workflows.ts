@@ -242,18 +242,22 @@ function defaultOperations(title: string): WorkflowOperations {
   };
 }
 
-function normalizeOperations(title: string, input?: Partial<WorkflowOperations> | null): WorkflowOperations {
+function normalizeOperations(
+  title: string,
+  input?: Partial<WorkflowOperations> | null,
+): WorkflowOperations {
   const fallback = defaultOperations(title);
   return {
-    preparationChecklist:
-      input?.preparationChecklist?.length
-        ? input.preparationChecklist.map((item, index) => ({
-            id: item.id || `legacy-check-${index}`,
-            title: item.title || fallback.preparationChecklist[index % fallback.preparationChecklist.length].title,
-            detail: item.detail || "",
-            done: !!item.done,
-          }))
-        : fallback.preparationChecklist,
+    preparationChecklist: input?.preparationChecklist?.length
+      ? input.preparationChecklist.map((item, index) => ({
+          id: item.id || `legacy-check-${index}`,
+          title:
+            item.title ||
+            fallback.preparationChecklist[index % fallback.preparationChecklist.length].title,
+          detail: item.detail || "",
+          done: !!item.done,
+        }))
+      : fallback.preparationChecklist,
     forms: {
       requirementsTrackerReady: !!input?.forms?.requirementsTrackerReady,
       attendeeCollectionReady: !!input?.forms?.attendeeCollectionReady,
@@ -270,16 +274,15 @@ function normalizeOperations(title: string, input?: Partial<WorkflowOperations> 
       achievements: input?.postEvent?.achievements ?? [],
       documentation: input?.postEvent?.documentation ?? [],
       finalSummary: input?.postEvent?.finalSummary ?? "",
-      expenseItems:
-        input?.postEvent?.expenseItems?.length
-          ? input.postEvent.expenseItems.map((item, index) => ({
-              id: item.id || `legacy-expense-${index}`,
-              label: item.label || `Expense ${index + 1}`,
-              plannedAmount: Number(item.plannedAmount) || 0,
-              actualAmount: Number(item.actualAmount) || 0,
-              receiptLabel: item.receiptLabel || "",
-            }))
-          : fallback.preparationChecklist.slice(0, 0).map(() => ({ id: "", label: "", plannedAmount: 0, actualAmount: 0, receiptLabel: "" })),
+      expenseItems: input?.postEvent?.expenseItems?.length
+        ? input.postEvent.expenseItems.map((item, index) => ({
+            id: item.id || `legacy-expense-${index}`,
+            label: item.label || `Expense ${index + 1}`,
+            plannedAmount: Number(item.plannedAmount) || 0,
+            actualAmount: Number(item.actualAmount) || 0,
+            receiptLabel: item.receiptLabel || "",
+          }))
+        : [],
       closeoutStatus: input?.postEvent?.closeoutStatus ?? "draft",
     },
   };
@@ -290,14 +293,19 @@ function normalizeWorkflow(workflow: EventWorkflow): EventWorkflow {
     ...workflow,
     operations: normalizeOperations(workflow.proposal.title, workflow.operations),
   };
-  if (!normalized.operations.postEvent.expenseItems.length && normalized.proposal.budgetItems.length) {
-    normalized.operations.postEvent.expenseItems = normalized.proposal.budgetItems.map((item, index) => ({
-      id: item.id || `proposal-expense-${index}`,
-      label: item.label,
-      plannedAmount: item.amount,
-      actualAmount: 0,
-      receiptLabel: "",
-    }));
+  if (
+    !normalized.operations.postEvent.expenseItems.length &&
+    normalized.proposal.budgetItems.length
+  ) {
+    normalized.operations.postEvent.expenseItems = normalized.proposal.budgetItems.map(
+      (item, index) => ({
+        id: item.id || `proposal-expense-${index}`,
+        label: item.label,
+        plannedAmount: item.amount,
+        actualAmount: 0,
+        receiptLabel: "",
+      }),
+    );
   }
   return normalized;
 }
@@ -334,8 +342,16 @@ function seedWorkflows(): EventWorkflow[] {
         ],
         timeline: [
           { id: "t1", phase: "Pre-event", detail: "Registration launch and speaker confirmations" },
-          { id: "t2", phase: "Event day", detail: "Program proper, project exhibits, and attendance check-in" },
-          { id: "t3", phase: "Post-event", detail: "Reflection form, liquidation, and documentation wrap-up" },
+          {
+            id: "t2",
+            phase: "Event day",
+            detail: "Program proper, project exhibits, and attendance check-in",
+          },
+          {
+            id: "t3",
+            phase: "Post-event",
+            detail: "Reflection form, liquidation, and documentation wrap-up",
+          },
         ],
       },
       operations: {
@@ -419,10 +435,12 @@ function seedWorkflows(): EventWorkflow[] {
       },
       operations: {
         ...defaultOperations("Hack Night Vol. 3"),
-        preparationChecklist: defaultOperations("Hack Night Vol. 3").preparationChecklist.map((item, index) => ({
-          ...item,
-          done: index < 2,
-        })),
+        preparationChecklist: defaultOperations("Hack Night Vol. 3").preparationChecklist.map(
+          (item, index) => ({
+            ...item,
+            done: index < 2,
+          }),
+        ),
         forms: { requirementsTrackerReady: true, attendeeCollectionReady: true },
         eventDay: {
           attendanceTarget: 80,
@@ -474,7 +492,8 @@ function seedWorkflows(): EventWorkflow[] {
         title: "Cultural Night 2026",
         category: "Cultural",
         objective: "Celebrate student identity through performances and storytelling.",
-        description: "A night program with inter-college performances and partner community guests.",
+        description:
+          "A night program with inter-college performances and partner community guests.",
         venue: "UM Gymnasium",
         date: "2026-06-18",
         time: "18:30",
@@ -487,16 +506,22 @@ function seedWorkflows(): EventWorkflow[] {
         ],
         timeline: [
           { id: "t7", phase: "Preparation", detail: "Casting, rehearsals, and venue coordination" },
-          { id: "t8", phase: "Main event", detail: "Performances, backstage management, and ushering" },
+          {
+            id: "t8",
+            phase: "Main event",
+            detail: "Performances, backstage management, and ushering",
+          },
           { id: "t9", phase: "Aftercare", detail: "Narrative report and archive curation" },
         ],
       },
       operations: {
         ...defaultOperations("Cultural Night 2026"),
-        preparationChecklist: defaultOperations("Cultural Night 2026").preparationChecklist.map((item, index) => ({
-          ...item,
-          done: index < 3,
-        })),
+        preparationChecklist: defaultOperations("Cultural Night 2026").preparationChecklist.map(
+          (item, index) => ({
+            ...item,
+            done: index < 3,
+          }),
+        ),
         forms: { requirementsTrackerReady: true, attendeeCollectionReady: true },
         eventDay: {
           attendanceTarget: 500,
@@ -556,7 +581,8 @@ function seedWorkflows(): EventWorkflow[] {
         title: "Tech Talk: AI in Education",
         category: "Seminar",
         objective: "Translate practical AI use cases into a faculty and student learning session.",
-        description: "Mid-sized seminar with a panel discussion, Q&A, and digital feedback collection.",
+        description:
+          "Mid-sized seminar with a panel discussion, Q&A, and digital feedback collection.",
         venue: "Audio Visual Room 2",
         date: "2026-06-14",
         time: "13:30",
@@ -570,12 +596,18 @@ function seedWorkflows(): EventWorkflow[] {
         timeline: [
           { id: "t10", phase: "Planning", detail: "Finalize speaker deck and registration flow" },
           { id: "t11", phase: "Event day", detail: "Run panel session and feedback collection" },
-          { id: "t12", phase: "Closeout", detail: "Submit reflection, outcomes, and expense wrap-up" },
+          {
+            id: "t12",
+            phase: "Closeout",
+            detail: "Submit reflection, outcomes, and expense wrap-up",
+          },
         ],
       },
       operations: {
         ...defaultOperations("Tech Talk: AI in Education"),
-        preparationChecklist: defaultOperations("Tech Talk: AI in Education").preparationChecklist.map((item) => ({ ...item, done: true })),
+        preparationChecklist: defaultOperations(
+          "Tech Talk: AI in Education",
+        ).preparationChecklist.map((item) => ({ ...item, done: true })),
         forms: { requirementsTrackerReady: true, attendeeCollectionReady: true },
         eventDay: {
           attendanceTarget: 150,
@@ -584,14 +616,28 @@ function seedWorkflows(): EventWorkflow[] {
           participationLogs: ["Check-in QR closed at 2:05 PM."],
         },
         postEvent: {
-          reflection: "Audience questions were strongest when the speaker used local classroom scenarios.",
+          reflection:
+            "Audience questions were strongest when the speaker used local classroom scenarios.",
           outcomes: "Collected 132 attendees and 87 feedback responses.",
           achievements: ["High faculty turnout", "Strong feedback completion rate"],
           documentation: ["session-album", "feedback-export.csv"],
-          finalSummary: "Event delivered strong participation and should be repeated with a workshop follow-up.",
+          finalSummary:
+            "Event delivered strong participation and should be repeated with a workshop follow-up.",
           expenseItems: [
-            { id: "e1", label: "Speaker tokens", plannedAmount: 5000, actualAmount: 5000, receiptLabel: "token-receipt.pdf" },
-            { id: "e2", label: "Printed kits", plannedAmount: 1800, actualAmount: 1650, receiptLabel: "print-shop-receipt.pdf" },
+            {
+              id: "e1",
+              label: "Speaker tokens",
+              plannedAmount: 5000,
+              actualAmount: 5000,
+              receiptLabel: "token-receipt.pdf",
+            },
+            {
+              id: "e2",
+              label: "Printed kits",
+              plannedAmount: 1800,
+              actualAmount: 1650,
+              receiptLabel: "print-shop-receipt.pdf",
+            },
           ],
           closeoutStatus: "pending_adviser",
         },
@@ -650,14 +696,20 @@ function seedWorkflows(): EventWorkflow[] {
           { id: "b13", label: "Refreshments", amount: 3500 },
         ],
         timeline: [
-          { id: "t13", phase: "Preparation", detail: "Facilitator alignment and breakout planning" },
+          {
+            id: "t13",
+            phase: "Preparation",
+            detail: "Facilitator alignment and breakout planning",
+          },
           { id: "t14", phase: "Forum", detail: "Leadership sessions and role-based planning" },
           { id: "t15", phase: "Closeout", detail: "Reports, receipts, and participant outcomes" },
         ],
       },
       operations: {
         ...defaultOperations("Student Leadership Forum"),
-        preparationChecklist: defaultOperations("Student Leadership Forum").preparationChecklist.map((item) => ({ ...item, done: true })),
+        preparationChecklist: defaultOperations(
+          "Student Leadership Forum",
+        ).preparationChecklist.map((item) => ({ ...item, done: true })),
         forms: { requirementsTrackerReady: true, attendeeCollectionReady: true },
         eventDay: {
           attendanceTarget: 120,
@@ -672,8 +724,20 @@ function seedWorkflows(): EventWorkflow[] {
           documentation: ["forum-report-draft.docx"],
           finalSummary: "Ready for final administrative closeout approval.",
           expenseItems: [
-            { id: "e3", label: "Workshop materials", plannedAmount: 4200, actualAmount: 4000, receiptLabel: "materials-receipt.pdf" },
-            { id: "e4", label: "Refreshments", plannedAmount: 3500, actualAmount: 3500, receiptLabel: "refreshments-receipt.pdf" },
+            {
+              id: "e3",
+              label: "Workshop materials",
+              plannedAmount: 4200,
+              actualAmount: 4000,
+              receiptLabel: "materials-receipt.pdf",
+            },
+            {
+              id: "e4",
+              label: "Refreshments",
+              plannedAmount: 3500,
+              actualAmount: 3500,
+              receiptLabel: "refreshments-receipt.pdf",
+            },
           ],
           closeoutStatus: "pending_admin2",
         },
@@ -727,9 +791,30 @@ function seedWorkflows(): EventWorkflow[] {
 
 function seedTransitionWorkflows(): OfficerTransitionWorkflow[] {
   const previousRoster: OfficerNominee[] = [
-    { id: "off-1", name: "Marco Reyes", position: "President", program: "BS Computer Science", yearLevel: "4th Year", email: "marco.reyes@um.edu.ph" },
-    { id: "off-2", name: "Anna Sy", position: "Vice President", program: "BS Information Technology", yearLevel: "3rd Year", email: "anna.sy@um.edu.ph" },
-    { id: "off-3", name: "Jules Tan", position: "Treasurer", program: "BS Computer Science", yearLevel: "3rd Year", email: "jules.tan@um.edu.ph" },
+    {
+      id: "off-1",
+      name: "Marco Reyes",
+      position: "President",
+      program: "BS Computer Science",
+      yearLevel: "4th Year",
+      email: "marco.reyes@um.edu.ph",
+    },
+    {
+      id: "off-2",
+      name: "Anna Sy",
+      position: "Vice President",
+      program: "BS Information Technology",
+      yearLevel: "3rd Year",
+      email: "anna.sy@um.edu.ph",
+    },
+    {
+      id: "off-3",
+      name: "Jules Tan",
+      position: "Treasurer",
+      program: "BS Computer Science",
+      yearLevel: "3rd Year",
+      email: "jules.tan@um.edu.ph",
+    },
   ];
   return [
     {
@@ -744,18 +829,42 @@ function seedTransitionWorkflows(): OfficerTransitionWorkflow[] {
       updatedAt: Date.now() - 90 * 60_000,
       adviserName: "Prof. Elena Tan",
       nominees: [
-        { id: "nom-1", name: "Karl Mendez", position: "President", program: "BS Computer Science", yearLevel: "3rd Year", email: "karl.mendez@um.edu.ph" },
-        { id: "nom-2", name: "Pia Lim", position: "Vice President", program: "BS Information Systems", yearLevel: "3rd Year", email: "pia.lim@um.edu.ph" },
-        { id: "nom-3", name: "Mia Cruz", position: "Secretary", program: "BS Computer Science", yearLevel: "2nd Year", email: "mia.cruz@um.edu.ph" },
+        {
+          id: "nom-1",
+          name: "Karl Mendez",
+          position: "President",
+          program: "BS Computer Science",
+          yearLevel: "3rd Year",
+          email: "karl.mendez@um.edu.ph",
+        },
+        {
+          id: "nom-2",
+          name: "Pia Lim",
+          position: "Vice President",
+          program: "BS Information Systems",
+          yearLevel: "3rd Year",
+          email: "pia.lim@um.edu.ph",
+        },
+        {
+          id: "nom-3",
+          name: "Mia Cruz",
+          position: "Secretary",
+          program: "BS Computer Science",
+          yearLevel: "2nd Year",
+          email: "mia.cruz@um.edu.ph",
+        },
       ],
-      rationale: "The organization is preparing its next academic year officer set based on current committee performance and continuity planning.",
-      handoverNotes: "Outgoing officers will transfer shared drive folders, event templates, and sponsor contacts during the final week of June.",
+      rationale:
+        "The organization is preparing its next academic year officer set based on current committee performance and continuity planning.",
+      handoverNotes:
+        "Outgoing officers will transfer shared drive folders, event templates, and sponsor contacts during the final week of June.",
       comments: [
         {
           id: "tc-1",
           authorRole: "leader",
           authorName: "Marco Reyes",
-          message: "Included next-year committee leads who already handled major events this semester.",
+          message:
+            "Included next-year committee leads who already handled major events this semester.",
           createdAt: Date.now() - 70 * 60_000,
         },
       ],
@@ -844,7 +953,9 @@ function cloneWorkflow(workflow: EventWorkflow) {
 }
 
 function updateWorkflow(id: string, updater: (workflow: EventWorkflow) => EventWorkflow) {
-  const next = read().map((workflow) => (workflow.id === id ? normalizeWorkflow(updater(cloneWorkflow(workflow))) : workflow));
+  const next = read().map((workflow) =>
+    workflow.id === id ? normalizeWorkflow(updater(cloneWorkflow(workflow))) : workflow,
+  );
   write(next);
   return next.find((workflow) => workflow.id === id) ?? null;
 }
@@ -889,12 +1000,32 @@ function stageIndexFor(status: WorkflowStatus) {
 export function getWorkflowStages(status: WorkflowStatus) {
   const currentIndex = stageIndexFor(status);
   return [
-    { id: "planning", label: "Planning", description: "Build the proposal form and draft the event scope." },
-    { id: "adviser", label: "Adviser approval", description: "First review for content, officer readiness, and activity details." },
-    { id: "admin2", label: "Admin 2 review", description: "Secondary compliance and monitoring check." },
+    {
+      id: "planning",
+      label: "Planning",
+      description: "Build the proposal form and draft the event scope.",
+    },
+    {
+      id: "adviser",
+      label: "Adviser approval",
+      description: "First review for content, officer readiness, and activity details.",
+    },
+    {
+      id: "admin2",
+      label: "Admin 2 review",
+      description: "Secondary compliance and monitoring check.",
+    },
     { id: "admin1", label: "Admin 1 approval", description: "Final university authority review." },
-    { id: "prep", label: "Preparation", description: "Checklist, forms, and implementation readiness." },
-    { id: "post", label: "Post-event", description: "Reflections, documentation, and final closeout." },
+    {
+      id: "prep",
+      label: "Preparation",
+      description: "Checklist, forms, and implementation readiness.",
+    },
+    {
+      id: "post",
+      label: "Post-event",
+      description: "Reflections, documentation, and final closeout.",
+    },
   ].map((stage, index) => ({
     ...stage,
     state: index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming",
@@ -937,7 +1068,9 @@ export function createWorkflow(input: {
         action: "created",
         byRole: "leader",
         byName: input.createdBy,
-        note: input.submit ? "Workflow created and submitted to adviser." : "Workflow draft created.",
+        note: input.submit
+          ? "Workflow created and submitted to adviser."
+          : "Workflow draft created.",
         createdAt: Date.now(),
       },
     ],
@@ -1344,7 +1477,9 @@ export function updateWorkflowExpenseItem(
 export function submitWorkflowCloseout(id: string, actor: WorkflowActor) {
   return updateWorkflow(id, (workflow) => {
     const closeoutStatus =
-      workflow.operations.postEvent.closeoutStatus === "revision_requested" ? "pending_adviser" : "pending_adviser";
+      workflow.operations.postEvent.closeoutStatus === "revision_requested"
+        ? "pending_adviser"
+        : "pending_adviser";
     addNotification({
       title: `${workflow.proposal.title} closeout is pending adviser review`,
       meta: "Post-event final review",
@@ -1422,7 +1557,8 @@ export function requestWorkflowCloseoutRevision(id: string, actor: WorkflowActor
 
 export function approveWorkflowCloseout(id: string, actor: WorkflowActor, note?: string) {
   return updateWorkflow(id, (workflow) => {
-    const nextCloseoutStatus: WorkflowCloseoutStatus = actor.role === "adviser" ? "pending_admin2" : "approved";
+    const nextCloseoutStatus: WorkflowCloseoutStatus =
+      actor.role === "adviser" ? "pending_admin2" : "approved";
     if (actor.role === "adviser") {
       addNotification({
         title: `${workflow.proposal.title} closeout is pending Admin 2 review`,
@@ -1505,7 +1641,9 @@ export function formatCloseoutStatus(status: WorkflowCloseoutStatus) {
   }
 }
 
-export function closeoutStatusTone(status: WorkflowCloseoutStatus): "neutral" | "warning" | "info" | "danger" | "success" {
+export function closeoutStatusTone(
+  status: WorkflowCloseoutStatus,
+): "neutral" | "warning" | "info" | "danger" | "success" {
   switch (status) {
     case "draft":
       return "neutral";
@@ -1539,7 +1677,9 @@ export function formatWorkflowStatus(status: WorkflowStatus) {
   }
 }
 
-export function statusTone(status: WorkflowStatus): "neutral" | "warning" | "info" | "danger" | "success" {
+export function statusTone(
+  status: WorkflowStatus,
+): "neutral" | "warning" | "info" | "danger" | "success" {
   switch (status) {
     case "draft":
       return "neutral";
@@ -1583,8 +1723,12 @@ export function operationsCompletion(workflow: EventWorkflow) {
   const checklist = workflow.operations.preparationChecklist;
   const checklistDone = checklist.filter((item) => item.done).length;
   const checklistTotal = checklist.length || 1;
-  const formsReady = Number(workflow.operations.forms.requirementsTrackerReady) + Number(workflow.operations.forms.attendeeCollectionReady);
-  const logsReady = Number(workflow.operations.eventDay.participationLogs.length > 0) + Number(workflow.operations.eventDay.mediaUploads.length > 0);
+  const formsReady =
+    Number(workflow.operations.forms.requirementsTrackerReady) +
+    Number(workflow.operations.forms.attendeeCollectionReady);
+  const logsReady =
+    Number(workflow.operations.eventDay.participationLogs.length > 0) +
+    Number(workflow.operations.eventDay.mediaUploads.length > 0);
   const financialReady =
     Number(workflow.operations.postEvent.expenseItems.length > 0) +
     Number(
@@ -1718,69 +1862,71 @@ export function createTransitionWorkflow(input: {
 }
 
 export function addTransitionComment(id: string, actor: WorkflowActor, message: string) {
-  const next = readTransitions().map((workflow) =>
-    workflow.id === id
-      ? {
-          ...workflow,
-          updatedAt: Date.now(),
-          comments: [
-            {
-              id: nowId("comment"),
-              authorRole: actor.role,
-              authorName: actor.name,
-              message,
-              createdAt: Date.now(),
-            },
-            ...workflow.comments,
-          ],
-          history: [
-            {
-              id: nowId("history"),
-              action: "commented",
-              byRole: actor.role,
-              byName: actor.name,
-              note: message,
-              createdAt: Date.now(),
-            },
-            ...workflow.history,
-          ],
-        }
-      : workflow,
+  const next: OfficerTransitionWorkflow[] = readTransitions().map(
+    (workflow): OfficerTransitionWorkflow =>
+      workflow.id === id
+        ? {
+            ...workflow,
+            updatedAt: Date.now(),
+            comments: [
+              {
+                id: nowId("comment"),
+                authorRole: actor.role,
+                authorName: actor.name,
+                message,
+                createdAt: Date.now(),
+              },
+              ...workflow.comments,
+            ],
+            history: [
+              {
+                id: nowId("history"),
+                action: "commented",
+                byRole: actor.role,
+                byName: actor.name,
+                note: message,
+                createdAt: Date.now(),
+              },
+              ...workflow.history,
+            ],
+          }
+        : workflow,
   );
   writeTransitions(next);
 }
 
 export function requestTransitionRevision(id: string, actor: WorkflowActor, note: string) {
-  const next = readTransitions().map((workflow) =>
-    workflow.id === id
-      ? {
-          ...workflow,
-          status: "revision_requested" as WorkflowStatus,
-          currentStage: nextTransitionStageFor("revision_requested"),
-          updatedAt: Date.now(),
-          comments: [
-            {
-              id: nowId("comment"),
-              authorRole: actor.role,
-              authorName: actor.name,
-              message: note,
-              createdAt: Date.now(),
-            },
-            ...workflow.comments,
-          ],
-          history: [
-            {
-              id: nowId("history"),
-              action: "revision_requested",
-              byRole: actor.role,
-              byName: actor.name,
-              note,
-              createdAt: Date.now(),
-            },
-            ...workflow.history,
-          ],
-        }
-      : workflow,
+  const next: OfficerTransitionWorkflow[] = readTransitions().map(
+    (workflow): OfficerTransitionWorkflow =>
+      workflow.id === id
+        ? {
+            ...workflow,
+            status: "revision_requested" as WorkflowStatus,
+            currentStage: nextTransitionStageFor("revision_requested"),
+            updatedAt: Date.now(),
+            comments: [
+              {
+                id: nowId("comment"),
+                authorRole: actor.role,
+                authorName: actor.name,
+                message: note,
+                createdAt: Date.now(),
+              },
+              ...workflow.comments,
+            ],
+            history: [
+              {
+                id: nowId("history"),
+                action: "revision_requested",
+                byRole: actor.role,
+                byName: actor.name,
+                note,
+                createdAt: Date.now(),
+              },
+              ...workflow.history,
+            ],
+          }
+        : workflow,
   );
   writeTransitions(next);
   const workflow = next.find((item) => item.id === id);
@@ -1795,57 +1941,61 @@ export function requestTransitionRevision(id: string, actor: WorkflowActor, note
 }
 
 export function approveTransitionWorkflow(id: string, actor: WorkflowActor, note?: string) {
-  const next = readTransitions().map((workflow) => {
-    if (workflow.id !== id) return workflow;
-    if (actor.role === "adviser") {
-      return {
-        ...workflow,
-        status: "pending_admin1" as WorkflowStatus,
-        currentStage: nextTransitionStageFor("pending_admin1"),
-        updatedAt: Date.now(),
-        history: [
-          {
-            id: nowId("history"),
-            action: "approved",
-            byRole: actor.role,
-            byName: actor.name,
-            note: note ?? "Validated officer nominees and forwarded to Admin 1.",
-            createdAt: Date.now(),
-          },
-          ...workflow.history,
-        ],
-      };
-    }
-    if (actor.role === "admin1") {
-      const previous = workflow.archivedOfficers.at(-1);
-      const archive: OfficerRecord = {
-        id: nowId("archive"),
-        academicYear: workflow.academicYear,
-        officers: workflow.nominees,
-        archivedAt: Date.now(),
-        approvedBy: actor.name,
-      };
-      return {
-        ...workflow,
-        status: "completed" as WorkflowStatus,
-        currentStage: nextTransitionStageFor("completed"),
-        updatedAt: Date.now(),
-        archivedOfficers: previous ? [...workflow.archivedOfficers, archive] : [...workflow.archivedOfficers, archive],
-        history: [
-          {
-            id: nowId("history"),
-            action: "completed",
-            byRole: actor.role,
-            byName: actor.name,
-            note: note ?? "Approved officer transition and archived previous roster.",
-            createdAt: Date.now(),
-          },
-          ...workflow.history,
-        ],
-      };
-    }
-    return workflow;
-  });
+  const next: OfficerTransitionWorkflow[] = readTransitions().map(
+    (workflow): OfficerTransitionWorkflow => {
+      if (workflow.id !== id) return workflow;
+      if (actor.role === "adviser") {
+        return {
+          ...workflow,
+          status: "pending_admin1" as WorkflowStatus,
+          currentStage: nextTransitionStageFor("pending_admin1"),
+          updatedAt: Date.now(),
+          history: [
+            {
+              id: nowId("history"),
+              action: "approved",
+              byRole: actor.role,
+              byName: actor.name,
+              note: note ?? "Validated officer nominees and forwarded to Admin 1.",
+              createdAt: Date.now(),
+            },
+            ...workflow.history,
+          ],
+        };
+      }
+      if (actor.role === "admin1") {
+        const previous = workflow.archivedOfficers.at(-1);
+        const archive: OfficerRecord = {
+          id: nowId("archive"),
+          academicYear: workflow.academicYear,
+          officers: workflow.nominees,
+          archivedAt: Date.now(),
+          approvedBy: actor.name,
+        };
+        return {
+          ...workflow,
+          status: "completed" as WorkflowStatus,
+          currentStage: nextTransitionStageFor("completed"),
+          updatedAt: Date.now(),
+          archivedOfficers: previous
+            ? [...workflow.archivedOfficers, archive]
+            : [...workflow.archivedOfficers, archive],
+          history: [
+            {
+              id: nowId("history"),
+              action: "completed",
+              byRole: actor.role,
+              byName: actor.name,
+              note: note ?? "Approved officer transition and archived previous roster.",
+              createdAt: Date.now(),
+            },
+            ...workflow.history,
+          ],
+        };
+      }
+      return workflow;
+    },
+  );
   writeTransitions(next);
   const workflow = next.find((item) => item.id === id);
   if (!workflow) return;
@@ -1856,7 +2006,10 @@ export function approveTransitionWorkflow(id: string, actor: WorkflowActor, note
         : `${workflow.orgShort} officer transition archived successfully`,
     meta: note ?? "Officer transition workflow updated",
     category: "general",
-    href: actor.role === "adviser" ? `/admin1/transitions/${workflow.id}` : `/leader/officer-transition/${workflow.id}`,
+    href:
+      actor.role === "adviser"
+        ? `/admin1/transitions/${workflow.id}`
+        : `/leader/officer-transition/${workflow.id}`,
   });
 }
 
@@ -1879,7 +2032,9 @@ export function useTransitionWorkflows() {
     () => JSON.stringify(getTransitionWorkflows()),
     () => JSON.stringify(seedTransitionWorkflows()),
   );
-  return hydrated ? (JSON.parse(snapshot) as OfficerTransitionWorkflow[]) : seedTransitionWorkflows();
+  return hydrated
+    ? (JSON.parse(snapshot) as OfficerTransitionWorkflow[])
+    : seedTransitionWorkflows();
 }
 
 export function useTransitionWorkflow(id: string) {

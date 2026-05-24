@@ -79,6 +79,11 @@ function Admin1Dashboard() {
           </div>
         )}
       </Panel>
+      <Panel title="Organization registry" className="mt-6" action={<AppButton asChild variant="secondary" size="sm"><Link to="/admin1/organizations">Open registry</Link></AppButton>}>
+        <p className="text-sm text-muted-foreground">
+          Final accreditation approval now updates the organization registry automatically. Use the registry to place organizations on probation, return them to review, or disband them with recorded governance history.
+        </p>
+      </Panel>
     </>
   );
 }

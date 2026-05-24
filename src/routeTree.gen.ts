@@ -79,6 +79,7 @@ import { Route as Admin2MonitoringRouteImport } from './routes/admin2.monitoring
 import { Route as Admin2ComplianceRouteImport } from './routes/admin2.compliance'
 import { Route as Admin1TransitionsRouteImport } from './routes/admin1.transitions'
 import { Route as Admin1ProfileRouteImport } from './routes/admin1.profile'
+import { Route as Admin1OrganizationsRouteImport } from './routes/admin1.organizations'
 import { Route as Admin1NotificationsRouteImport } from './routes/admin1.notifications'
 import { Route as Admin1GovernanceRouteImport } from './routes/admin1.governance'
 import { Route as Admin1AuthorityRouteImport } from './routes/admin1.authority'
@@ -111,6 +112,7 @@ import { Route as Admin2PostsApprovalIdRouteImport } from './routes/admin2.posts
 import { Route as Admin2ComplianceSubmissionIdRouteImport } from './routes/admin2.compliance.$submissionId'
 import { Route as Admin1WorkflowsWorkflowIdRouteImport } from './routes/admin1.workflows.$workflowId'
 import { Route as Admin1TransitionsTransitionIdRouteImport } from './routes/admin1.transitions.$transitionId'
+import { Route as Admin1OrganizationsSlugRouteImport } from './routes/admin1.organizations.$slug'
 import { Route as Admin1AccreditationSubmissionIdRouteImport } from './routes/admin1.accreditation.$submissionId'
 
 const StudentRoute = StudentRouteImport.update({
@@ -463,6 +465,11 @@ const Admin1ProfileRoute = Admin1ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => Admin1Route,
 } as any)
+const Admin1OrganizationsRoute = Admin1OrganizationsRouteImport.update({
+  id: '/organizations',
+  path: '/organizations',
+  getParentRoute: () => Admin1Route,
+} as any)
 const Admin1NotificationsRoute = Admin1NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -637,6 +644,11 @@ const Admin1TransitionsTransitionIdRoute =
     path: '/$transitionId',
     getParentRoute: () => Admin1TransitionsRoute,
   } as any)
+const Admin1OrganizationsSlugRoute = Admin1OrganizationsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => Admin1OrganizationsRoute,
+} as any)
 const Admin1AccreditationSubmissionIdRoute =
   Admin1AccreditationSubmissionIdRouteImport.update({
     id: '/$submissionId',
@@ -673,6 +685,7 @@ export interface FileRoutesByFullPath {
   '/admin1/authority': typeof Admin1AuthorityRoute
   '/admin1/governance': typeof Admin1GovernanceRoute
   '/admin1/notifications': typeof Admin1NotificationsRoute
+  '/admin1/organizations': typeof Admin1OrganizationsRouteWithChildren
   '/admin1/profile': typeof Admin1ProfileRoute
   '/admin1/transitions': typeof Admin1TransitionsRouteWithChildren
   '/admin2/compliance': typeof Admin2ComplianceRouteWithChildren
@@ -731,6 +744,7 @@ export interface FileRoutesByFullPath {
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
   '/admin1/accreditation/$submissionId': typeof Admin1AccreditationSubmissionIdRoute
+  '/admin1/organizations/$slug': typeof Admin1OrganizationsSlugRoute
   '/admin1/transitions/$transitionId': typeof Admin1TransitionsTransitionIdRoute
   '/admin1/workflows/$workflowId': typeof Admin1WorkflowsWorkflowIdRoute
   '/admin2/compliance/$submissionId': typeof Admin2ComplianceSubmissionIdRoute
@@ -772,6 +786,7 @@ export interface FileRoutesByTo {
   '/admin1/authority': typeof Admin1AuthorityRoute
   '/admin1/governance': typeof Admin1GovernanceRoute
   '/admin1/notifications': typeof Admin1NotificationsRoute
+  '/admin1/organizations': typeof Admin1OrganizationsRouteWithChildren
   '/admin1/profile': typeof Admin1ProfileRoute
   '/admin1/transitions': typeof Admin1TransitionsRouteWithChildren
   '/admin2/compliance': typeof Admin2ComplianceRouteWithChildren
@@ -830,6 +845,7 @@ export interface FileRoutesByTo {
   '/leader': typeof LeaderIndexRoute
   '/student': typeof StudentIndexRoute
   '/admin1/accreditation/$submissionId': typeof Admin1AccreditationSubmissionIdRoute
+  '/admin1/organizations/$slug': typeof Admin1OrganizationsSlugRoute
   '/admin1/transitions/$transitionId': typeof Admin1TransitionsTransitionIdRoute
   '/admin1/workflows/$workflowId': typeof Admin1WorkflowsWorkflowIdRoute
   '/admin2/compliance/$submissionId': typeof Admin2ComplianceSubmissionIdRoute
@@ -878,6 +894,7 @@ export interface FileRoutesById {
   '/admin1/authority': typeof Admin1AuthorityRoute
   '/admin1/governance': typeof Admin1GovernanceRoute
   '/admin1/notifications': typeof Admin1NotificationsRoute
+  '/admin1/organizations': typeof Admin1OrganizationsRouteWithChildren
   '/admin1/profile': typeof Admin1ProfileRoute
   '/admin1/transitions': typeof Admin1TransitionsRouteWithChildren
   '/admin2/compliance': typeof Admin2ComplianceRouteWithChildren
@@ -936,6 +953,7 @@ export interface FileRoutesById {
   '/leader/': typeof LeaderIndexRoute
   '/student/': typeof StudentIndexRoute
   '/admin1/accreditation/$submissionId': typeof Admin1AccreditationSubmissionIdRoute
+  '/admin1/organizations/$slug': typeof Admin1OrganizationsSlugRoute
   '/admin1/transitions/$transitionId': typeof Admin1TransitionsTransitionIdRoute
   '/admin1/workflows/$workflowId': typeof Admin1WorkflowsWorkflowIdRoute
   '/admin2/compliance/$submissionId': typeof Admin2ComplianceSubmissionIdRoute
@@ -985,6 +1003,7 @@ export interface FileRouteTypes {
     | '/admin1/authority'
     | '/admin1/governance'
     | '/admin1/notifications'
+    | '/admin1/organizations'
     | '/admin1/profile'
     | '/admin1/transitions'
     | '/admin2/compliance'
@@ -1043,6 +1062,7 @@ export interface FileRouteTypes {
     | '/leader/'
     | '/student/'
     | '/admin1/accreditation/$submissionId'
+    | '/admin1/organizations/$slug'
     | '/admin1/transitions/$transitionId'
     | '/admin1/workflows/$workflowId'
     | '/admin2/compliance/$submissionId'
@@ -1084,6 +1104,7 @@ export interface FileRouteTypes {
     | '/admin1/authority'
     | '/admin1/governance'
     | '/admin1/notifications'
+    | '/admin1/organizations'
     | '/admin1/profile'
     | '/admin1/transitions'
     | '/admin2/compliance'
@@ -1142,6 +1163,7 @@ export interface FileRouteTypes {
     | '/leader'
     | '/student'
     | '/admin1/accreditation/$submissionId'
+    | '/admin1/organizations/$slug'
     | '/admin1/transitions/$transitionId'
     | '/admin1/workflows/$workflowId'
     | '/admin2/compliance/$submissionId'
@@ -1189,6 +1211,7 @@ export interface FileRouteTypes {
     | '/admin1/authority'
     | '/admin1/governance'
     | '/admin1/notifications'
+    | '/admin1/organizations'
     | '/admin1/profile'
     | '/admin1/transitions'
     | '/admin2/compliance'
@@ -1247,6 +1270,7 @@ export interface FileRouteTypes {
     | '/leader/'
     | '/student/'
     | '/admin1/accreditation/$submissionId'
+    | '/admin1/organizations/$slug'
     | '/admin1/transitions/$transitionId'
     | '/admin1/workflows/$workflowId'
     | '/admin2/compliance/$submissionId'
@@ -1775,6 +1799,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Admin1ProfileRouteImport
       parentRoute: typeof Admin1Route
     }
+    '/admin1/organizations': {
+      id: '/admin1/organizations'
+      path: '/organizations'
+      fullPath: '/admin1/organizations'
+      preLoaderRoute: typeof Admin1OrganizationsRouteImport
+      parentRoute: typeof Admin1Route
+    }
     '/admin1/notifications': {
       id: '/admin1/notifications'
       path: '/notifications'
@@ -1999,6 +2030,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Admin1TransitionsTransitionIdRouteImport
       parentRoute: typeof Admin1TransitionsRoute
     }
+    '/admin1/organizations/$slug': {
+      id: '/admin1/organizations/$slug'
+      path: '/$slug'
+      fullPath: '/admin1/organizations/$slug'
+      preLoaderRoute: typeof Admin1OrganizationsSlugRouteImport
+      parentRoute: typeof Admin1OrganizationsRoute
+    }
     '/admin1/accreditation/$submissionId': {
       id: '/admin1/accreditation/$submissionId'
       path: '/$submissionId'
@@ -2052,6 +2090,17 @@ const Admin1AccreditationRouteChildren: Admin1AccreditationRouteChildren = {
 const Admin1AccreditationRouteWithChildren =
   Admin1AccreditationRoute._addFileChildren(Admin1AccreditationRouteChildren)
 
+interface Admin1OrganizationsRouteChildren {
+  Admin1OrganizationsSlugRoute: typeof Admin1OrganizationsSlugRoute
+}
+
+const Admin1OrganizationsRouteChildren: Admin1OrganizationsRouteChildren = {
+  Admin1OrganizationsSlugRoute: Admin1OrganizationsSlugRoute,
+}
+
+const Admin1OrganizationsRouteWithChildren =
+  Admin1OrganizationsRoute._addFileChildren(Admin1OrganizationsRouteChildren)
+
 interface Admin1TransitionsRouteChildren {
   Admin1TransitionsTransitionIdRoute: typeof Admin1TransitionsTransitionIdRoute
 }
@@ -2068,6 +2117,7 @@ interface Admin1RouteChildren {
   Admin1AuthorityRoute: typeof Admin1AuthorityRoute
   Admin1GovernanceRoute: typeof Admin1GovernanceRoute
   Admin1NotificationsRoute: typeof Admin1NotificationsRoute
+  Admin1OrganizationsRoute: typeof Admin1OrganizationsRouteWithChildren
   Admin1ProfileRoute: typeof Admin1ProfileRoute
   Admin1TransitionsRoute: typeof Admin1TransitionsRouteWithChildren
   Admin1IndexRoute: typeof Admin1IndexRoute
@@ -2079,6 +2129,7 @@ const Admin1RouteChildren: Admin1RouteChildren = {
   Admin1AuthorityRoute: Admin1AuthorityRoute,
   Admin1GovernanceRoute: Admin1GovernanceRoute,
   Admin1NotificationsRoute: Admin1NotificationsRoute,
+  Admin1OrganizationsRoute: Admin1OrganizationsRouteWithChildren,
   Admin1ProfileRoute: Admin1ProfileRoute,
   Admin1TransitionsRoute: Admin1TransitionsRouteWithChildren,
   Admin1IndexRoute: Admin1IndexRoute,

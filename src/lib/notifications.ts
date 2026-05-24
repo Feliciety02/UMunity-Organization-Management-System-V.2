@@ -1,7 +1,13 @@
 // Client-side notifications store (demo, localStorage-backed)
 import { useEffect, useState, useSyncExternalStore } from "react";
 
-export type NotifCategory = "event" | "announcement" | "comment-reply" | "rsvp" | "general";
+export type NotifCategory =
+  | "event"
+  | "announcement"
+  | "comment-reply"
+  | "rsvp"
+  | "general"
+  | "system";
 
 export type AppNotif = {
   id: string;
@@ -17,13 +23,68 @@ const KEY = "umunity.notifications.v1";
 const EVENT = "umunity:notifications";
 
 const seed: AppNotif[] = [
-  { id: "n1", title: "Marvin Lim replied to your comment on UM Innovation Summit 2026", meta: "30m ago", category: "comment-reply", unread: true, createdAt: Date.now() - 30 * 60_000, href: "/student" },
-  { id: "n2", title: "UM CS Society pinned a new announcement", meta: "2h ago", category: "announcement", unread: true, createdAt: Date.now() - 2 * 3_600_000, href: "/org/cs-society" },
-  { id: "n3", title: "Innovation Summit RSVP confirmed", meta: "4h ago", category: "rsvp", unread: true, createdAt: Date.now() - 4 * 3_600_000, href: "/student/events" },
-  { id: "n4", title: "New event: Eco Run for the Planet", meta: "Yesterday", category: "event", unread: true, createdAt: Date.now() - 86_400_000, href: "/student/events" },
-  { id: "n5", title: "UM Eco Warriors posted a campus update", meta: "Yesterday", category: "announcement", unread: false, createdAt: Date.now() - 86_400_000, href: "/org/eco-warriors" },
-  { id: "n6", title: "Jana Cruz replied to your comment", meta: "2 days ago", category: "comment-reply", unread: false, createdAt: Date.now() - 2 * 86_400_000, href: "/student" },
-  { id: "n7", title: "Welcome to UMUnity!", meta: "3 days ago", category: "general", unread: false, createdAt: Date.now() - 3 * 86_400_000 },
+  {
+    id: "n1",
+    title: "Marvin Lim replied to your comment on UM Innovation Summit 2026",
+    meta: "30m ago",
+    category: "comment-reply",
+    unread: true,
+    createdAt: Date.now() - 30 * 60_000,
+    href: "/student",
+  },
+  {
+    id: "n2",
+    title: "UM CS Society pinned a new announcement",
+    meta: "2h ago",
+    category: "announcement",
+    unread: true,
+    createdAt: Date.now() - 2 * 3_600_000,
+    href: "/org/cs-society",
+  },
+  {
+    id: "n3",
+    title: "Innovation Summit RSVP confirmed",
+    meta: "4h ago",
+    category: "rsvp",
+    unread: true,
+    createdAt: Date.now() - 4 * 3_600_000,
+    href: "/student/events",
+  },
+  {
+    id: "n4",
+    title: "New event: Eco Run for the Planet",
+    meta: "Yesterday",
+    category: "event",
+    unread: true,
+    createdAt: Date.now() - 86_400_000,
+    href: "/student/events",
+  },
+  {
+    id: "n5",
+    title: "UM Eco Warriors posted a campus update",
+    meta: "Yesterday",
+    category: "announcement",
+    unread: false,
+    createdAt: Date.now() - 86_400_000,
+    href: "/org/eco-warriors",
+  },
+  {
+    id: "n6",
+    title: "Jana Cruz replied to your comment",
+    meta: "2 days ago",
+    category: "comment-reply",
+    unread: false,
+    createdAt: Date.now() - 2 * 86_400_000,
+    href: "/student",
+  },
+  {
+    id: "n7",
+    title: "Welcome to UMUnity!",
+    meta: "3 days ago",
+    category: "general",
+    unread: false,
+    createdAt: Date.now() - 3 * 86_400_000,
+  },
 ];
 
 function read(): AppNotif[] {
@@ -70,7 +131,9 @@ export function removeNotification(id: string) {
   write(read().filter((n) => n.id !== id));
 }
 
-export function addNotification(input: Omit<AppNotif, "id" | "createdAt" | "unread"> & { unread?: boolean }) {
+export function addNotification(
+  input: Omit<AppNotif, "id" | "createdAt" | "unread"> & { unread?: boolean },
+) {
   const n: AppNotif = {
     id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     createdAt: Date.now(),
@@ -119,7 +182,7 @@ export function resolveAdmin2NotificationHref(href?: string): string | undefined
 
 export function resolveAdmin1NotificationHref(href?: string): string | undefined {
   if (!href) return href;
-  if (href.startsWith("/admin1/workflows/")) return href;
+  if (href.startsWith("/admin1/")) return href;
   return "/admin1";
 }
 

@@ -1,7 +1,23 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bell, Calendar, Megaphone, MessageSquare, Sparkles, Check, Trash2, Inbox, Search } from "lucide-react";
-import { PageHead, Panel, Badge, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
+import {
+  Bell,
+  Calendar,
+  Megaphone,
+  MessageSquare,
+  Sparkles,
+  Check,
+  Trash2,
+  Inbox,
+  Search,
+} from "lucide-react";
+import {
+  PageHead,
+  Panel,
+  Badge,
+  EmptyState,
+  PanelSkeleton,
+} from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { useDashboardPageLoading } from "@/lib/feedback";
 import {
@@ -32,6 +48,7 @@ const ICONS: Record<NotifCategory, typeof Bell> = {
   "comment-reply": MessageSquare,
   rsvp: Check,
   general: Sparkles,
+  system: Bell,
 };
 
 const TONES: Record<NotifCategory, "gold" | "info" | "success" | "neutral"> = {
@@ -40,6 +57,7 @@ const TONES: Record<NotifCategory, "gold" | "info" | "success" | "neutral"> = {
   "comment-reply": "neutral",
   rsvp: "success",
   general: "neutral",
+  system: "info",
 };
 
 export function NotificationsView({
@@ -72,7 +90,9 @@ export function NotificationsView({
     else if (filter !== "all") out = out.filter((n) => n.category === filter);
     if (query.trim()) {
       const q = query.toLowerCase();
-      out = out.filter((n) => n.title.toLowerCase().includes(q) || n.meta.toLowerCase().includes(q));
+      out = out.filter(
+        (n) => n.title.toLowerCase().includes(q) || n.meta.toLowerCase().includes(q),
+      );
     }
     return out;
   }, [list, filter, query]);
@@ -98,7 +118,12 @@ export function NotificationsView({
         title={title}
         sub={sub ?? `${counts.unread} unread of ${counts.total} updates.`}
         action={
-          <AppButton variant="secondary" size="sm" onClick={() => markAllRead()} disabled={counts.unread === 0}>
+          <AppButton
+            variant="secondary"
+            size="sm"
+            onClick={() => markAllRead()}
+            disabled={counts.unread === 0}
+          >
             <Check className="h-4 w-4" /> Mark all read
           </AppButton>
         }
@@ -113,18 +138,22 @@ export function NotificationsView({
                   ? counts.total
                   : f.id === "unread"
                     ? counts.unread
-                    : counts.byCat[f.id] ?? 0;
+                    : (counts.byCat[f.id] ?? 0);
               const active = filter === f.id;
               return (
                 <button
                   key={f.id}
                   onClick={() => setFilter(f.id)}
                   className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm font-medium transition ${
-                    active ? "bg-[color:color-mix(in_oklab,var(--primary)_8%,white)] text-primary" : "text-foreground/80 hover:bg-secondary"
+                    active
+                      ? "bg-[color:color-mix(in_oklab,var(--primary)_8%,white)] text-primary"
+                      : "text-foreground/80 hover:bg-secondary"
                   }`}
                 >
                   <span>{f.label}</span>
-                  <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}
+                  >
                     {count}
                   </span>
                 </button>
@@ -148,11 +177,22 @@ export function NotificationsView({
             {filtered.length === 0 ? (
               <EmptyState
                 title={query ? "No matches" : "You're all caught up"}
-                sub={query ? "Try a different search or clear the filter." : "New notifications will show up here."}
+                sub={
+                  query
+                    ? "Try a different search or clear the filter."
+                    : "New notifications will show up here."
+                }
                 icon={Inbox}
                 action={
                   query ? (
-                    <AppButton variant="secondary" size="sm" onClick={() => { setQuery(""); setFilter("all"); }}>
+                    <AppButton
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        setQuery("");
+                        setFilter("all");
+                      }}
+                    >
                       Clear search
                     </AppButton>
                   ) : (
@@ -180,14 +220,20 @@ export function NotificationsView({
 function NotifRow({ notif }: { notif: AppNotif }) {
   const Icon = ICONS[notif.category];
   return (
-    <div className={`flex items-start gap-3 py-4 first:pt-0 last:pb-0 ${notif.unread ? "" : "opacity-75"}`}>
-      <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${notif.unread ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"}`}>
+    <div
+      className={`flex items-start gap-3 py-4 first:pt-0 last:pb-0 ${notif.unread ? "" : "opacity-75"}`}
+    >
+      <div
+        className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${notif.unread ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"}`}
+      >
         <Icon className="h-4 w-4" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone={TONES[notif.category]}>{labelFor(notif.category)}</Badge>
-          {notif.unread ? <span className="text-[10px] font-bold uppercase tracking-wider text-primary">New</span> : null}
+          {notif.unread ? (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-primary">New</span>
+          ) : null}
         </div>
         {notif.href ? (
           <Link
@@ -232,10 +278,15 @@ function NotifRow({ notif }: { notif: AppNotif }) {
 
 function labelFor(c: NotifCategory) {
   switch (c) {
-    case "event": return "Event";
-    case "announcement": return "Announcement";
-    case "comment-reply": return "Comment reply";
-    case "rsvp": return "RSVP";
-    default: return "Update";
+    case "event":
+      return "Event";
+    case "announcement":
+      return "Announcement";
+    case "comment-reply":
+      return "Comment reply";
+    case "rsvp":
+      return "RSVP";
+    default:
+      return "Update";
   }
 }

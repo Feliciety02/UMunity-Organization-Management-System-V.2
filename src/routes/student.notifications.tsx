@@ -9,7 +9,9 @@ export const Route = createFileRoute("/student/notifications")({
       resolveHref={resolveStudentNotificationHref}
       emptyAction={
         <AppButton asChild variant="secondary" size="sm">
-          <Link to="/student/events">Browse events</Link>
+          <Link to="/student/events" search={{ event: undefined }}>
+            Browse events
+          </Link>
         </AppButton>
       }
     />
