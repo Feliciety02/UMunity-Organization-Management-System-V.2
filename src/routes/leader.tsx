@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
 import type { BottomNavItem } from "@/components/dashboard/MobileBottomNav";
-import { LayoutDashboard, Building2, Users, UserPlus, Calendar, PenSquare, MessageSquare, FileText, User, Eye, Newspaper, ClipboardList, Bell, ClipboardCheck, Workflow, UserCog, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Building2, Users, UserPlus, Calendar, PenSquare, MessageSquare, FileText, User, Eye, Newspaper, ClipboardList, Bell, ClipboardCheck, Workflow, UserCog, ShieldCheck, RotateCcw } from "lucide-react";
 import { resolveLeaderNotificationHref } from "@/lib/notifications";
 
 const nav: NavItem[] = [
@@ -14,6 +14,7 @@ const nav: NavItem[] = [
   { to: "/leader/requests", label: "Membership Requests", icon: UserPlus, badge: "12", section: "MANAGEMENT" },
   { to: "/leader/manage-events", label: "Events", icon: Calendar, section: "MANAGEMENT" },
   { to: "/leader/workflows", label: "Event Workflows", icon: Workflow, section: "MANAGEMENT" },
+  { to: "/leader/revisions", label: "Revision Center", icon: RotateCcw, section: "MANAGEMENT" },
   { to: "/leader/officer-transition", label: "Officer Transition", icon: UserCog, section: "MANAGEMENT" },
   { to: "/leader/requirements", label: "Event Requirements", icon: ClipboardCheck, section: "MANAGEMENT" },
   { to: "/leader/attendees", label: "Attendees", icon: ClipboardList, section: "MANAGEMENT" },
@@ -27,8 +28,8 @@ const nav: NavItem[] = [
 const bottomNav: BottomNavItem[] = [
   { to: "/leader", label: "Home", icon: LayoutDashboard },
   { to: "/leader/feed", label: "Feed", icon: Newspaper },
+  { to: "/leader/revisions", label: "Revisions", icon: RotateCcw },
   { to: "/leader/create-post", label: "Post", icon: PenSquare },
-  { to: "/leader/requests", label: "Requests", icon: UserPlus, badge: "12" },
   { to: "/leader/notifications", label: "Alerts", icon: Bell },
 ];
 

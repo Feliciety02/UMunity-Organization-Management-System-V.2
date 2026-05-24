@@ -121,7 +121,7 @@ function LeaderDashboard() {
           </div>
         </Panel>
 
-        <Panel title="Recent activity">
+        <Panel title="Recent activity" action={<Link to="/leader/revisions" className="text-xs font-semibold text-primary">Open revision center</Link>}>
           <ul className="space-y-3 text-sm">
             {[
               "Marvin Lim applied to join",
@@ -140,7 +140,7 @@ function LeaderDashboard() {
         </Panel>
       </div>
 
-      <Panel title="Post-event closeout queue" className="mt-6" action={<Link to="/leader/workflows" className="text-xs font-semibold text-primary">Open workflows</Link>}>
+      <Panel title="Post-event closeout queue" className="mt-6" action={<Link to="/leader/revisions" className="text-xs font-semibold text-primary">Review blockers</Link>}>
         <div className="space-y-3">
           {closeoutQueue.length === 0 ? (
             <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">No active closeout packets need leader action right now.</div>

@@ -9,6 +9,7 @@ import {
   UserCog,
   Megaphone,
   ShieldCheck,
+  MessageSquareText,
 } from "lucide-react";
 import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
 import type { BottomNavItem } from "@/components/dashboard/MobileBottomNav";
@@ -20,6 +21,7 @@ const nav: NavItem[] = [
   { to: "/adviser/posts", label: "Post Approvals", icon: Megaphone, section: "WORKSPACE" },
   { to: "/adviser/requirements", label: "Requirements", icon: ClipboardCheck, section: "WORKSPACE" },
   { to: "/adviser/compliance", label: "Accreditation", icon: ShieldCheck, section: "WORKSPACE" },
+  { to: "/adviser/review-center", label: "Review Center", icon: MessageSquareText, section: "WORKSPACE" },
   { to: "/adviser/analytics", label: "Analytics", icon: BarChart3, section: "WORKSPACE" },
   { to: "/adviser/members", label: "Member activity", icon: Users, section: "WORKSPACE" },
   { to: "/adviser/notifications", label: "Notifications", icon: Bell, section: "REVIEW" },
@@ -28,8 +30,8 @@ const nav: NavItem[] = [
 
 const bottomNav: BottomNavItem[] = [
   { to: "/adviser", label: "Queue", icon: ClipboardCheck },
+  { to: "/adviser/review-center", label: "Review", icon: MessageSquareText },
   { to: "/adviser/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/adviser/members", label: "Members", icon: Users },
   { to: "/adviser/notifications", label: "Alerts", icon: Bell },
   { to: "/adviser/profile", label: "Me", icon: User },
 ];
