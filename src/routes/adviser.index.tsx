@@ -32,6 +32,19 @@ function AdviserDashboard() {
         emptyTitle="No adviser approvals pending"
         emptySub="Once leaders submit workflows, they will appear here for first-line review."
       />
+      <Panel
+        title="Review center"
+        className="mt-6"
+        action={
+          <AppButton asChild variant="secondary" size="sm">
+            <Link to="/adviser/review-center">Open full view</Link>
+          </AppButton>
+        }
+      >
+        <p className="text-sm text-muted-foreground">
+          Keep revision notes, recent reviewer comments, and the active adviser queue visible in one place instead of jumping across individual routes.
+        </p>
+      </Panel>
       <Panel title="Post approvals" className="mt-6">
         {postApprovals.length === 0 ? (
           <p className="text-sm text-muted-foreground">No post submissions are waiting for adviser review.</p>

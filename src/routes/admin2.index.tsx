@@ -59,6 +59,19 @@ function Admin2Dashboard() {
           </div>
         </Panel>
       </div>
+      <Panel
+        title="Review center"
+        className="mb-6"
+        action={
+          <AppButton asChild variant="secondary" size="sm">
+            <Link to="/admin2/review-center">Open feedback view</Link>
+          </AppButton>
+        }
+      >
+        <p className="text-sm text-muted-foreground">
+          Use the review center to see Admin 2 validation notes and pending review context across compliance, publishing, closeout, and workflow lanes.
+        </p>
+      </Panel>
       <WorkflowBoard
         title="Admin 2 compliance queue"
         sub="Validate adviser-cleared submissions, monitor compliance, and escalate only the ready workflows."
