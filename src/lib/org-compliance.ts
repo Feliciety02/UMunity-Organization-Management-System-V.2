@@ -1,6 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { addNotification } from "@/lib/notifications";
 import type { WorkflowActor } from "@/lib/workflows";
+import { applyAccreditationDecision, sendOrgRegistryNotification } from "@/lib/org-registry";
 
 export type ComplianceStatus =
   | "draft"
@@ -435,6 +436,18 @@ export function approveCompliance(id: string, actor: WorkflowActor, note?: strin
     if (status !== "approved") {
       notifyQueue(status, next);
     } else {
+      applyAccreditationDecision(submission.orgSlug, {
+        by: actor.name,
+        academicYear: submission.academicYear,
+        status: "active",
+        lifecycleStatus: "recognized",
+        note: note ?? "Admin 1 approved this accreditation cycle and kept the organization recognized.",
+      });
+      sendOrgRegistryNotification(
+        submission.orgSlug,
+        `${next.orgName} remains recognized after final accreditation approval`,
+        next.academicYear,
+      );
       addNotification({
         title: `${next.orgName} accreditation has been approved`,
         meta: next.academicYear,

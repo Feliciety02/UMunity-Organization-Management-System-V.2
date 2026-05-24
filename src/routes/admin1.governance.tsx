@@ -40,6 +40,9 @@ function Admin1Governance() {
                 <Link to="/admin1/authority">Open final authority view</Link>
               </AppButton>
               <AppButton asChild variant="secondary" size="sm">
+                <Link to="/admin1/organizations">Open organization registry</Link>
+              </AppButton>
+              <AppButton asChild variant="secondary" size="sm">
                 <Link to="/admin1/transitions">Open officer transitions</Link>
               </AppButton>
               <AppButton asChild variant="secondary" size="sm">

@@ -45,7 +45,10 @@ function StudentFeed() {
 
   return (
     <>
-      <PageHead title="Home feed" sub="See the latest updates from your organizations and campus community." />
+      <PageHead
+        title="Home feed"
+        sub="See the latest updates from your organizations and campus community."
+      />
 
       <div className="mx-auto max-w-[1520px]">
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1.18fr)_380px]">
@@ -66,7 +69,12 @@ function StudentFeed() {
 
             <div className="space-y-5">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} org={orgBySlug[post.orgSlug]} orgLinkMode="student" />
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  org={orgBySlug[post.orgSlug]}
+                  orgLinkMode="student"
+                />
               ))}
             </div>
           </div>
@@ -75,7 +83,15 @@ function StudentFeed() {
             <div className="space-y-6 xl:sticky xl:top-24">
               <Panel
                 title="Upcoming events"
-                action={<Link to="/student/events" className="text-sm font-semibold text-primary">View all</Link>}
+                action={
+                  <Link
+                    to="/student/events"
+                    search={{ event: undefined }}
+                    className="text-sm font-semibold text-primary"
+                  >
+                    View all
+                  </Link>
+                }
                 className="rounded-[28px] bg-card/96 p-6"
               >
                 <div className="space-y-4">
@@ -85,13 +101,27 @@ function StudentFeed() {
                       event={event}
                       cover={eventVisuals[event.title] ?? defaultEventVisual}
                       compact
-                      badge={<Badge tone={event.status === "Open" ? "success" : event.status === "Soon" ? "info" : "warning"}>{event.status}</Badge>}
+                      badge={
+                        <Badge
+                          tone={
+                            event.status === "Open"
+                              ? "success"
+                              : event.status === "Soon"
+                                ? "info"
+                                : "warning"
+                          }
+                        >
+                          {event.status}
+                        </Badge>
+                      }
                     />
                   ))}
                 </div>
 
                 <AppButton asChild variant="secondary" className="mt-5 w-full">
-                  <Link to="/student/events">View all events</Link>
+                  <Link to="/student/events" search={{ event: undefined }}>
+                    View all events
+                  </Link>
                 </AppButton>
               </Panel>
 
@@ -106,7 +136,10 @@ function StudentFeed() {
                       key={org.slug}
                       org={org}
                       coverTone={suggestedCoverTones[index % suggestedCoverTones.length]}
-                      reason={suggestedReasons[org.slug] ?? "Shared interests in campus events and student communities."}
+                      reason={
+                        suggestedReasons[org.slug] ??
+                        "Shared interests in campus events and student communities."
+                      }
                       orgLinkMode="student"
                     />
                   ))}
