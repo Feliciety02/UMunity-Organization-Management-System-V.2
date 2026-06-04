@@ -280,6 +280,19 @@ export function createEventDoc(input: {
   return doc;
 }
 
+export function updateEventDoc(
+  id: string,
+  patch: Partial<Pick<EventDoc, "title" | "category" | "venue" | "date" | "time" | "objectives" | "collaborators" | "orgShort">>,
+): EventDoc | undefined {
+  return updateDoc(id, (doc) => {
+    const next: EventDoc = { ...doc, ...patch };
+    if (patch.date && patch.date !== doc.date) {
+      next.ay = academicYearFor(patch.date);
+    }
+    return next;
+  });
+}
+
 export function updateItemStatus(eventId: string, sectionId: SectionId, itemId: string, status: ReqStatus) {
   write(
     read().map((e) =>
