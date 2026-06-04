@@ -90,7 +90,6 @@ import { Route as AdminReportedPostsRouteImport } from './routes/admin.reported-
 import { Route as AdminReportedCommentsRouteImport } from './routes/admin.reported-comments'
 import { Route as AdminProfileRouteImport } from './routes/admin.profile'
 import { Route as AdminOrganizationsRouteImport } from './routes/admin.organizations'
-import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminLogsRouteImport } from './routes/admin.logs'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminAnnouncementsRouteImport } from './routes/admin.announcements'
@@ -520,11 +519,6 @@ const AdminOrganizationsRoute = AdminOrganizationsRouteImport.update({
   path: '/organizations',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminModerationRoute = AdminModerationRouteImport.update({
-  id: '/moderation',
-  path: '/moderation',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminLogsRoute = AdminLogsRouteImport.update({
   id: '/logs',
   path: '/logs',
@@ -674,7 +668,6 @@ export interface FileRoutesByFullPath {
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/logs': typeof AdminLogsRoute
-  '/admin/moderation': typeof AdminModerationRoute
   '/admin/organizations': typeof AdminOrganizationsRoute
   '/admin/profile': typeof AdminProfileRoute
   '/admin/reported-comments': typeof AdminReportedCommentsRoute
@@ -775,7 +768,6 @@ export interface FileRoutesByTo {
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/logs': typeof AdminLogsRoute
-  '/admin/moderation': typeof AdminModerationRoute
   '/admin/organizations': typeof AdminOrganizationsRoute
   '/admin/profile': typeof AdminProfileRoute
   '/admin/reported-comments': typeof AdminReportedCommentsRoute
@@ -883,7 +875,6 @@ export interface FileRoutesById {
   '/admin/announcements': typeof AdminAnnouncementsRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/logs': typeof AdminLogsRoute
-  '/admin/moderation': typeof AdminModerationRoute
   '/admin/organizations': typeof AdminOrganizationsRoute
   '/admin/profile': typeof AdminProfileRoute
   '/admin/reported-comments': typeof AdminReportedCommentsRoute
@@ -992,7 +983,6 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/events'
     | '/admin/logs'
-    | '/admin/moderation'
     | '/admin/organizations'
     | '/admin/profile'
     | '/admin/reported-comments'
@@ -1093,7 +1083,6 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/events'
     | '/admin/logs'
-    | '/admin/moderation'
     | '/admin/organizations'
     | '/admin/profile'
     | '/admin/reported-comments'
@@ -1200,7 +1189,6 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/events'
     | '/admin/logs'
-    | '/admin/moderation'
     | '/admin/organizations'
     | '/admin/profile'
     | '/admin/reported-comments'
@@ -1876,13 +1864,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrganizationsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/moderation': {
-      id: '/admin/moderation'
-      path: '/moderation'
-      fullPath: '/admin/moderation'
-      preLoaderRoute: typeof AdminModerationRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/logs': {
       id: '/admin/logs'
       path: '/logs'
@@ -2052,7 +2033,6 @@ interface AdminRouteChildren {
   AdminAnnouncementsRoute: typeof AdminAnnouncementsRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminLogsRoute: typeof AdminLogsRoute
-  AdminModerationRoute: typeof AdminModerationRoute
   AdminOrganizationsRoute: typeof AdminOrganizationsRoute
   AdminProfileRoute: typeof AdminProfileRoute
   AdminReportedCommentsRoute: typeof AdminReportedCommentsRoute
@@ -2067,7 +2047,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAnnouncementsRoute: AdminAnnouncementsRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminLogsRoute: AdminLogsRoute,
-  AdminModerationRoute: AdminModerationRoute,
   AdminOrganizationsRoute: AdminOrganizationsRoute,
   AdminProfileRoute: AdminProfileRoute,
   AdminReportedCommentsRoute: AdminReportedCommentsRoute,
