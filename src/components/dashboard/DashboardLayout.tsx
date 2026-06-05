@@ -146,8 +146,8 @@ const SIDEBAR_CTA: Record<Role, { title: string; text: string; button: string; t
   admin: {
     title: "Review reports",
     text: "Check flagged posts and comments.",
-    button: "Open moderation",
-    to: "/admin/moderation",
+    button: "Open reported posts",
+    to: "/admin/reported-posts",
   },
 };
 

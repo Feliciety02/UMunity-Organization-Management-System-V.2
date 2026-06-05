@@ -1,7 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
-import { Edit3, Trash2, ExternalLink, ClipboardCheck } from "lucide-react";
-import { useEventDocs, computeProgress } from "@/lib/event-requirements";
+import { Edit3, Trash2, ExternalLink, ClipboardCheck, Plus } from "lucide-react";
+import { useEventDocs, computeProgress, deleteEventDoc, type EventDoc } from "@/lib/event-requirements";
+import { AppButton } from "@/components/ui/app-button";
+import { EventFormDialog } from "@/components/events/EventFormDialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { showStatusToast } from "@/lib/feedback";
 
 export const Route = createFileRoute("/leader/manage-events")({
   component: ManageEvents,
@@ -15,11 +20,44 @@ const staticList = [
 ];
 
 function ManageEvents() {
+  const navigate = useNavigate();
   const docs = useEventDocs();
+  const [formOpen, setFormOpen] = useState(false);
+  const [formMode, setFormMode] = useState<"create" | "edit">("create");
+  const [editing, setEditing] = useState<EventDoc | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<EventDoc | null>(null);
+
+  function openCreate() {
+    setFormMode("create");
+    setEditing(null);
+    setFormOpen(true);
+  }
+
+  function openEdit(doc: EventDoc) {
+    setFormMode("edit");
+    setEditing(doc);
+    setFormOpen(true);
+  }
+
+  function confirmDelete() {
+    if (!pendingDelete) return;
+    const title = pendingDelete.title;
+    deleteEventDoc(pendingDelete.id);
+    setPendingDelete(null);
+    showStatusToast("Event deleted", `${title} and its tracker were removed.`, "info");
+  }
 
   return (
     <>
-      <PageHead title="Manage events" sub="All events created by your organization." />
+      <PageHead
+        title="Manage events"
+        sub="All events created by your organization."
+        action={
+          <AppButton variant="primary" onClick={openCreate}>
+            <Plus className="h-4 w-4" /> New event
+          </AppButton>
+        }
+      />
 
       <Panel>
         <div className="overflow-x-auto">
@@ -49,13 +87,28 @@ function ManageEvents() {
                     </td>
                     <td>
                       <div className="flex justify-end gap-1">
-                        <Link to="/leader/requirements/$eventId" params={{ eventId: doc.id }} className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary" aria-label="Open requirements">
+                        <button
+                          type="button"
+                          onClick={() => openEdit(doc)}
+                          className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          aria-label={`Edit ${doc.title}`}
+                        >
                           <Edit3 className="h-3.5 w-3.5" />
-                        </Link>
-                        <button className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary" aria-label="Open public">
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => navigate({ to: "/leader/requirements/$eventId", params: { eventId: doc.id } })}
+                          className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          aria-label={`Open ${doc.title} tracker`}
+                        >
                           <ExternalLink className="h-3.5 w-3.5" />
                         </button>
-                        <button className="grid h-8 w-8 place-items-center rounded-full hover:bg-rose-100 hover:text-rose-600" aria-label="Delete">
+                        <button
+                          type="button"
+                          onClick={() => setPendingDelete(doc)}
+                          className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-rose-100 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:hover:bg-rose-500/10"
+                          aria-label={`Delete ${doc.title}`}
+                        >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
@@ -80,9 +133,9 @@ function ManageEvents() {
                   <td><Badge tone={e.s === "Published" ? "success" : e.s === "Draft" ? "warning" : "neutral"}>{e.s}</Badge></td>
                   <td>
                     <div className="flex justify-end gap-1">
-                      <button className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary" aria-label="Edit"><Edit3 className="h-3.5 w-3.5" /></button>
-                      <button className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary" aria-label="Open public"><ExternalLink className="h-3.5 w-3.5" /></button>
-                      <button className="grid h-8 w-8 place-items-center rounded-full hover:bg-rose-100 hover:text-rose-600" aria-label="Delete"><Trash2 className="h-3.5 w-3.5" /></button>
+                      <button className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary" aria-label={`Edit ${e.t}`}><Edit3 className="h-3.5 w-3.5" /></button>
+                      <button className="grid h-8 w-8 place-items-center rounded-full hover:bg-secondary" aria-label={`Open ${e.t}`}><ExternalLink className="h-3.5 w-3.5" /></button>
+                      <button className="grid h-8 w-8 place-items-center rounded-full hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-500/10" aria-label={`Delete ${e.t}`}><Trash2 className="h-3.5 w-3.5" /></button>
                     </div>
                   </td>
                 </tr>
@@ -91,6 +144,23 @@ function ManageEvents() {
           </table>
         </div>
       </Panel>
+
+      <EventFormDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        mode={formMode}
+        doc={editing}
+      />
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        title={`Delete ${pendingDelete?.title ?? "event"}?`}
+        description="This removes the event and its requirements tracker, including uploaded drafts and review history. This action cannot be undone."
+        confirmLabel="Delete event"
+        tone="danger"
+        onConfirm={confirmDelete}
+      />
     </>
   );
 }

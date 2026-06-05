@@ -473,9 +473,13 @@ function subscribe(callback: () => void) {
 
 export function useComplianceSubmissions() {
   const [mounted, setMounted] = useState(false);
-  const snapshot = useSyncExternalStore(subscribe, getComplianceSubmissions, getComplianceSubmissions);
+  const snapshot = useSyncExternalStore(
+    subscribe,
+    () => JSON.stringify(getComplianceSubmissions()),
+    () => JSON.stringify(seed),
+  );
   useEffect(() => setMounted(true), []);
-  return mounted ? snapshot : seed;
+  return mounted ? (JSON.parse(snapshot) as typeof seed) : seed;
 }
 
 export function useComplianceSubmission(id: string) {
