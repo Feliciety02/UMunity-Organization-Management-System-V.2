@@ -7,6 +7,7 @@ import { useForcedTheme } from "@/hooks/use-theme";
 const nav = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
+
   { to: "/organizations", label: "Organizations" },
   { to: "/events", label: "Events" },
   { to: "/features", label: "Features" },
