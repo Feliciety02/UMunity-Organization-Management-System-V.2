@@ -49,7 +49,7 @@ function Requests() {
           {requests.map((r, i) => (
             <Panel key={r.n}>
               <div className="flex items-start gap-3">
-                <Avatar name={r.n} color={["from-rose-400 to-primary", "from-amber-500 to-primary", "from-emerald-400 to-primary-deep", "from-primary-deep to-rose-700"][i % 4]} />
+                <Avatar name={r.n} color={["from-rose-400 to-primary", "from-primary to-primary", "from-emerald-400 to-primary-deep", "from-primary-deep to-rose-700"][i % 4]} />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <p className="font-semibold">{r.n}</p>

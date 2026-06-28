@@ -12,7 +12,7 @@ export type TimelineItem = {
 
 const dotColors: Record<string, string> = {
   success: "bg-emerald-500 ring-emerald-200",
-  warning: "bg-amber-500 ring-amber-200",
+  warning: "bg-primary ring-primary/30",
   danger: "bg-rose-500 ring-rose-200",
   info: "bg-sky-500 ring-sky-200",
   neutral: "bg-muted-foreground ring-border",

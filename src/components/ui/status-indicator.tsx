@@ -6,7 +6,7 @@ export type StatusLevel = "success" | "warning" | "danger" | "info" | "neutral" 
 export function StatusDot({ level = "neutral", className }: { level?: StatusLevel; className?: string }) {
   const colors = {
     success: "bg-emerald-500",
-    warning: "bg-amber-500",
+    warning: "bg-primary",
     danger: "bg-rose-500",
     info: "bg-sky-500",
     gold: "bg-gold",
@@ -25,7 +25,7 @@ export function StatusBadge({ status, tone, className }: { status: string; tone?
 export function StatusPill({ label, level = "neutral", className }: { label: string; level?: StatusLevel; className?: string }) {
   const colors = {
     success: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    warning: "bg-amber-100 text-amber-800 border-amber-200",
+    warning: "bg-primary/15 text-primary-deep border-primary/30",
     danger: "bg-rose-100 text-rose-700 border-rose-200",
     info: "bg-sky-100 text-sky-700 border-sky-200",
     gold: "bg-gold/20 text-primary-deep border-gold/30",

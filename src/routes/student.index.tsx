@@ -193,7 +193,7 @@ const defaultEventVisual = svgToDataUri(`
 `);
 
 const suggestedCoverTones = [
-  "from-rose-100 via-amber-50 to-white",
+  "from-rose-100 via-primary/40 to-white",
   "from-emerald-100 via-lime-50 to-white",
   "from-sky-100 via-orange-50 to-white",
 ];

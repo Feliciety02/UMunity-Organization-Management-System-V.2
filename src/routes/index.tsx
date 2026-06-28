@@ -556,7 +556,7 @@ export function EventCard({
     status === "Open"
       ? "bg-emerald-100 text-emerald-700"
       : status === "Filling Fast"
-        ? "bg-amber-100 text-amber-800"
+        ? "bg-primary/15 text-primary-deep"
         : "bg-secondary text-primary";
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-soft">
