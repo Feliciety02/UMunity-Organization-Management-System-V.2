@@ -1,45 +1,26 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import {
-  LayoutDashboard,
-  ScrollText,
-  Bell,
-  User,
-  UserCog,
-  Landmark,
-  ShieldCheck,
-  Building2,
-} from "lucide-react";
-import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
-import type { BottomNavItem } from "@/components/dashboard/MobileBottomNav";
+import { DashboardLayout, type Notif } from "@/components/dashboard/DashboardLayout";
 import { resolveAdmin1NotificationHref } from "@/lib/notifications";
-
-const nav: NavItem[] = [
-  { to: "/admin1", label: "Dashboard", icon: LayoutDashboard, section: "OVERVIEW" },
-  { to: "/admin1/authority", label: "Final Authority", icon: ShieldCheck, section: "OVERVIEW" },
-  { to: "/admin1/organizations", label: "Organizations", icon: Building2, section: "OVERVIEW" },
-  { to: "/admin1/accreditation", label: "Accreditation", icon: Landmark, section: "OVERVIEW" },
-  { to: "/admin1/transitions", label: "Officer Transitions", icon: UserCog, section: "OVERVIEW" },
-  { to: "/admin1/governance", label: "Governance", icon: ScrollText, section: "OVERVIEW" },
-  { to: "/admin1/notifications", label: "Notifications", icon: Bell, section: "AUTHORITY" },
-  { to: "/admin1/profile", label: "Profile", icon: User, section: "SETTINGS" },
-];
-
-const bottomNav: BottomNavItem[] = [
-  { to: "/admin1", label: "Queue", icon: ShieldCheck },
-  { to: "/admin1/authority", label: "Authority", icon: Landmark },
-  { to: "/admin1/organizations", label: "Orgs", icon: Building2 },
-  { to: "/admin1/governance", label: "Records", icon: ScrollText },
-  { to: "/admin1/profile", label: "Me", icon: User },
-];
+import { ROLE_BOTTOM_NAV, ROLE_NAV } from "@/lib/role-navigation";
 
 const notifs: Notif[] = [
-  { title: "Cultural Night is ready for final approval", meta: "Pending final authority", unread: true },
+  {
+    title: "Cultural Night is ready for final approval",
+    meta: "Pending final authority",
+    unread: true,
+  },
   { title: "Officer transition season starts next month", meta: "Governance", unread: false },
 ];
 
 export const Route = createFileRoute("/admin1")({
   component: () => (
-    <DashboardLayout role="admin1" nav={nav} notifs={notifs} resolveNotifHref={resolveAdmin1NotificationHref} bottomNav={bottomNav}>
+    <DashboardLayout
+      role="admin1"
+      nav={ROLE_NAV.admin1}
+      notifs={notifs}
+      resolveNotifHref={resolveAdmin1NotificationHref}
+      bottomNav={ROLE_BOTTOM_NAV.admin1}
+    >
       <Outlet />
     </DashboardLayout>
   ),

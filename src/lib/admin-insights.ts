@@ -114,11 +114,16 @@ export function useAdminInsights(role: AdminRole) {
   const admin2RequirementsQueue = requirements.filter((doc) => doc.reviewStatus === "pending_admin2");
 
   const admin1WorkflowQueue = workflows.filter((workflow) => workflow.status === "pending_admin1");
+  const admin1CloseoutQueue = workflows.filter(
+    (workflow) =>
+      (workflow.status === "approved" || workflow.status === "completed") &&
+      workflow.operations.postEvent.closeoutStatus === "pending_admin1",
+  );
   const admin1ComplianceQueue = compliance.filter((submission) => submission.status === "pending_admin1");
   const admin1TransitionQueue = transitions.filter((workflow) => workflow.status === "pending_admin1");
 
   const queueItems: AdminQueueItem[] = role === "admin2"
-    ? [
+      ? [
         ...admin2WorkflowQueue.map((workflow) => {
           const ageHours = hoursSince(workflow.updatedAt);
           return {
@@ -206,6 +211,20 @@ export function useAdminInsights(role: AdminRole) {
             note: workflow.currentStage,
           } satisfies AdminQueueItem;
         }),
+        ...admin1CloseoutQueue.map((workflow) => {
+          const ageHours = hoursSince(workflow.updatedAt);
+          return {
+            id: `closeout-${workflow.id}`,
+            title: workflow.proposal.title,
+            orgName: workflow.orgName,
+            lane: "Final closeout approval",
+            status: formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus),
+            tone: queueToneForAge(ageHours),
+            href: `/admin1/workflows/${workflow.id}`,
+            ageHours,
+            note: "Financial wrap-up and outcomes review",
+          } satisfies AdminQueueItem;
+        }),
         ...admin1ComplianceQueue.map((submission) => {
           const ageHours = hoursSince(submission.updatedAt);
           return {
@@ -247,7 +266,7 @@ export function useAdminInsights(role: AdminRole) {
       finalAuthority: workflow.status === "pending_admin1",
       ageHours: hoursSince(workflow.updatedAt),
     });
-    if (workflow.operations.postEvent.closeoutStatus === "pending_admin2" || workflow.operations.postEvent.closeoutStatus === "revision_requested") {
+    if (workflow.operations.postEvent.closeoutStatus === "pending_admin2" || workflow.operations.postEvent.closeoutStatus === "pending_admin1" || workflow.operations.postEvent.closeoutStatus === "revision_requested" || workflow.operations.postEvent.closeoutStatus === "rejected") {
       pushWatch(watchMap, workflow.orgName, {
         pending: workflow.operations.postEvent.closeoutStatus === "pending_admin2",
         revision: workflow.operations.postEvent.closeoutStatus === "revision_requested",
@@ -307,7 +326,7 @@ export function useAdminInsights(role: AdminRole) {
         ...compliance.flatMap((submission) => submission.history.filter((entry) => entry.byRole === "admin2" && entry.createdAt >= monthStart && entry.action === "approved")),
       ].length
     : [
-        ...workflows.flatMap((workflow) => workflow.history.filter((entry) => entry.byRole === "admin1" && entry.createdAt >= monthStart && entry.action === "approved")),
+        ...workflows.flatMap((workflow) => workflow.history.filter((entry) => entry.byRole === "admin1" && entry.createdAt >= monthStart && (entry.action === "approved" || entry.action === "completed"))),
         ...compliance.flatMap((submission) => submission.history.filter((entry) => entry.byRole === "admin1" && entry.createdAt >= monthStart && entry.action === "approved")),
         ...transitions.flatMap((workflow) => workflow.history.filter((entry) => entry.byRole === "admin1" && entry.createdAt >= monthStart && entry.action === "completed")),
       ].length;
@@ -408,10 +427,12 @@ export function useAdminInsights(role: AdminRole) {
     avgTurnaroundDays: avg(turnaroundSamples),
     revisionLoad:
       workflows.filter((workflow) => workflow.status === "revision_requested").length +
-      postApprovals.filter((approval) => approval.status === "revision_requested").length +
-      compliance.filter((submission) => submission.status === "revision_requested").length +
-      requirements.filter((doc) => doc.reviewStatus === "revision_requested").length +
-      transitions.filter((workflow) => workflow.status === "revision_requested").length,
+      workflows.filter((workflow) => workflow.status === "rejected").length +
+      workflows.filter((workflow) => workflow.operations.postEvent.closeoutStatus === "revision_requested" || workflow.operations.postEvent.closeoutStatus === "rejected").length +
+      postApprovals.filter((approval) => approval.status === "revision_requested" || approval.status === "rejected").length +
+      compliance.filter((submission) => submission.status === "revision_requested" || submission.status === "rejected").length +
+      requirements.filter((doc) => doc.reviewStatus === "revision_requested" || doc.reviewStatus === "rejected").length +
+      transitions.filter((workflow) => workflow.status === "revision_requested" || workflow.status === "rejected").length,
     accreditedOrgs: compliance.filter((submission) => submission.status === "approved").length,
     archivedTransitions: transitions.filter((workflow) => workflow.status === "completed").length,
     weeklyDecisions,

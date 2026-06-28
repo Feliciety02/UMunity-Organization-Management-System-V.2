@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { organizations } from "@/data/site";
+import { getDiscoverableOrganizations } from "@/lib/org-discovery";
+import { useOrgRegistry } from "@/lib/org-registry";
 import umOrganizationsHero from "@/assets/um-organizations-hero.svg";
 import { ArrowRight, ArrowUpDown, Search, SlidersHorizontal, Sparkles, Users } from "lucide-react";
 
@@ -29,14 +31,19 @@ function Orgs() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const [sort, setSort] = useState<"Popular" | "A-Z">("Popular");
+  const registry = useOrgRegistry();
+  const discoverableOrganizations = useMemo(
+    () => getDiscoverableOrganizations(organizations, registry),
+    [registry],
+  );
 
   const categories = useMemo(
-    () => ["All", ...Array.from(new Set(organizations.map((o) => o.category)))],
-    [],
+    () => ["All", ...Array.from(new Set(discoverableOrganizations.map((o) => o.category)))],
+    [discoverableOrganizations],
   );
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase();
-    const next = organizations.filter((o) => {
+    const next = discoverableOrganizations.filter((o) => {
       const matchesCategory = cat === "All" || o.category === cat;
       const matchesQuery =
         query === "" ||
@@ -51,7 +58,7 @@ function Orgs() {
       if (sort === "A-Z") return a.name.localeCompare(b.name);
       return b.members - a.members;
     });
-  }, [cat, q, sort]);
+  }, [cat, discoverableOrganizations, q, sort]);
 
   return (
     <PageShell overlayHeader>
@@ -158,8 +165,8 @@ function Orgs() {
                 }`}
               >
                 {c === "All"
-                  ? `${organizations.length} total`
-                  : `${organizations.filter((o) => o.category === c).length} orgs`}
+                  ? `${discoverableOrganizations.length} total`
+                  : `${discoverableOrganizations.filter((o) => o.category === c).length} orgs`}
               </span>
             ))}
           </div>
@@ -190,7 +197,7 @@ function Orgs() {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr))]">
           {filtered.map((o) => (
             <article
               key={o.slug}
@@ -234,17 +241,17 @@ function Orgs() {
                   <span>Recognized org</span>
                 </div>
 
-                <div className="mt-5 flex items-center gap-3">
+                <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                   <Link
                     to="/org/$slug"
                     params={{ slug: o.slug }}
-                    className="inline-flex h-10 items-center justify-center rounded-full border border-border bg-card px-4 text-sm font-medium text-foreground transition hover:bg-secondary"
+                    className="inline-flex h-10 w-full items-center justify-center rounded-full border border-border bg-card px-4 text-sm font-medium text-foreground transition hover:bg-secondary sm:w-auto"
                   >
                     View details
                   </Link>
                   <Link
                     to="/register"
-                    className="inline-flex h-10 items-center justify-center rounded-full bg-gold px-4 text-sm font-semibold text-primary-deep transition hover:brightness-95"
+                    className="inline-flex h-10 w-full items-center justify-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary-deep sm:w-auto"
                   >
                     Join UMunity
                   </Link>

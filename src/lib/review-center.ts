@@ -126,8 +126,60 @@ export function useLeaderReviewCenter(orgName?: string) {
         updatedAt: workflow.updatedAt,
         tone: "danger" as const,
       })),
+    ...workflows
+      .filter((workflow) => workflow.status === "rejected")
+      .map((workflow) => ({
+        id: `workflow-rejected-${workflow.id}`,
+        title: workflow.proposal.title,
+        lane: "Event workflow (rejected)",
+        orgName: workflow.orgName,
+        status: "Rejected",
+        href: `/leader/workflows/${workflow.id}`,
+        note: workflow.comments[0]?.message ?? "This workflow was rejected by a reviewer.",
+        updatedAt: workflow.updatedAt,
+        tone: "danger" as const,
+      })),
+    ...postApprovals
+      .filter((approval) => approval.status === "rejected")
+      .map((approval) => ({
+        id: `post-rejected-${approval.id}`,
+        title: approval.title || "Untitled post",
+        lane: "Post approval (rejected)",
+        orgName: approval.orgName,
+        status: "Rejected",
+        href: `/leader/post-approvals/${approval.id}`,
+        note: approval.comments[0]?.message ?? "This post was rejected.",
+        updatedAt: approval.updatedAt,
+        tone: "danger" as const,
+      })),
+    ...compliance
+      .filter((submission) => submission.status === "rejected")
+      .map((submission) => ({
+        id: `compliance-rejected-${submission.id}`,
+        title: submission.orgName,
+        lane: "Accreditation (rejected)",
+        orgName: submission.orgName,
+        status: "Rejected",
+        href: `/leader/compliance/${submission.id}`,
+        note: submission.comments[0]?.message ?? "This accreditation was rejected.",
+        updatedAt: submission.updatedAt,
+        tone: "danger" as const,
+      })),
+    ...transitions
+      .filter((workflow) => workflow.status === "rejected")
+      .map((workflow) => ({
+        id: `transition-rejected-${workflow.id}`,
+        title: workflow.orgName,
+        lane: "Officer transition (rejected)",
+        orgName: workflow.orgName,
+        status: "Rejected",
+        href: `/leader/officer-transition/${workflow.id}`,
+        note: workflow.comments[0]?.message ?? "This transition was rejected.",
+        updatedAt: workflow.updatedAt,
+        tone: "danger" as const,
+      })),
     ...requirements
-      .filter((doc) => doc.reviewStatus === "revision_requested")
+      .filter((doc) => doc.reviewStatus === "revision_requested" || doc.reviewStatus === "rejected")
       .map((doc) => ({
         id: `requirements-${doc.id}`,
         title: doc.title,
@@ -218,7 +270,7 @@ export function useReviewerReviewCenter(role: "adviser" | "admin2") {
 
   const pendingActionItems: ReviewCenterItem[] = [
     ...workflows
-      .filter((workflow) => (role === "adviser" ? workflow.status === "pending_adviser" : workflow.status === "pending_admin2"))
+      .filter((workflow) => (role === "adviser" ? workflow.status === "pending_adviser" : role === "admin2" ? workflow.status === "pending_admin2" : workflow.status === "pending_admin1"))
       .map((workflow) => ({
         id: `workflow-${workflow.id}`,
         title: workflow.proposal.title,
@@ -234,7 +286,9 @@ export function useReviewerReviewCenter(role: "adviser" | "admin2") {
       .filter((workflow) =>
         role === "adviser"
           ? workflow.operations.postEvent.closeoutStatus === "pending_adviser"
-          : workflow.operations.postEvent.closeoutStatus === "pending_admin2",
+          : role === "admin2"
+            ? workflow.operations.postEvent.closeoutStatus === "pending_admin2"
+            : workflow.operations.postEvent.closeoutStatus === "pending_admin1",
       )
       .map((workflow) => ({
         id: `closeout-${workflow.id}`,

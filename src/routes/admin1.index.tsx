@@ -2,10 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { WorkflowBoard } from "@/components/workflows/WorkflowBoard";
 import { useWorkflows } from "@/lib/workflows";
 import { useComplianceSubmissions } from "@/lib/org-compliance";
+import { useEventDocs } from "@/lib/event-requirements";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, MiniBarChart, Panel, StatCard } from "@/components/dashboard/DashboardLayout";
 import { useAdminInsights } from "@/lib/admin-insights";
-import { CheckCircle2, Landmark, ShieldCheck, UserCog } from "lucide-react";
+import { CheckCircle2, ClipboardCheck, Landmark, ShieldCheck, UserCog } from "lucide-react";
 
 export const Route = createFileRoute("/admin1/")({
   component: Admin1Dashboard,
@@ -14,7 +15,13 @@ export const Route = createFileRoute("/admin1/")({
 function Admin1Dashboard() {
   const insights = useAdminInsights("admin1");
   const workflows = useWorkflows().filter((workflow) => workflow.status === "pending_admin1");
+  const closeoutQueue = useWorkflows().filter(
+    (workflow) =>
+      (workflow.status === "approved" || workflow.status === "completed") &&
+      workflow.operations.postEvent.closeoutStatus === "pending_admin1",
+  );
   const compliance = useComplianceSubmissions().filter((submission) => submission.status === "pending_admin1");
+  const requirements = useEventDocs().filter((doc) => doc.reviewStatus === "pending_admin1");
 
   return (
     <>
@@ -58,6 +65,30 @@ function Admin1Dashboard() {
         emptyTitle="No final approvals pending"
         emptySub="Only fully validated workflows reach this last stage."
       />
+      {closeoutQueue.length > 0 ? (
+        <Panel title="Final closeout approvals" className="mt-6">
+          <div className="space-y-3">
+            {closeoutQueue.slice(0, 3).map((workflow) => (
+              <Link key={workflow.id} to="/admin1/workflows/$workflowId" params={{ workflowId: workflow.id }} className="block rounded-2xl border border-border bg-card p-3 transition hover:bg-secondary/55">
+                <p className="text-sm font-semibold">{workflow.proposal.title}</p>
+                <p className="text-xs text-muted-foreground">{workflow.orgName} - Post-event closeout awaiting final approval</p>
+              </Link>
+            ))}
+          </div>
+        </Panel>
+      ) : null}
+      {requirements.length > 0 ? (
+        <Panel title="Requirements tracker approvals" className="mt-6">
+          <div className="space-y-3">
+            {requirements.slice(0, 3).map((doc) => (
+              <Link key={doc.id} to="/admin1/requirements/$eventId" params={{ eventId: doc.id }} className="block rounded-2xl border border-border bg-card p-3 transition hover:bg-secondary/55">
+                <p className="text-sm font-semibold">{doc.title}</p>
+                <p className="text-xs text-muted-foreground">{doc.orgShort} - Requirements tracker for final approval</p>
+              </Link>
+            ))}
+          </div>
+        </Panel>
+      ) : null}
       <Panel title="Accreditation decisions" className="mt-6">
         {compliance.length === 0 ? (
           <p className="text-sm text-muted-foreground">No final accreditation decisions are waiting for Admin 1.</p>

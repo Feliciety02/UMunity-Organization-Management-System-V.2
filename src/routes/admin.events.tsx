@@ -1,11 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 import { events } from "@/data/site";
+import { DataTable, type Column } from "@/components/ui/data-table";
 import { Eye, CheckCircle2, X } from "lucide-react";
 
 export const Route = createFileRoute("/admin/events")({
   component: AdminEvents,
 });
+
+type Event = (typeof events)[number];
+
+const columns: Column<Event>[] = [
+  { key: "title", label: "Event", sortable: true, render: (row) => <span className="font-semibold">{row.title}</span> },
+  { key: "host", label: "Host", sortable: true, render: (row) => <span className="text-muted-foreground">{row.host}</span> },
+  { key: "date", label: "Date", sortable: true, render: (row) => <>{row.date}</> },
+  {
+    key: "status",
+    label: "Status",
+    sortable: false,
+    render: (row) => {
+      const i = events.indexOf(row);
+      const label = i < 2 ? "Approved" : i < 4 ? "Pending" : "Scheduled";
+      return <Badge tone={i < 2 ? "success" : i < 4 ? "warning" : "info"}>{label}</Badge>;
+    },
+  },
+];
 
 function AdminEvents() {
   return (
@@ -33,25 +52,14 @@ function AdminEvents() {
       </Panel>
 
       <Panel title="All events">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-                <th className="py-3">Event</th><th>Host</th><th>Date</th><th>Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {events.map((e, i) => (
-                <tr key={e.title} className="hover:bg-secondary/40">
-                  <td className="py-3 font-semibold">{e.title}</td>
-                  <td className="text-muted-foreground">{e.host}</td>
-                  <td>{e.date}</td>
-                  <td><Badge tone={i < 2 ? "success" : i < 4 ? "warning" : "info"}>{i < 2 ? "Approved" : i < 4 ? "Pending" : "Scheduled"}</Badge></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          columns={columns}
+          data={events}
+          keyExtractor={(row) => row.title}
+          searchable
+          searchPlaceholder="Search events..."
+          pageSize={10}
+        />
       </Panel>
     </>
   );

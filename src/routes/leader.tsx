@@ -1,37 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { DashboardLayout, type NavItem, type Notif } from "@/components/dashboard/DashboardLayout";
-import type { BottomNavItem } from "@/components/dashboard/MobileBottomNav";
-import { LayoutDashboard, Building2, Users, UserPlus, Calendar, PenSquare, MessageSquare, FileText, User, Eye, Newspaper, ClipboardList, Bell, ClipboardCheck, Workflow, UserCog, ShieldCheck, RotateCcw } from "lucide-react";
+import { DashboardLayout, type Notif } from "@/components/dashboard/DashboardLayout";
 import { resolveLeaderNotificationHref } from "@/lib/notifications";
-
-const nav: NavItem[] = [
-  { to: "/leader", label: "Dashboard", icon: LayoutDashboard, section: "WORKSPACE" },
-  { to: "/leader/feed", label: "Organization Feed", icon: Newspaper, section: "WORKSPACE" },
-  { to: "/leader/preview", label: "Public Preview", icon: Eye, section: "WORKSPACE" },
-  { to: "/leader/organization", label: "Edit Organization", icon: Building2, section: "MANAGEMENT" },
-  { to: "/leader/compliance", label: "Accreditation", icon: ShieldCheck, section: "MANAGEMENT" },
-  { to: "/leader/members", label: "Members", icon: Users, section: "MANAGEMENT" },
-  { to: "/leader/requests", label: "Membership Requests", icon: UserPlus, badge: "12", section: "MANAGEMENT" },
-  { to: "/leader/manage-events", label: "Events", icon: Calendar, section: "MANAGEMENT" },
-  { to: "/leader/workflows", label: "Event Workflows", icon: Workflow, section: "MANAGEMENT" },
-  { to: "/leader/revisions", label: "Revision Center", icon: RotateCcw, section: "MANAGEMENT" },
-  { to: "/leader/officer-transition", label: "Officer Transition", icon: UserCog, section: "MANAGEMENT" },
-  { to: "/leader/requirements", label: "Event Requirements", icon: ClipboardCheck, section: "MANAGEMENT" },
-  { to: "/leader/attendees", label: "Attendees", icon: ClipboardList, section: "MANAGEMENT" },
-  { to: "/leader/create-post", label: "Create Post", icon: PenSquare, section: "MANAGEMENT" },
-  { to: "/leader/posts", label: "Manage Posts", icon: FileText, section: "MANAGEMENT" },
-  { to: "/leader/comments", label: "Comments", icon: MessageSquare, badge: "8", section: "MANAGEMENT" },
-  { to: "/leader/notifications", label: "Notifications", icon: Bell, section: "SETTINGS" },
-  { to: "/leader/profile", label: "Profile", icon: User, section: "SETTINGS" },
-];
-
-const bottomNav: BottomNavItem[] = [
-  { to: "/leader", label: "Home", icon: LayoutDashboard },
-  { to: "/leader/feed", label: "Feed", icon: Newspaper },
-  { to: "/leader/revisions", label: "Revisions", icon: RotateCcw },
-  { to: "/leader/create-post", label: "Post", icon: PenSquare },
-  { to: "/leader/notifications", label: "Alerts", icon: Bell },
-];
+import { ROLE_BOTTOM_NAV, ROLE_NAV } from "@/lib/role-navigation";
 
 export const notifs: Notif[] = [
   { title: "12 new membership requests pending review", meta: "1h ago", unread: true },
@@ -43,7 +13,13 @@ export const notifs: Notif[] = [
 
 export const Route = createFileRoute("/leader")({
   component: () => (
-    <DashboardLayout role="leader" nav={nav} notifs={notifs} resolveNotifHref={resolveLeaderNotificationHref} bottomNav={bottomNav}>
+    <DashboardLayout
+      role="leader"
+      nav={ROLE_NAV.leader}
+      notifs={notifs}
+      resolveNotifHref={resolveLeaderNotificationHref}
+      bottomNav={ROLE_BOTTOM_NAV.leader}
+    >
       <Outlet />
     </DashboardLayout>
   ),

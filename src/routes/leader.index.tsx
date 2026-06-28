@@ -30,7 +30,7 @@ function LeaderDashboard() {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total members" value="412" delta="+24 this month" icon={Users} tone="primary" />
+        <StatCard label="Total members" value="3" delta="Current active roster" icon={Users} tone="primary" />
         <StatCard label="Pending requests" value="12" delta="Action needed" icon={UserPlus} tone="gold" />
         <StatCard label="Upcoming events" value="4" icon={Calendar} tone="rose" />
         <StatCard label="Engagement rate" value="87%" delta="+6% vs. last month" icon={TrendingUp} tone="emerald" />
@@ -38,9 +38,9 @@ function LeaderDashboard() {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <Panel className="lg:col-span-2" title="Member growth" action={<span className="text-xs text-muted-foreground">Last 8 weeks</span>}>
-          <MiniBarChart data={[210, 245, 268, 290, 312, 348, 388, 412]} color="var(--primary)" />
+          <MiniBarChart data={[1, 1, 2, 2, 2, 3, 3, 3]} color="var(--primary)" />
           <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-            <div className="rounded-xl bg-secondary/60 p-3"><p className="font-display text-lg font-bold">+202</p><p className="text-[10px] uppercase text-muted-foreground">New / 2mos</p></div>
+            <div className="rounded-xl bg-secondary/60 p-3"><p className="font-display text-lg font-bold">+1</p><p className="text-[10px] uppercase text-muted-foreground">New / 2mos</p></div>
             <div className="rounded-xl bg-secondary/60 p-3"><p className="font-display text-lg font-bold">94%</p><p className="text-[10px] uppercase text-muted-foreground">Retention</p></div>
             <div className="rounded-xl bg-secondary/60 p-3"><p className="font-display text-lg font-bold">4.8 stars</p><p className="text-[10px] uppercase text-muted-foreground">Avg rating</p></div>
           </div>

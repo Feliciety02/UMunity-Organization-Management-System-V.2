@@ -122,8 +122,9 @@
 
 | Role | Name | Date |
 |------|------|------|
-| Project Manager | [Name] | April 15, 2026 |
-| Quality Assurance Lead | [Name] | April 15, 2026 |
+| Project Leader | Joevan Capote | April 15, 2026 |
+| Quality Assurance (QA) Engineer | Joevan Capote | April 15, 2026 |
+| Full Stack Developer | Fe Anne Malasarte | April 15, 2026 |
 
 ### Additional Approvers
 
@@ -131,5 +132,4 @@
 |------|------|------|
 | [Name] | OSA Director — Primary Stakeholder | April 14, 2026 |
 | [Name] | IT Director — Technical Authority | April 15, 2026 |
-
 

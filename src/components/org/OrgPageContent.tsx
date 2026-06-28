@@ -8,11 +8,8 @@ import { UnderlineTabs } from "@/components/ui/app-tabs";
 import { PostCard, OrgAvatar } from "@/components/social/PostCard";
 import type { OrgLinkMode } from "@/components/org/OrgLink";
 import { showImportantActionToast } from "@/lib/feedback";
-import { events, officers, organizations, posts, type Org } from "@/data/site";
+import { events, organizations, posts, type Org } from "@/data/site";
 import { Users, Calendar, Mail, MapPin, Globe, UserPlus, Check, ArrowLeft, Compass } from "lucide-react";
-
-const tabs = ["Posts", "About", "Events", "Officers", "Photos"] as const;
-type Tab = (typeof tabs)[number];
 
 export function OrgPageContent({
   org,
@@ -29,11 +26,12 @@ export function OrgPageContent({
   orgLinkMode?: OrgLinkMode;
   onBack?: () => void;
 }) {
+  const tabs = ["Posts", "About", "Events", "Photos"] as const;
+  type Tab = (typeof tabs)[number];
   const [tab, setTab] = useState<Tab>("Posts");
   const [joined, setJoined] = useState(false);
 
   const orgPosts = posts.filter((p) => p.orgSlug === org.slug);
-  const orgOfficers = officers[org.slug] ?? [];
   const orgEvents = events.filter((e) => e.host === org.name);
   const relatedOrgs = organizations.filter((item) => item.slug !== org.slug && item.category === org.category).slice(0, 3);
 
@@ -198,29 +196,6 @@ export function OrgPageContent({
                   ))}
                 </div>
               )}
-            </FlatCard>
-          ) : null}
-
-          {tab === "Officers" ? (
-            <FlatCard title="Officers">
-              <div className="grid gap-3 sm:grid-cols-2">
-                {(orgOfficers.length
-                  ? orgOfficers
-                  : [
-                      { name: "President TBA", role: "President" },
-                      { name: "VP TBA", role: "Vice President" },
-                    ]).map((o) => (
-                  <div key={o.name} className="flex items-center gap-3 rounded-[18px] border border-border/70 bg-secondary/35 p-4">
-                    <div className="grid h-11 w-11 place-items-center rounded-full bg-secondary text-xs font-bold text-primary-deep">
-                      {o.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">{o.name}</p>
-                      <p className="text-xs text-muted-foreground">{o.role}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </FlatCard>
           ) : null}
 

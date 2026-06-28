@@ -5,8 +5,8 @@ import { addNotification } from "./notifications";
 
 export type ReqStatus = "pending" | "for-review" | "approved" | "missing";
 export type SectionId = "before" | "during" | "after";
-export type ReqReviewStatus = "draft" | "pending_adviser" | "revision_requested" | "pending_admin2" | "approved";
-export type ReqActorRole = "leader" | "adviser" | "admin2";
+export type ReqReviewStatus = "draft" | "pending_adviser" | "revision_requested" | "pending_admin2" | "pending_admin1" | "approved" | "rejected";
+export type ReqActorRole = "leader" | "adviser" | "admin2" | "admin1";
 
 export type ReqFile = { name: string; size: number; uploadedAt: number };
 
@@ -50,7 +50,7 @@ export type EventDoc = {
   }[];
   history: {
     id: string;
-    action: "created" | "submitted" | "commented" | "revision_requested" | "approved";
+    action: "created" | "submitted" | "commented" | "revision_requested" | "approved" | "rejected" | "retracted";
     byRole: ReqActorRole;
     byName: string;
     note?: string;
@@ -145,8 +145,12 @@ export function formatReqReviewStatus(status: ReqReviewStatus) {
       return "Revision Requested";
     case "pending_admin2":
       return "Pending Admin 2";
+    case "pending_admin1":
+      return "Pending Admin 1";
     case "approved":
       return "Approved";
+    case "rejected":
+      return "Rejected";
   }
 }
 
@@ -159,7 +163,10 @@ export function reqReviewTone(status: ReqReviewStatus): "neutral" | "info" | "wa
     case "revision_requested":
       return "danger";
     case "pending_admin2":
+    case "pending_admin1":
       return "warning";
+    case "rejected":
+      return "danger";
     case "approved":
       return "success";
   }
@@ -405,15 +412,27 @@ export function requestEventDocRevision(id: string, actor: { role: ReqActorRole;
 
 export function approveEventDoc(id: string, actor: { role: ReqActorRole; name: string }) {
   return updateDoc(id, (doc) => {
-    const nextStatus: ReqReviewStatus = actor.role === "adviser" ? "pending_admin2" : "approved";
+    let nextStatus: ReqReviewStatus;
+    let note: string;
+    let href: string;
+    if (actor.role === "adviser") {
+      nextStatus = "pending_admin2";
+      note = "Approved to Admin 2.";
+      href = `/admin2/requirements/${doc.id}`;
+    } else if (actor.role === "admin2") {
+      nextStatus = "pending_admin1";
+      note = "Approved to Admin 1.";
+      href = `/admin1/requirements/${doc.id}`;
+    } else {
+      nextStatus = "approved";
+      note = "Tracker fully approved.";
+      href = `/leader/requirements/${doc.id}`;
+    }
     addNotification({
-      title:
-        actor.role === "adviser"
-          ? `${doc.title} requirements are pending Admin 2 review`
-          : `${doc.title} requirements have been approved`,
+      title: `${doc.title} requirements are ${nextStatus === "approved" ? "approved" : `pending review`}`,
       meta: "Requirements tracker",
       category: "event",
-      href: actor.role === "adviser" ? `/admin2/requirements/${doc.id}` : `/leader/requirements/${doc.id}`,
+      href,
     });
     return {
       ...doc,
@@ -424,13 +443,67 @@ export function approveEventDoc(id: string, actor: { role: ReqActorRole; name: s
           action: "approved",
           byRole: actor.role,
           byName: actor.name,
-          note: actor.role === "adviser" ? "Approved to Admin 2." : "Tracker fully approved.",
+          note,
           createdAt: Date.now(),
         },
         ...doc.history,
       ],
     };
   });
+}
+
+export function rejectEventDoc(id: string, actor: { role: ReqActorRole; name: string }, note: string) {
+  return updateDoc(id, (doc) => {
+    addNotification({
+      title: `${doc.title} requirements were rejected`,
+      meta: actor.name,
+      category: "event",
+      href: `/leader/requirements/${doc.id}`,
+    });
+    return {
+      ...doc,
+      reviewStatus: "rejected",
+      comments: [
+        {
+          id: nowId("comment"),
+          authorRole: actor.role,
+          authorName: actor.name,
+          message: note,
+          createdAt: Date.now(),
+        },
+        ...doc.comments,
+      ],
+      history: [
+        {
+          id: nowId("history"),
+          action: "rejected",
+          byRole: actor.role,
+          byName: actor.name,
+          note,
+          createdAt: Date.now(),
+        },
+        ...doc.history,
+      ],
+    };
+  });
+}
+
+export function retractEventDoc(id: string, actor: { role: ReqActorRole; name: string }, note?: string) {
+  return updateDoc(id, (doc) => ({
+    ...doc,
+    reviewStatus: "draft",
+    history: [
+      {
+        id: nowId("history"),
+        action: "retracted",
+        byRole: actor.role,
+        byName: actor.name,
+        note: note ?? "Leader retracted the requirements tracker back to draft.",
+        createdAt: Date.now(),
+      },
+      ...doc.history,
+    ],
+  }));
 }
 
 export function uploadItemFile(eventId: string, sectionId: SectionId, itemId: string, file: { name: string; size: number }) {

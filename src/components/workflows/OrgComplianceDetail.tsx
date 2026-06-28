@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Building2, CheckCircle2, ClipboardCheck, FileText, Landmark, MessageSquareText, Send, ShieldCheck, Users } from "lucide-react";
+import { Ban, Building2, CheckCircle2, ClipboardCheck, FileText, Landmark, MessageSquareText, Send, ShieldCheck, Undo2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, PageHead, Panel } from "@/components/dashboard/DashboardLayout";
@@ -9,7 +9,9 @@ import {
   approveCompliance,
   complianceTone,
   formatComplianceStatus,
+  rejectCompliance,
   requestComplianceRevision,
+  retractCompliance,
   type OrgComplianceSubmission,
 } from "@/lib/org-compliance";
 import type { WorkflowActor } from "@/lib/workflows";
@@ -27,7 +29,13 @@ export function OrgComplianceDetail({
 }) {
   const [comment, setComment] = useState("");
 
+  const canSubmit = viewer.role === "leader" && (submission.status === "draft" || submission.status === "revision_requested" || submission.status === "rejected");
+  const canRetract = viewer.role === "leader" && (submission.status === "pending_adviser" || submission.status === "pending_admin2" || submission.status === "pending_admin1");
   const canReview =
+    (viewer.role === "adviser" && submission.status === "pending_adviser") ||
+    (viewer.role === "admin2" && submission.status === "pending_admin2") ||
+    (viewer.role === "admin1" && submission.status === "pending_admin1");
+  const canReject =
     (viewer.role === "adviser" && submission.status === "pending_adviser") ||
     (viewer.role === "admin2" && submission.status === "pending_admin2") ||
     (viewer.role === "admin1" && submission.status === "pending_admin1");
@@ -47,6 +55,21 @@ export function OrgComplianceDetail({
     addComplianceComment(submission.id, viewer, comment.trim());
     toast.success("Comment added");
     setComment("");
+  }
+
+  function handleReject() {
+    if (!comment.trim()) {
+      toast.error("Write the rejection reason first.");
+      return;
+    }
+    rejectCompliance(submission.id, viewer, comment.trim());
+    toast.success("Compliance rejected");
+    setComment("");
+  }
+
+  function handleRetract() {
+    retractCompliance(submission.id, viewer);
+    toast.success("Submission retracted to draft");
   }
 
   function requestRevision() {
@@ -74,9 +97,24 @@ export function OrgComplianceDetail({
             <AppButton asChild variant="secondary" size="sm">
               <Link to={backTo as string}>{backLabel}</Link>
             </AppButton>
+            {canSubmit ? (
+              <AppButton variant="primary" size="sm" onClick={() => { approveCompliance(submission.id, viewer); toast.success("Submitted for review"); }}>
+                <Send className="h-4 w-4" /> Submit for review
+              </AppButton>
+            ) : null}
+            {canRetract ? (
+              <AppButton variant="ghost" size="sm" onClick={handleRetract}>
+                <Undo2 className="h-4 w-4" /> Retract
+              </AppButton>
+            ) : null}
             {canReview ? (
               <AppButton variant="primary" size="sm" onClick={approve}>
                 <CheckCircle2 className="h-4 w-4" /> {stageLabel}
+              </AppButton>
+            ) : null}
+            {canReject ? (
+              <AppButton variant="ghost" size="sm" onClick={handleReject}>
+                <Ban className="h-4 w-4" /> Reject
               </AppButton>
             ) : null}
           </div>
@@ -152,6 +190,11 @@ export function OrgComplianceDetail({
                 {canReview ? (
                   <AppButton variant="ghost" size="sm" onClick={requestRevision}>
                     <Send className="h-4 w-4" /> Request revision
+                  </AppButton>
+                ) : null}
+                {canReject ? (
+                  <AppButton variant="ghost" size="sm" onClick={handleReject}>
+                    <Ban className="h-4 w-4" /> Reject
                   </AppButton>
                 ) : null}
               </div>

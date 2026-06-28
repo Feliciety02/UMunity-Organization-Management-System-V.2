@@ -68,7 +68,8 @@ export function useAdviserInsights(orgName?: string) {
       ).length +
       postApprovals.filter((approval) => approval.status === "pending_adviser").length +
       compliance.filter((submission) => submission.status === "pending_adviser").length +
-      requirements.filter((doc) => doc.reviewStatus === "pending_adviser").length;
+      requirements.filter((doc) => doc.reviewStatus === "pending_adviser").length +
+      workflows.filter((workflow) => workflow.operations.postEvent.closeoutStatus === "pending_adviser").length;
 
     const monthStart = startOfMonth();
 
@@ -105,7 +106,7 @@ export function useAdviserInsights(orgName?: string) {
 
     const memberCount =
       compliance.find((submission) => matchesOrg(orgName, { orgName: submission.orgName, orgSlug: submission.orgSlug }))?.data.memberCount ??
-      412;
+      3;
 
     const leaderActivities: ActivityEntry[] = [];
 

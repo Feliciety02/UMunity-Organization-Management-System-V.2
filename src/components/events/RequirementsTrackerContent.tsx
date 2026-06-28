@@ -13,15 +13,19 @@ import {
   X,
   Sparkles,
   Users,
+  Ban,
+  Undo2,
 } from "lucide-react";
 import {
   addEventDocComment,
   approveEventDoc,
   computeProgress,
   formatReqReviewStatus,
+  rejectEventDoc,
   removeItemFile,
   reqReviewTone,
   requestEventDocRevision,
+  retractEventDoc,
   sectionProgress,
   submitEventDoc,
   suggestFilename,
@@ -68,10 +72,16 @@ export function RequirementsTrackerContent({
   const [comment, setComment] = useState("");
   const progress = useMemo(() => computeProgress(doc), [doc]);
   const sections = activeSection === "all" ? doc.sections : doc.sections.filter((s) => s.id === activeSection);
-  const canSubmit = viewer.role === "leader" && (doc.reviewStatus === "draft" || doc.reviewStatus === "revision_requested");
+  const canSubmit = viewer.role === "leader" && (doc.reviewStatus === "draft" || doc.reviewStatus === "revision_requested" || doc.reviewStatus === "rejected");
+  const canRetract = viewer.role === "leader" && (doc.reviewStatus === "pending_adviser" || doc.reviewStatus === "pending_admin2" || doc.reviewStatus === "pending_admin1");
   const canReview =
     (viewer.role === "adviser" && doc.reviewStatus === "pending_adviser") ||
-    (viewer.role === "admin2" && doc.reviewStatus === "pending_admin2");
+    (viewer.role === "admin2" && doc.reviewStatus === "pending_admin2") ||
+    (viewer.role === "admin1" && doc.reviewStatus === "pending_admin1");
+  const canReject =
+    (viewer.role === "adviser" && doc.reviewStatus === "pending_adviser") ||
+    (viewer.role === "admin2" && doc.reviewStatus === "pending_admin2") ||
+    (viewer.role === "admin1" && doc.reviewStatus === "pending_admin1");
 
   return (
     <>
@@ -97,15 +107,41 @@ export function RequirementsTrackerContent({
                     Submit for review
                   </button>
                 ) : null}
+                {canRetract ? (
+                  <button
+                    onClick={() => {
+                      retractEventDoc(doc.id, viewer);
+                      toast.success("Tracker retracted to draft");
+                    }}
+                    className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold transition hover:bg-secondary"
+                  >
+                    <Undo2 className="h-3.5 w-3.5 mr-1" /> Retract
+                  </button>
+                ) : null}
                 {canReview ? (
                   <button
                     onClick={() => {
                       approveEventDoc(doc.id, viewer);
-                      toast.success(viewer.role === "adviser" ? "Tracker approved to Admin 2" : "Tracker approved");
+                      toast.success(
+                        viewer.role === "adviser" ? "Tracker approved to Admin 2" : viewer.role === "admin2" ? "Tracker approved to Admin 1" : "Tracker fully approved"
+                      );
                     }}
                     className="inline-flex items-center rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition hover:opacity-90"
                   >
-                    {viewer.role === "adviser" ? "Approve to Admin 2" : "Approve tracker"}
+                    {viewer.role === "adviser" ? "Approve to Admin 2" : viewer.role === "admin2" ? "Approve to Admin 1" : "Approve tracker"}
+                  </button>
+                ) : null}
+                {canReject ? (
+                  <button
+                    onClick={() => {
+                      if (!comment.trim()) { toast.error("Write the rejection reason first."); return; }
+                      rejectEventDoc(doc.id, viewer, comment.trim());
+                      toast.success("Tracker rejected");
+                      setComment("");
+                    }}
+                    className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold transition hover:bg-secondary"
+                  >
+                    <Ban className="h-3.5 w-3.5 mr-1" /> Reject
                   </button>
                 ) : null}
               </div>
@@ -132,7 +168,7 @@ export function RequirementsTrackerContent({
         <Panel title="Review lane">
           <div className="space-y-3">
             <div className="rounded-2xl bg-secondary/35 p-3 text-sm text-muted-foreground">
-              Adviser reviews the requirements tracker first. Admin 2 validates the final compliance pass after adviser approval.
+              Adviser reviews first, Admin 2 validates compliance, Admin 1 gives final approval.
             </div>
             <textarea
               value={comment}

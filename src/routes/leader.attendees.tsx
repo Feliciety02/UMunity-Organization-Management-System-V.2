@@ -1,21 +1,63 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Calendar, Download, Search, Users } from "lucide-react";
-import { PageHead, Panel, Badge, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
+import { Calendar, Download, Users } from "lucide-react";
+import { PageHead, Panel, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { useDashboardPageLoading } from "@/lib/feedback";
 import { useRsvps, type RsvpStatus } from "@/lib/rsvp";
 import { events } from "@/data/site";
+import { DataTable, DataTableStatusBadge, type Column } from "@/components/ui/data-table";
 
 export const Route = createFileRoute("/leader/attendees")({
   component: Attendees,
 });
 
-const statusTone: Record<RsvpStatus, "success" | "warning" | "danger"> = {
-  going: "success",
-  maybe: "warning",
-  cancelled: "danger",
+type AttendeeRow = {
+  key: string;
+  name: string;
+  email: string;
+  initials: string;
+  program: string;
+  status: RsvpStatus;
+  updated: string;
 };
+
+const columns: Column<AttendeeRow>[] = [
+  {
+    key: "name",
+    label: "Attendee",
+    sortable: true,
+    render: (row) => (
+      <div className="flex items-center gap-3">
+        <div className="grid h-9 w-9 place-items-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+          {row.initials}
+        </div>
+        <div>
+          <p className="font-semibold">{row.name}</p>
+          <p className="text-xs text-muted-foreground">{row.email}</p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    key: "program",
+    label: "Program",
+    sortable: true,
+    render: (row) => <span className="text-muted-foreground">{row.program || "—"}</span>,
+  },
+  {
+    key: "status",
+    label: "Status",
+    sortable: true,
+    render: (row) => <DataTableStatusBadge status={row.status} />,
+  },
+  {
+    key: "updated",
+    label: "Updated",
+    sortable: true,
+    render: (row) => <span className="text-xs text-muted-foreground">{row.updated}</span>,
+  },
+];
 
 function Attendees() {
   const rsvps = useRsvps();
@@ -35,14 +77,9 @@ function Attendees() {
     [rsvps, selected],
   );
 
-  const filtered = useMemo(
-    () =>
-      eventRsvps.filter((r) => {
-        if (status !== "all" && r.status !== status) return false;
-        if (query && !`${r.attendeeName} ${r.attendeeEmail} ${r.program ?? ""}`.toLowerCase().includes(query.toLowerCase())) return false;
-        return true;
-      }),
-    [eventRsvps, query, status],
+  const statusFiltered = useMemo(
+    () => (status === "all" ? eventRsvps : eventRsvps.filter((r) => r.status === status)),
+    [eventRsvps, status],
   );
 
   const counts = useMemo(() => {
@@ -74,7 +111,7 @@ function Attendees() {
   function exportCsv() {
     const rows = [
       ["Name", "Email", "Program", "Status", "Updated"],
-      ...filtered.map((r) => [r.attendeeName, r.attendeeEmail, r.program ?? "", r.status, new Date(r.updatedAt).toISOString()]),
+      ...statusFiltered.map((r) => [r.attendeeName, r.attendeeEmail, r.program ?? "", r.status, new Date(r.updatedAt).toISOString()]),
     ];
     const csv = rows.map((r) => r.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -86,13 +123,23 @@ function Attendees() {
     URL.revokeObjectURL(url);
   }
 
+  const rows: AttendeeRow[] = useMemo(() => statusFiltered.map((r) => ({
+    key: r.attendeeEmail + r.eventTitle,
+    name: r.attendeeName,
+    email: r.attendeeEmail,
+    initials: r.attendeeName.split(" ").slice(0, 2).map((w) => w[0]).join(""),
+    program: r.program ?? "—",
+    status: r.status,
+    updated: new Date(r.updatedAt).toLocaleDateString(),
+  })), [statusFiltered]);
+
   return (
     <>
       <PageHead
         title="Attendees"
         sub="See who RSVP'd to your events and export the attendee list."
         action={
-          <AppButton variant="secondary" size="sm" onClick={exportCsv} disabled={filtered.length === 0}>
+          <AppButton variant="secondary" size="sm" onClick={exportCsv} disabled={statusFiltered.length === 0}>
             <Download className="h-4 w-4" /> Export CSV
           </AppButton>
         }
@@ -134,78 +181,42 @@ function Attendees() {
           </div>
 
           <Panel>
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="relative w-full sm:max-w-xs">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search attendees..."
-                  className="w-full rounded-full border border-border bg-background py-2 pl-9 pr-3 text-sm focus:border-primary focus:outline-none"
-                />
-              </div>
-              <div className="flex items-center gap-1 rounded-full border border-border bg-background p-1 text-xs">
-                {(["all", "going", "maybe", "cancelled"] as const).map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setStatus(s)}
-                    className={`rounded-full px-3 py-1.5 font-semibold capitalize transition ${
-                      status === s ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {filtered.length === 0 ? (
-              <EmptyState
-                title="No attendees match"
-                sub="Try a different filter or open your events to publish or promote one."
-                icon={Users}
-                action={
+            <DataTable
+              columns={columns}
+              data={rows}
+              keyExtractor={(row) => row.key}
+              searchable
+              searchQuery={query}
+              onSearchChange={setQuery}
+              searchPlaceholder="Search attendees..."
+              filters={
+                <div className="flex items-center gap-1 rounded-full border border-border bg-background p-1 text-xs">
+                  {(["all", "going", "maybe", "cancelled"] as const).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setStatus(s)}
+                      className={`rounded-full px-3 py-1.5 font-semibold capitalize transition ${
+                        status === s ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              }
+              emptyTitle="No attendees match"
+              emptySub="Try a different filter or open your events to publish or promote one."
+              emptyIcon={
+                <div className="flex flex-col items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+                    <Users className="h-5 w-5" />
+                  </div>
                   <AppButton asChild variant="secondary" size="sm">
                     <Link to="/leader/manage-events">Open events</Link>
                   </AppButton>
-                }
-              />
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-                      <th className="py-3">Attendee</th>
-                      <th>Program</th>
-                      <th>Status</th>
-                      <th>Updated</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {filtered.map((r) => (
-                      <tr key={r.attendeeEmail + r.eventTitle} className="hover:bg-secondary/40">
-                        <td className="py-3">
-                          <div className="flex items-center gap-3">
-                            <div className="grid h-9 w-9 place-items-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                              {r.attendeeName.split(" ").slice(0, 2).map((w) => w[0]).join("")}
-                            </div>
-                            <div>
-                              <p className="font-semibold">{r.attendeeName}</p>
-                              <p className="text-xs text-muted-foreground">{r.attendeeEmail}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="text-muted-foreground">{r.program ?? "—"}</td>
-                        <td>
-                          <Badge tone={statusTone[r.status]}>{r.status}</Badge>
-                        </td>
-                        <td className="text-xs text-muted-foreground">{new Date(r.updatedAt).toLocaleDateString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                </div>
+              }
+            />
           </Panel>
         </div>
       </div>
