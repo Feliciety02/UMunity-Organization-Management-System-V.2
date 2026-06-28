@@ -69,7 +69,7 @@ export function SiteHeader() {
             </Link>
             <Link
               to="/register"
-              className="inline-flex items-center gap-2 rounded-full bg-[#F4B000] px-5 py-2.5 text-sm font-semibold text-[#4B0010] shadow-[0_12px_30px_rgba(244,176,0,0.24)] transition hover:bg-[#FFC72C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+              className="inline-flex items-center gap-2 rounded-full bg-[#7A0019] px-5 py-2.5 text-sm font-semibold text-[#4B0010] shadow-[0_12px_30px_rgba(244,176,0,0.24)] transition hover:bg-[#E89BA8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
             >
               Get Started
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -112,7 +112,7 @@ export function SiteHeader() {
               <Link
                 to="/register"
                 onClick={() => setOpen(false)}
-                className="flex-1 rounded-full bg-[#F4B000] px-4 py-3 text-center text-sm font-semibold text-[#4B0010]"
+                className="flex-1 rounded-full bg-[#7A0019] px-4 py-3 text-center text-sm font-semibold text-[#4B0010]"
               >
                 Get Started
               </Link>
