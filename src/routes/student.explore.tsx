@@ -4,6 +4,8 @@ import { PageHead, Panel, EmptyState, PanelSkeleton } from "@/components/dashboa
 import { AppButton } from "@/components/ui/app-button";
 import { organizations } from "@/data/site";
 import { showImportantActionToast, useDashboardPageLoading } from "@/lib/feedback";
+import { getDiscoverableOrganizations } from "@/lib/org-discovery";
+import { useOrgRegistry } from "@/lib/org-registry";
 import { ArrowUpDown, ChevronRight, Search, SlidersHorizontal, Users } from "lucide-react";
 
 export const Route = createFileRoute("/student/explore")({
@@ -15,11 +17,19 @@ function Explore() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const [sort, setSort] = useState<"Popular" | "A-Z">("Popular");
+  const registry = useOrgRegistry();
+  const discoverableOrganizations = useMemo(
+    () => getDiscoverableOrganizations(organizations, registry),
+    [registry],
+  );
 
-  const cats = useMemo(() => ["All", ...new Set(organizations.map((o) => o.category))], []);
+  const cats = useMemo(
+    () => ["All", ...new Set(discoverableOrganizations.map((o) => o.category))],
+    [discoverableOrganizations],
+  );
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase();
-    const next = organizations.filter((o) => {
+    const next = discoverableOrganizations.filter((o) => {
       const matchesCategory = cat === "All" || o.category === cat;
       const matchesQuery =
         query === "" ||
@@ -34,14 +44,17 @@ function Explore() {
       if (sort === "A-Z") return a.name.localeCompare(b.name);
       return b.members - a.members;
     });
-  }, [cat, q, sort]);
+  }, [cat, discoverableOrganizations, q, sort]);
 
   if (loading) {
     return (
       <>
-        <PageHead title="Explore Organizations" sub="Loading communities that match your passions." />
+        <PageHead
+          title="Explore Organizations"
+          sub="Loading communities that match your passions."
+        />
         <PanelSkeleton rows={3} className="mb-6" />
-        <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(380px,1fr))]">
+        <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr))]">
           {Array.from({ length: 6 }).map((_, index) => (
             <PanelSkeleton key={index} rows={4} />
           ))}
@@ -118,7 +131,7 @@ function Explore() {
                 onClick={() => setCat(c)}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                   cat === c
-                  ? "bg-primary text-primary-foreground"
+                    ? "bg-primary text-primary-foreground"
                     : "bg-secondary/70 text-foreground hover:bg-secondary"
                 }`}
               >
@@ -129,7 +142,7 @@ function Explore() {
         </div>
       </Panel>
 
-      <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(380px,1fr))]">
+      <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr))]">
         {filtered.map((o) => (
           <article
             key={o.slug}
@@ -142,7 +155,9 @@ function Explore() {
                 {o.category}
               </span>
               <div className="absolute -bottom-7 left-6 z-10 grid h-16 w-16 place-items-center rounded-[20px] border-4 border-card bg-card shadow-soft">
-                <div className={`grid h-full w-full place-items-center rounded-2xl bg-gradient-to-br ${o.color} font-display text-lg font-bold text-primary-foreground`}>
+                <div
+                  className={`grid h-full w-full place-items-center rounded-2xl bg-gradient-to-br ${o.color} font-display text-lg font-bold text-primary-foreground`}
+                >
                   {o.initials}
                 </div>
               </div>
@@ -151,8 +166,12 @@ function Explore() {
             <div className="px-6 pb-6 pt-10">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <h2 className="text-[1.35rem] font-bold tracking-[-0.03em] text-foreground">{o.name}</h2>
-                  <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted-foreground">{o.desc}</p>
+                  <h2 className="text-[1.35rem] font-bold tracking-[-0.03em] text-foreground">
+                    {o.name}
+                  </h2>
+                  <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted-foreground">
+                    {o.desc}
+                  </p>
                 </div>
                 <span className="rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
                   Active
@@ -167,18 +186,23 @@ function Explore() {
                 <span>Recognized org</span>
               </div>
 
-              <div className="mt-5 flex items-center gap-3">
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <Link
                   to="/student/org/$slug"
                   params={{ slug: o.slug }}
-                  className="inline-flex h-10 items-center justify-center rounded-full border border-border bg-card px-4 text-sm font-medium text-foreground transition hover:bg-secondary"
+                  className="inline-flex h-10 w-full items-center justify-center rounded-full border border-border bg-card px-4 text-sm font-medium text-foreground transition hover:bg-secondary sm:w-auto"
                 >
                   View
                 </Link>
                 <button
                   type="button"
-                  onClick={() => showImportantActionToast("apply", `${o.name} will review your application shortly.`)}
-                  className="inline-flex h-10 items-center justify-center rounded-full bg-gold px-4 text-sm font-semibold text-primary-deep transition hover:brightness-95"
+                  onClick={() =>
+                    showImportantActionToast(
+                      "apply",
+                      `${o.name} will review your application shortly.`,
+                    )
+                  }
+                  className="inline-flex h-10 w-full items-center justify-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary-deep sm:w-auto"
                 >
                   Apply
                 </button>

@@ -9,7 +9,7 @@
 
 ## Meeting #1 — November 16, 2025
 
-**Participants:** Project Manager, QA Lead, Lead Developer, UI/UX Designer, OSA Representative
+**Participants:** Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), UI/UX Designer, OSA Representative
 
 ### Agenda
 
@@ -27,18 +27,18 @@ The team reviewed the approved project charter and aligned on key objectives. Th
 
 | Decision | Rationale | Made By |
 |----------|-----------|---------|
-| Sprint cycle: 2 weeks with Friday demos | Allows adequate development time while maintaining stakeholder visibility | Project Manager |
-| React + TypeScript as primary tech stack | Team expertise and university preference for modern web technologies | Lead Developer |
+| Sprint cycle: 2 weeks with Friday demos | Allows adequate development time while maintaining stakeholder visibility | Joevan Capote |
+| React + TypeScript as primary tech stack | Team expertise and university preference for modern web technologies | Fe Anne Malasarte |
 | MVP scope: core org management + events | Ensures timely delivery of highest-value functionality | Team Consensus |
 
 ### Action Items
 
 | Item | Responsible | Due Date |
 |------|-------------|----------|
-| Schedule individual stakeholder interviews | Project Manager | Nov 20, 2025 |
-| Set up project repository and CI/CD pipeline | Lead Developer | Nov 18, 2025 |
+| Schedule individual stakeholder interviews | Joevan Capote | Nov 20, 2025 |
+| Set up project repository and CI/CD pipeline | Fe Anne Malasarte | Nov 18, 2025 |
 | Prepare initial wireframes for core pages | UI/UX Designer | Nov 25, 2025 |
-| Distribute project charter to all stakeholders | Project Manager | Nov 17, 2025 |
+| Distribute project charter to all stakeholders | Joevan Capote | Nov 17, 2025 |
 
 ### Outcome
 
@@ -48,7 +48,7 @@ Successful kickoff with clear direction and assigned action items. All team memb
 
 ## Meeting #2 — December 1, 2025
 
-**Participants:** Project Manager, QA Lead, Lead Developer, UI/UX Designer
+**Participants:** Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), UI/UX Designer
 
 ### Agenda
 
@@ -59,14 +59,14 @@ Successful kickoff with clear direction and assigned action items. All team memb
 
 ### Discussion Summary
 
-UI/UX Designer presented wireframes for the student dashboard, organization profiles, and event pages. Feedback was positive with minor adjustments needed for the organization discovery flow. Lead Developer proposed the system architecture using TanStack Start with PostgreSQL. The team agreed on Sprint 1 scope focusing on authentication and basic organization management functionality.
+UI/UX Designer presented wireframes for the student dashboard, organization profiles, and event pages. Feedback was positive with minor adjustments needed for the organization discovery flow. Fe Anne Malasarte proposed the system architecture using TanStack Start with PostgreSQL. The team agreed on Sprint 1 scope focusing on authentication and basic organization management functionality.
 
 ### Decisions Made
 
 | Decision | Rationale | Made By |
 |----------|-----------|---------|
-| TanStack Start for full-stack framework | Best fit for React SSR with type-safe routing | Lead Developer |
-| PostgreSQL with Prisma ORM | Robust relational data model for complex org relationships | Lead Developer |
+| TanStack Start for full-stack framework | Best fit for React SSR with type-safe routing | Fe Anne Malasarte |
+| PostgreSQL with Prisma ORM | Robust relational data model for complex org relationships | Fe Anne Malasarte |
 | Design system follows university brand guidelines | Consistent branding across all university digital properties | UI/UX Designer |
 
 ### Action Items
@@ -74,8 +74,8 @@ UI/UX Designer presented wireframes for the student dashboard, organization prof
 | Item | Responsible | Due Date |
 |------|-------------|----------|
 | Update wireframes based on feedback and finalize | UI/UX Designer | Dec 5, 2025 |
-| Finalize database schema for user and organization models | Lead Developer | Dec 4, 2025 |
-| Prepare test strategy document for review | QA Lead | Dec 6, 2025 |
+| Finalize database schema for user and organization models | Fe Anne Malasarte | Dec 4, 2025 |
+| Prepare test strategy document for review | Joevan Capote | Dec 6, 2025 |
 
 ### Outcome
 
@@ -85,7 +85,7 @@ Design direction approved. Architecture decisions finalized. Sprint 1 scope defi
 
 ## Meeting #3 — January 15, 2026
 
-**Participants:** Project Manager, QA Lead, Lead Developer, OSA Representative
+**Participants:** Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), OSA Representative
 
 ### Agenda
 
@@ -96,22 +96,22 @@ Design direction approved. Architecture decisions finalized. Sprint 1 scope defi
 
 ### Discussion Summary
 
-Demonstrated working authentication flow with university email registration and login. Organization profile creation and membership management were functional. OSA Representative tested the flow and provided specific feedback on compliance form requirements. QA Lead presented the test strategy with emphasis on automated testing for critical business paths. Sprint 2 planning focused on event management and the notification system.
+Demonstrated working authentication flow with university email registration and login. Organization profile creation and membership management were functional. OSA Representative tested the flow and provided specific feedback on compliance form requirements. Joevan Capote presented the test strategy with emphasis on automated testing for critical business paths. Sprint 2 planning focused on event management and the notification system.
 
 ### Decisions Made
 
 | Decision | Rationale | Made By |
 |----------|-----------|---------|
-| Automated testing prioritized for critical business flows | Ensures reliability of core functionality | QA Lead |
+| Automated testing prioritized for critical business flows | Ensures reliability of core functionality | Joevan Capote |
 | Event approval workflow requires adviser sign-off | Adds oversight without creating bottlenecks | OSA Representative |
 
 ### Action Items
 
 | Item | Responsible | Due Date |
 |------|-------------|----------|
-| Add organization category filtering to search | Frontend Developer | Jan 20, 2026 |
-| Begin drafting compliance module requirements | QA Lead | Jan 22, 2026 |
-| Set up automated test suite for auth flows | QA Lead | Jan 18, 2026 |
+| Add organization category filtering to search | Fe Anne Malasarte | Jan 20, 2026 |
+| Begin drafting compliance module requirements | Joevan Capote | Jan 22, 2026 |
+| Set up automated test suite for auth flows | Joevan Capote | Jan 18, 2026 |
 | Provide sample compliance forms from OSA | OSA Representative | Jan 20, 2026 |
 
 ### Outcome
@@ -131,4 +131,3 @@ Sprint 1 successfully completed. Stakeholder feedback incorporated. Sprint 2 cle
 | 5 | Dec 1 | PostgreSQL with Prisma | Database technology selection |
 | 6 | Jan 15 | Automated testing for critical paths | Quality assurance strategy |
 | 7 | Jan 15 | Adviser sign-off for event approval | Governance workflow decision |
-

@@ -11,18 +11,18 @@
 
 | ID | Risk Description | Probability | Impact | Level | Mitigation Strategy | Owner | Status |
 |----|-----------------|-------------|--------|-------|---------------------|-------|--------|
-| R-001 | Scope creep from additional feature requests | High | Major | HIGH | Establish change control process; require formal change requests with impact analysis | Project Manager | Monitoring |
-| R-002 | Timeline delays from underestimated complexity | Medium | Major | HIGH | Build buffer; weekly reviews; MVP prioritization | Project Manager | Open |
-| R-003 | Resource constraints across multiple projects | High | Moderate | MEDIUM | Dedicated team allocation; contingency plan | Project Manager | Monitoring |
-| R-004 | Requirement changes during development | Medium | Moderate | MEDIUM | Agile sprints; regular stakeholder demos | Project Manager | Open |
-| R-005 | University SSO integration technical issues | Medium | Major | HIGH | Start early; fallback auth; engage IT dept early | Lead Developer | Open |
-| R-006 | Stakeholder misalignment on priorities | Medium | Moderate | MEDIUM | Prioritization workshops; backlog management | Project Manager | Monitoring |
+| R-001 | Scope creep from additional feature requests | High | Major | HIGH | Establish change control process; require formal change requests with impact analysis | Joevan Capote | Monitoring |
+| R-002 | Timeline delays from underestimated complexity | Medium | Major | HIGH | Build buffer; weekly reviews; MVP prioritization | Joevan Capote | Open |
+| R-003 | Resource constraints across multiple projects | High | Moderate | MEDIUM | Dedicated team allocation; contingency plan | Joevan Capote | Monitoring |
+| R-004 | Requirement changes during development | Medium | Moderate | MEDIUM | Agile sprints; regular stakeholder demos | Joevan Capote | Open |
+| R-005 | University SSO integration technical issues | Medium | Major | HIGH | Start early; fallback auth; engage IT dept early | Fe Anne Malasarte | Open |
+| R-006 | Stakeholder misalignment on priorities | Medium | Moderate | MEDIUM | Prioritization workshops; backlog management | Joevan Capote | Monitoring |
 | R-007 | Data migration issues from legacy systems | Medium | Minor | MEDIUM | Data audit; migration scripts; test migrations | Database Administrator | Open |
-| R-008 | Performance bottlenecks at peak enrollment | Low | Critical | HIGH | Load testing; caching strategy; auto-scaling | Lead Developer | Open |
-| R-009 | Security vulnerabilities in dependencies | Medium | Critical | HIGH | Dependency audits; vulnerability scanning; update schedule | Lead Developer | Monitoring |
-| R-010 | Low user adoption post-launch | Medium | Major | HIGH | Adoption campaign; tutorials; early feedback collection | Project Manager | Open |
-| R-011 | Compliance requirement changes from university | Low | Moderate | LOW | Flexible compliance module; maintain OSA communication | Project Manager | Closed |
-| R-012 | Team member turnover during critical phases | Low | Major | MEDIUM | Cross-train team; maintain documentation; knowledge transfer plan | Project Manager | Open |
+| R-008 | Performance bottlenecks at peak enrollment | Low | Critical | HIGH | Load testing; caching strategy; auto-scaling | Fe Anne Malasarte | Open |
+| R-009 | Security vulnerabilities in dependencies | Medium | Critical | HIGH | Dependency audits; vulnerability scanning; update schedule | Fe Anne Malasarte | Monitoring |
+| R-010 | Low user adoption post-launch | Medium | Major | HIGH | Adoption campaign; tutorials; early feedback collection | Joevan Capote | Open |
+| R-011 | Compliance requirement changes from university | Low | Moderate | LOW | Flexible compliance module; maintain OSA communication | Joevan Capote | Closed |
+| R-012 | Team member turnover during critical phases | Low | Major | MEDIUM | Cross-train team; maintain documentation; knowledge transfer plan | Joevan Capote | Open |
 
 ---
 

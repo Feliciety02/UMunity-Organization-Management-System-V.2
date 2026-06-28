@@ -1,5 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { addNotification } from "@/lib/notifications";
+import { sendOrgRegistryNotification } from "@/lib/org-registry";
 
 export type WorkflowStatus =
   | "draft"
@@ -8,7 +9,8 @@ export type WorkflowStatus =
   | "pending_admin2"
   | "pending_admin1"
   | "approved"
-  | "completed";
+  | "completed"
+  | "rejected";
 
 export type WorkflowActorRole = "leader" | "adviser" | "admin2" | "admin1";
 
@@ -72,7 +74,9 @@ export type WorkflowCloseoutStatus =
   | "pending_adviser"
   | "revision_requested"
   | "pending_admin2"
-  | "approved";
+  | "pending_admin1"
+  | "approved"
+  | "rejected";
 
 export type WorkflowPostEventData = {
   reflection: string;
@@ -113,7 +117,9 @@ export type WorkflowHistoryEntry = {
     | "revision_requested"
     | "resubmitted"
     | "approved"
+    | "rejected"
     | "completed"
+    | "retracted"
     | "operations_updated";
   byRole: WorkflowActorRole;
   byName: string;
@@ -976,6 +982,8 @@ function nextStageFor(status: WorkflowStatus) {
       return "Preparation";
     case "completed":
       return "Completed";
+    case "rejected":
+      return "Rejected";
   }
 }
 
@@ -992,8 +1000,10 @@ function stageIndexFor(status: WorkflowStatus) {
       return 3;
     case "approved":
       return 4;
-    case "completed":
+    case "rejected":
       return 5;
+    case "completed":
+      return 6;
   }
 }
 
@@ -1208,6 +1218,65 @@ export function requestWorkflowRevision(id: string, actor: WorkflowActor, note: 
   });
 }
 
+export function rejectWorkflow(id: string, actor: WorkflowActor, note: string) {
+  return updateWorkflow(id, (workflow) => {
+    addNotification({
+      title: `${workflow.proposal.title} was rejected`,
+      meta: `${actor.name} rejected the workflow`,
+      category: "event",
+      href: `/leader/workflows/${workflow.id}`,
+    });
+    sendOrgRegistryNotification(workflow.orgShort, `${workflow.proposal.title} was rejected by ${actor.name}`, workflow.ay);
+    return {
+      ...workflow,
+      status: "rejected",
+      currentStage: nextStageFor("rejected"),
+      updatedAt: Date.now(),
+      comments: [
+        {
+          id: nowId("comment"),
+          authorRole: actor.role,
+          authorName: actor.name,
+          message: note,
+          createdAt: Date.now(),
+        },
+        ...workflow.comments,
+      ],
+      history: [
+        {
+          id: nowId("history"),
+          action: "rejected",
+          byRole: actor.role,
+          byName: actor.name,
+          note,
+          createdAt: Date.now(),
+        },
+        ...workflow.history,
+      ],
+    };
+  });
+}
+
+export function retractWorkflow(id: string, actor: WorkflowActor, note?: string) {
+  return updateWorkflow(id, (workflow) => ({
+    ...workflow,
+    status: "draft",
+    currentStage: nextStageFor("draft"),
+    updatedAt: Date.now(),
+    history: [
+      {
+        id: nowId("history"),
+        action: "retracted",
+        byRole: actor.role,
+        byName: actor.name,
+        note: note ?? "Leader retracted the submission back to draft.",
+        createdAt: Date.now(),
+      },
+      ...workflow.history,
+    ],
+  }));
+}
+
 export function approveWorkflow(id: string, actor: WorkflowActor, note?: string) {
   return updateWorkflow(id, (workflow) => {
     let nextStatus: WorkflowStatus = workflow.status;
@@ -1218,7 +1287,7 @@ export function approveWorkflow(id: string, actor: WorkflowActor, note?: string)
     } else if (actor.role === "admin2") {
       nextStatus = "pending_admin1";
       href = `/admin1/workflows/${workflow.id}`;
-    } else if (actor.role === "admin1") {
+    } else     if (actor.role === "admin1") {
       nextStatus = "approved";
       href = `/leader/workflows/${workflow.id}`;
     }
@@ -1229,6 +1298,10 @@ export function approveWorkflow(id: string, actor: WorkflowActor, note?: string)
       category: "event",
       href,
     });
+
+    if (actor.role === "admin1") {
+      sendOrgRegistryNotification(workflow.orgShort, `${workflow.proposal.title} approved for execution`, workflow.ay);
+    }
 
     return {
       ...workflow,
@@ -1558,7 +1631,7 @@ export function requestWorkflowCloseoutRevision(id: string, actor: WorkflowActor
 export function approveWorkflowCloseout(id: string, actor: WorkflowActor, note?: string) {
   return updateWorkflow(id, (workflow) => {
     const nextCloseoutStatus: WorkflowCloseoutStatus =
-      actor.role === "adviser" ? "pending_admin2" : "approved";
+      actor.role === "adviser" ? "pending_admin2" : "pending_admin1";
     if (actor.role === "adviser") {
       addNotification({
         title: `${workflow.proposal.title} closeout is pending Admin 2 review`,
@@ -1569,16 +1642,14 @@ export function approveWorkflowCloseout(id: string, actor: WorkflowActor, note?:
     }
     if (actor.role === "admin2") {
       addNotification({
-        title: `${workflow.proposal.title} closeout has been approved`,
-        meta: "Workflow completed",
+        title: `${workflow.proposal.title} closeout is pending Admin 1 review`,
+        meta: "Post-event final review",
         category: "system",
-        href: `/leader/workflows/${workflow.id}`,
+        href: `/admin1/workflows/${workflow.id}`,
       });
     }
     return {
       ...workflow,
-      status: actor.role === "admin2" ? "completed" : workflow.status,
-      currentStage: actor.role === "admin2" ? nextStageFor("completed") : workflow.currentStage,
       updatedAt: Date.now(),
       operations: {
         ...workflow.operations,
@@ -1590,14 +1661,94 @@ export function approveWorkflowCloseout(id: string, actor: WorkflowActor, note?:
       history: [
         {
           id: nowId("history"),
-          action: actor.role === "admin2" ? "completed" : "approved",
+          action: "approved",
           byRole: actor.role,
           byName: actor.name,
           note:
             note ??
             (actor.role === "adviser"
               ? "Approved the closeout packet and forwarded it to Admin 2."
-              : "Approved the closeout packet and completed the workflow."),
+              : "Approved the closeout packet and forwarded it to Admin 1."),
+          createdAt: Date.now(),
+        },
+        ...workflow.history,
+      ],
+    };
+  });
+}
+
+export function approveWorkflowCloseoutFinal(id: string, actor: WorkflowActor, note?: string) {
+  return updateWorkflow(id, (workflow) => {
+    addNotification({
+      title: `${workflow.proposal.title} closeout has been approved`,
+      meta: "Workflow completed",
+      category: "system",
+      href: `/leader/workflows/${workflow.id}`,
+    });
+    sendOrgRegistryNotification(workflow.orgShort, `${workflow.proposal.title} completed with approved closeout`, workflow.ay);
+    return {
+      ...workflow,
+      status: "completed",
+      currentStage: nextStageFor("completed"),
+      updatedAt: Date.now(),
+      operations: {
+        ...workflow.operations,
+        postEvent: {
+          ...workflow.operations.postEvent,
+          closeoutStatus: "approved",
+        },
+      },
+      history: [
+        {
+          id: nowId("history"),
+          action: "completed",
+          byRole: actor.role,
+          byName: actor.name,
+          note: note ?? "Admin 1 approved the closeout packet and completed the workflow.",
+          createdAt: Date.now(),
+        },
+        ...workflow.history,
+      ],
+    };
+  });
+}
+
+export function rejectWorkflowCloseout(id: string, actor: WorkflowActor, note: string) {
+  return updateWorkflow(id, (workflow) => {
+    addNotification({
+      title: `${workflow.proposal.title} closeout was rejected`,
+      meta: actor.name,
+      category: "system",
+      href: `/leader/workflows/${workflow.id}`,
+    });
+    return {
+      ...workflow,
+      updatedAt: Date.now(),
+      operations: {
+        ...workflow.operations,
+        postEvent: {
+          ...workflow.operations.postEvent,
+          closeoutStatus: "rejected",
+        },
+      },
+      comments: [
+        {
+          id: nowId("comment"),
+          authorRole: actor.role,
+          authorName: actor.name,
+          message: note,
+          createdAt: Date.now(),
+          sectionId: "post-event-closeout",
+        },
+        ...workflow.comments,
+      ],
+      history: [
+        {
+          id: nowId("history"),
+          action: "rejected",
+          byRole: actor.role,
+          byName: actor.name,
+          note: `Rejected closeout: ${note}`,
           createdAt: Date.now(),
         },
         ...workflow.history,
@@ -1636,8 +1787,12 @@ export function formatCloseoutStatus(status: WorkflowCloseoutStatus) {
       return "Revision Requested";
     case "pending_admin2":
       return "Pending Admin 2";
+    case "pending_admin1":
+      return "Pending Admin 1";
     case "approved":
       return "Approved";
+    case "rejected":
+      return "Rejected";
   }
 }
 
@@ -1653,8 +1808,12 @@ export function closeoutStatusTone(
       return "danger";
     case "pending_admin2":
       return "warning";
+    case "pending_admin1":
+      return "warning";
     case "approved":
       return "success";
+    case "rejected":
+      return "danger";
   }
 }
 
@@ -1672,6 +1831,8 @@ export function formatWorkflowStatus(status: WorkflowStatus) {
       return "Pending Admin 1";
     case "approved":
       return "Approved";
+    case "rejected":
+      return "Rejected";
     case "completed":
       return "Completed";
   }
@@ -1690,6 +1851,8 @@ export function statusTone(
     case "pending_admin2":
     case "pending_admin1":
       return "warning";
+    case "rejected":
+      return "danger";
     case "approved":
     case "completed":
       return "success";
@@ -1793,6 +1956,8 @@ function nextTransitionStageFor(status: WorkflowStatus) {
       return "Approved and ready to archive";
     case "completed":
       return "Archived";
+    case "rejected":
+      return "Rejected";
     case "pending_admin2":
       return "Admin 2 review";
   }

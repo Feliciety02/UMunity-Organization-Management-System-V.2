@@ -45,7 +45,7 @@ function Org() {
             </div>
             <div className="pb-2">
               <p className="font-display text-xl font-bold">UM Computer Studies Society</p>
-              <p className="text-sm text-muted-foreground">Academic · 412 members</p>
+              <p className="text-sm text-muted-foreground">Academic · 3 members</p>
             </div>
           </div>
 
@@ -66,7 +66,7 @@ function Org() {
         </Panel>
 
         <div className="space-y-4">
-          <StatCard label="Members" value="412" icon={Users} tone="primary" />
+          <StatCard label="Members" value="3" icon={Users} tone="primary" />
           <StatCard label="Events hosted" value="38" icon={Calendar} tone="gold" />
           <StatCard label="Awards" value="6" icon={Award} tone="rose" />
           <StatCard label="Community love" value="98%" icon={Heart} tone="emerald" />

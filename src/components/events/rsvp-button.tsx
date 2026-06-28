@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown, HelpCircle, X } from "lucide-react";
 import { AppButton } from "@/components/ui/app-button";
 import { getSession } from "@/lib/auth";
@@ -13,11 +13,13 @@ const labels: Record<RsvpStatus | "none", { label: string; icon: typeof Check; t
 };
 
 export function RsvpButton({ eventTitle, size = "md" }: { eventTitle: string; size?: "sm" | "md" | "lg" }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const rsvps = useRsvps();
-  const session = typeof window !== "undefined" ? getSession() : null;
+  const session = mounted ? getSession() : null;
   const mine = useMemo(
-    () => rsvps.find((r) => r.eventTitle === eventTitle && r.attendeeEmail === session?.email),
-    [rsvps, eventTitle, session?.email],
+    () => (mounted ? rsvps.find((r) => r.eventTitle === eventTitle && r.attendeeEmail === session?.email) : undefined),
+    [rsvps, eventTitle, session?.email, mounted],
   );
   const status: RsvpStatus | "none" = mine?.status ?? "none";
   const meta = labels[status];

@@ -30,7 +30,7 @@ function LeaderCompliancePage() {
     academicYear: "2026-2027",
     category: "Academic",
     adviserName: "Prof. Elena Tan",
-    memberCount: "412",
+    memberCount: "3",
     accreditationScope: "Recognition renewal",
     mission: "Build student leaders in computing through guided projects, service, and campus collaboration.",
     vision: "Be the university's most trusted student technology community for innovation, ethics, and peer growth.",

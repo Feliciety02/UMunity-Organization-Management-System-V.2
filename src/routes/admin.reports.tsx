@@ -27,7 +27,7 @@ function Reports() {
         <Panel title="Top performing organizations">
           {[
             ["UM Volunteer Corps", 510],
-            ["UM CS Society", 412],
+            ["UM CS Society", 3],
             ["UM Athletics League", 320],
             ["UM Engineering Circle", 295],
             ["UM Eco Warriors", 256],

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   ArrowRight,
+  Ban,
   CheckCircle2,
   CheckSquare,
   ClipboardCheck,
@@ -12,6 +13,7 @@ import {
   Send,
   Sparkles,
   Target,
+  Undo2,
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -24,6 +26,7 @@ import {
   addWorkflowPostEventAsset,
   approveWorkflow,
   approveWorkflowCloseout,
+  approveWorkflowCloseoutFinal,
   closeoutStatusTone,
   formatCloseoutStatus,
   formatWorkflowStatus,
@@ -31,8 +34,11 @@ import {
   markWorkflowCompleted,
   operationsCompletion,
   proposalCompletion,
+  rejectWorkflow,
+  rejectWorkflowCloseout,
   requestWorkflowCloseoutRevision,
   requestWorkflowRevision,
+  retractWorkflow,
   setWorkflowFormReady,
   statusTone,
   submitWorkflow,
@@ -108,8 +114,13 @@ export function EventWorkflowDetail({
     [workflow.proposal.budgetItems],
   );
 
-  const canSubmit = viewer.role === "leader" && (workflow.status === "draft" || workflow.status === "revision_requested");
+  const canSubmit = viewer.role === "leader" && (workflow.status === "draft" || workflow.status === "revision_requested" || workflow.status === "rejected");
+  const canRetract = viewer.role === "leader" && (workflow.status === "pending_adviser" || workflow.status === "pending_admin2" || workflow.status === "pending_admin1");
   const canReview =
+    (viewer.role === "adviser" && workflow.status === "pending_adviser") ||
+    (viewer.role === "admin2" && workflow.status === "pending_admin2") ||
+    (viewer.role === "admin1" && workflow.status === "pending_admin1");
+  const canReject =
     (viewer.role === "adviser" && workflow.status === "pending_adviser") ||
     (viewer.role === "admin2" && workflow.status === "pending_admin2") ||
     (viewer.role === "admin1" && workflow.status === "pending_admin1");
@@ -117,14 +128,31 @@ export function EventWorkflowDetail({
   const canSubmitCloseout =
     viewer.role === "leader" &&
     (workflow.status === "approved" || workflow.status === "completed") &&
-    (workflow.operations.postEvent.closeoutStatus === "draft" || workflow.operations.postEvent.closeoutStatus === "revision_requested");
+    (workflow.operations.postEvent.closeoutStatus === "draft" || workflow.operations.postEvent.closeoutStatus === "revision_requested" || workflow.operations.postEvent.closeoutStatus === "rejected");
+  const canRetractCloseout =
+    viewer.role === "leader" &&
+    (workflow.status === "approved" || workflow.status === "completed") &&
+    (workflow.operations.postEvent.closeoutStatus === "pending_adviser" || workflow.operations.postEvent.closeoutStatus === "pending_admin2" || workflow.operations.postEvent.closeoutStatus === "pending_admin1");
   const canReviewCloseout =
     (viewer.role === "adviser" &&
       (workflow.status === "approved" || workflow.status === "completed") &&
       workflow.operations.postEvent.closeoutStatus === "pending_adviser") ||
     (viewer.role === "admin2" &&
       (workflow.status === "approved" || workflow.status === "completed") &&
-      workflow.operations.postEvent.closeoutStatus === "pending_admin2");
+      workflow.operations.postEvent.closeoutStatus === "pending_admin2") ||
+    (viewer.role === "admin1" &&
+      (workflow.status === "approved" || workflow.status === "completed") &&
+      workflow.operations.postEvent.closeoutStatus === "pending_admin1");
+  const canRejectCloseout =
+    (viewer.role === "adviser" &&
+      (workflow.status === "approved" || workflow.status === "completed") &&
+      workflow.operations.postEvent.closeoutStatus === "pending_adviser") ||
+    (viewer.role === "admin2" &&
+      (workflow.status === "approved" || workflow.status === "completed") &&
+      workflow.operations.postEvent.closeoutStatus === "pending_admin2") ||
+    (viewer.role === "admin1" &&
+      (workflow.status === "approved" || workflow.status === "completed") &&
+      workflow.operations.postEvent.closeoutStatus === "pending_admin1");
   const canComplete = viewer.role === "leader" && workflow.status === "approved" && workflow.operations.postEvent.closeoutStatus === "approved";
 
   function handleComment() {
@@ -145,6 +173,21 @@ export function EventWorkflowDetail({
   function handleApprove() {
     approveWorkflow(workflow.id, viewer);
     toast.success(`${approvalActionLabel(viewer.role)} complete`);
+  }
+
+  function handleReject() {
+    if (!comment.trim()) {
+      toast.error("Write the rejection reason first.");
+      return;
+    }
+    rejectWorkflow(workflow.id, viewer, comment.trim());
+    toast.success("Workflow rejected");
+    setComment("");
+  }
+
+  function handleRetract() {
+    retractWorkflow(workflow.id, viewer);
+    toast.success("Workflow retracted to draft");
   }
 
   function handleRevision() {
@@ -168,8 +211,30 @@ export function EventWorkflowDetail({
   }
 
   function handleCloseoutApprove() {
-    approveWorkflowCloseout(workflow.id, viewer);
-    toast.success(viewer.role === "adviser" ? "Closeout approved to Admin 2" : "Closeout approved");
+    if (viewer.role === "admin1") {
+      approveWorkflowCloseoutFinal(workflow.id, viewer);
+      toast.success("Closeout approved and workflow completed");
+    } else {
+      approveWorkflowCloseout(workflow.id, viewer);
+      toast.success(
+        viewer.role === "adviser" ? "Closeout approved to Admin 2" : "Closeout approved to Admin 1",
+      );
+    }
+  }
+
+  function handleCloseoutReject() {
+    if (!comment.trim()) {
+      toast.error("Write the rejection reason first.");
+      return;
+    }
+    rejectWorkflowCloseout(workflow.id, viewer, comment.trim());
+    toast.success("Closeout rejected");
+    setComment("");
+  }
+
+  function handleCloseoutRetract() {
+    submitWorkflowCloseout(workflow.id, viewer);
+    toast.success("Closeout retracted");
   }
 
   function handleCloseoutRevision() {
@@ -206,9 +271,19 @@ export function EventWorkflowDetail({
                 <Send className="h-4 w-4" /> Submit to adviser
               </AppButton>
             ) : null}
+            {canRetract ? (
+              <AppButton variant="ghost" size="sm" onClick={handleRetract}>
+                <Undo2 className="h-4 w-4" /> Retract
+              </AppButton>
+            ) : null}
             {canReview ? (
               <AppButton variant="primary" size="sm" onClick={handleApprove}>
                 <CheckCircle2 className="h-4 w-4" /> {approvalActionLabel(viewer.role)}
+              </AppButton>
+            ) : null}
+            {canReject ? (
+              <AppButton variant="ghost" size="sm" onClick={handleReject}>
+                <Ban className="h-4 w-4" /> Reject
               </AppButton>
             ) : null}
             {canComplete ? (
@@ -509,9 +584,19 @@ export function EventWorkflowDetail({
                       <Send className="h-4 w-4" /> Submit closeout
                     </AppButton>
                   ) : null}
+                  {canRetractCloseout ? (
+                    <AppButton variant="ghost" size="sm" onClick={handleCloseoutRetract}>
+                      <Undo2 className="h-4 w-4" /> Retract closeout
+                    </AppButton>
+                  ) : null}
                   {canReviewCloseout ? (
                     <AppButton variant="primary" size="sm" onClick={handleCloseoutApprove}>
-                      <CheckCircle2 className="h-4 w-4" /> {viewer.role === "adviser" ? "Approve to Admin 2" : "Approve closeout"}
+                      <CheckCircle2 className="h-4 w-4" /> {viewer.role === "adviser" ? "Approve to Admin 2" : viewer.role === "admin2" ? "Approve to Admin 1" : "Approve closeout"}
+                    </AppButton>
+                  ) : null}
+                  {canRejectCloseout ? (
+                    <AppButton variant="ghost" size="sm" onClick={handleCloseoutReject}>
+                      <Ban className="h-4 w-4" /> Reject closeout
                     </AppButton>
                   ) : null}
                 </div>
@@ -669,9 +754,19 @@ export function EventWorkflowDetail({
                     Request revision
                   </AppButton>
                 ) : null}
+                {canReject ? (
+                  <AppButton variant="ghost" size="sm" onClick={handleReject}>
+                    <Ban className="h-4 w-4" /> Reject
+                  </AppButton>
+                ) : null}
                 {canReviewCloseout ? (
                   <AppButton variant="ghost" size="sm" onClick={handleCloseoutRevision}>
                     Request closeout revision
+                  </AppButton>
+                ) : null}
+                {canRejectCloseout ? (
+                  <AppButton variant="ghost" size="sm" onClick={handleCloseoutReject}>
+                    <Ban className="h-4 w-4" /> Reject closeout
                   </AppButton>
                 ) : null}
               </div>

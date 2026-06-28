@@ -7,7 +7,8 @@ export type PostApprovalStatus =
   | "pending_adviser"
   | "revision_requested"
   | "pending_admin2"
-  | "published";
+  | "published"
+  | "rejected";
 
 export type PostApprovalType = "general" | "announcement" | "event";
 export type PostVisibility = "public" | "members";
@@ -22,7 +23,7 @@ export type PostApprovalComment = {
 
 export type PostApprovalHistory = {
   id: string;
-  action: "created" | "submitted" | "commented" | "revision_requested" | "approved" | "published";
+  action: "created" | "submitted" | "commented" | "revision_requested" | "approved" | "published" | "rejected" | "retracted";
   byRole: WorkflowActor["role"];
   byName: string;
   note?: string;
@@ -168,6 +169,8 @@ export function formatPostApprovalStatus(status: PostApprovalStatus) {
       return "Revision Requested";
     case "pending_admin2":
       return "Pending Admin 2";
+    case "rejected":
+      return "Rejected";
     case "published":
       return "Published";
   }
@@ -183,6 +186,8 @@ export function postApprovalTone(status: PostApprovalStatus): "neutral" | "info"
       return "danger";
     case "pending_admin2":
       return "warning";
+    case "rejected":
+      return "danger";
     case "published":
       return "success";
   }
@@ -327,6 +332,62 @@ export function requestPostApprovalRevision(id: string, actor: WorkflowActor, no
       ],
     };
   });
+}
+
+export function rejectPostApproval(id: string, actor: WorkflowActor, note: string) {
+  return updateApproval(id, (approval) => {
+    addNotification({
+      title: `${approval.orgName} post was rejected`,
+      meta: actor.name,
+      category: "announcement",
+      href: `/leader/post-approvals/${approval.id}`,
+    });
+    return {
+      ...approval,
+      status: "rejected",
+      updatedAt: Date.now(),
+      comments: [
+        {
+          id: nowId("comment"),
+          authorRole: actor.role,
+          authorName: actor.name,
+          message: note,
+          createdAt: Date.now(),
+        },
+        ...approval.comments,
+      ],
+      history: [
+        {
+          id: nowId("history"),
+          action: "rejected",
+          byRole: actor.role,
+          byName: actor.name,
+          note,
+          createdAt: Date.now(),
+        },
+        ...approval.history,
+      ],
+    };
+  });
+}
+
+export function retractPostApproval(id: string, actor: WorkflowActor, note?: string) {
+  return updateApproval(id, (approval) => ({
+    ...approval,
+    status: "draft",
+    updatedAt: Date.now(),
+    history: [
+      {
+        id: nowId("history"),
+        action: "retracted",
+        byRole: actor.role,
+        byName: actor.name,
+        note: note ?? "Leader retracted the post back to draft.",
+        createdAt: Date.now(),
+      },
+      ...approval.history,
+    ],
+  }));
 }
 
 export function approvePostApproval(id: string, actor: WorkflowActor) {

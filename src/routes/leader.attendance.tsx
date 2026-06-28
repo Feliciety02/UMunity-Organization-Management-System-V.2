@@ -1,10 +1,75 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHead, Panel, StatCard, Badge, MiniBarChart } from "@/components/dashboard/DashboardLayout";
+import { PageHead, Panel, StatCard, MiniBarChart } from "@/components/dashboard/DashboardLayout";
 import { CheckSquare, Users, TrendingUp, Calendar } from "lucide-react";
+import { DataTable, DataTableStatusBadge, type Column } from "@/components/ui/data-table";
 
 export const Route = createFileRoute("/leader/attendance")({
   component: Attendance,
 });
+
+type AttendanceRow = {
+  key: string;
+  event: string;
+  date: string;
+  rsvps: number;
+  attended: number;
+  rate: number;
+  status: string;
+};
+
+const eventData: AttendanceRow[] = [
+  { key: "1", event: "Innovation Summit 2026", date: "May 24", rsvps: 184, attended: 162, rate: 88, status: "Upcoming" },
+  { key: "2", event: "Hack Night Vol. 2", date: "Apr 18", rsvps: 78, attended: 70, rate: 90, status: "Completed" },
+  { key: "3", event: "Coding Bootcamp Day 3", date: "Apr 03", rsvps: 64, attended: 58, rate: 91, status: "Completed" },
+  { key: "4", event: "Welcome Mixer 2026", date: "Mar 12", rsvps: 142, attended: 118, rate: 83, status: "Completed" },
+  { key: "5", event: "Tech Talk: Web3", date: "Feb 20", rsvps: 92, attended: 64, rate: 70, status: "Completed" },
+];
+
+const columns: Column<AttendanceRow>[] = [
+  {
+    key: "event",
+    label: "Event",
+    sortable: true,
+    render: (row) => <span className="font-semibold">{row.event}</span>,
+  },
+  {
+    key: "date",
+    label: "Date",
+    sortable: true,
+    render: (row) => <span className="text-muted-foreground">{row.date}</span>,
+  },
+  {
+    key: "rsvps",
+    label: "RSVPs",
+    sortable: true,
+    render: (row) => row.rsvps,
+  },
+  {
+    key: "attended",
+    label: "Attended",
+    sortable: true,
+    render: (row) => row.attended,
+  },
+  {
+    key: "rate",
+    label: "Rate",
+    sortable: true,
+    render: (row) => (
+      <div className="flex items-center gap-2">
+        <div className="h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
+          <div className="h-full bg-gradient-maroon" style={{ width: `${row.rate}%` }} />
+        </div>
+        <span className="text-xs">{row.rate}%</span>
+      </div>
+    ),
+  },
+  {
+    key: "status",
+    label: "Status",
+    sortable: true,
+    render: (row) => <DataTableStatusBadge status={row.status} />,
+  },
+];
 
 function Attendance() {
   return (
@@ -26,41 +91,14 @@ function Attendance() {
       </Panel>
 
       <Panel title="Recent events" className="mt-6">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-                <th className="py-3">Event</th><th>Date</th><th>RSVPs</th><th>Attended</th><th>Rate</th><th>Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {([
-                { t: "Innovation Summit 2026", d: "May 24", r: 184, a: 162, s: "Upcoming", tone: "info" as const },
-                { t: "Hack Night Vol. 2", d: "Apr 18", r: 78, a: 70, s: "Completed", tone: "success" as const },
-                { t: "Coding Bootcamp Day 3", d: "Apr 03", r: 64, a: 58, s: "Completed", tone: "success" as const },
-                { t: "Welcome Mixer 2026", d: "Mar 12", r: 142, a: 118, s: "Completed", tone: "success" as const },
-                { t: "Tech Talk: Web3", d: "Feb 20", r: 92, a: 64, s: "Completed", tone: "warning" as const },
-              ]).map((row) => {
-                const rate = Math.round((row.a / row.r) * 100);
-                return (
-                  <tr key={row.t} className="hover:bg-secondary/40">
-                    <td className="py-3 font-semibold">{row.t}</td>
-                    <td className="text-muted-foreground">{row.d}</td>
-                    <td>{row.r}</td>
-                    <td>{row.a}</td>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-20 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-gradient-maroon" style={{ width: `${rate}%` }} /></div>
-                        <span className="text-xs">{rate}%</span>
-                      </div>
-                    </td>
-                    <td><Badge tone={row.tone}>{row.s}</Badge></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          columns={columns}
+          data={eventData}
+          keyExtractor={(row) => row.key}
+          searchable
+          searchPlaceholder="Search events..."
+          pageSize={10}
+        />
       </Panel>
     </>
   );

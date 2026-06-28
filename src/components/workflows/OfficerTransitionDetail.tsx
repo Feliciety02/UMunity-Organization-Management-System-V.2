@@ -1,13 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Archive, ArrowRight, CheckCircle2, MessageSquareText, Send } from "lucide-react";
+import { Archive, ArrowRight, Ban, CheckCircle2, MessageSquareText, Send, Undo2 } from "lucide-react";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, PageHead, Panel } from "@/components/dashboard/DashboardLayout";
 import {
   addTransitionComment,
   approveTransitionWorkflow,
   formatWorkflowStatus,
+  rejectWorkflow,
   requestTransitionRevision,
+  retractWorkflow,
   statusTone,
   type OfficerTransitionWorkflow,
   type WorkflowActor,
@@ -29,6 +31,8 @@ export function OfficerTransitionDetail({
   const canAdviserApprove = viewer.role === "adviser" && workflow.status === "pending_adviser";
   const canAdminApprove = viewer.role === "admin1" && workflow.status === "pending_admin1";
   const canReview = canAdviserApprove || canAdminApprove;
+  const canReject = canReview;
+  const canRetract = viewer.role === "leader" && (workflow.status === "pending_adviser" || workflow.status === "pending_admin1");
 
   function submitComment() {
     if (!comment.trim()) {
@@ -38,6 +42,21 @@ export function OfficerTransitionDetail({
     addTransitionComment(workflow.id, viewer, comment.trim());
     toast.success("Comment added");
     setComment("");
+  }
+
+  function handleReject() {
+    if (!comment.trim()) {
+      toast.error("Write the rejection reason first.");
+      return;
+    }
+    rejectWorkflow(workflow.id, viewer, comment.trim());
+    toast.success("Transition rejected");
+    setComment("");
+  }
+
+  function handleRetract() {
+    retractWorkflow(workflow.id, viewer);
+    toast.success("Transition retracted to draft");
   }
 
   function requestRevision() {
@@ -65,9 +84,19 @@ export function OfficerTransitionDetail({
             <AppButton asChild variant="secondary" size="sm">
               <Link to={backTo as string}>{backLabel}</Link>
             </AppButton>
+            {canRetract ? (
+              <AppButton variant="ghost" size="sm" onClick={handleRetract}>
+                <Undo2 className="h-4 w-4" /> Retract
+              </AppButton>
+            ) : null}
             {canReview ? (
               <AppButton variant="primary" size="sm" onClick={approve}>
                 <CheckCircle2 className="h-4 w-4" /> {viewer.role === "adviser" ? "Validate nominees" : "Approve and archive"}
+              </AppButton>
+            ) : null}
+            {canReject ? (
+              <AppButton variant="ghost" size="sm" onClick={handleReject}>
+                <Ban className="h-4 w-4" /> Reject
               </AppButton>
             ) : null}
           </div>
@@ -167,6 +196,11 @@ export function OfficerTransitionDetail({
                 {canReview ? (
                   <AppButton variant="ghost" size="sm" onClick={requestRevision}>
                     <Send className="h-4 w-4" /> Request revision
+                  </AppButton>
+                ) : null}
+                {canReject ? (
+                  <AppButton variant="ghost" size="sm" onClick={handleReject}>
+                    <Ban className="h-4 w-4" /> Reject
                   </AppButton>
                 ) : null}
               </div>

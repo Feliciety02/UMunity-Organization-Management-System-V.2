@@ -224,9 +224,13 @@ function subscribe(callback: () => void) {
 
 export function useOrgRegistry() {
   const [mounted, setMounted] = useState(false);
-  const snapshot = useSyncExternalStore(subscribe, getOrgRegistry, getOrgRegistry);
   useEffect(() => setMounted(true), []);
-  return mounted ? snapshot : seed;
+  const snapshot = useSyncExternalStore(
+    subscribe,
+    () => JSON.stringify(getOrgRegistry()),
+    () => JSON.stringify(seed),
+  );
+  return mounted ? (JSON.parse(snapshot) as OrgRegistryRecord[]) : seed;
 }
 
 export function useOrgRecord(slug: string) {

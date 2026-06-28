@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { CheckCircle2, Globe, Lock, Megaphone, MessageSquareText, Pin, Send, FileText, Calendar } from "lucide-react";
+import { Ban, CheckCircle2, Globe, Lock, Megaphone, MessageSquareText, Pin, Send, FileText, Calendar, Undo2 } from "lucide-react";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, PageHead, Panel } from "@/components/dashboard/DashboardLayout";
 import {
@@ -8,7 +8,9 @@ import {
   approvePostApproval,
   formatPostApprovalStatus,
   postApprovalTone,
+  rejectPostApproval,
   requestPostApprovalRevision,
+  retractPostApproval,
   type PostApproval,
 } from "@/lib/post-approvals";
 import type { WorkflowActor } from "@/lib/workflows";
@@ -38,7 +40,12 @@ export function PostApprovalDetail({
 }) {
   const [comment, setComment] = useState("");
   const Icon = typeIcon(approval.type);
+  const canSubmit = viewer.role === "leader" && (approval.status === "draft" || approval.status === "revision_requested" || approval.status === "rejected");
+  const canRetract = viewer.role === "leader" && (approval.status === "pending_adviser" || approval.status === "pending_admin2");
   const canReview =
+    (viewer.role === "adviser" && approval.status === "pending_adviser") ||
+    (viewer.role === "admin2" && approval.status === "pending_admin2");
+  const canReject =
     (viewer.role === "adviser" && approval.status === "pending_adviser") ||
     (viewer.role === "admin2" && approval.status === "pending_admin2");
 
@@ -50,6 +57,21 @@ export function PostApprovalDetail({
     addPostApprovalComment(approval.id, viewer, comment.trim());
     toast.success("Comment added");
     setComment("");
+  }
+
+  function handleReject() {
+    if (!comment.trim()) {
+      toast.error("Write the rejection reason first.");
+      return;
+    }
+    rejectPostApproval(approval.id, viewer, comment.trim());
+    toast.success("Post rejected");
+    setComment("");
+  }
+
+  function handleRetract() {
+    retractPostApproval(approval.id, viewer);
+    toast.success("Post retracted to draft");
   }
 
   function requestRevision() {
@@ -77,9 +99,24 @@ export function PostApprovalDetail({
             <AppButton asChild variant="secondary" size="sm">
               <Link to={backTo as string}>{backLabel}</Link>
             </AppButton>
+            {canSubmit ? (
+              <AppButton variant="primary" size="sm" onClick={() => { approvePostApproval(approval.id, viewer); toast.success("Submitted for review"); }}>
+                <Send className="h-4 w-4" /> Submit for review
+              </AppButton>
+            ) : null}
+            {canRetract ? (
+              <AppButton variant="ghost" size="sm" onClick={handleRetract}>
+                <Undo2 className="h-4 w-4" /> Retract
+              </AppButton>
+            ) : null}
             {canReview ? (
               <AppButton variant="primary" size="sm" onClick={approve}>
                 <CheckCircle2 className="h-4 w-4" /> {viewer.role === "adviser" ? "Approve to Admin 2" : "Publish post"}
+              </AppButton>
+            ) : null}
+            {canReject ? (
+              <AppButton variant="ghost" size="sm" onClick={handleReject}>
+                <Ban className="h-4 w-4" /> Reject
               </AppButton>
             ) : null}
           </div>
@@ -137,6 +174,11 @@ export function PostApprovalDetail({
                 {canReview ? (
                   <AppButton variant="ghost" size="sm" onClick={requestRevision}>
                     <Send className="h-4 w-4" /> Request revision
+                  </AppButton>
+                ) : null}
+                {canReject ? (
+                  <AppButton variant="ghost" size="sm" onClick={handleReject}>
+                    <Ban className="h-4 w-4" /> Reject
                   </AppButton>
                 ) : null}
               </div>

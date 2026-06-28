@@ -100,14 +100,13 @@ The University of Mindanao currently manages student organizations through fragm
 
 ## 8. Team Structure
 
-| Role | Department |
-|------|------------|
-| Project Manager | Project Management Office |
-| Quality Assurance Lead | Quality Assurance |
-| Senior Software Engineer | Engineering |
-| Product Designer | Design |
-| Software Engineer | Engineering |
-| Data Engineer | Engineering |
+| Name | Role | Department |
+|------|------|------------|
+| Joevan Capote | Project Leader | Project Management Office |
+| Joevan Capote | Quality Assurance (QA) Engineer | Quality Assurance |
+| Fe Anne Malasarte | Full Stack Developer | Engineering |
+| [Name] | Product Designer | Design |
+| [Name] | Data Engineer | Engineering |
 
 ---
 
@@ -128,7 +127,6 @@ The University of Mindanao currently manages student organizations through fragm
 
 | Role | Name | Date |
 |------|------|------|
-| Prepared by | Project Manager | November 15, 2025 |
-| Reviewed by | QA Lead | November 15, 2025 |
+| Prepared by | Joevan Capote, Project Leader | November 15, 2025 |
+| Reviewed by | Joevan Capote, Quality Assurance (QA) Engineer | November 15, 2025 |
 | Approved by | University of Mindanao Administration | November 15, 2025 |
-

@@ -9,7 +9,8 @@ export type ComplianceStatus =
   | "revision_requested"
   | "pending_admin2"
   | "pending_admin1"
-  | "approved";
+  | "approved"
+  | "rejected";
 
 export type ComplianceAttachment = {
   id: string;
@@ -46,7 +47,7 @@ export type ComplianceComment = {
 
 export type ComplianceHistoryEntry = {
   id: string;
-  action: "created" | "submitted" | "commented" | "revision_requested" | "approved";
+  action: "created" | "submitted" | "commented" | "revision_requested" | "approved" | "rejected" | "retracted";
   byRole: WorkflowActor["role"];
   byName: string;
   note?: string;
@@ -83,7 +84,7 @@ function defaultFormData(): ComplianceFormData {
   return {
     category: "Academic",
     adviserName: "Prof. Elena Tan",
-    memberCount: 412,
+    memberCount: 3,
     accreditationScope: "Recognition renewal",
     mission: "Build student leaders in computing through guided projects, service, and campus collaboration.",
     vision: "Be the university's most trusted student technology community for innovation, ethics, and peer growth.",
@@ -256,6 +257,8 @@ export function formatComplianceStatus(status: ComplianceStatus) {
       return "Pending Admin 2";
     case "pending_admin1":
       return "Pending Admin 1";
+    case "rejected":
+      return "Rejected";
     case "approved":
       return "Accredited";
   }
@@ -272,6 +275,8 @@ export function complianceTone(status: ComplianceStatus): "neutral" | "info" | "
     case "pending_admin2":
     case "pending_admin1":
       return "warning";
+    case "rejected":
+      return "danger";
     case "approved":
       return "success";
   }
@@ -401,6 +406,62 @@ export function requestComplianceRevision(id: string, actor: WorkflowActor, note
       ],
     };
   });
+}
+
+export function rejectCompliance(id: string, actor: WorkflowActor, note: string) {
+  return updateSubmission(id, (submission) => {
+    addNotification({
+      title: `${submission.orgName} accreditation was rejected`,
+      meta: actor.name,
+      category: "system",
+      href: `/leader/compliance/${submission.id}`,
+    });
+    return {
+      ...submission,
+      status: "rejected",
+      updatedAt: Date.now(),
+      comments: [
+        {
+          id: nowId("comment"),
+          authorRole: actor.role,
+          authorName: actor.name,
+          message: note,
+          createdAt: Date.now(),
+        },
+        ...submission.comments,
+      ],
+      history: [
+        {
+          id: nowId("history"),
+          action: "rejected",
+          byRole: actor.role,
+          byName: actor.name,
+          note,
+          createdAt: Date.now(),
+        },
+        ...submission.history,
+      ],
+    };
+  });
+}
+
+export function retractCompliance(id: string, actor: WorkflowActor, note?: string) {
+  return updateSubmission(id, (submission) => ({
+    ...submission,
+    status: "draft",
+    updatedAt: Date.now(),
+    history: [
+      {
+        id: nowId("history"),
+        action: "retracted",
+        byRole: actor.role,
+        byName: actor.name,
+        note: note ?? "Leader retracted the compliance submission back to draft.",
+        createdAt: Date.now(),
+      },
+      ...submission.history,
+    ],
+  }));
 }
 
 export function approveCompliance(id: string, actor: WorkflowActor, note?: string) {

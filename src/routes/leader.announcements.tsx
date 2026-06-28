@@ -15,7 +15,7 @@ const list = [
 function Announcements() {
   return (
     <>
-      <PageHead title="Announcements" sub="Broadcast updates to all 412 members." action={<button className="rounded-full bg-gradient-maroon px-5 py-2 text-xs font-semibold text-primary-foreground">+ New post</button>} />
+      <PageHead title="Announcements" sub="Broadcast updates to all 3 members." action={<button className="rounded-full bg-gradient-maroon px-5 py-2 text-xs font-semibold text-primary-foreground">+ New post</button>} />
 
       <Panel title="Compose new announcement" className="mb-6">
         <input placeholder="Headline..." className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none" />

@@ -229,8 +229,8 @@ function buildCharter(doc) {
 
   addSection(doc, "9. Approval");
   doc.fontSize(9).font("Helvetica").fillColor(COLORS.dark);
-  doc.text("Prepared by: Project Manager");
-  doc.text("Reviewed by: QA Lead");
+  doc.text("Prepared by: Joevan Capote, Project Leader");
+  doc.text("Reviewed by: Joevan Capote, Quality Assurance (QA) Engineer");
   doc.text("Approved by: University of Mindanao Administration");
   doc.text("Date: November 15, 2025");
 }
@@ -413,18 +413,18 @@ function buildRiskRegister(doc) {
   addSection(doc, "Identified Risks");
 
   const risks = [
-    ["R-001", "Scope creep from additional feature requests", "High", "Major", "HIGH", "Establish change control process", "Project Manager", "Monitoring"],
-    ["R-002", "Timeline delays from underestimated complexity", "Medium", "Major", "HIGH", "Build buffer; weekly reviews; MVP prioritization", "Project Manager", "Open"],
-    ["R-003", "Resource constraints across multiple projects", "High", "Moderate", "MEDIUM", "Dedicated team allocation; contingency plan", "Project Manager", "Monitoring"],
-    ["R-004", "Requirement changes during development", "Medium", "Moderate", "MEDIUM", "Agile sprints; regular stakeholder demos", "Project Manager", "Open"],
-    ["R-005", "University SSO integration technical issues", "Medium", "Major", "HIGH", "Start early; fallback auth; engage IT dept", "Lead Developer", "Open"],
-    ["R-006", "Stakeholder misalignment on priorities", "Medium", "Moderate", "MEDIUM", "Prioritization workshops; backlog management", "Project Manager", "Monitoring"],
+    ["R-001", "Scope creep from additional feature requests", "High", "Major", "HIGH", "Establish change control process", "Joevan Capote", "Monitoring"],
+    ["R-002", "Timeline delays from underestimated complexity", "Medium", "Major", "HIGH", "Build buffer; weekly reviews; MVP prioritization", "Joevan Capote", "Open"],
+    ["R-003", "Resource constraints across multiple projects", "High", "Moderate", "MEDIUM", "Dedicated team allocation; contingency plan", "Joevan Capote", "Monitoring"],
+    ["R-004", "Requirement changes during development", "Medium", "Moderate", "MEDIUM", "Agile sprints; regular stakeholder demos", "Joevan Capote", "Open"],
+    ["R-005", "University SSO integration technical issues", "Medium", "Major", "HIGH", "Start early; fallback auth; engage IT dept", "Fe Anne Malasarte", "Open"],
+    ["R-006", "Stakeholder misalignment on priorities", "Medium", "Moderate", "MEDIUM", "Prioritization workshops; backlog management", "Joevan Capote", "Monitoring"],
     ["R-007", "Data migration issues from legacy systems", "Medium", "Minor", "MEDIUM", "Data audit; migration scripts; test migrations", "DBA", "Open"],
-    ["R-008", "Performance bottlenecks at peak enrollment", "Low", "Critical", "HIGH", "Load testing; caching strategy; auto-scaling", "Lead Developer", "Open"],
-    ["R-009", "Security vulnerabilities in dependencies", "Medium", "Critical", "HIGH", "Dependency audits; vulnerability scanning", "Lead Developer", "Monitoring"],
-    ["R-010", "Low user adoption post-launch", "Medium", "Major", "HIGH", "Adoption campaign; tutorials; early feedback", "Project Manager", "Open"],
-    ["R-011", "Compliance requirement changes", "Low", "Moderate", "LOW", "Flexible design; OSA communication", "Project Manager", "Closed"],
-    ["R-012", "Team member turnover", "Low", "Major", "MEDIUM", "Cross-training; documentation; knowledge transfer", "Project Manager", "Open"],
+    ["R-008", "Performance bottlenecks at peak enrollment", "Low", "Critical", "HIGH", "Load testing; caching strategy; auto-scaling", "Fe Anne Malasarte", "Open"],
+    ["R-009", "Security vulnerabilities in dependencies", "Medium", "Critical", "HIGH", "Dependency audits; vulnerability scanning", "Fe Anne Malasarte", "Monitoring"],
+    ["R-010", "Low user adoption post-launch", "Medium", "Major", "HIGH", "Adoption campaign; tutorials; early feedback", "Joevan Capote", "Open"],
+    ["R-011", "Compliance requirement changes", "Low", "Moderate", "LOW", "Flexible design; OSA communication", "Joevan Capote", "Closed"],
+    ["R-012", "Team member turnover", "Low", "Major", "MEDIUM", "Cross-training; documentation; knowledge transfer", "Joevan Capote", "Open"],
   ];
 
   addTable(doc,
@@ -452,18 +452,18 @@ function buildMeetingMinutes(doc) {
     {
       num: 1,
       date: "November 16, 2025",
-      participants: "PM, QA Lead, Lead Developer, UI/UX Designer, OSA Rep",
+      participants: "Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), UI/UX Designer, OSA Rep",
       agenda: ["Project kickoff", "Review charter", "High-level requirements", "Communication channels", "Sprint cadence"],
       summary: "Team reviewed approved charter and aligned on objectives. OSA rep provided compliance requirements. Team agreed on 2-week sprints with bi-weekly demos.",
       actions: [
         ["Schedule stakeholder interviews", "PM", "Nov 20"],
-        ["Set up repo and CI/CD", "Lead Developer", "Nov 18"],
+        ["Set up repo and CI/CD", "Fe Anne Malasarte", "Nov 18"],
         ["Prepare wireframes", "UI/UX Designer", "Nov 25"],
         ["Distribute charter", "PM", "Nov 17"],
       ],
       decisions: [
         ["Sprint cycle: 2 weeks with Friday demos", "Allows dev time with stakeholder visibility", "PM"],
-        ["React + TypeScript as tech stack", "Team expertise and university preference", "Lead Developer"],
+        ["React + TypeScript as tech stack", "Team expertise and university preference", "Fe Anne Malasarte"],
         ["MVP: core org management + events", "Ensures timely delivery of highest value", "Team Consensus"],
       ],
       outcome: "Successful kickoff. All members aligned on goals and timeline.",
@@ -471,17 +471,17 @@ function buildMeetingMinutes(doc) {
     {
       num: 2,
       date: "December 1, 2025",
-      participants: "PM, QA Lead, Lead Developer, UI/UX Designer",
+      participants: "Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), UI/UX Designer",
       agenda: ["Design prototypes review", "Technical architecture", "Requirements progress", "Sprint 1 scope"],
-      summary: "Presented wireframes for student dashboard, org profiles, and events. Minor adjustments needed. Architecture proposed using TanStack Start with PostgreSQL.",
+      summary: "Presented wireframes for student dashboard, org profiles, and events. Minor adjustments needed. Fe Anne Malasarte proposed the system architecture using TanStack Start with PostgreSQL.",
       actions: [
         ["Update wireframes and finalize", "UI/UX Designer", "Dec 5"],
-        ["Finalize DB schema", "Lead Developer", "Dec 4"],
-        ["Prepare test strategy", "QA Lead", "Dec 6"],
+        ["Finalize DB schema", "Fe Anne Malasarte", "Dec 4"],
+        ["Prepare test strategy", "Joevan Capote", "Dec 6"],
       ],
       decisions: [
-        ["TanStack Start for full-stack framework", "Best fit for React SSR with type-safe routing", "Lead Developer"],
-        ["PostgreSQL with Prisma ORM", "Robust relational data model", "Lead Developer"],
+        ["TanStack Start for full-stack framework", "Best fit for React SSR with type-safe routing", "Fe Anne Malasarte"],
+        ["PostgreSQL with Prisma ORM", "Robust relational data model", "Fe Anne Malasarte"],
         ["Design system follows university brand", "Consistent branding", "UI/UX Designer"],
       ],
       outcome: "Design approved. Architecture finalized. Sprint 1 scoped.",
@@ -489,17 +489,17 @@ function buildMeetingMinutes(doc) {
     {
       num: 3,
       date: "January 15, 2026",
-      participants: "PM, QA Lead, Lead Developer, OSA Rep",
+      participants: "Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), OSA Rep",
       agenda: ["Sprint 1 demo", "Compliance requirements", "Testing approach", "Sprint 2 planning"],
-      summary: "Demonstrated working auth and org management. OSA rep tested and provided feedback. QA Lead presented test strategy. Sprint 2 focused on events and notifications.",
+      summary: "Demonstrated working auth and org management. OSA rep tested and provided feedback. Joevan Capote presented the test strategy. Sprint 2 focused on events and notifications.",
       actions: [
-        ["Add org category filtering", "Frontend Developer", "Jan 20"],
-        ["Draft compliance requirements", "QA Lead", "Jan 22"],
-        ["Set up auth test suite", "QA Lead", "Jan 18"],
+        ["Add org category filtering", "Fe Anne Malasarte", "Jan 20"],
+        ["Draft compliance requirements", "Joevan Capote", "Jan 22"],
+        ["Set up auth test suite", "Joevan Capote", "Jan 18"],
         ["Provide sample compliance forms", "OSA Rep", "Jan 20"],
       ],
       decisions: [
-        ["Automated testing for critical flows", "Ensures core reliability", "QA Lead"],
+        ["Automated testing for critical flows", "Ensures core reliability", "Joevan Capote"],
         ["Event approval needs adviser sign-off", "Oversight without bottlenecks", "OSA Rep"],
       ],
       outcome: "Sprint 1 complete. Feedback incorporated. Sprint 2 ready.",
@@ -707,12 +707,13 @@ function buildClosureReport(doc) {
 
   addSection(doc, "8. Final Sign-Off");
   doc.fontSize(9).font("Helvetica").fillColor(COLORS.dark);
-  doc.text("Project Manager: Project Manager");
+  doc.text("Project Leader: Joevan Capote");
   doc.text("Date: April 15, 2026");
   doc.moveDown(0.5);
   doc.fontSize(9).font("Helvetica-Bold").fillColor(COLORS.maroon).text("Additional Approvers:");
   doc.font("Helvetica").fillColor(COLORS.dark);
-  doc.text("QA Lead — Quality Assurance Lead — April 15, 2026");
+  doc.text("Joevan Capote — Quality Assurance (QA) Engineer — April 15, 2026");
+  doc.text("Fe Anne Malasarte — Full Stack Developer — April 15, 2026");
   doc.text("OSA Director — Primary Stakeholder — April 14, 2026");
   doc.text("IT Director — Technical Authority — April 15, 2026");
 }

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
-import { organizations } from "@/data/site";
+import { organizations, type Org } from "@/data/site";
+import { DataTable, DataTableStatusBadge, type Column } from "@/components/ui/data-table";
 import { CheckCircle2, X, Eye } from "lucide-react";
 
 export const Route = createFileRoute("/admin/organizations")({
@@ -13,6 +14,28 @@ const pending = [
   { n: "UM Game Dev Guild", c: "Tech", who: "Jared K.", submitted: "May 02" },
   { n: "UM Mental Wellness Circle", c: "Wellness", who: "Faye R.", submitted: "Apr 28" },
   { n: "UM Astronomy Club", c: "Science", who: "Rian C.", submitted: "Apr 25" },
+];
+
+const columns: Column<Org>[] = [
+  {
+    key: "name",
+    label: "Organization",
+    sortable: true,
+    render: (row) => (
+      <div className="flex items-center gap-3">
+        <div className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${row.color} text-xs font-bold text-primary-foreground`}>{row.initials}</div>
+        <span className="font-semibold">{row.name}</span>
+      </div>
+    ),
+  },
+  { key: "category", label: "Category", sortable: true, render: (row) => <>{row.category}</> },
+  { key: "members", label: "Members", sortable: true, render: (row) => <>{row.members}</> },
+  {
+    key: "status",
+    label: "Status",
+    sortable: true,
+    render: () => <DataTableStatusBadge status="Recognized" />,
+  },
 ];
 
 function AdminOrgs() {
@@ -38,30 +61,14 @@ function AdminOrgs() {
       </Panel>
 
       <Panel title="Active organizations">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-                <th className="py-3">Organization</th><th>Category</th><th>Members</th><th>Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {organizations.map((o) => (
-                <tr key={o.name} className="hover:bg-secondary/40">
-                  <td className="py-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${o.color} text-xs font-bold text-primary-foreground`}>{o.name.split(" ").filter(w => w !== "UM").slice(0, 2).map(w => w[0]).join("")}</div>
-                      <span className="font-semibold">{o.name}</span>
-                    </div>
-                  </td>
-                  <td>{o.category}</td>
-                  <td>{o.members}</td>
-                  <td><Badge tone="success">Recognized</Badge></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          columns={columns}
+          data={organizations}
+          keyExtractor={(row) => row.slug}
+          searchable
+          searchPlaceholder="Search organizations..."
+          pageSize={10}
+        />
       </Panel>
     </>
   );
