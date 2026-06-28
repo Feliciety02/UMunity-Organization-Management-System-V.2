@@ -33,6 +33,10 @@
   --color-gold: var(--gold);
   --color-gold-warm: var(--gold-warm);
   --color-cream: var(--cream);
+  /* Real academic gold — reserved for hero display text, key icons, and CTAs */
+  --color-sun: var(--sun);
+  --color-sun-bright: var(--sun-bright);
+
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
