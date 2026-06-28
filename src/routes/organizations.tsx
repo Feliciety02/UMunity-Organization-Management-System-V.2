@@ -74,13 +74,13 @@ function Orgs() {
 
         <div className="hero-content relative mx-auto flex w-full max-w-[1400px] px-4 pb-16 pt-32 sm:px-6 lg:px-8 lg:pb-20 lg:pt-40">
           <div className="mx-auto max-w-4xl text-center text-[#FFFDF7]">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/16 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#E89BA8] backdrop-blur-xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/16 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#FFC72C] backdrop-blur-xl">
               <Sparkles className="h-3.5 w-3.5" />
               Discover Campus Communities
             </div>
             <h1 className="mt-6 font-display text-5xl font-bold leading-[0.96] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
               Explore{" "}
-              <span className="bg-[linear-gradient(180deg,#E89BA8_0%,#7A0019_100%)] bg-clip-text text-transparent">
+              <span className="bg-[linear-gradient(180deg,#FFD24A_0%,#F4B000_100%)] bg-clip-text text-transparent">
                 Organizations
               </span>
             </h1>
@@ -100,19 +100,19 @@ function Orgs() {
                 className="min-w-0 flex-1 bg-transparent px-1 py-2 text-sm text-[#FFFDF7] placeholder:text-[#FFFDF7]/58 focus:outline-none sm:text-base"
               />
               <div className="hidden items-center gap-2 rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-4 py-2 text-xs font-semibold text-[#FFFDF7]/74 md:inline-flex">
-                <Users className="h-4 w-4 text-[#E89BA8]" />
+                <Users className="h-4 w-4 text-[#FFC72C]" />
                 {filtered.length} visible
               </div>
             </div>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-[#FFFDF7]/80">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-4 py-2 backdrop-blur-xl">
-                <Users className="h-4 w-4 text-[#E89BA8]" />
+                <Users className="h-4 w-4 text-[#FFC72C]" />
                 Academic, service, arts, and tech communities
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-4 py-2 backdrop-blur-xl">
                 Start exploring
-                <ArrowRight className="h-4 w-4 text-[#E89BA8]" />
+                <ArrowRight className="h-4 w-4 text-[#FFC72C]" />
               </span>
             </div>
           </div>

@@ -33,6 +33,10 @@
   --color-gold: var(--gold);
   --color-gold-warm: var(--gold-warm);
   --color-cream: var(--cream);
+  /* Real academic gold — reserved for hero display text, key icons, and CTAs */
+  --color-sun: var(--sun);
+  --color-sun-bright: var(--sun-bright);
+
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
@@ -61,6 +65,9 @@
   --gold: oklch(0.58 0.17 18);             /* bright maroon-rose accent */
   --gold-warm: oklch(0.48 0.16 18);        /* mid maroon */
   --cream: oklch(0.985 0.022 88);          /* Warm cream secondary */
+  --sun: #F4B000;                          /* Academic gold accent */
+  --sun-bright: #FFC72C;                   /* Brighter gold for display text */
+
 
   /* Background & Elevation — design spec values */
   --background: #F9F9F8;
@@ -95,6 +102,9 @@
   --gold: oklch(0.70 0.15 18);             /* maroon-rose accent on dark */
   --gold-warm: oklch(0.60 0.16 18);
   --cream: oklch(0.22 0.02 18);
+  --sun: #F4B000;                          /* Academic gold stays gold on dark */
+  --sun-bright: #FFD24A;                   /* lifted gold for dark backgrounds */
+
 
   --background: oklch(0.16 0.012 18);      /* deep maroon-tinted near-black */
   --foreground: oklch(0.96 0.012 80);

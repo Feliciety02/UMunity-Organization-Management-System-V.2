@@ -59,7 +59,7 @@ function Home() {
             <div className="max-w-3xl text-[#FFFDF7]">
               <h1 className="max-w-4xl font-display text-5xl font-bold leading-[0.96] tracking-[-0.04em] text-[#FFFDF7] sm:text-6xl lg:text-7xl">
                 One Platform for{" "}
-                <span className="bg-[linear-gradient(180deg,#E89BA8_0%,#7A0019_100%)] bg-clip-text text-transparent">
+                <span className="bg-[linear-gradient(180deg,#FFD24A_0%,#F4B000_100%)] bg-clip-text text-transparent">
                   Every Student Organization.
                 </span>
               </h1>
@@ -100,7 +100,7 @@ function Home() {
                   ))}
                 </div>
                 <p className="text-sm leading-6 sm:text-base">
-                  Trusted by <span className="font-semibold text-[#E89BA8]">18,000+</span>{" "}
+                  Trusted by <span className="font-semibold text-[#FFC72C]">18,000+</span>{" "}
                   Mindanaoan students
                 </p>
               </div>
@@ -110,13 +110,13 @@ function Home() {
               <div className="rounded-[2rem] border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.08))] p-5 text-[#FFFDF7] shadow-[0_28px_80px_rgba(18,6,10,0.42)] backdrop-blur-2xl">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#E89BA8]">
-                      <span className="h-2 w-2 rounded-full bg-[#7A0019]" />
+                    <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#FFC72C]">
+                      <span className="h-2 w-2 rounded-full bg-[#F4B000]" />
                       Live Now
                     </p>
                     <h3 className="mt-2 font-display text-2xl font-bold">Student Dashboard</h3>
                   </div>
-                  <span className="rounded-full border border-[rgba(232,155,168,0.32)] bg-[rgba(122,0,25,0.18)] px-3 py-1 text-xs font-semibold text-[#E89BA8]">
+                  <span className="rounded-full border border-[rgba(244,176,0,0.35)] bg-[rgba(244,176,0,0.14)] px-3 py-1 text-xs font-semibold text-[#FFC72C]">
                     3 new
                   </span>
                 </div>
@@ -170,7 +170,7 @@ function Home() {
                       key={label}
                       className="rounded-[1.35rem] border border-white/10 bg-[rgba(255,255,255,0.05)] px-3 py-4 text-center"
                     >
-                      <div className="font-display text-3xl font-bold text-[#E89BA8]">{value}</div>
+                      <div className="font-display text-3xl font-bold text-[#FFC72C]">{value}</div>
                       <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#FFFDF7]/60">
                         {label}
                       </div>
@@ -208,7 +208,7 @@ function Home() {
                 key={feature.title}
                 className="rounded-[1.5rem] border border-white/10 bg-[rgba(255,255,255,0.05)] px-5 py-5 text-[#FFFDF7] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
               >
-                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[rgba(122,0,25,0.18)] text-[#E89BA8]">
+                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[rgba(244,176,0,0.16)] text-[#FFC72C]">
                   <feature.icon className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 font-display text-lg font-bold">{feature.title}</h3>
