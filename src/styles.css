@@ -88,28 +88,37 @@
 }
 
 .dark {
-  --primary: #8ab4f8;
-  --primary-deep: #669df6;
-  --primary-foreground: #202124;
-  --background: #202124;
-  --foreground: #e8eaed;
-  --card: #292a2d;
-  --card-foreground: #e8eaed;
-  --popover: #292a2d;
-  --popover-foreground: #e8eaed;
-  --secondary: #303134;
-  --secondary-foreground: #e8eaed;
-  --muted: #2b2c2f;
-  --muted-foreground: #9aa0a6;
-  --accent: #8ab4f8;
-  --accent-foreground: #202124;
-  --border: #3c4043;
-  --input: #3c4043;
-  --ring: #8ab4f8;
-  --gradient-hero: radial-gradient(at 85% 15%, color-mix(in oklab, #8ab4f8 20%, transparent) 0%, transparent 52%),
-                   linear-gradient(160deg, #1f1f1f, #202124 55%, #26282b);
-  --gradient-maroon: linear-gradient(160deg, #1f1f1f, #202124 55%, #26282b);
+  /* Maroon-themed dark mode */
+  --primary: oklch(0.62 0.16 18);          /* brighter maroon-rose for contrast */
+  --primary-deep: oklch(0.48 0.15 18);
+  --primary-foreground: oklch(0.99 0.01 90);
+  --gold: oklch(0.70 0.15 18);             /* maroon-rose accent on dark */
+  --gold-warm: oklch(0.60 0.16 18);
+  --cream: oklch(0.22 0.02 18);
+
+  --background: oklch(0.16 0.012 18);      /* deep maroon-tinted near-black */
+  --foreground: oklch(0.96 0.012 80);
+  --card: oklch(0.21 0.018 18);
+  --card-foreground: oklch(0.96 0.012 80);
+  --popover: oklch(0.21 0.018 18);
+  --popover-foreground: oklch(0.96 0.012 80);
+  --secondary: oklch(0.24 0.022 18);
+  --secondary-foreground: oklch(0.96 0.012 80);
+  --muted: oklch(0.24 0.018 18);
+  --muted-foreground: oklch(0.72 0.02 80);
+  --accent: var(--gold);
+  --accent-foreground: oklch(0.18 0.012 18);
+  --destructive: oklch(0.62 0.22 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.32 0.025 18);
+  --input: oklch(0.32 0.025 18);
+  --ring: var(--primary);
+
+  --gradient-hero: radial-gradient(at 85% 15%, color-mix(in oklab, var(--gold) 26%, transparent) 0%, transparent 55%),
+                   linear-gradient(160deg, oklch(0.20 0.02 18), oklch(0.30 0.10 18));
+  --gradient-maroon: linear-gradient(160deg, oklch(0.24 0.06 18), oklch(0.38 0.13 18));
 }
+
 
 @layer base {
   * { border-color: var(--color-border); }
