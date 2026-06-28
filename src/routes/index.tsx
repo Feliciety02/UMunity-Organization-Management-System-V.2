@@ -70,7 +70,7 @@ function Home() {
               <div className="mt-9 flex flex-wrap gap-4">
                 <Link
                   to="/organizations"
-                  className="group inline-flex items-center gap-2 rounded-full bg-[#7A0019] px-7 py-3.5 text-sm font-semibold text-[#4B0010] shadow-[0_16px_40px_rgba(122,0,25,0.28)] transition hover:bg-[#E89BA8]"
+                  className="group inline-flex items-center gap-2 rounded-full bg-[#7A0019] px-7 py-3.5 text-sm font-semibold text-[#FFFDF7] shadow-[0_16px_40px_rgba(122,0,25,0.28)] transition hover:bg-[#4B0010]"
                 >
                   Explore Organizations
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -146,7 +146,7 @@ function Home() {
                       key={item.label}
                       className="flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-[rgba(255,255,255,0.07)] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                     >
-                      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(180deg,#E89BA8_0%,#7A0019_100%)] text-[#4B0010] shadow-[0_10px_24px_rgba(122,0,25,0.22)]">
+                      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(180deg,#E89BA8_0%,#7A0019_100%)] text-[#FFFDF7] shadow-[0_10px_24px_rgba(122,0,25,0.22)]">
                         <item.icon className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
