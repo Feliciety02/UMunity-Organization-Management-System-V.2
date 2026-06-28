@@ -19,10 +19,10 @@ type User = {
 
 const users: User[] = [
   { n: "Althea Dumaguete", e: "althea.d@umindanao.edu.ph", r: "Student", s: "Active", c: "from-rose-400 to-primary", join: "Mar 2026" },
-  { n: "Marco Reyes", e: "marco.r@umindanao.edu.ph", r: "Leader", s: "Active", c: "from-amber-500 to-primary", join: "Mar 2024" },
+  { n: "Marco Reyes", e: "marco.r@umindanao.edu.ph", r: "Leader", s: "Active", c: "from-primary to-primary", join: "Mar 2024" },
   { n: "Dr. Liana Kintanar", e: "liana.k@umindanao.edu.ph", r: "Admin", s: "Active", c: "from-primary-deep to-rose-700", join: "Aug 2022" },
   { n: "Jana Cruz", e: "jana.c@umindanao.edu.ph", r: "Student", s: "Pending", c: "from-emerald-400 to-primary", join: "May 2026" },
-  { n: "Renz Aquino", e: "renz.a@umindanao.edu.ph", r: "Student", s: "Suspended", c: "from-amber-500 to-primary", join: "Feb 2026" },
+  { n: "Renz Aquino", e: "renz.a@umindanao.edu.ph", r: "Student", s: "Suspended", c: "from-primary to-primary", join: "Feb 2026" },
   { n: "Anna Sy", e: "anna.sy@umindanao.edu.ph", r: "Leader", s: "Active", c: "from-rose-400 to-primary", join: "Mar 2024" },
   { n: "Prof. Tan", e: "prof.tan@umindanao.edu.ph", r: "Adviser", s: "Active", c: "from-primary to-primary-deep", join: "Jun 2021" },
 ];

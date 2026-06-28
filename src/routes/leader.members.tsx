@@ -19,7 +19,7 @@ type MemberRow = {
 };
 
 const members = [
-  { n: "Anna Sy", r: "Officer · VP", e: "anna.sy@umindanao.edu.ph", joined: "Mar 2024", status: "Active", c: "from-amber-500 to-primary" },
+  { n: "Anna Sy", r: "Officer · VP", e: "anna.sy@umindanao.edu.ph", joined: "Mar 2024", status: "Active", c: "from-primary to-primary" },
   { n: "Karl Mendez", r: "Officer · Sec", e: "karl.m@umindanao.edu.ph", joined: "Mar 2024", status: "Active", c: "from-rose-400 to-primary" },
   { n: "Jaymark Burlado", r: "Member", e: "jaymark.burlado@umindanao.edu.ph", joined: "Apr 2024", status: "Active", c: "from-emerald-400 to-primary-deep" },
 ];

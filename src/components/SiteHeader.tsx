@@ -63,18 +63,23 @@ export function SiteHeader() {
           <div className="hidden items-center gap-2 md:flex">
             <Link
               to="/login"
-              className="rounded-full bg-[rgba(122,0,25,0.88)] px-5 py-2.5 text-sm font-semibold text-[#FFFDF7] shadow-[0_10px_24px_rgba(75,0,16,0.16)] transition hover:bg-[rgba(122,0,25,0.96)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gold"
+              className={`rounded-full border px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
+                scrolled
+                  ? "border-[rgba(122,0,25,0.18)] bg-white text-[#7A0019] hover:bg-[rgba(122,0,25,0.06)]"
+                  : "border-white/22 bg-white/10 text-[#FFFDF7] hover:bg-white/18"
+              }`}
             >
               Login
             </Link>
             <Link
               to="/register"
-              className="inline-flex items-center gap-2 rounded-full bg-[#F4B000] px-5 py-2.5 text-sm font-semibold text-[#4B0010] shadow-[0_12px_30px_rgba(244,176,0,0.24)] transition hover:bg-[#FFC72C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+              className="inline-flex items-center gap-2 rounded-full bg-[#7A0019] px-5 py-2.5 text-sm font-semibold text-[#FFFDF7] shadow-[0_12px_30px_rgba(122,0,25,0.28)] transition hover:bg-[#4B0010] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
             >
               Get Started
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
+
         </div>
       </div>
 
@@ -112,7 +117,7 @@ export function SiteHeader() {
               <Link
                 to="/register"
                 onClick={() => setOpen(false)}
-                className="flex-1 rounded-full bg-[#F4B000] px-4 py-3 text-center text-sm font-semibold text-[#4B0010]"
+                className="flex-1 rounded-full bg-[#7A0019] px-4 py-3 text-center text-sm font-semibold text-[#FFFDF7]"
               >
                 Get Started
               </Link>

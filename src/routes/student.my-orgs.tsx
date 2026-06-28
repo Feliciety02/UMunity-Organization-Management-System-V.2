@@ -9,7 +9,7 @@ export const Route = createFileRoute("/student/my-orgs")({
 
 function MyOrgs() {
   const my = organizations.slice(0, 3);
-  const pending = [{ name: "UM Debate Council", category: "Advocacy", color: "from-amber-500 to-primary" }];
+  const pending = [{ name: "UM Debate Council", category: "Advocacy", color: "from-primary to-primary" }];
 
   return (
     <>

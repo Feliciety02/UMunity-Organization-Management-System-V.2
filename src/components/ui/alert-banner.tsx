@@ -7,7 +7,7 @@ const variants = {
     icon: CheckCircle2,
   },
   warning: {
-    container: "bg-amber-50 border-amber-200 text-amber-800",
+    container: "bg-primary/5 border-primary/30 text-primary-deep",
     icon: AlertTriangle,
   },
   error: {

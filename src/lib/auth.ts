@@ -27,7 +27,7 @@ export const DEMO_USERS: DemoUser[] = [
     name: "Marco Reyes",
     program: "President - UM CS Society",
     org: "UM Computer Studies Society",
-    avatarColor: "from-amber-500 to-primary",
+    avatarColor: "from-primary to-primary",
   },
   {
     email: "adviser@um.edu.ph",
@@ -120,9 +120,9 @@ export const ROLE_META: Record<Role, { label: string; accent: string; bg: string
   },
   leader: {
     label: "Org Leader",
-    accent: "text-amber-600",
-    bg: "from-amber-500 to-primary",
-    ring: "ring-amber-200",
+    accent: "text-primary",
+    bg: "from-primary to-primary",
+    ring: "ring-primary/30",
   },
   adviser: {
     label: "Adviser",
