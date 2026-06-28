@@ -50,8 +50,8 @@ function Home() {
           style={{ backgroundImage: `url(${umCampusHero})` }}
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(75,0,16,0.92)_0%,rgba(75,0,16,0.78)_36%,rgba(75,0,16,0.44)_68%,rgba(20,6,9,0.62)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,199,44,0.18),transparent_30%),radial-gradient(circle_at_78%_24%,rgba(255,255,255,0.14),transparent_24%),linear-gradient(180deg,rgba(0,0,0,0.38),rgba(0,0,0,0.14))]" />
-        <div className="absolute -left-20 top-24 h-72 w-72 rounded-full bg-[rgba(244,176,0,0.12)] blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(232,155,168,0.22),transparent_30%),radial-gradient(circle_at_78%_24%,rgba(255,255,255,0.14),transparent_24%),linear-gradient(180deg,rgba(0,0,0,0.38),rgba(0,0,0,0.14))]" />
+        <div className="absolute -left-20 top-24 h-72 w-72 rounded-full bg-[rgba(122,0,25,0.16)] blur-3xl" />
         <div className="absolute bottom-8 right-0 h-80 w-80 rounded-full bg-[rgba(122,0,25,0.24)] blur-3xl" />
 
         <div className="hero-content relative mx-auto max-w-[1400px] px-4 pb-16 pt-32 sm:px-6 lg:px-8 lg:pb-20 lg:pt-40">
@@ -59,7 +59,7 @@ function Home() {
             <div className="max-w-3xl text-[#FFFDF7]">
               <h1 className="max-w-4xl font-display text-5xl font-bold leading-[0.96] tracking-[-0.04em] text-[#FFFDF7] sm:text-6xl lg:text-7xl">
                 One Platform for{" "}
-                <span className="bg-[linear-gradient(180deg,#FFC72C_0%,#F4B000_100%)] bg-clip-text text-transparent">
+                <span className="bg-[linear-gradient(180deg,#E89BA8_0%,#7A0019_100%)] bg-clip-text text-transparent">
                   Every Student Organization.
                 </span>
               </h1>
@@ -70,7 +70,7 @@ function Home() {
               <div className="mt-9 flex flex-wrap gap-4">
                 <Link
                   to="/organizations"
-                  className="group inline-flex items-center gap-2 rounded-full bg-[#F4B000] px-7 py-3.5 text-sm font-semibold text-[#4B0010] shadow-[0_16px_40px_rgba(244,176,0,0.22)] transition hover:bg-[#FFC72C]"
+                  className="group inline-flex items-center gap-2 rounded-full bg-[#7A0019] px-7 py-3.5 text-sm font-semibold text-[#FFFDF7] shadow-[0_16px_40px_rgba(122,0,25,0.28)] transition hover:bg-[#4B0010]"
                 >
                   Explore Organizations
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -88,7 +88,7 @@ function Home() {
                     "from-[#f8d8a7] to-[#b66a4b]",
                     "from-[#f7b8b6] to-[#7A0019]",
                     "from-[#d6e8bf] to-[#496c36]",
-                    "from-[#ffe59a] to-[#F4B000]",
+                    "from-[#ffe59a] to-[#7A0019]",
                     "from-[#f1d0c7] to-[#7d3f3d]",
                   ].map((tone, index) => (
                     <div
@@ -100,7 +100,7 @@ function Home() {
                   ))}
                 </div>
                 <p className="text-sm leading-6 sm:text-base">
-                  Trusted by <span className="font-semibold text-[#FFC72C]">18,000+</span>{" "}
+                  Trusted by <span className="font-semibold text-[#E89BA8]">18,000+</span>{" "}
                   Mindanaoan students
                 </p>
               </div>
@@ -110,13 +110,13 @@ function Home() {
               <div className="rounded-[2rem] border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.08))] p-5 text-[#FFFDF7] shadow-[0_28px_80px_rgba(18,6,10,0.42)] backdrop-blur-2xl">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#FFC72C]">
-                      <span className="h-2 w-2 rounded-full bg-[#F4B000]" />
+                    <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#E89BA8]">
+                      <span className="h-2 w-2 rounded-full bg-[#7A0019]" />
                       Live Now
                     </p>
                     <h3 className="mt-2 font-display text-2xl font-bold">Student Dashboard</h3>
                   </div>
-                  <span className="rounded-full border border-[rgba(255,199,44,0.25)] bg-[rgba(244,176,0,0.14)] px-3 py-1 text-xs font-semibold text-[#FFC72C]">
+                  <span className="rounded-full border border-[rgba(232,155,168,0.32)] bg-[rgba(122,0,25,0.18)] px-3 py-1 text-xs font-semibold text-[#E89BA8]">
                     3 new
                   </span>
                 </div>
@@ -146,7 +146,7 @@ function Home() {
                       key={item.label}
                       className="flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-[rgba(255,255,255,0.07)] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                     >
-                      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(180deg,#FFC72C_0%,#F4B000_100%)] text-[#4B0010] shadow-[0_10px_24px_rgba(244,176,0,0.16)]">
+                      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(180deg,#E89BA8_0%,#7A0019_100%)] text-[#FFFDF7] shadow-[0_10px_24px_rgba(122,0,25,0.22)]">
                         <item.icon className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -170,7 +170,7 @@ function Home() {
                       key={label}
                       className="rounded-[1.35rem] border border-white/10 bg-[rgba(255,255,255,0.05)] px-3 py-4 text-center"
                     >
-                      <div className="font-display text-3xl font-bold text-[#FFC72C]">{value}</div>
+                      <div className="font-display text-3xl font-bold text-[#E89BA8]">{value}</div>
                       <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#FFFDF7]/60">
                         {label}
                       </div>
@@ -208,7 +208,7 @@ function Home() {
                 key={feature.title}
                 className="rounded-[1.5rem] border border-white/10 bg-[rgba(255,255,255,0.05)] px-5 py-5 text-[#FFFDF7] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
               >
-                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[rgba(244,176,0,0.15)] text-[#FFC72C]">
+                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[rgba(122,0,25,0.18)] text-[#E89BA8]">
                   <feature.icon className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 font-display text-lg font-bold">{feature.title}</h3>
@@ -556,7 +556,7 @@ export function EventCard({
     status === "Open"
       ? "bg-emerald-100 text-emerald-700"
       : status === "Filling Fast"
-        ? "bg-amber-100 text-amber-800"
+        ? "bg-primary/15 text-primary-deep"
         : "bg-secondary text-primary";
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-soft">

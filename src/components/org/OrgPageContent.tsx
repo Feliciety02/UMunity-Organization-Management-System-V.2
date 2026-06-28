@@ -58,7 +58,7 @@ export function OrgPageContent({
 
       <section className="overflow-hidden rounded-[24px] border border-border/70 bg-card shadow-soft">
         <div className={`relative h-44 bg-gradient-to-br ${org.color} sm:h-56`}>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_20%,rgba(244,176,0,0.22),transparent_32%),radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.10),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.10))]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_20%,rgba(122,0,25,0.28),transparent_32%),radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.10),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.10))]" />
         </div>
 
         <div className="relative bg-card px-5 pb-5 sm:px-6">

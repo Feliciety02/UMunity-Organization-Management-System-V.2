@@ -7,7 +7,7 @@ const tones = {
   rose: "bg-rose-100 text-rose-700",
   emerald: "bg-emerald-100 text-emerald-700",
   sky: "bg-sky-100 text-sky-700",
-  amber: "bg-amber-100 text-amber-800",
+  amber: "bg-primary/15 text-primary-deep",
   neutral: "bg-secondary text-foreground",
 };
 

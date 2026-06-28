@@ -29,7 +29,7 @@ const groups = [
   },
   {
     label: "For Organization Leaders",
-    color: "from-amber-600 to-primary",
+    color: "from-primary to-primary",
     items: [
       { icon: Users, t: "Member Management", d: "Approve, organize, and engage your members effortlessly." },
       { icon: Calendar, t: "Event Management", d: "Create, publish, and run events with built-in RSVP." },

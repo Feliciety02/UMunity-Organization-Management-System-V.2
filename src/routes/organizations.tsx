@@ -68,19 +68,19 @@ function Orgs() {
           style={{ backgroundImage: `url(${umOrganizationsHero})` }}
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(75,0,16,0.9)_0%,rgba(75,0,16,0.72)_34%,rgba(75,0,16,0.48)_68%,rgba(20,6,9,0.58)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_20%,rgba(255,199,44,0.16),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(255,255,255,0.11),transparent_20%),linear-gradient(180deg,rgba(0,0,0,0.34),rgba(0,0,0,0.18))]" />
-        <div className="absolute -left-16 top-28 h-72 w-72 rounded-full bg-[rgba(244,176,0,0.12)] blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_20%,rgba(232,155,168,0.24),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(255,255,255,0.11),transparent_20%),linear-gradient(180deg,rgba(0,0,0,0.34),rgba(0,0,0,0.18))]" />
+        <div className="absolute -left-16 top-28 h-72 w-72 rounded-full bg-[rgba(122,0,25,0.16)] blur-3xl" />
         <div className="absolute right-0 top-16 h-80 w-80 rounded-full bg-[rgba(122,0,25,0.22)] blur-3xl" />
 
         <div className="hero-content relative mx-auto flex w-full max-w-[1400px] px-4 pb-16 pt-32 sm:px-6 lg:px-8 lg:pb-20 lg:pt-40">
           <div className="mx-auto max-w-4xl text-center text-[#FFFDF7]">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/16 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#FFC72C] backdrop-blur-xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/16 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#E89BA8] backdrop-blur-xl">
               <Sparkles className="h-3.5 w-3.5" />
               Discover Campus Communities
             </div>
             <h1 className="mt-6 font-display text-5xl font-bold leading-[0.96] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
               Explore{" "}
-              <span className="bg-[linear-gradient(180deg,#FFC72C_0%,#F4B000_100%)] bg-clip-text text-transparent">
+              <span className="bg-[linear-gradient(180deg,#E89BA8_0%,#7A0019_100%)] bg-clip-text text-transparent">
                 Organizations
               </span>
             </h1>
@@ -100,19 +100,19 @@ function Orgs() {
                 className="min-w-0 flex-1 bg-transparent px-1 py-2 text-sm text-[#FFFDF7] placeholder:text-[#FFFDF7]/58 focus:outline-none sm:text-base"
               />
               <div className="hidden items-center gap-2 rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-4 py-2 text-xs font-semibold text-[#FFFDF7]/74 md:inline-flex">
-                <Users className="h-4 w-4 text-[#FFC72C]" />
+                <Users className="h-4 w-4 text-[#E89BA8]" />
                 {filtered.length} visible
               </div>
             </div>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-[#FFFDF7]/80">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-4 py-2 backdrop-blur-xl">
-                <Users className="h-4 w-4 text-[#FFC72C]" />
+                <Users className="h-4 w-4 text-[#E89BA8]" />
                 Academic, service, arts, and tech communities
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-4 py-2 backdrop-blur-xl">
                 Start exploring
-                <ArrowRight className="h-4 w-4 text-[#FFC72C]" />
+                <ArrowRight className="h-4 w-4 text-[#E89BA8]" />
               </span>
             </div>
           </div>
