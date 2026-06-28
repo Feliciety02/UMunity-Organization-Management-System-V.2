@@ -117,7 +117,7 @@ export function SiteHeader() {
               <Link
                 to="/register"
                 onClick={() => setOpen(false)}
-                className="flex-1 rounded-full bg-[#7A0019] px-4 py-3 text-center text-sm font-semibold text-[#4B0010]"
+                className="flex-1 rounded-full bg-[#7A0019] px-4 py-3 text-center text-sm font-semibold text-[#FFFDF7]"
               >
                 Get Started
               </Link>
