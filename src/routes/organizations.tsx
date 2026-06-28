@@ -68,7 +68,7 @@ function Orgs() {
           style={{ backgroundImage: `url(${umOrganizationsHero})` }}
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(75,0,16,0.9)_0%,rgba(75,0,16,0.72)_34%,rgba(75,0,16,0.48)_68%,rgba(20,6,9,0.58)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_20%,rgba(255,199,44,0.16),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(255,255,255,0.11),transparent_20%),linear-gradient(180deg,rgba(0,0,0,0.34),rgba(0,0,0,0.18))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_20%,rgba(232,155,168,0.24),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(255,255,255,0.11),transparent_20%),linear-gradient(180deg,rgba(0,0,0,0.34),rgba(0,0,0,0.18))]" />
         <div className="absolute -left-16 top-28 h-72 w-72 rounded-full bg-[rgba(122,0,25,0.16)] blur-3xl" />
         <div className="absolute right-0 top-16 h-80 w-80 rounded-full bg-[rgba(122,0,25,0.22)] blur-3xl" />
 
