@@ -65,6 +65,9 @@
   --gold: oklch(0.58 0.17 18);             /* bright maroon-rose accent */
   --gold-warm: oklch(0.48 0.16 18);        /* mid maroon */
   --cream: oklch(0.985 0.022 88);          /* Warm cream secondary */
+  --sun: #F4B000;                          /* Academic gold accent */
+  --sun-bright: #FFC72C;                   /* Brighter gold for display text */
+
 
   /* Background & Elevation — design spec values */
   --background: #F9F9F8;
