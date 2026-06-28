@@ -31,7 +31,7 @@ export function ProfileHeader<T extends string>({
 }) {
   return (
     <AppCard className="overflow-hidden rounded-[32px]" padded={false}>
-      <div className="relative h-[220px] bg-gradient-to-br from-primary-deep via-primary to-amber-700 md:h-[240px] xl:h-[256px]">
+      <div className="relative h-[220px] bg-gradient-to-br from-primary-deep via-primary to-primary-deep md:h-[240px] xl:h-[256px]">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.14))]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(244,176,0,0.35),transparent_55%)]" />
         <div className="absolute inset-x-0 bottom-0 h-20 bg-[linear-gradient(180deg,transparent,rgba(0,0,0,0.12))]" />

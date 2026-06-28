@@ -166,7 +166,7 @@ function Org() {
             { n: "Prof. Tan", r: "Adviser" },
           ].map((o) => (
             <div key={o.n} className="flex items-center gap-3 rounded-2xl bg-secondary/60 p-3">
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-amber-500 to-primary text-xs font-bold text-primary-foreground">
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-primary to-primary text-xs font-bold text-primary-foreground">
                 {o.n.split(" ").map((w) => w[0]).join("")}
               </div>
               <div>

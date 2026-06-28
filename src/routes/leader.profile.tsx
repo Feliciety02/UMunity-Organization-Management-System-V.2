@@ -13,7 +13,7 @@ function Profile() {
       <PageHead title="Profile settings" sub="Update your leader account details." />
       <div className="grid gap-4 lg:grid-cols-3">
         <Panel className="lg:col-span-1">
-          <div className={`grid h-24 w-24 place-items-center rounded-full bg-gradient-to-br ${s?.avatarColor ?? "from-amber-500 to-primary"} text-2xl font-bold text-primary-foreground`}>
+          <div className={`grid h-24 w-24 place-items-center rounded-full bg-gradient-to-br ${s?.avatarColor ?? "from-primary to-primary"} text-2xl font-bold text-primary-foreground`}>
             {s?.name.split(" ").slice(0,2).map(w=>w[0]).join("")}
           </div>
           <p className="mt-4 font-display text-lg font-bold">{s?.name}</p>

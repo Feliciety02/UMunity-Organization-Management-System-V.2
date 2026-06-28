@@ -228,7 +228,7 @@ function Stat({ label, value, tone = "primary" }: { label: string; value: number
   const cls = {
     primary: "bg-primary/10 text-primary",
     emerald: "bg-emerald-100 text-emerald-700",
-    amber: "bg-amber-100 text-amber-700",
+    amber: "bg-primary/15 text-primary-deep",
     rose: "bg-rose-100 text-rose-700",
   }[tone];
   return (

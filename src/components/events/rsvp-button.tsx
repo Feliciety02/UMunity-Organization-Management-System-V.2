@@ -61,7 +61,7 @@ export function RsvpButton({ eventTitle, size = "md" }: { eventTitle: string; si
           <Check className="h-3.5 w-3.5 text-emerald-600" /> Going
         </Option>
         <Option active={status === "maybe"} onClick={() => handle("maybe")}>
-          <HelpCircle className="h-3.5 w-3.5 text-amber-600" /> Maybe
+          <HelpCircle className="h-3.5 w-3.5 text-primary" /> Maybe
         </Option>
         <Option active={status === "cancelled"} onClick={() => handle("cancelled")}>
           <X className="h-3.5 w-3.5 text-rose-600" /> {mine && status !== "cancelled" ? "Cancel RSVP" : "Not going"}

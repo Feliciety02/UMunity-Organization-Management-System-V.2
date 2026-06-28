@@ -345,7 +345,7 @@ function RequirementCard({
             due.tone === "danger"
               ? "bg-rose-500/10 text-rose-600"
               : due.tone === "warning"
-                ? "bg-amber-500/10 text-amber-700"
+                ? "bg-primary/10 text-primary-deep"
                 : due.tone === "success"
                   ? "bg-emerald-500/10 text-emerald-700"
                   : "bg-secondary text-muted-foreground"
