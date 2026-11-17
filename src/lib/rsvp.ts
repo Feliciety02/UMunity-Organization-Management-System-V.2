@@ -1,4 +1,5 @@
-// Client-side RSVP store (demo, localStorage-backed)
+// Client-side RSVP store (saved to the database via cloud-storage)
+import { cloudStorage } from "@/lib/cloud-storage";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { addNotification } from "./notifications";
 
@@ -27,9 +28,9 @@ const seed: RsvpRecord[] = [
 function read(): RsvpRecord[] {
   if (typeof window === "undefined") return seed;
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = cloudStorage.getItem(KEY);
     if (!raw) {
-      localStorage.setItem(KEY, JSON.stringify(seed));
+      cloudStorage.setItem(KEY, JSON.stringify(seed));
       return seed;
     }
     return JSON.parse(raw) as RsvpRecord[];
@@ -40,7 +41,7 @@ function read(): RsvpRecord[] {
 
 function write(list: RsvpRecord[]) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(list));
+  cloudStorage.setItem(KEY, JSON.stringify(list));
   window.dispatchEvent(new Event(EVENT));
 }
 

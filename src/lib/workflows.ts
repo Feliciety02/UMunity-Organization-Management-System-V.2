@@ -1,3 +1,4 @@
+import { cloudStorage } from "@/lib/cloud-storage";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { addNotification } from "@/lib/notifications";
 import { sendOrgRegistryNotification } from "@/lib/org-registry";
@@ -908,10 +909,10 @@ function seedTransitionWorkflows(): OfficerTransitionWorkflow[] {
 function read(): EventWorkflow[] {
   if (typeof window === "undefined") return seedWorkflows();
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = cloudStorage.getItem(KEY);
     if (!raw) {
       const seeded = seedWorkflows();
-      localStorage.setItem(KEY, JSON.stringify(seeded));
+      cloudStorage.setItem(KEY, JSON.stringify(seeded));
       return seeded;
     }
     const parsed = (JSON.parse(raw) as EventWorkflow[]).map(normalizeWorkflow);
@@ -919,7 +920,7 @@ function read(): EventWorkflow[] {
     const knownIds = new Set(parsed.map((workflow) => workflow.id));
     const merged = [...parsed, ...seeded.filter((workflow) => !knownIds.has(workflow.id))];
     if (merged.length !== parsed.length) {
-      localStorage.setItem(KEY, JSON.stringify(merged));
+      cloudStorage.setItem(KEY, JSON.stringify(merged));
     }
     return merged;
   } catch {
@@ -929,17 +930,17 @@ function read(): EventWorkflow[] {
 
 function write(list: EventWorkflow[]) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(list));
+  cloudStorage.setItem(KEY, JSON.stringify(list));
   window.dispatchEvent(new Event(EVENT));
 }
 
 function readTransitions(): OfficerTransitionWorkflow[] {
   if (typeof window === "undefined") return seedTransitionWorkflows();
   try {
-    const raw = localStorage.getItem(TRANSITION_KEY);
+    const raw = cloudStorage.getItem(TRANSITION_KEY);
     if (!raw) {
       const seeded = seedTransitionWorkflows();
-      localStorage.setItem(TRANSITION_KEY, JSON.stringify(seeded));
+      cloudStorage.setItem(TRANSITION_KEY, JSON.stringify(seeded));
       return seeded;
     }
     return JSON.parse(raw) as OfficerTransitionWorkflow[];
@@ -950,7 +951,7 @@ function readTransitions(): OfficerTransitionWorkflow[] {
 
 function writeTransitions(list: OfficerTransitionWorkflow[]) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(TRANSITION_KEY, JSON.stringify(list));
+  cloudStorage.setItem(TRANSITION_KEY, JSON.stringify(list));
   window.dispatchEvent(new Event(TRANSITION_EVENT));
 }
 

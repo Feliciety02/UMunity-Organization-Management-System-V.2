@@ -1,5 +1,6 @@
-// Event Documentation Workflow store (demo, localStorage-backed)
+// Event Documentation Workflow store (saved to the database via cloud-storage)
 // Generates an OSA-style Requirements Tracker per event.
+import { cloudStorage } from "@/lib/cloud-storage";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { addNotification } from "./notifications";
 
@@ -213,9 +214,9 @@ const seed: EventDoc[] = [
 function read(): EventDoc[] {
   if (typeof window === "undefined") return seed;
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = cloudStorage.getItem(KEY);
     if (!raw) {
-      localStorage.setItem(KEY, JSON.stringify(seed));
+      cloudStorage.setItem(KEY, JSON.stringify(seed));
       return seed;
     }
     return JSON.parse(raw) as EventDoc[];
@@ -226,7 +227,7 @@ function read(): EventDoc[] {
 
 function write(list: EventDoc[]) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(list));
+  cloudStorage.setItem(KEY, JSON.stringify(list));
   window.dispatchEvent(new Event(EVENT));
 }
 
