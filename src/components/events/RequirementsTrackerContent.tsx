@@ -156,7 +156,7 @@ export function RequirementsTrackerContent({
               </div>
             ) : (
               <div className="rounded-2xl border border-border bg-secondary/40 px-4 py-3 text-xs text-muted-foreground">
-                UMUnity does <strong className="text-foreground">not</strong> submit on your behalf - it only helps you prepare.
+                UMunity does <strong className="text-foreground">not</strong> submit on your behalf - it only helps you prepare.
               </div>
             )}
           </div>

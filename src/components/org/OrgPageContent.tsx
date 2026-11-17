@@ -7,9 +7,10 @@ import { AppCard } from "@/components/ui/app-card";
 import { UnderlineTabs } from "@/components/ui/app-tabs";
 import { PostCard, OrgAvatar } from "@/components/social/PostCard";
 import type { OrgLinkMode } from "@/components/org/OrgLink";
-import { showImportantActionToast } from "@/lib/feedback";
+import { JoinOrgButton } from "@/components/org/JoinOrgButton";
+import { AppButton } from "@/components/ui/app-button";
 import { events, organizations, posts, type Org } from "@/data/site";
-import { Users, Calendar, Mail, MapPin, Globe, UserPlus, Check, ArrowLeft, Compass } from "lucide-react";
+import { Users, Calendar, Mail, MapPin, Globe, UserPlus, ArrowLeft, Compass, MessageSquare } from "lucide-react";
 
 export function OrgPageContent({
   org,
@@ -29,7 +30,6 @@ export function OrgPageContent({
   const tabs = ["Posts", "About", "Events", "Photos"] as const;
   type Tab = (typeof tabs)[number];
   const [tab, setTab] = useState<Tab>("Posts");
-  const [joined, setJoined] = useState(false);
 
   const orgPosts = posts.filter((p) => p.orgSlug === org.slug);
   const orgEvents = events.filter((e) => e.host === org.name);
@@ -90,38 +90,22 @@ export function OrgPageContent({
 
             <div className="flex items-center justify-center pb-1 md:shrink-0 md:justify-end">
               <div className="flex flex-wrap items-center justify-center gap-2">
-                <button
-                  onClick={() => {
-                    setJoined((current) => !current);
-                    showImportantActionToast(
-                      joined ? "apply" : "join",
-                      joined
-                        ? `You can reapply to ${org.name} anytime from its organization page.`
-                        : `${org.name} will review your membership request soon.`,
-                      joined ? "Left organization" : "Membership request sent",
-                    );
-                  }}
-                  className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
-                    joined
-                      ? "border border-border bg-card text-foreground hover:bg-secondary"
-                      : "bg-primary text-primary-foreground hover:bg-primary-deep"
-                  }`}
-                >
-                  {joined ? (
-                    <>
-                      <Check className="h-3.5 w-3.5" />
-                      Joined
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="h-3.5 w-3.5" />
-                      Join
-                    </>
-                  )}
-                </button>
-                <button className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-secondary">
-                  Follow
-                </button>
+                {orgLinkMode === "student" ? (
+                  <>
+                    <JoinOrgButton slug={org.slug} orgName={org.name} shape="soft" />
+                    <AppButton asChild variant="secondary" shape="soft">
+                      <Link to="/student/messages">
+                        <MessageSquare className="h-4 w-4" /> Message
+                      </Link>
+                    </AppButton>
+                  </>
+                ) : (
+                  <AppButton asChild variant="primary" shape="soft">
+                    <Link to="/register">
+                      <UserPlus className="h-4 w-4" /> Sign up to join
+                    </Link>
+                  </AppButton>
+                )}
               </div>
             </div>
           </div>

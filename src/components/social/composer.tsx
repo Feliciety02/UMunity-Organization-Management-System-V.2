@@ -13,7 +13,7 @@ export function Composer({
   initials: string;
   prompt: string;
   ctaTo: string;
-  actions: Array<{ label: string; icon: LucideIcon }>;
+  actions: Array<{ label: string; icon: LucideIcon; to: string }>;
 }) {
   return (
     <AppCard className="overflow-hidden rounded-[28px]" padded={false}>
@@ -29,9 +29,11 @@ export function Composer({
       </div>
       <div className="flex flex-wrap items-center gap-3 px-5 py-4 sm:px-6">
         {actions.map((item, index) => (
-          <AppButton key={item.label} variant={index === 0 ? "primary" : "subtle"} size="md">
-            <item.icon className="h-4 w-4" />
-            {item.label}
+          <AppButton key={item.label} asChild variant={index === 0 ? "primary" : "subtle"} size="md">
+            <Link to={item.to}>
+              <item.icon className="h-4 w-4" />
+              {item.label}
+            </Link>
           </AppButton>
         ))}
       </div>

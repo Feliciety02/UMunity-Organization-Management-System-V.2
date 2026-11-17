@@ -1,8 +1,7 @@
 import type { Org } from "@/data/site";
-import { showImportantActionToast } from "@/lib/feedback";
 import { OrgLink, type OrgLinkMode } from "@/components/org/OrgLink";
 import { OrgAvatar } from "@/components/social/PostCard";
-import { AppButton } from "@/components/ui/app-button";
+import { JoinOrgButton } from "@/components/org/JoinOrgButton";
 import { AppCard } from "@/components/ui/app-card";
 
 export function OrgSuggestionCard({
@@ -28,22 +27,14 @@ export function OrgSuggestionCard({
             {org.name}
           </OrgLink>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {org.category} - {org.members} members
+            {org.category} · {org.members} members
           </p>
           <p className="mt-1.5 text-xs leading-5 text-muted-foreground">{reason}</p>
         </div>
       </div>
       <div className="flex items-center justify-between border-t border-border/70 px-4 py-3">
-        <span className="text-xs text-muted-foreground">2 mutual interests</span>
-        <AppButton
-          variant="primary"
-          size="sm"
-          onClick={() =>
-            showImportantActionToast("join", `${org.name} will review your membership request soon.`)
-          }
-        >
-          Join
-        </AppButton>
+        <span className="text-xs text-muted-foreground">Recommended for you</span>
+        <JoinOrgButton slug={org.slug} orgName={org.name} size="sm" />
       </div>
     </AppCard>
   );

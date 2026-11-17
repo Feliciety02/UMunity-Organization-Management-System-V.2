@@ -30,6 +30,7 @@ import {
   type AppNotif,
   type NotifCategory,
 } from "@/lib/notifications";
+import type { Role } from "@/lib/auth";
 
 type Filter = "all" | "unread" | NotifCategory;
 
@@ -40,6 +41,8 @@ const FILTERS: { id: Filter; label: string }[] = [
   { id: "announcement", label: "Announcements" },
   { id: "comment-reply", label: "Comments" },
   { id: "event", label: "Events" },
+  { id: "system", label: "System" },
+  { id: "general", label: "General" },
 ];
 
 const ICONS: Record<NotifCategory, typeof Bell> = {
@@ -61,17 +64,19 @@ const TONES: Record<NotifCategory, "gold" | "info" | "success" | "neutral"> = {
 };
 
 export function NotificationsView({
+  role,
   title = "Notifications",
   sub,
   resolveHref,
   emptyAction,
 }: {
+  role: Role;
   title?: string;
   sub?: string;
   resolveHref?: (href?: string) => string | undefined;
   emptyAction?: React.ReactNode;
 }) {
-  const list = useNotifications();
+  const list = useNotifications(role);
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const loading = useDashboardPageLoading();
@@ -116,12 +121,12 @@ export function NotificationsView({
     <>
       <PageHead
         title={title}
-        sub={sub ?? `${counts.unread} unread of ${counts.total} updates.`}
+        sub={`${sub ? `${sub} ` : ""}${counts.unread} unread of ${counts.total}.`}
         action={
           <AppButton
             variant="secondary"
             size="sm"
-            onClick={() => markAllRead()}
+            onClick={() => markAllRead(role)}
             disabled={counts.unread === 0}
           >
             <Check className="h-4 w-4" /> Mark all read
@@ -132,7 +137,7 @@ export function NotificationsView({
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
         <Panel className="h-fit p-2">
           <div className="space-y-1">
-            {FILTERS.map((f) => {
+            {FILTERS.filter((f) => f.id === "all" || f.id === "unread" || (counts.byCat[f.id] ?? 0) > 0 || filter === f.id).map((f) => {
               const count =
                 f.id === "all"
                   ? counts.total
@@ -146,7 +151,7 @@ export function NotificationsView({
                   onClick={() => setFilter(f.id)}
                   className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm font-medium transition ${
                     active
-                      ? "bg-[color:color-mix(in_oklab,var(--primary)_8%,white)] text-primary"
+                      ? "bg-primary/8 text-primary"
                       : "text-foreground/80 hover:bg-secondary"
                   }`}
                 >
@@ -286,6 +291,8 @@ function labelFor(c: NotifCategory) {
       return "Comment reply";
     case "rsvp":
       return "RSVP";
+    case "system":
+      return "System";
     default:
       return "Update";
   }

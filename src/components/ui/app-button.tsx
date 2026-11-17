@@ -12,7 +12,7 @@ const appButtonVariants = cva(
         secondary: "border border-border bg-background text-foreground hover:bg-secondary",
         ghost: "bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground",
         gold: "bg-gradient-gold text-primary-deep hover:brightness-95",
-        subtle: "bg-secondary text-foreground hover:bg-[color:color-mix(in_oklab,var(--primary)_8%,white)]",
+        subtle: "bg-secondary text-foreground hover:bg-[color:color-mix(in_oklab,var(--primary)_8%,var(--card))]",
       },
       size: {
         sm: "h-8 px-3 text-xs",

@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Facebook, Twitter } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 
 export function SiteFooter() {
@@ -19,13 +18,12 @@ export function SiteFooter() {
             <p className="mt-4 max-w-sm text-sm text-primary-foreground/80">
               One platform for every student organization at the University of Mindanao. Discover, connect, and thrive.
             </p>
-            <div className="mt-6 flex gap-3">
-              {[Instagram, Facebook, Twitter].map((Icon, i) => (
-                <a key={i} href="#" className="grid h-10 w-10 place-items-center rounded-full bg-white/10 transition hover:bg-gold hover:text-primary-deep">
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
+            <Link
+              to="/register"
+              className="mt-6 inline-flex rounded-full bg-gold px-5 py-2 text-sm font-semibold text-primary-deep transition hover:brightness-95"
+            >
+              Create your account
+            </Link>
           </div>
 
           <div>
@@ -48,7 +46,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-primary-foreground/70 md:flex-row">
-          <p>(c) {new Date().getFullYear()} UMunity. Built for the University of Mindanao community.</p>
+          <p>© {new Date().getFullYear()} UMunity. Built for the University of Mindanao community.</p>
           <p>One Platform for Every Student Organization.</p>
         </div>
       </div>

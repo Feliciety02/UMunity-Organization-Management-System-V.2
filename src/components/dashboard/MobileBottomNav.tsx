@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 
 export type BottomNavItem = { to: string; label: string; icon: LucideIcon; badge?: string };
 
-export function MobileBottomNav({ items }: { items: BottomNavItem[] }) {
+export function MobileBottomNav({ items, badges = {} }: { items: BottomNavItem[]; badges?: Record<string, string | undefined> }) {
   const path = useRouterState({ select: (r) => r.location.pathname });
   return (
     <nav
@@ -13,6 +13,7 @@ export function MobileBottomNav({ items }: { items: BottomNavItem[] }) {
     >
       <ul className="mx-auto grid max-w-md grid-cols-5">
         {items.slice(0, 5).map((item) => {
+          const badge = item.to in badges ? badges[item.to] : item.badge;
           const active = path === item.to || (item.to.split("/").length > 2 && path.startsWith(item.to));
           return (
             <li key={item.to}>
@@ -26,9 +27,9 @@ export function MobileBottomNav({ items }: { items: BottomNavItem[] }) {
               >
                 <item.icon className="h-5 w-5" aria-hidden="true" />
                 <span className="leading-none">{item.label}</span>
-                {item.badge ? (
+                {badge ? (
                   <span className="absolute right-3 top-1.5 min-w-4 rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
-                    {item.badge}
+                    {badge}
                   </span>
                 ) : null}
               </Link>

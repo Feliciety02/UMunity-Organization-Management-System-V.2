@@ -4,6 +4,8 @@ import { AppBadge } from "@/components/ui/app-badge";
 import { AppCard } from "@/components/ui/app-card";
 import { IconButton } from "@/components/ui/icon-button";
 import { RsvpButton } from "@/components/events/rsvp-button";
+import { showImportantActionToast } from "@/lib/feedback";
+import { toggleSavedEvent, useSaved } from "@/lib/saved";
 
 type EventData = {
   title: string;
@@ -31,15 +33,29 @@ export function EventCard({
   compact?: boolean;
   footerAction?: ReactNode;
 }) {
+  const saved = useSaved().events.includes(event.title);
   return (
     <AppCard className="group relative overflow-visible rounded-3xl transition hover:z-20 hover:-translate-y-0.5 hover:shadow-soft focus-within:z-20" padded={false}>
       <div className="relative h-36 rounded-t-3xl bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url("${cover}")` }}>
         <div className="absolute inset-0 bg-gradient-to-r from-black/16 via-transparent to-black/12" />
-        <IconButton tone="soft" className="absolute right-3 top-3 h-8 w-8">
-          <Bookmark className="h-4 w-4" />
+        <IconButton
+          tone="soft"
+          className="absolute right-3 top-3 h-8 w-8"
+          aria-label={saved ? `Remove ${event.title} from saved` : `Save ${event.title}`}
+          aria-pressed={saved}
+          onClick={() => {
+            const nowSaved = toggleSavedEvent(event.title);
+            showImportantActionToast(
+              "save",
+              nowSaved ? "Find it under the Saved tab on Events." : "Removed from your saved events.",
+              nowSaved ? "Event saved" : "Removed from saved",
+            );
+          }}
+        >
+          <Bookmark className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
         </IconButton>
         {floatingDate ? (
-          <div className="absolute bottom-0 left-5 flex h-[68px] w-[72px] translate-y-1/2 flex-col items-center justify-center rounded-[22px] border-4 border-white bg-gradient-maroon text-center shadow-soft">
+          <div className="absolute bottom-0 left-5 flex h-[68px] w-[72px] translate-y-1/2 flex-col items-center justify-center rounded-[22px] border-4 border-card bg-gradient-maroon text-center shadow-soft">
             <p className="font-display text-[2rem] font-bold leading-none text-white">{event.date.split(" ")[1].replace(",", "")}</p>
             <p className="mt-0.5 text-[10px] font-semibold uppercase leading-none tracking-[0.18em] text-white/90">{event.date.split(" ")[0]}</p>
           </div>

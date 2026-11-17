@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export type Theme = "light" | "dark";
 const KEY = "umunity.theme";
+const EVENT = "umunity:theme";
 
 function readTheme(): Theme {
   if (typeof window === "undefined") return "light";
@@ -32,12 +33,17 @@ export function useTheme() {
     const initial = readTheme();
     setThemeState(initial);
     applyTheme(initial);
+    // Keep every toggle on the page in sync when one of them changes the theme.
+    const sync = () => setThemeState(readTheme());
+    window.addEventListener(EVENT, sync);
+    return () => window.removeEventListener(EVENT, sync);
   }, []);
 
   function setTheme(next: Theme) {
     setThemeState(next);
     applyTheme(next);
     try { localStorage.setItem(KEY, next); } catch { /* ignore */ }
+    window.dispatchEvent(new Event(EVENT));
   }
 
   function toggle() {

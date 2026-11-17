@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Calendar, Globe, Lock, MoreHorizontal, Pin, Send } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Bookmark, Calendar, Flag, Globe, Link2, Lock, MoreHorizontal, Pin, Send } from "lucide-react";
 import type { Comment, Org, Post } from "@/data/site";
 import { Badge } from "@/components/dashboard/DashboardLayout";
 import { OrgLink, type OrgLinkMode } from "@/components/org/OrgLink";
@@ -8,7 +9,16 @@ import { RsvpButton } from "@/components/events/rsvp-button";
 import { AppButton } from "@/components/ui/app-button";
 import { AppCard } from "@/components/ui/app-card";
 import { IconButton } from "@/components/ui/icon-button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { getSession } from "@/lib/auth";
 import { showImportantActionToast, showStatusToast } from "@/lib/feedback";
+import { toggleSavedPost, useSaved } from "@/lib/saved";
 
 export function OrgAvatar({ org, size = 40 }: { org: Pick<Org, "color" | "initials">; size?: number }) {
   return (
@@ -34,10 +44,39 @@ export function PostCard({
 }) {
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes);
-  const [saved, setSaved] = useState(false);
+  const saved = useSaved().posts.includes(post.id);
+  const [shares, setShares] = useState(12);
+  const [pinned, setPinned] = useState(Boolean(post.pinned));
+  const [deleted, setDeleted] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [draft, setDraft] = useState("");
   const [comments, setComments] = useState<Comment[]>(post.comments);
+  const session = getSession();
+  const myName = session?.name ?? "You";
+  const myInitials = myName.split(" ").slice(0, 2).map((w) => w[0]).join("");
+
+  function toggleSave() {
+    const nowSaved = toggleSavedPost(post.id);
+    showImportantActionToast(
+      "save",
+      nowSaved ? "You can find this post anytime in Saved posts." : "This post has been removed from your saved list.",
+      nowSaved ? "Saved for later" : "Removed from saved",
+    );
+  }
+
+  function copyLink() {
+    const url = typeof window !== "undefined" ? `${window.location.origin}/org/${org.slug}` : "";
+    navigator.clipboard?.writeText(url).then(
+      () => showStatusToast("Link copied", "The organization page link is on your clipboard."),
+      () => showStatusToast("Couldn't copy link", url, "warning"),
+    );
+  }
+
+  function replyTo(author: string) {
+    setShowComments(true);
+    setDraft(`@${author} `);
+  }
 
   function toggleLike() {
     setLiked((current) => !current);
@@ -48,11 +87,13 @@ export function PostCard({
     if (!draft.trim()) return;
     setComments((current) => [
       ...current,
-      { id: `local-${Date.now()}`, author: "Althea Dumaguete", program: "BS CS - 3rd Yr", text: draft, time: "now" },
+      { id: `local-${Date.now()}`, author: myName, program: session?.program, text: draft, time: "now" },
     ]);
     setDraft("");
     showStatusToast("Comment posted", "Your reply is now visible in the thread.");
   }
+
+  if (deleted) return null;
 
   const typeLabel = post.type === "event" ? "Event" : post.type === "announcement" ? "Announcement" : null;
   const visual = post.image ? postVisuals[post.id] ?? defaultVisual : null;
@@ -70,7 +111,7 @@ export function PostCard({
             <OrgLink slug={org.slug} mode={orgLinkMode} className="font-display text-[15px] font-semibold hover:underline">
               {org.name}
             </OrgLink>
-            {post.pinned ? (
+            {pinned ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-gold/20 px-2 py-0.5 text-[10px] font-semibold text-primary-deep">
                 <Pin className="h-3 w-3" /> Pinned
               </span>
@@ -78,13 +119,33 @@ export function PostCard({
             {typeLabel ? <Badge tone={post.type === "event" ? "gold" : "info"}>{typeLabel}</Badge> : null}
           </div>
           <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span>{post.time}</span> - {post.visibility === "public" ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
+            <span>{post.time}</span> · {post.visibility === "public" ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
             <span>{post.visibility === "public" ? "Public" : "Members only"}</span>
           </p>
         </div>
-        <IconButton tone="ghost" className="h-9 w-9">
-          <MoreHorizontal className="h-4 w-4" />
-        </IconButton>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <IconButton tone="ghost" className="h-9 w-9" aria-label="Post options">
+              <MoreHorizontal className="h-4 w-4" />
+            </IconButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48 rounded-xl">
+            <DropdownMenuItem onSelect={toggleSave}>
+              <Bookmark className="h-4 w-4" /> {saved ? "Remove from saved" : "Save post"}
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={copyLink}>
+              <Link2 className="h-4 w-4" /> Copy link
+            </DropdownMenuItem>
+            {!manage ? (
+              <DropdownMenuItem
+                onSelect={() => showStatusToast("Post reported", "Moderators will review this post. Thanks for flagging it.", "info")}
+                className="text-destructive focus:text-destructive"
+              >
+                <Flag className="h-4 w-4" /> Report post
+              </DropdownMenuItem>
+            ) : null}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       <div className="px-5 pb-4">
@@ -119,7 +180,7 @@ export function PostCard({
           <span>{likes} reactions</span>
           <div className="flex items-center gap-3">
             <span>{comments.length} comments</span>
-            <span>12 shares</span>
+            <span>{shares} shares</span>
           </div>
         </div>
       </div>
@@ -129,15 +190,11 @@ export function PostCard({
         saved={saved}
         onLike={toggleLike}
         onComment={() => setShowComments((current) => !current)}
-        onShare={() => showStatusToast("Post shared", "This post is ready to send to your circle.")}
-        onSave={() => {
-          setSaved((current) => !current);
-          showImportantActionToast(
-            "save",
-            saved ? "This post has been removed from your saved list." : "You can find this post anytime in Saved posts.",
-            saved ? "Removed from saved" : "Saved for later",
-          );
+        onShare={() => {
+          setShares((n) => n + 1);
+          copyLink();
         }}
+        onSave={toggleSave}
       />
 
       {showComments ? (
@@ -145,11 +202,11 @@ export function PostCard({
           <div className="space-y-3">
             {comments.length === 0 ? <p className="text-center text-xs text-muted-foreground">Be the first to comment.</p> : null}
             {comments.map((comment) => (
-              <CommentItem key={comment.id} comment={comment} />
+              <CommentItem key={comment.id} comment={comment} onReply={replyTo} />
             ))}
           </div>
           <div className="mt-4 flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 shadow-soft">
-            <div className="grid h-7 w-7 place-items-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">AD</div>
+            <div className="grid h-7 w-7 place-items-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">{myInitials}</div>
             <input
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
@@ -157,7 +214,7 @@ export function PostCard({
               placeholder="Write a comment..."
               className="flex-1 bg-transparent text-sm focus:outline-none"
             />
-            <AppButton onClick={submitComment} variant="primary" size="icon" className="h-7 w-7">
+            <AppButton onClick={submitComment} variant="primary" size="icon" className="h-7 w-7" aria-label="Post comment" disabled={!draft.trim()}>
               <Send className="h-3.5 w-3.5" />
             </AppButton>
           </div>
@@ -166,18 +223,49 @@ export function PostCard({
 
       {manage ? (
         <div className="flex gap-2 border-t border-border bg-secondary/30 px-5 py-3 text-xs">
-          <AppButton variant="secondary" size="sm" shape="soft">Edit</AppButton>
-          <AppButton variant="secondary" size="sm" shape="soft">{post.pinned ? "Unpin" : "Pin"}</AppButton>
-          <AppButton variant="ghost" size="sm" shape="soft" className="text-destructive hover:bg-destructive/5 hover:text-destructive">
+          <AppButton asChild variant="secondary" size="sm" shape="soft">
+            <Link to="/leader/create-post">Edit</Link>
+          </AppButton>
+          <AppButton
+            variant="secondary"
+            size="sm"
+            shape="soft"
+            onClick={() => {
+              setPinned((p) => !p);
+              showStatusToast(pinned ? "Post unpinned" : "Post pinned", pinned ? "It returns to its normal place in the feed." : "It now stays at the top of your feed.");
+            }}
+          >
+            {pinned ? "Unpin" : "Pin"}
+          </AppButton>
+          <AppButton
+            variant="ghost"
+            size="sm"
+            shape="soft"
+            className="text-destructive hover:bg-destructive/5 hover:text-destructive"
+            onClick={() => setConfirmDelete(true)}
+          >
             Delete
           </AppButton>
+          <ConfirmDialog
+            open={confirmDelete}
+            onOpenChange={setConfirmDelete}
+            title="Delete this post?"
+            description="It will be removed from your organization feed. This can't be undone."
+            confirmLabel="Delete post"
+            tone="danger"
+            onConfirm={() => {
+              setDeleted(true);
+              showStatusToast("Post deleted", "The post was removed from your feed.", "warning");
+            }}
+          />
         </div>
       ) : null}
     </AppCard>
   );
 }
 
-function CommentItem({ comment }: { comment: Comment }) {
+function CommentItem({ comment, onReply }: { comment: Comment; onReply: (author: string) => void }) {
+  const [liked, setLiked] = useState(false);
   return (
     <div className="flex items-start gap-2">
       <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-secondary text-[10px] font-bold text-primary-deep">
@@ -187,19 +275,28 @@ function CommentItem({ comment }: { comment: Comment }) {
         <div className="rounded-2xl bg-card px-3 py-2 shadow-soft">
           <p className="text-xs font-semibold">
             {comment.author}
-            {comment.program ? <span className="ml-1 font-normal text-muted-foreground">- {comment.program}</span> : null}
+            {comment.program ? <span className="ml-1 font-normal text-muted-foreground">· {comment.program}</span> : null}
           </p>
           <p className="text-sm">{comment.text}</p>
         </div>
         <div className="mt-1 flex items-center gap-3 px-3 text-[11px] text-muted-foreground">
-          <button className="font-semibold hover:text-foreground">Like</button>
-          <button className="font-semibold hover:text-foreground">Reply</button>
+          <button
+            type="button"
+            onClick={() => setLiked((v) => !v)}
+            aria-pressed={liked}
+            className={`font-semibold hover:text-foreground ${liked ? "text-primary" : ""}`}
+          >
+            {liked ? "Liked" : "Like"}
+          </button>
+          <button type="button" onClick={() => onReply(comment.author)} className="font-semibold hover:text-foreground">
+            Reply
+          </button>
           <span>{comment.time}</span>
         </div>
         {comment.replies?.length ? (
           <div className="mt-2 space-y-2 border-l-2 border-border pl-3">
             {comment.replies.map((reply) => (
-              <CommentItem key={reply.id} comment={reply} />
+              <CommentItem key={reply.id} comment={reply} onReply={onReply} />
             ))}
           </div>
         ) : null}
