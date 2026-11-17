@@ -6,6 +6,8 @@ import { resolveStudentNotificationHref } from "@/lib/notifications";
 export const Route = createFileRoute("/student/notifications")({
   component: () => (
     <NotificationsView
+      role="student"
+      sub="Comments, announcements, RSVPs, and updates from your organizations."
       resolveHref={resolveStudentNotificationHref}
       emptyAction={
         <AppButton asChild variant="secondary" size="sm">

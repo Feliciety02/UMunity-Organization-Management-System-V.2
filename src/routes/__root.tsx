@@ -11,6 +11,9 @@ import {
 import appCss from "../styles.css?url";
 import { brandLogoUrl } from "@/components/BrandLogo";
 import { Toaster } from "@/components/ui/sonner";
+import { useEffect } from "react";
+import { ensureSession, getSession } from "@/lib/auth";
+import { startBackgroundSync } from "@/lib/cloud-storage";
 
 function NotFoundComponent() {
   return (
@@ -118,6 +121,12 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    // Signed-in visitors on public pages (e.g. joining from an org page) save to the database too.
+    if (getSession()) void ensureSession();
+    return startBackgroundSync();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

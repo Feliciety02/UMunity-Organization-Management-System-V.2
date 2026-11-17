@@ -3,19 +3,26 @@ import { useMemo, useState } from "react";
 import { PageHead, Panel, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { organizations } from "@/data/site";
-import { showImportantActionToast, useDashboardPageLoading } from "@/lib/feedback";
+import { useDashboardPageLoading } from "@/lib/feedback";
+import { JoinOrgButton } from "@/components/org/JoinOrgButton";
+import { useMemberships } from "@/lib/memberships";
 import { getDiscoverableOrganizations } from "@/lib/org-discovery";
 import { useOrgRegistry } from "@/lib/org-registry";
 import { ArrowUpDown, ChevronRight, Search, SlidersHorizontal, Users } from "lucide-react";
 
 export const Route = createFileRoute("/student/explore")({
+  validateSearch: (s: Record<string, unknown>): { category?: string } =>
+    typeof s.category === "string" ? { category: s.category } : {},
   component: Explore,
 });
 
 function Explore() {
   const loading = useDashboardPageLoading();
   const [q, setQ] = useState("");
-  const [cat, setCat] = useState("All");
+  const { category } = Route.useSearch();
+  const [cat, setCat] = useState(category ?? "All");
+  const [hideJoined, setHideJoined] = useState(false);
+  const memberships = useMemberships();
   const [sort, setSort] = useState<"Popular" | "A-Z">("Popular");
   const registry = useOrgRegistry();
   const discoverableOrganizations = useMemo(
@@ -31,6 +38,7 @@ function Explore() {
     const query = q.trim().toLowerCase();
     const next = discoverableOrganizations.filter((o) => {
       const matchesCategory = cat === "All" || o.category === cat;
+      if (hideJoined && memberships.member[o.slug]) return false;
       const matchesQuery =
         query === "" ||
         o.name.toLowerCase().includes(query) ||
@@ -44,7 +52,7 @@ function Explore() {
       if (sort === "A-Z") return a.name.localeCompare(b.name);
       return b.members - a.members;
     });
-  }, [cat, discoverableOrganizations, q, sort]);
+  }, [cat, discoverableOrganizations, q, sort, hideJoined, memberships]);
 
   if (loading) {
     return (
@@ -87,10 +95,16 @@ function Explore() {
             </button>
             <button
               type="button"
-              className="inline-flex h-11 items-center gap-2 rounded-full border border-border bg-card px-4 text-sm font-medium text-foreground transition hover:bg-secondary"
+              aria-pressed={hideJoined}
+              onClick={() => setHideJoined((v) => !v)}
+              className={`inline-flex h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium transition ${
+                hideJoined
+                  ? "border-primary bg-primary/8 text-primary"
+                  : "border-border bg-card text-foreground hover:bg-secondary"
+              }`}
             >
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-              Filters
+              <SlidersHorizontal className="h-4 w-4" />
+              {hideJoined ? "Hiding joined" : "Hide joined"}
             </button>
           </div>
         }
@@ -99,9 +113,6 @@ function Explore() {
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <div className="rounded-full border border-border bg-card px-4 py-2 text-sm text-muted-foreground">
           {filtered.length} organizations
-        </div>
-        <div className="rounded-full border border-border bg-card px-4 py-2 text-sm text-muted-foreground">
-          Warm, student-first discovery
         </div>
       </div>
 
@@ -173,9 +184,11 @@ function Explore() {
                     {o.desc}
                   </p>
                 </div>
-                <span className="rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
-                  Active
-                </span>
+                {memberships.member[o.slug] ? (
+                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+                    Member
+                  </span>
+                ) : null}
               </div>
 
               <div className="mt-5 flex items-center justify-between border-t border-border pt-4 text-sm text-muted-foreground">
@@ -194,18 +207,7 @@ function Explore() {
                 >
                   View
                 </Link>
-                <button
-                  type="button"
-                  onClick={() =>
-                    showImportantActionToast(
-                      "apply",
-                      `${o.name} will review your application shortly.`,
-                    )
-                  }
-                  className="inline-flex h-10 w-full items-center justify-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary-deep sm:w-auto"
-                >
-                  Apply
-                </button>
+                <JoinOrgButton slug={o.slug} orgName={o.name} size="md" className="w-full sm:w-auto" />
               </div>
             </div>
           </article>
@@ -217,10 +219,18 @@ function Explore() {
           <EmptyState
             icon={Users}
             title="No organizations match your current search"
-            sub="Try a broader keyword, change the category, or return to your organizations list."
+            sub="Try a broader keyword, change the category, or clear your filters."
             action={
-              <AppButton asChild variant="secondary" size="sm">
-                <Link to="/student/my-orgs">Go to my organizations</Link>
+              <AppButton
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setQ("");
+                  setCat("All");
+                  setHideJoined(false);
+                }}
+              >
+                Clear filters
               </AppButton>
             }
           />

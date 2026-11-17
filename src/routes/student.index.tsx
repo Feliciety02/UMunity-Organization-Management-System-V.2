@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Calendar, ImageIcon, PenSquare, Sparkles, Vote } from "lucide-react";
-import { PageHead, Panel, Badge, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
+import { useMemo, useState } from "react";
+import { Calendar, Compass, MessageSquare, Newspaper, Sparkles } from "lucide-react";
+import { PageHead, Panel, Badge, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
+import { defaultEventCover, eventCovers } from "@/components/events/event-covers";
 import { EventCard } from "@/components/events/event-card";
 import { PostCard } from "@/components/social/PostCard";
 import { Composer } from "@/components/social/composer";
@@ -9,6 +11,8 @@ import { organizations, events, posts } from "@/data/site";
 import { AppButton } from "@/components/ui/app-button";
 import { AppTabs } from "@/components/ui/app-tabs";
 import { useDashboardPageLoading } from "@/lib/feedback";
+import { getSession } from "@/lib/auth";
+import { useMemberships } from "@/lib/memberships";
 
 export const Route = createFileRoute("/student/")({
   component: StudentFeed,
@@ -18,9 +22,18 @@ const feedTabs = ["All", "Following", "Events"] as const;
 
 function StudentFeed() {
   const loading = useDashboardPageLoading();
+  const [tab, setTab] = useState<(typeof feedTabs)[number]>("All");
+  const memberships = useMemberships();
   const orgBySlug = Object.fromEntries(organizations.map((o) => [o.slug, o]));
   const upcoming = events.slice(0, 3);
-  const recommended = organizations.slice(3, 6);
+  const recommended = organizations.filter((o) => !memberships.member[o.slug] && !memberships.pending[o.slug]).slice(0, 3);
+  const session = getSession();
+  const initials = (session?.name ?? "").split(" ").slice(0, 2).map((w) => w[0]).join("");
+  const visiblePosts = useMemo(() => {
+    if (tab === "Following") return posts.filter((p) => Boolean(memberships.member[p.orgSlug]));
+    if (tab === "Events") return posts.filter((p) => p.type === "event");
+    return posts;
+  }, [tab, memberships]);
 
   if (loading) {
     return (
@@ -54,28 +67,42 @@ function StudentFeed() {
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1.18fr)_380px]">
           <div className="min-w-0 space-y-6">
             <Composer
-              initials="AD"
-              prompt="Share an update, event, or question with your campus community..."
+              initials={initials}
+              prompt="Looking for something? Find organizations, events, and people on campus..."
               ctaTo="/student/explore"
               actions={[
-                { label: "Create post", icon: PenSquare },
-                { label: "Event", icon: Calendar },
-                { label: "Poll", icon: Vote },
-                { label: "Photo", icon: ImageIcon },
+                { label: "Explore orgs", icon: Compass, to: "/student/explore" },
+                { label: "Events", icon: Calendar, to: "/student/events" },
+                { label: "Messages", icon: MessageSquare, to: "/student/messages" },
               ]}
             />
 
-            <AppTabs items={feedTabs} value="All" onChange={() => undefined} />
+            <AppTabs items={feedTabs} value={tab} onChange={setTab} />
 
             <div className="space-y-5">
-              {posts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  org={orgBySlug[post.orgSlug]}
-                  orgLinkMode="student"
-                />
-              ))}
+              {visiblePosts.length === 0 ? (
+                <Panel>
+                  <EmptyState
+                    icon={Newspaper}
+                    title={tab === "Following" ? "No posts from your organizations yet" : "No event posts yet"}
+                    sub="Join more organizations to fill your feed."
+                    action={
+                      <AppButton asChild variant="primary" size="sm">
+                        <Link to="/student/explore">Explore organizations</Link>
+                      </AppButton>
+                    }
+                  />
+                </Panel>
+              ) : (
+                visiblePosts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    org={orgBySlug[post.orgSlug]}
+                    orgLinkMode="student"
+                  />
+                ))
+              )}
             </div>
           </div>
 
@@ -99,7 +126,7 @@ function StudentFeed() {
                     <EventCard
                       key={event.title}
                       event={event}
-                      cover={eventVisuals[event.title] ?? defaultEventVisual}
+                      cover={eventCovers[event.title] ?? defaultEventCover}
                       compact
                       badge={
                         <Badge
@@ -157,45 +184,10 @@ function StudentFeed() {
   );
 }
 
-function svgToDataUri(svg: string) {
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-const eventVisuals: Record<string, string> = {
-  [events[0].title]: svgToDataUri(`
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420">
-      <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4b0014"/><stop offset="100%" stop-color="#c33652"/></linearGradient></defs>
-      <rect width="1200" height="420" fill="url(#a)"/><ellipse cx="840" cy="40" rx="320" ry="150" fill="#ffd29f" opacity="0.22"/>
-      <path d="M0 320 C170 250 360 340 540 305 C760 262 910 356 1200 280 L1200 420 L0 420 Z" fill="#130105"/>
-    </svg>
-  `),
-  [events[1].title]: svgToDataUri(`
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420">
-      <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#193d1f"/><stop offset="100%" stop-color="#9fd45b"/></linearGradient></defs>
-      <rect width="1200" height="420" fill="url(#a)"/><circle cx="920" cy="80" r="120" fill="#fff6c0" opacity="0.3"/>
-      <circle cx="620" cy="220" r="70" fill="#4fb662"/><path d="M580 205 C600 175 660 178 688 196 C666 230 666 255 686 280 C642 282 608 270 587 248 C576 236 574 219 580 205 Z" fill="#2f79b7"/>
-    </svg>
-  `),
-  [events[2].title]: svgToDataUri(`
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420">
-      <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a100d"/><stop offset="100%" stop-color="#9b744c"/></linearGradient></defs>
-      <rect width="1200" height="420" fill="url(#a)"/><ellipse cx="780" cy="70" rx="260" ry="130" fill="#f4d8a7" opacity="0.24"/>
-      <rect y="320" width="1200" height="100" fill="#1b120f"/><rect x="760" y="120" width="74" height="140" fill="#432d21"/><rect x="724" y="148" width="146" height="18" fill="#5c3c2d"/>
-    </svg>
-  `),
-};
-
-const defaultEventVisual = svgToDataUri(`
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420">
-    <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f4efe5"/><stop offset="100%" stop-color="#efe7da"/></linearGradient></defs>
-    <rect width="1200" height="420" fill="url(#a)"/><circle cx="930" cy="90" r="120" fill="#7A0019" opacity="0.08"/>
-  </svg>
-`);
-
 const suggestedCoverTones = [
-  "from-rose-100 via-primary/40 to-white",
-  "from-emerald-100 via-lime-50 to-white",
-  "from-sky-100 via-orange-50 to-white",
+  "from-rose-100 via-primary/40 to-card",
+  "from-emerald-100 via-lime-50 to-card",
+  "from-sky-100 via-orange-50 to-card",
 ];
 
 const suggestedReasons: Record<string, string> = {

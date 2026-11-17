@@ -494,12 +494,14 @@ export function SectionHeader({
 }
 
 export function OrgCard({
+  slug,
   name,
   category,
   members,
   desc,
   color,
 }: {
+  slug: string;
   name: string;
   category: string;
   members: number;
@@ -529,9 +531,13 @@ export function OrgCard({
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
           <Users className="h-3.5 w-3.5" /> {members} members
         </span>
-        <button className="rounded-full bg-gradient-maroon px-4 py-2 text-xs font-semibold text-primary-foreground transition-transform hover:scale-105">
-          Join
-        </button>
+        <Link
+          to="/org/$slug"
+          params={{ slug }}
+          className="rounded-full bg-gradient-maroon px-4 py-2 text-xs font-semibold text-primary-foreground transition-transform hover:scale-105"
+        >
+          View
+        </Link>
       </div>
     </div>
   );

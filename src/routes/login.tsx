@@ -1,7 +1,16 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Mail, Lock, ArrowRight, User as UserIcon } from "lucide-react";
-import { useState } from "react";
-import { login, homeFor, DEMO_USERS } from "@/lib/auth";
+import { Mail, Lock, ArrowRight, User as UserIcon, type LucideIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { login, homeFor, DEMO_USERS, type LoginResult } from "@/lib/auth";
+import { authConfigFn, requestPasswordResetFn } from "@/lib/api.functions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { BrandLogo } from "@/components/BrandLogo";
 import umCampusHero from "@/assets/um-campus-hero.svg";
 import { useForcedTheme } from "@/hooks/use-theme";
@@ -9,35 +18,74 @@ import { useForcedTheme } from "@/hooks/use-theme";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Login - UMunity" },
+      { title: "Login — UMunity" },
       { name: "description", content: "Sign in to your UMunity account." },
     ],
   }),
   component: Login,
 });
 
+function loginError(result: Exclude<LoginResult, { ok: true }>) {
+  if (result.reason === "locked") {
+    const minutes = Math.max(1, Math.ceil(result.retryAfterMs / 60000));
+    return `Too many failed sign-in attempts. Try again in ${minutes} minute${minutes === 1 ? "" : "s"}, or reset your password.`;
+  }
+  return "Incorrect email or password.";
+}
+
 function Login() {
   const navigate = useNavigate();
+  // Demo accounts only exist where the server enables them (development by default).
+  const [showDemo, setShowDemo] = useState(false);
+  useEffect(() => {
+    authConfigFn()
+      .then((cfg) => setShowDemo(cfg.demoAccounts))
+      .catch(() => setShowDemo(false));
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [remember, setRemember] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const s = login(email, password);
-    if (!s) {
-      setError("Invalid credentials. Try a demo account below.");
+    if (!email.trim() || !password) {
+      setError("Enter your UM email and password.");
       return;
     }
-    navigate({ to: homeFor(s.role) });
+    setSubmitting(true);
+    let s: Awaited<ReturnType<typeof login>>;
+    try {
+      s = await login(email, password, remember);
+    } catch {
+      setSubmitting(false);
+      setError("We couldn't reach UMunity. Check your connection and try again.");
+      return;
+    }
+    setSubmitting(false);
+    if (!s.ok) {
+      setError(loginError(s));
+      return;
+    }
+    navigate({ to: homeFor(s.session.role) });
   }
 
-  function quickLogin(idx: number) {
+  async function quickLogin(idx: number) {
     const u = DEMO_USERS[idx];
     setEmail(u.email);
     setPassword(u.password);
-    const s = login(u.email, u.password);
-    if (s) navigate({ to: homeFor(s.role) });
+    setSubmitting(true);
+    try {
+      const s = await login(u.email, u.password, remember);
+      if (s.ok) navigate({ to: homeFor(s.session.role) });
+      else setError(s.reason === "locked" ? loginError(s) : "That demo account isn't available. Try signing in manually.");
+    } catch {
+      setError("We couldn't reach UMunity. Check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -51,21 +99,31 @@ function Login() {
       }
     >
       <form className="space-y-4" onSubmit={submit}>
-        <Field icon={Mail} type="email" label="UM Email" placeholder="you@umindanao.edu.ph" value={email} onChange={setEmail} />
-        <Field icon={Lock} type="password" label="Password" placeholder="********" value={password} onChange={setPassword} />
+        <Field icon={Mail} type="email" label="UM Email" placeholder="you@umindanao.edu.ph" value={email} onChange={(v) => { setEmail(v); setError(""); }} autoComplete="email" />
+        <Field icon={Lock} type="password" label="Password" placeholder="********" value={password} onChange={(v) => { setPassword(v); setError(""); }} autoComplete="current-password" />
         {error && <p className="rounded-xl bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">{error}</p>}
         <div className="flex items-center justify-between text-sm">
           <label className="flex items-center gap-2 text-muted-foreground">
-            <input type="checkbox" className="h-4 w-4 rounded border-border accent-[var(--primary)]" />
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              className="h-4 w-4 rounded border-border accent-[var(--primary)]"
+            />
             Remember me
           </label>
-          <a href="#" className="font-medium text-primary hover:underline">Forgot password?</a>
+          <button type="button" onClick={() => setResetOpen(true)} className="font-medium text-primary hover:underline">
+            Forgot password?
+          </button>
         </div>
-        <button type="submit" className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-maroon py-3 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.02]">
-          Sign in <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        <button type="submit" disabled={submitting} className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-maroon py-3 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.02] disabled:opacity-60">
+          {submitting ? "Signing in..." : "Sign in"} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </button>
       </form>
 
+      <ForgotPasswordDialog open={resetOpen} onOpenChange={setResetOpen} initialEmail={email} />
+
+      {showDemo ? (
       <div className="mt-8 rounded-2xl border border-dashed border-primary/30 bg-secondary/50 p-4">
         <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
           <UserIcon className="h-3.5 w-3.5" /> Demo accounts
@@ -80,13 +138,14 @@ function Login() {
             >
               <div>
                 <p className="font-semibold capitalize text-foreground">{u.role}</p>
-                <p className="text-muted-foreground">{u.email} - <span className="font-mono">{u.password}</span></p>
+                <p className="text-muted-foreground">{u.email} · <span className="font-mono">{u.password}</span></p>
               </div>
               <ArrowRight className="h-4 w-4 text-primary" />
             </button>
           ))}
         </div>
       </div>
+      ) : null}
     </AuthLayout>
   );
 }
@@ -115,7 +174,7 @@ export function AuthLayout({ title, sub, footer, children }: { title: string; su
             Join 18,000+ Mindanaoans already building their college story on UMunity.
           </p>
         </div>
-        <p className="relative text-xs text-primary-foreground/60">(c) {new Date().getFullYear()} UMunity - University of Mindanao</p>
+        <p className="relative text-xs text-primary-foreground/60">© {new Date().getFullYear()} UMunity · University of Mindanao</p>
       </div>
 
       <div className="flex items-center justify-center bg-background px-4 py-12 sm:px-6">
@@ -133,20 +192,153 @@ export function AuthLayout({ title, sub, footer, children }: { title: string; su
   );
 }
 
-export function Field({ icon: Icon, label, type, placeholder, value, onChange }: { icon: any; label: string; type: string; placeholder: string; value?: string; onChange?: (v: string) => void }) {
+export function Field({
+  icon: Icon,
+  label,
+  type,
+  placeholder,
+  value,
+  onChange,
+  autoComplete,
+  error,
+}: {
+  icon: LucideIcon;
+  label: string;
+  type: string;
+  placeholder: string;
+  value?: string;
+  onChange?: (v: string) => void;
+  autoComplete?: string;
+  error?: string;
+}) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-sm font-medium text-foreground">{label}</span>
-      <div className="flex items-center gap-2 rounded-2xl border border-input bg-card px-4 py-3 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15">
+      <div className={`flex items-center gap-2 rounded-2xl border bg-card px-4 py-3 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 ${error ? "border-destructive" : "border-input"}`}>
         <Icon className="h-4 w-4 text-muted-foreground" />
         <input
           type={type}
           placeholder={placeholder}
           value={value}
           onChange={onChange ? (e) => onChange(e.target.value) : undefined}
+          autoComplete={autoComplete}
+          aria-invalid={error ? true : undefined}
           className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
         />
       </div>
+      {error ? <span className="mt-1 block text-xs text-destructive">{error}</span> : null}
     </label>
+  );
+}
+
+function ForgotPasswordDialog({
+  open,
+  onOpenChange,
+  initialEmail,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  initialEmail: string;
+}) {
+  const [email, setEmail] = useState(initialEmail);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
+  const [devLink, setDevLink] = useState<string | undefined>();
+
+  // Start fresh, with the email from the sign-in form, every time the dialog opens.
+  useEffect(() => {
+    if (!open) return;
+    setEmail(initialEmail);
+    setSent(false);
+    setError("");
+    setDevLink(undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on open, not while typing
+  }, [open]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="rounded-3xl">
+        <DialogHeader>
+          <DialogTitle className="font-display">Reset your password</DialogTitle>
+          <DialogDescription>
+            {sent
+              ? `If ${email.trim()} belongs to a UMunity account, a reset link is on its way. It works once and expires in 30 minutes.`
+              : "Enter your UM email and we'll send you a link to set a new password."}
+          </DialogDescription>
+        </DialogHeader>
+        {sent ? (
+          <>
+          {devLink ? (
+            <p className="rounded-xl bg-secondary px-3 py-2 text-xs text-muted-foreground">
+              Development mode (no email service configured):{" "}
+              <a href={devLink} className="font-semibold text-primary underline">open the reset link</a>
+            </p>
+          ) : null}
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep"
+            >
+              Back to sign in
+            </button>
+          </DialogFooter>
+          </>
+        ) : (
+          <form
+            noValidate
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+                setError("Enter a valid email address.");
+                return;
+              }
+              setSending(true);
+              try {
+                const res = await requestPasswordResetFn({ data: { email: email.trim() } });
+                setDevLink(res.devLink);
+                setSent(true);
+              } catch {
+                setError("We couldn't reach UMunity. Check your connection and try again.");
+              } finally {
+                setSending(false);
+              }
+            }}
+            className="space-y-4"
+          >
+            <Field
+              icon={Mail}
+              type="email"
+              label="UM Email"
+              placeholder="you@umindanao.edu.ph"
+              value={email}
+              onChange={(v) => {
+                setEmail(v);
+                setError("");
+              }}
+              autoComplete="email"
+              error={error}
+            />
+            <DialogFooter>
+              <button
+                type="button"
+                onClick={() => onOpenChange(false)}
+                className="rounded-full border border-border px-5 py-2 text-sm font-semibold hover:bg-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={sending}
+                className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep disabled:opacity-60"
+              >
+                {sending ? "Sending..." : "Send reset link"}
+              </button>
+            </DialogFooter>
+          </form>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }

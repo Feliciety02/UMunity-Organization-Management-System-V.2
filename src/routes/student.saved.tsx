@@ -4,6 +4,7 @@ import { AppButton } from "@/components/ui/app-button";
 import { posts, organizations } from "@/data/site";
 import { PostCard } from "@/components/social/PostCard";
 import { useDashboardPageLoading } from "@/lib/feedback";
+import { useSaved } from "@/lib/saved";
 import { Bookmark, Compass } from "lucide-react";
 
 export const Route = createFileRoute("/student/saved")({
@@ -13,7 +14,8 @@ export const Route = createFileRoute("/student/saved")({
 function Saved() {
   const loading = useDashboardPageLoading();
   const orgBySlug = Object.fromEntries(organizations.map((o) => [o.slug, o]));
-  const saved = posts.slice(0, 2);
+  const savedIds = useSaved().posts;
+  const saved = posts.filter((p) => savedIds.includes(p.id));
 
   if (loading) {
     return (
@@ -27,7 +29,7 @@ function Saved() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
-      <PageHead title="Saved posts" sub="Things you bookmarked for later." />
+      <PageHead title="Saved posts" sub={`${saved.length} ${saved.length === 1 ? "post" : "posts"} bookmarked for later. Saved events are on the Events page.`} />
       {saved.length === 0 ? (
         <Panel>
           <EmptyState
