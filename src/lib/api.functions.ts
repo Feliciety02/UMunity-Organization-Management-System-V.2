@@ -3,7 +3,7 @@
 // core.server.ts; these wrappers deal with cookies, the request and error shapes.
 import { createServerFn } from "@tanstack/react-start";
 import { deleteCookie, getCookie, getRequestHeader, getRequestIP, getRequestProtocol, getRequestUrl, setCookie } from "@tanstack/react-start/server";
-import type { Session } from "@/lib/auth";
+import type { Session } from "@/lib/demo-users";
 import * as core from "@/lib/core.server";
 import { db, demoAccountsEnabled } from "@/lib/db.server";
 import type { DocPatch } from "@/lib/synced-keys";

@@ -110,6 +110,7 @@ async function push(key: SyncedKey) {
   } catch (err) {
     const n = (failures.get(key) ?? 0) + 1;
     failures.set(key, n);
+    bases.delete(key); // retry with the whole value, which the server always accepts
     console.warn(`[UMunity] Couldn't save ${key} (attempt ${n}); will retry.`, err);
     notifySaveProblem();
     const delay = RETRY_DELAYS_MS[Math.min(n - 1, RETRY_DELAYS_MS.length - 1)];
@@ -176,7 +177,9 @@ export function syncFromServer(forRole?: Role): Promise<void> {
       const doc = remote[key];
       if (doc && (firstSync || !dirty.has(key))) {
         store.setItem(key, doc.value);
-        bases.set(key, baseFrom(doc.value, doc.positions));
+        // Only item-stored values can be patched; a value stored whole (e.g. by an older
+        // version) gets no base, so its next save is whole and converts it to item rows.
+        bases.set(key, doc.kind ? baseFrom(doc.value, doc.positions) : null);
         dirty.delete(key);
       } else if (!doc) {
         bases.delete(key);

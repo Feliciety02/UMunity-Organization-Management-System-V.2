@@ -1,7 +1,7 @@
 // Server-only business logic. Every function takes the database client, so the same code runs
 // behind the server functions (api.functions.ts) and in the tests (against an in-memory database).
 import type { Client, InStatement } from "@libsql/client";
-import type { Session } from "@/lib/auth";
+import type { Session } from "@/lib/demo-users";
 import { organizations } from "@/data/orgs";
 import { DISABLED, hashPassword, randomToken, rowToUser, sha256Hex, toSession, verifyPassword, type UserRow } from "@/lib/db.server";
 import {
@@ -222,6 +222,8 @@ export async function resetPassword(c: Client, token: string, password: string, 
       { sql: "UPDATE users SET password_hash = ? WHERE id = ?", args: [await hashPassword(password), String(userId)] },
       { sql: "UPDATE password_resets SET used_at = ? WHERE id = ?", args: [now, id] },
       { sql: "DELETE FROM sessions WHERE user_id = ?", args: [String(userId)] },
+      // Proving control of the inbox lifts a sign-in lockout on this account.
+      { sql: "DELETE FROM login_attempts WHERE key = (SELECT 'email:' || email FROM users WHERE id = ?)", args: [String(userId)] },
     ],
     "write",
   );
@@ -300,10 +302,11 @@ export async function patchData(c: Client, user: UserRow, key: string, patch: Do
   const size = patch.upserts.reduce((n, u) => n + String(u.v).length, 0);
   if (size > MAX_VALUE_BYTES) throw new UserError("Value too large");
   const scope = scopeFor(k, user.id);
-  const stmts: InStatement[] = [
-    // A store that was saved whole before (e.g. by an older version) becomes item-level now.
-    { sql: "DELETE FROM app_data WHERE scope = ? AND key = ?", args: [scope, k] },
-  ];
+  // A patch only makes sense on top of item rows. If this store is still saved whole (e.g. by an
+  // older version), refuse, so the client re-sends the whole value instead of losing items.
+  const whole = await c.execute({ sql: "SELECT 1 FROM app_data WHERE scope = ? AND key = ?", args: [scope, k] });
+  if (whole.rows.length) throw new UserError("This data changed shape on the server. Reload and try again.");
+  const stmts: InStatement[] = [];
   for (const u of patch.upserts) {
     JSON.parse(String(u.v)); // must be valid JSON
     stmts.push({

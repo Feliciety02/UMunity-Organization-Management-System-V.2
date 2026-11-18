@@ -1,7 +1,7 @@
 // Server-only database access (Turso / libSQL). Never import this from client code:
 // only server modules (core.server.ts, api.functions.ts handlers) use it.
 import { createClient, type Client } from "@libsql/client";
-import { DEMO_USERS, type Role, type Session } from "@/lib/auth";
+import { DEMO_USERS, type Role, type Session } from "@/lib/demo-users";
 
 let client: Client | undefined;
 let ready: Promise<void> | undefined;

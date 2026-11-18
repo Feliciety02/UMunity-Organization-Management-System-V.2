@@ -2,7 +2,7 @@
 // "user": each account has its own copy (bookmarks, RSVPs, inbox...); only that account writes it.
 // "shared": one copy for everyone (review queues, org records, workflows...); only the listed
 // roles may write it. The server rejects any key not listed here.
-import type { Role } from "@/lib/auth";
+import type { Role } from "@/lib/demo-users";
 
 const ALL: readonly Role[] = ["student", "leader", "adviser", "admin2", "admin1", "admin"];
 const STAFF: readonly Role[] = ["leader", "adviser", "admin2", "admin1", "admin"];
