@@ -547,3 +547,6 @@ export function useComplianceSubmissions() {
 export function useComplianceSubmission(id: string) {
   return useComplianceSubmissions().find((item) => item.id === id) ?? null;
 }
+
+/** Starting data, loaded into the database by the server (see seed-data.ts). */
+export const complianceSeed = seed;

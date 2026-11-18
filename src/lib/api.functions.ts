@@ -10,13 +10,16 @@ import type { DocPatch } from "@/lib/synced-keys";
 
 const COOKIE = "umunity_sid";
 
-type Fail = { ok: false; error: string };
+/** `code` tells the client how to recover: reload the latest version, or re-send the whole value. */
+type Fail = { ok: false; error: string; code?: "conflict" | "reshape" };
 
 /** Turns expected problems (UserError) into { ok: false, error } for the UI; real bugs still throw. */
 async function attempt<T extends object>(fn: () => Promise<T>): Promise<({ ok: true } & T) | Fail> {
   try {
     return { ok: true, ...(await fn()) };
   } catch (err) {
+    if (err instanceof core.ConflictError) return { ok: false, error: err.message, code: "conflict" };
+    if (err instanceof core.ReshapeError) return { ok: false, error: err.message, code: "reshape" };
     if (err instanceof core.UserError) return { ok: false, error: err.message };
     throw err;
   }
@@ -183,7 +186,12 @@ export const resetPasswordFn = createServerFn({ method: "POST" })
 
 export const loadDataFn = createServerFn({ method: "GET" }).handler(async () => {
   const user = await requireUser();
-  return core.loadData(await db(), user);
+  // Starting data for the approval stores; production starts them empty.
+  const { SERVER_SEEDS } = await import("@/lib/seed-data");
+  const seeds = demoAccountsEnabled()
+    ? SERVER_SEEDS
+    : Object.fromEntries(Object.keys(SERVER_SEEDS).map((k) => [k, () => []]));
+  return core.loadData(await db(), user, seeds);
 });
 
 export const saveDataFn = createServerFn({ method: "POST" })
@@ -191,8 +199,7 @@ export const saveDataFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) =>
     attempt(async () => {
       const user = await requireUser();
-      await core.saveWhole(await db(), user, data.key, data.value);
-      return {};
+      return core.saveWhole(await db(), user, data.key, data.value);
     }),
   );
 
@@ -201,15 +208,16 @@ export const patchDataFn = createServerFn({ method: "POST" })
     key: String(d.key),
     patch: {
       kind: d.patch?.kind,
-      upserts: Array.isArray(d.patch?.upserts) ? d.patch.upserts : [],
-      deletes: Array.isArray(d.patch?.deletes) ? d.patch.deletes.map(String) : [],
+      upserts: Array.isArray(d.patch?.upserts)
+        ? d.patch.upserts.map((u) => ({ k: String(u.k), v: String(u.v), pos: Number(u.pos) || 0, ver: Number(u.ver) || 0 }))
+        : [],
+      deletes: Array.isArray(d.patch?.deletes) ? d.patch.deletes.map((x) => ({ k: String(x.k), ver: Number(x.ver) || 0 })) : [],
     } as DocPatch,
   }))
   .handler(async ({ data }) =>
     attempt(async () => {
       const user = await requireUser();
-      await core.patchData(await db(), user, data.key, data.patch);
-      return {};
+      return core.patchData(await db(), user, data.key, data.patch);
     }),
   );
 

@@ -1,6 +1,6 @@
 // Server-only business logic. Every function takes the database client, so the same code runs
 // behind the server functions (api.functions.ts) and in the tests (against an in-memory database).
-import type { Client, InStatement } from "@libsql/client";
+import type { Client, InStatement, Transaction } from "@libsql/client";
 import type { Session } from "@/lib/demo-users";
 import { organizations } from "@/data/orgs";
 import { DISABLED, hashPassword, randomToken, rowToUser, sha256Hex, toSession, verifyPassword, type UserRow } from "@/lib/db.server";
@@ -11,9 +11,11 @@ import {
   scopeOf,
   SYNCED_KEYS,
   toEntries,
+  type DocKind,
   type DocPatch,
   type SyncedKey,
 } from "@/lib/synced-keys";
+import { checkReviewChange, REVIEW_RULES } from "@/lib/review-rules";
 
 const MINUTE = 60 * 1000;
 const DAY = 24 * 60 * MINUTE;
@@ -231,36 +233,95 @@ export async function resetPassword(c: Client, token: string, password: string, 
 
 // ---------- App data ----------
 
+/** Someone else saved the same item after this client last loaded it. */
+export class ConflictError extends UserError {}
+/** The store is still saved whole (older format): the client should re-send the whole value. */
+export class ReshapeError extends UserError {}
+
 const scopeFor = (key: SyncedKey, userId: string) => (scopeOf(key) === "user" ? `user:${userId}` : "shared");
 
-export type LoadedDoc = { value: string; kind?: "array" | "object"; positions?: Record<string, number> };
+export type LoadedDoc = {
+  value: string;
+  kind?: DocKind;
+  positions?: Record<string, number>;
+  versions?: Record<string, number>;
+};
+/** Where each saved item now sits and which version it is: [position, version]. */
+export type SavedItems = Record<string, [number, number]>;
+export type StoreSeeds = Partial<Record<SyncedKey, () => unknown>>;
 
-/** Every synced value for the user: their own keys plus the shared ones, with item positions. */
-export async function loadData(c: Client, user: UserRow): Promise<Record<string, LoadedDoc>> {
+/**
+ * Shared stores with starting data are filled on the server the first time anyone loads them,
+ * so browsers never upload "already approved" items (which the review rules would refuse).
+ * Pass seeds that return [] to start empty (production).
+ */
+async function seedStores(c: Client, seeds: StoreSeeds, now: number) {
+  const keys = (Object.keys(seeds) as SyncedKey[]).filter((k) => scopeOf(k) === "shared");
+  if (!keys.length) return;
+  const marks = keys.map(() => "?").join(", ");
+  const present = await c.execute({
+    sql: `SELECT key FROM app_items WHERE scope = 'shared' AND key IN (${marks})
+          UNION SELECT key FROM app_data WHERE scope = 'shared' AND key IN (${marks})`,
+    args: [...keys, ...keys],
+  });
+  const have = new Set(present.rows.map((r) => String(r.key)));
+  const stmts: InStatement[] = [];
+  for (const key of keys) {
+    if (have.has(key)) continue;
+    const value = seeds[key]!();
+    const split = toEntries(value);
+    if (split && split.entries.length) {
+      split.entries.forEach(([itemKey, item], i) =>
+        stmts.push({
+          sql: `INSERT OR IGNORE INTO app_items (scope, key, item_key, kind, position, value, updated_at, updated_by, version)
+                VALUES ('shared', ?, ?, ?, ?, ?, ?, NULL, 1)`,
+          args: [key, itemKey, split.kind, (i + 1) * 1024, JSON.stringify(item), now],
+        }),
+      );
+    } else {
+      // Mark the store as existing-but-empty so no browser fills it with its own copy.
+      stmts.push({
+        sql: "INSERT OR IGNORE INTO app_data (scope, key, value, updated_at, updated_by) VALUES ('shared', ?, ?, ?, NULL)",
+        args: [key, JSON.stringify(value ?? []), now],
+      });
+    }
+  }
+  if (stmts.length) await c.batch(stmts, "write");
+}
+
+/** Every synced value for the user: their own keys plus the shared ones, with item positions and versions. */
+export async function loadData(c: Client, user: UserRow, seeds: StoreSeeds = {}, now = Date.now()): Promise<Record<string, LoadedDoc>> {
+  await seedStores(c, seeds, now);
   const scopes = [`user:${user.id}`, "shared"];
   const [whole, items] = await Promise.all([
     c.execute({ sql: "SELECT scope, key, value FROM app_data WHERE scope IN (?, ?)", args: scopes }),
-    c.execute({ sql: "SELECT scope, key, item_key, kind, position, value FROM app_items WHERE scope IN (?, ?) ORDER BY key, position, updated_at", args: scopes }),
+    c.execute({
+      sql: "SELECT scope, key, item_key, kind, position, value, version FROM app_items WHERE scope IN (?, ?) ORDER BY key, position, updated_at",
+      args: scopes,
+    }),
   ]);
   const out: Record<string, LoadedDoc> = {};
   for (const row of whole.rows) {
     const key = String(row.key);
     if (isSyncedKey(key) && String(row.scope) === scopeFor(key, user.id)) out[key] = { value: String(row.value) };
   }
-  const grouped = new Map<string, { kind: "array" | "object"; rows: Array<{ k: string; v: string; pos: number }> }>();
+  const grouped = new Map<string, { kind: DocKind; rows: Array<{ k: string; v: string; pos: number; ver: number }> }>();
   for (const row of items.rows) {
     const key = String(row.key);
     if (!isSyncedKey(key) || String(row.scope) !== scopeFor(key, user.id)) continue;
-    const g = grouped.get(key) ?? { kind: String(row.kind) as "array" | "object", rows: [] };
-    g.rows.push({ k: String(row.item_key), v: String(row.value), pos: Number(row.position) });
+    const g = grouped.get(key) ?? { kind: String(row.kind) as DocKind, rows: [] };
+    g.rows.push({ k: String(row.item_key), v: String(row.value), pos: Number(row.position), ver: Number(row.version ?? 1) });
     grouped.set(key, g);
   }
   for (const [key, g] of grouped) {
     const value =
-      g.kind === "array"
-        ? `[${g.rows.map((r) => r.v).join(",")}]`
-        : `{${g.rows.map((r) => `${JSON.stringify(r.k)}:${r.v}`).join(",")}}`;
-    out[key] = { value, kind: g.kind, positions: Object.fromEntries(g.rows.map((r) => [r.k, r.pos])) };
+      g.kind === "array" ? `[${g.rows.map((r) => r.v).join(",")}]` : `{${g.rows.map((r) => `${JSON.stringify(r.k)}:${r.v}`).join(",")}}`;
+    out[key] = {
+      value,
+      kind: g.kind,
+      positions: Object.fromEntries(g.rows.map((r) => [r.k, r.pos])),
+      versions: Object.fromEntries(g.rows.map((r) => [r.k, r.ver])),
+    };
   }
   return out;
 }
@@ -271,55 +332,162 @@ function checkWrite(user: UserRow, key: string): SyncedKey {
   return key;
 }
 
-/** Replace a whole value. Lists of identified items and objects are stored one row per item. */
-export async function saveWhole(c: Client, user: UserRow, key: string, value: string, now = Date.now()) {
+type Stored = { value: string; ver: number; pos: number };
+
+async function storedItems(tx: Transaction, scope: string, key: SyncedKey, only?: string[]) {
+  const out = new Map<string, Stored>();
+  if (only && !only.length) return out;
+  const filter = only ? ` AND item_key IN (${only.map(() => "?").join(", ")})` : "";
+  const res = await tx.execute({
+    sql: `SELECT item_key, value, version, position FROM app_items WHERE scope = ? AND key = ?${filter}`,
+    args: [scope, key, ...(only ?? [])],
+  });
+  for (const r of res.rows) out.set(String(r.item_key), { value: String(r.value), ver: Number(r.version ?? 1), pos: Number(r.position) });
+  return out;
+}
+
+const asItem = (json: string | undefined | null) => {
+  if (json == null) return null;
+  const v: unknown = JSON.parse(json);
+  if (!v || typeof v !== "object" || Array.isArray(v)) throw new UserError("Each item must be an object.");
+  return v as Record<string, unknown>;
+};
+
+/** Apply the review rules (who may take which step) to one item's change. */
+function checkReview(key: SyncedKey, user: UserRow, before: string | null, after: string | null) {
+  const rule = REVIEW_RULES[key];
+  if (!rule || before === after) return;
+  const problem = checkReviewChange(rule, { role: user.role, org: user.org }, asItem(before), asItem(after));
+  if (problem) throw new UserError(problem);
+}
+
+const upsertSql = `INSERT INTO app_items (scope, key, item_key, kind, position, value, updated_at, updated_by, version)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ON CONFLICT (scope, key, item_key) DO UPDATE SET kind = excluded.kind, position = excluded.position, value = excluded.value,
+    updated_at = excluded.updated_at, updated_by = excluded.updated_by, version = excluded.version`;
+
+/**
+ * An emptied store keeps an explicit "[]" / "{}" row, so it still reads as existing and no
+ * browser refills it with its own starting copy. The next patch removes the placeholder.
+ */
+function emptyPlaceholder(scope: string, key: SyncedKey, kind: DocKind, now: number, by: string): InStatement {
+  return {
+    sql: "INSERT OR REPLACE INTO app_data (scope, key, value, updated_at, updated_by) VALUES (?, ?, ?, ?, ?)",
+    args: [scope, key, kind === "array" ? "[]" : "{}", now, by],
+  };
+}
+
+async function inTransaction<T>(c: Client, fn: (tx: Transaction) => Promise<T>): Promise<T> {
+  const tx = await c.transaction("write");
+  try {
+    const result = await fn(tx);
+    await tx.commit();
+    return result;
+  } finally {
+    tx.close();
+  }
+}
+
+/**
+ * Replace a whole value. Lists of identified items and objects are stored one row per item.
+ * Unchanged items keep their version; approval stores are checked item by item.
+ */
+export async function saveWhole(c: Client, user: UserRow, key: string, value: string, now = Date.now()): Promise<{ items: SavedItems }> {
   const k = checkWrite(user, key);
   if (typeof value !== "string" || value.length > MAX_VALUE_BYTES) throw new UserError("Value too large");
   const parsed: unknown = JSON.parse(value);
   const scope = scopeFor(k, user.id);
   const split = toEntries(parsed);
-  const stmts: InStatement[] = [
-    { sql: "DELETE FROM app_items WHERE scope = ? AND key = ?", args: [scope, k] },
-    { sql: "DELETE FROM app_data WHERE scope = ? AND key = ?", args: [scope, k] },
-  ];
-  if (split) {
-    split.entries.forEach(([itemKey, item], i) => {
-      stmts.push({
-        sql: "INSERT INTO app_items (scope, key, item_key, kind, position, value, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        args: [scope, k, itemKey, split.kind, (i + 1) * 1024, JSON.stringify(item), now, user.id],
+  if (REVIEW_RULES[k] && split?.kind !== "array") throw new UserError("Every item in this list needs an id.");
+
+  return inTransaction(c, async (tx) => {
+    const current = await storedItems(tx, scope, k);
+    // A store still saved whole counts as its items for the review checks.
+    const old = await tx.execute({ sql: "SELECT value FROM app_data WHERE scope = ? AND key = ?", args: [scope, k] });
+    const before = new Map<string, string>([...current].map(([ik, s]) => [ik, s.value]));
+    if (old.rows.length) {
+      const legacy = toEntries(JSON.parse(String(old.rows[0].value)));
+      legacy?.entries.forEach(([ik, item]) => before.set(ik, JSON.stringify(item)));
+    }
+
+    const stmts: InStatement[] = [
+      { sql: "DELETE FROM app_items WHERE scope = ? AND key = ?", args: [scope, k] },
+      { sql: "DELETE FROM app_data WHERE scope = ? AND key = ?", args: [scope, k] },
+    ];
+    const items: SavedItems = {};
+    if (split && !split.entries.length) {
+      stmts.push(emptyPlaceholder(scope, k, split.kind, now, user.id));
+    } else if (split) {
+      const nextKeys = new Set(split.entries.map(([ik]) => ik));
+      for (const [ik, json] of before) if (!nextKeys.has(ik)) checkReview(k, user, json, null);
+      split.entries.forEach(([ik, item], i) => {
+        const json = JSON.stringify(item);
+        checkReview(k, user, before.get(ik) ?? null, json);
+        const prev = current.get(ik);
+        const ver = prev && prev.value === json ? prev.ver : (prev?.ver ?? 0) + 1;
+        const pos = (i + 1) * 1024;
+        items[ik] = [pos, ver];
+        stmts.push({ sql: upsertSql, args: [scope, k, ik, split.kind, pos, json, now, user.id, ver] });
       });
-    });
-  } else {
-    stmts.push({ sql: "INSERT INTO app_data (scope, key, value, updated_at, updated_by) VALUES (?, ?, ?, ?, ?)", args: [scope, k, value, now, user.id] });
-  }
-  await c.batch(stmts, "write");
+    } else {
+      stmts.push({ sql: "INSERT INTO app_data (scope, key, value, updated_at, updated_by) VALUES (?, ?, ?, ?, ?)", args: [scope, k, value, now, user.id] });
+    }
+    await tx.batch(stmts);
+    return { items };
+  });
 }
 
-/** Apply item-level changes: only the items that changed are written. */
-export async function patchData(c: Client, user: UserRow, key: string, patch: DocPatch, now = Date.now()) {
+/**
+ * Apply item-level changes: only the items that changed are written, all or nothing.
+ * Each change names the version it was based on; if any item moved on since, the whole patch is
+ * refused with a ConflictError so the client can show the latest version instead of overwriting it.
+ */
+export async function patchData(c: Client, user: UserRow, key: string, patch: DocPatch, now = Date.now()): Promise<{ versions: Record<string, number> }> {
   const k = checkWrite(user, key);
   if (patch.kind !== "array" && patch.kind !== "object") throw new UserError("Bad patch");
   const size = patch.upserts.reduce((n, u) => n + String(u.v).length, 0);
   if (size > MAX_VALUE_BYTES) throw new UserError("Value too large");
   const scope = scopeFor(k, user.id);
-  // A patch only makes sense on top of item rows. If this store is still saved whole (e.g. by an
-  // older version), refuse, so the client re-sends the whole value instead of losing items.
-  const whole = await c.execute({ sql: "SELECT 1 FROM app_data WHERE scope = ? AND key = ?", args: [scope, k] });
-  if (whole.rows.length) throw new UserError("This data changed shape on the server. Reload and try again.");
-  const stmts: InStatement[] = [];
-  for (const u of patch.upserts) {
-    JSON.parse(String(u.v)); // must be valid JSON
-    stmts.push({
-      sql: `INSERT INTO app_items (scope, key, item_key, kind, position, value, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT (scope, key, item_key) DO UPDATE SET kind = excluded.kind, position = excluded.position, value = excluded.value,
-              updated_at = excluded.updated_at, updated_by = excluded.updated_by`,
-      args: [scope, k, String(u.k), patch.kind, Number(u.pos) || 0, String(u.v), now, user.id],
-    });
-  }
-  for (const d of patch.deletes) {
-    stmts.push({ sql: "DELETE FROM app_items WHERE scope = ? AND key = ? AND item_key = ?", args: [scope, k, String(d)] });
-  }
-  await c.batch(stmts, "write");
+
+  return inTransaction(c, async (tx) => {
+    // A patch only makes sense on top of item rows. A store still saved whole (e.g. by an older
+    // version) must be re-sent whole, unless it's just an empty placeholder.
+    const whole = await tx.execute({ sql: "SELECT value FROM app_data WHERE scope = ? AND key = ?", args: [scope, k] });
+    const stmts: InStatement[] = [];
+    if (whole.rows.length) {
+      const v = String(whole.rows[0].value);
+      if (v !== "[]" && v !== "{}") throw new ReshapeError("This data changed shape on the server. Saving it again in full.");
+      stmts.push({ sql: "DELETE FROM app_data WHERE scope = ? AND key = ?", args: [scope, k] });
+    }
+    const touched = [...new Set([...patch.upserts.map((u) => String(u.k)), ...patch.deletes.map((d) => String(d.k))])];
+    const current = await storedItems(tx, scope, k, touched);
+    const conflict = () => new ConflictError("Someone else changed this at the same time. Showing the latest version.");
+    const versions: Record<string, number> = {};
+
+    for (const u of patch.upserts) {
+      const ik = String(u.k);
+      const v = String(u.v);
+      JSON.parse(v); // must be valid JSON
+      const cur = current.get(ik);
+      if ((cur?.ver ?? 0) !== Number(u.ver)) throw conflict();
+      checkReview(k, user, cur?.value ?? null, v);
+      const ver = cur && cur.value === v ? cur.ver : (cur?.ver ?? 0) + 1; // a pure move keeps the version
+      versions[ik] = ver;
+      stmts.push({ sql: upsertSql, args: [scope, k, ik, patch.kind, Number(u.pos) || 0, v, now, user.id, ver] });
+    }
+    for (const d of patch.deletes) {
+      const ik = String(d.k);
+      const cur = current.get(ik);
+      if (!cur) continue; // already gone
+      if (cur.ver !== Number(d.ver)) throw conflict();
+      checkReview(k, user, cur.value, null);
+      stmts.push({ sql: "DELETE FROM app_items WHERE scope = ? AND key = ? AND item_key = ?", args: [scope, k, ik] });
+    }
+    if (stmts.length) await tx.batch(stmts);
+    const left = await tx.execute({ sql: "SELECT 1 FROM app_items WHERE scope = ? AND key = ? LIMIT 1", args: [scope, k] });
+    if (!left.rows.length) await tx.execute(emptyPlaceholder(scope, k, patch.kind, now, user.id));
+    return { versions };
+  });
 }
 
 // ---------- Memberships ----------

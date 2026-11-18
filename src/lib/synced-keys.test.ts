@@ -3,8 +3,8 @@ import { canWrite, diffEntries, isSyncedKey, itemKeyOf, toEntries, type DocKind 
 
 function baseOf(value: unknown) {
   const split = toEntries(value)!;
-  const items = new Map<string, { json: string; pos: number }>();
-  split.entries.forEach(([k, v], i) => items.set(k, { json: JSON.stringify(v), pos: (i + 1) * 1024 }));
+  const items = new Map<string, { json: string; pos: number; ver: number }>();
+  split.entries.forEach(([k, v], i) => items.set(k, { json: JSON.stringify(v), pos: (i + 1) * 1024, ver: 3 }));
   return { kind: split.kind as DocKind, items };
 }
 
@@ -37,6 +37,7 @@ describe("diffEntries", () => {
     const patch = diffEntries(base, toEntries([{ id: "a", v: 1 }, { id: "b", v: 2 }, { id: "c", v: 1 }])!)!;
     expect(patch.upserts.map((u) => u.k)).toEqual(["b"]);
     expect(patch.upserts[0].pos).toBe(2048); // keeps its position
+    expect(patch.upserts[0].ver).toBe(3); // based on the version it was loaded at
     expect(patch.deletes).toEqual([]);
   });
 
@@ -44,6 +45,7 @@ describe("diffEntries", () => {
     const patch = diffEntries(base, toEntries([{ id: "new" }, { id: "a", v: 1 }, { id: "b", v: 1 }, { id: "c", v: 1 }])!)!;
     expect(patch.upserts).toHaveLength(1);
     expect(patch.upserts[0].k).toBe("new");
+    expect(patch.upserts[0].ver).toBe(0);
     expect(patch.upserts[0].pos).toBeLessThan(1024);
   });
 
@@ -55,7 +57,7 @@ describe("diffEntries", () => {
 
   it("deletes removed items", () => {
     const patch = diffEntries(base, toEntries([{ id: "a", v: 1 }, { id: "c", v: 1 }])!)!;
-    expect(patch.deletes).toEqual(["b"]);
+    expect(patch.deletes).toEqual([{ k: "b", ver: 3 }]);
     expect(patch.upserts).toEqual([]);
   });
 

@@ -595,3 +595,6 @@ export function useEventDoc(id: string): EventDoc | undefined {
   const docs = useEventDocs();
   return docs.find((e) => e.id === id);
 }
+
+/** Starting data, loaded into the database by the server (see seed-data.ts). */
+export const eventDocSeed = seed;

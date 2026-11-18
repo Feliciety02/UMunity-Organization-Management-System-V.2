@@ -447,3 +447,6 @@ export function usePostApprovals() {
 export function usePostApproval(id: string) {
   return usePostApprovals().find((approval) => approval.id === id) ?? null;
 }
+
+/** Starting data, loaded into the database by the server (see seed-data.ts). */
+export const postApprovalSeed = seed;

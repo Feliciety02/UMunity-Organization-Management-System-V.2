@@ -3,6 +3,8 @@
 //  - syncFromServer() pulls every value for the signed-in user, then tells all stores to re-read.
 //  - setItem() updates the cache at once and saves the change shortly after. Lists and objects
 //    are saved item by item (only what changed), so concurrent edits to different items survive.
+//  - Each saved item carries the version it was based on. If someone else saved the same item in
+//    the meantime, or the server refuses the step (review rules), the latest version is shown instead.
 import { toast } from "sonner";
 import type { Role } from "@/lib/auth";
 import { loadDataFn, patchDataFn, saveDataFn } from "@/lib/api.functions";
@@ -13,6 +15,7 @@ import {
   SERVER_CACHE_KEYS,
   SYNCED_KEYS,
   toEntries,
+  type BaseItem,
   type DocKind,
   type SyncedKey,
 } from "@/lib/synced-keys";
@@ -20,7 +23,7 @@ import {
 const PUSH_DELAY_MS = 300;
 const RETRY_DELAYS_MS = [2_000, 5_000, 15_000, 30_000];
 
-type Base = { kind: DocKind; items: Map<string, { json: string; pos: number }> } | null;
+type Base = { kind: DocKind; items: Map<string, BaseItem> } | null;
 
 let synced = false;
 let role: Role | null = null;
@@ -29,6 +32,7 @@ const dirty = new Set<SyncedKey>(); // keys changed locally but not saved yet
 const timers = new Map<string, ReturnType<typeof setTimeout>>();
 const bases = new Map<SyncedKey, Base>(); // last value the server confirmed, per key
 const failures = new Map<SyncedKey, number>();
+const rejected = new Set<SyncedKey>(); // edits the server refused; the next sync restores its copy
 const refreshers = new Set<() => Promise<void>>();
 let warned = false;
 
@@ -36,15 +40,38 @@ function local() {
   return typeof window === "undefined" ? null : window.localStorage;
 }
 
-function baseFrom(value: string, positions?: Record<string, number>): Base {
+/** The confirmed state of a stored value: positions and versions as the server reported them. */
+function baseFrom(value: string, saved: Record<string, [number, number]>): Base {
   try {
     const split = toEntries(JSON.parse(value));
     if (!split) return null;
-    const items = new Map<string, { json: string; pos: number }>();
-    split.entries.forEach(([k, v], i) => items.set(k, { json: JSON.stringify(v), pos: positions?.[k] ?? (i + 1) * 1024 }));
+    const items = new Map<string, BaseItem>();
+    split.entries.forEach(([k, v], i) => {
+      const [pos, ver] = saved[k] ?? [(i + 1) * 1024, 1];
+      items.set(k, { json: JSON.stringify(v), pos, ver });
+    });
     return { kind: split.kind, items };
   } catch {
     return null;
+  }
+}
+
+// Tabs of one browser share the local copy but each remembers its own confirmed versions.
+// After a save, tell the other tabs what the server now holds, so their next save of the same
+// list isn't based on versions that are already out of date (which would look like a conflict).
+type BaseMessage = { key: SyncedKey; kind: DocKind; items: Array<[string, BaseItem]> } | { key: SyncedKey; kind: null };
+const channel = typeof BroadcastChannel === "undefined" ? null : new BroadcastChannel("umunity-sync");
+channel?.addEventListener("message", (e: MessageEvent<BaseMessage>) => {
+  const msg = e.data;
+  if (!msg || !isSyncedKey(msg.key)) return;
+  bases.set(msg.key, msg.kind ? { kind: msg.kind, items: new Map(msg.items) } : null);
+});
+
+function shareBase(key: SyncedKey, base: Base) {
+  try {
+    channel?.postMessage(base ? { key, kind: base.kind, items: [...base.items] } : { key, kind: null });
+  } catch {
+    /* other tabs fall back to their next sync */
   }
 }
 
@@ -67,6 +94,23 @@ function notifySaved() {
   toast.success("All changes saved", { id: "umunity-save" });
 }
 
+/**
+ * The server refused a save for good (someone else changed the same item, or this step isn't
+ * allowed): drop the local edit and show what the database holds.
+ */
+function rejectEdit(key: SyncedKey, message: string, conflict: boolean) {
+  rejected.add(key);
+  dirty.delete(key);
+  failures.delete(key);
+  bases.delete(key);
+  clearTimeout(timers.get(key));
+  timers.delete(key);
+  if (conflict) toast.info("Someone else changed this at the same time", { description: "Showing the latest version. Please redo your change if it's still needed." });
+  else toast.error("That change wasn't saved", { description: message });
+  if (failures.size === 0) notifySaved();
+  void syncFromServer().catch(() => {});
+}
+
 async function push(key: SyncedKey) {
   timers.delete(key);
   const value = local()?.getItem(key);
@@ -87,21 +131,28 @@ async function push(key: SyncedKey) {
     const patch = base && next ? diffEntries(base, next) : null;
     let newBase: Base;
     if (patch) {
+      const items = new Map(base!.items);
       if (patch.upserts.length || patch.deletes.length) {
         const res = await patchDataFn({ data: { key, patch } });
-        if (!res.ok) throw new Error(res.error);
+        if (!res.ok) {
+          if (res.code === "reshape") {
+            bases.delete(key); // stored whole on the server: send the whole value next time
+            throw new Error(res.error);
+          }
+          return rejectEdit(key, res.error, res.code === "conflict");
+        }
+        // New base: the confirmed items with the positions just sent and the versions now stored.
+        patch.deletes.forEach((d) => items.delete(d.k));
+        patch.upserts.forEach((u) => items.set(u.k, { json: u.v, pos: u.pos, ver: res.versions[u.k] ?? u.ver + 1 }));
       }
-      // New base: the confirmed items with the positions just sent.
-      const items = new Map(base!.items);
-      patch.deletes.forEach((k) => items.delete(k));
-      patch.upserts.forEach((u) => items.set(u.k, { json: u.v, pos: u.pos }));
       newBase = { kind: patch.kind, items };
     } else {
       const res = await saveDataFn({ data: { key, value } });
-      if (!res.ok) throw new Error(res.error);
-      newBase = baseFrom(value); // the server stores positions (i + 1) * 1024, as baseFrom does
+      if (!res.ok) return rejectEdit(key, res.error, res.code === "conflict");
+      newBase = baseFrom(value, res.items);
     }
     bases.set(key, newBase);
+    shareBase(key, newBase);
     failures.delete(key);
     // Only clear if nothing changed while the request was in flight.
     if (local()?.getItem(key) === value) dirty.delete(key);
@@ -110,7 +161,8 @@ async function push(key: SyncedKey) {
   } catch (err) {
     const n = (failures.get(key) ?? 0) + 1;
     failures.set(key, n);
-    bases.delete(key); // retry with the whole value, which the server always accepts
+    // Network trouble: keep the base and retry the same patch. Its versions stop it from
+    // overwriting anything someone else saved in the meantime.
     console.warn(`[UMunity] Couldn't save ${key} (attempt ${n}); will retry.`, err);
     notifySaveProblem();
     const delay = RETRY_DELAYS_MS[Math.min(n - 1, RETRY_DELAYS_MS.length - 1)];
@@ -179,15 +231,21 @@ export function syncFromServer(forRole?: Role): Promise<void> {
         store.setItem(key, doc.value);
         // Only item-stored values can be patched; a value stored whole (e.g. by an older
         // version) gets no base, so its next save is whole and converts it to item rows.
-        bases.set(key, doc.kind ? baseFrom(doc.value, doc.positions) : null);
+        const saved = Object.fromEntries(
+          Object.entries(doc.positions ?? {}).map(([k, pos]) => [k, [pos, doc.versions?.[k] ?? 1] as [number, number]]),
+        );
+        bases.set(key, doc.kind ? baseFrom(doc.value, saved) : null);
         dirty.delete(key);
       } else if (!doc) {
         bases.delete(key);
-        if (store.getItem(key) != null && canPush(key)) dirty.add(key);
+        // A refused edit to a value the server doesn't have: drop it rather than re-sending it.
+        if (rejected.has(key)) store.removeItem(key);
+        if (store.getItem(key) != null && canPush(key) && !rejected.has(key)) dirty.add(key);
         else dirty.delete(key);
       }
     }
     synced = true;
+    rejected.clear();
     for (const key of [...dirty]) void push(key);
     // Every store listens for "storage" and re-reads, so the UI picks up the fresh data.
     window.dispatchEvent(new Event("storage"));
@@ -204,6 +262,7 @@ export function clearSyncedCache() {
   dirty.clear();
   bases.clear();
   failures.clear();
+  rejected.clear();
   timers.forEach(clearTimeout);
   timers.clear();
   const store = local();

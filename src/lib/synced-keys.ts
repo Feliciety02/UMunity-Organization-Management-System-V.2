@@ -86,12 +86,20 @@ export function toEntries(value: unknown): DocEntries | null {
   return null;
 }
 
-/** One row-level change set for a store. Positions order array items (fractional, ascending). */
+/**
+ * One row-level change set for a store. Positions order array items (fractional, ascending).
+ * `ver` is the version the change was based on (0 = the item is new). The server refuses the
+ * whole patch if any of those items changed in the meantime, so concurrent edits of the same
+ * item are caught instead of silently overwritten.
+ */
 export type DocPatch = {
   kind: DocKind;
-  upserts: Array<{ k: string; v: string; pos: number }>;
-  deletes: string[];
+  upserts: Array<{ k: string; v: string; pos: number; ver: number }>;
+  deletes: Array<{ k: string; ver: number }>;
 };
+
+/** What the client knows about each stored item: its JSON, position and version. */
+export type BaseItem = { json: string; pos: number; ver: number };
 
 const GAP = 1024;
 
@@ -100,18 +108,19 @@ const GAP = 1024;
  * Returns null when the shapes don't allow a row-level patch (send the whole value instead).
  */
 export function diffEntries(
-  base: { kind: DocKind; items: Map<string, { json: string; pos: number }> },
+  base: { kind: DocKind; items: Map<string, BaseItem> },
   next: DocEntries,
 ): DocPatch | null {
   if (base.kind !== next.kind) return null;
   const upserts: DocPatch["upserts"] = [];
   const nextKeys = new Set(next.entries.map(([k]) => k));
-  const deletes = [...base.items.keys()].filter((k) => !nextKeys.has(k));
+  const deletes = [...base.items.entries()].filter(([k]) => !nextKeys.has(k)).map(([k, b]) => ({ k, ver: b.ver }));
+  const verOf = (k: string) => base.items.get(k)?.ver ?? 0;
 
   if (next.kind === "object") {
     for (const [k, v] of next.entries) {
       const json = JSON.stringify(v);
-      if (base.items.get(k)?.json !== json) upserts.push({ k, v: json, pos: 0 });
+      if (base.items.get(k)?.json !== json) upserts.push({ k, v: json, pos: 0, ver: verOf(k) });
     }
     return { kind: "object", upserts, deletes };
   }
@@ -120,7 +129,7 @@ export function diffEntries(
   const known = next.entries.filter(([k]) => base.items.has(k)).map(([k]) => base.items.get(k)!.pos);
   const ordered = known.every((p, i) => i === 0 || p > known[i - 1]);
   if (!ordered) {
-    next.entries.forEach(([k, v], i) => upserts.push({ k, v: JSON.stringify(v), pos: (i + 1) * GAP }));
+    next.entries.forEach(([k, v], i) => upserts.push({ k, v: JSON.stringify(v), pos: (i + 1) * GAP, ver: verOf(k) }));
     return { kind: "array", upserts, deletes: [...deletes] };
   }
   const positions = next.entries.map(([k]) => base.items.get(k)?.pos ?? null);
@@ -135,9 +144,9 @@ export function diffEntries(
       for (let j = i + 1; j < positions.length && after === null; j++) after = positions[j];
       pos = prev === null && after === null ? (i + 1) * GAP : prev === null ? after! - GAP : after === null ? prev + GAP : (prev + after) / 2;
       positions[i] = pos;
-      upserts.push({ k, v: json, pos });
+      upserts.push({ k, v: json, pos, ver: 0 });
     } else if (base.items.get(k)!.json !== json) {
-      upserts.push({ k, v: json, pos });
+      upserts.push({ k, v: json, pos, ver: verOf(k) });
     }
   });
   return { kind: "array", upserts, deletes };

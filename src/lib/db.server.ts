@@ -80,6 +80,7 @@ export async function initSchema(c: Client, opts: { demo: boolean }) {
         value TEXT NOT NULL,
         updated_at INTEGER NOT NULL,
         updated_by TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
         PRIMARY KEY (scope, key, item_key)
       )`,
       `CREATE TABLE IF NOT EXISTS login_attempts (
@@ -120,6 +121,13 @@ export async function initSchema(c: Client, opts: { demo: boolean }) {
     ],
     "write",
   );
+
+  // Databases created before item versions existed: add the column (fails harmlessly if present).
+  try {
+    await c.execute("ALTER TABLE app_items ADD COLUMN version INTEGER NOT NULL DEFAULT 1");
+  } catch {
+    /* already there */
+  }
 
   if (opts.demo) await seedDemo(c);
   else await disableDemoAccounts(c);

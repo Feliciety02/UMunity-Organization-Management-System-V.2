@@ -317,7 +317,7 @@ function normalizeWorkflow(workflow: EventWorkflow): EventWorkflow {
   return normalized;
 }
 
-function seedWorkflows(): EventWorkflow[] {
+export function seedWorkflows(): EventWorkflow[] {
   const baseTime = Date.now() - 3 * 86_400_000;
   return [
     normalizeWorkflow({
@@ -796,7 +796,7 @@ function seedWorkflows(): EventWorkflow[] {
   ];
 }
 
-function seedTransitionWorkflows(): OfficerTransitionWorkflow[] {
+export function seedTransitionWorkflows(): OfficerTransitionWorkflow[] {
   const previousRoster: OfficerNominee[] = [
     {
       id: "off-1",
@@ -915,14 +915,8 @@ function read(): EventWorkflow[] {
       cloudStorage.setItem(KEY, JSON.stringify(seeded));
       return seeded;
     }
-    const parsed = (JSON.parse(raw) as EventWorkflow[]).map(normalizeWorkflow);
-    const seeded = seedWorkflows();
-    const knownIds = new Set(parsed.map((workflow) => workflow.id));
-    const merged = [...parsed, ...seeded.filter((workflow) => !knownIds.has(workflow.id))];
-    if (merged.length !== parsed.length) {
-      cloudStorage.setItem(KEY, JSON.stringify(merged));
-    }
-    return merged;
+    // The database is the source of truth (it is seeded on the server), so use what it holds as-is.
+    return (JSON.parse(raw) as EventWorkflow[]).map(normalizeWorkflow);
   } catch {
     return seedWorkflows();
   }
