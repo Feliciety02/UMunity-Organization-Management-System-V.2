@@ -19,6 +19,7 @@ import {
 import { getSession } from "@/lib/auth";
 import { showImportantActionToast, showStatusToast } from "@/lib/feedback";
 import { toggleSavedPost, useSaved } from "@/lib/saved";
+import { svgToDataUri } from "@/lib/text";
 
 export function OrgAvatar({ org, size = 40 }: { org: Pick<Org, "color" | "initials">; size?: number }) {
   return (
@@ -303,10 +304,6 @@ function CommentItem({ comment, onReply }: { comment: Comment; onReply: (author:
       </div>
     </div>
   );
-}
-
-function svgToDataUri(svg: string) {
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
 const postVisuals: Record<string, string> = {

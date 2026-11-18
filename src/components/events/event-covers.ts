@@ -1,8 +1,5 @@
 import { events } from "@/data/site";
-
-function svgToDataUri(svg: string) {
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
+import { svgToDataUri } from "@/lib/text";
 
 export const eventCovers: Record<string, string> = {
   [events[0].title]: svgToDataUri(`

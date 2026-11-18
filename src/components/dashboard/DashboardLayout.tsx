@@ -652,7 +652,7 @@ export function MiniBarChart({ data, color = "var(--primary)" }: { data: number[
   return (
     <div className="flex h-32 items-end gap-2">
       {data.map((v, i) => (
-        <div key={i} className="flex flex-1 flex-col items-center gap-1">
+        <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
           <div
             className="w-full rounded-t-md"
             style={{ height: `${(v / max) * 100}%`, background: color, opacity: 0.85 }}

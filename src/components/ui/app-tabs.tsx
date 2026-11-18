@@ -64,6 +64,3 @@ export function UnderlineTabs<T extends string>({
   );
 }
 
-export function MetaRow({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("flex flex-wrap items-center gap-2 text-sm text-muted-foreground", className)}>{children}</div>;
-}
