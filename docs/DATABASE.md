@@ -97,6 +97,10 @@ Each organization has open books under **Finance** (leader, adviser, Admin 1 and
   - An expense can't be verified until it has a receipt. A flagged entry goes back for review once the
     leader adds a receipt.
 - **Audit trail:** every action is logged with who did it, their role and the time.
+- **Events:** an entry can be linked to an event. The event's closeout shows those entries with their
+  receipts and status, and warns reviewers about missing receipts, unverified entries, or a gap between
+  the closeout's reported spend and the ledger. "Record with receipt" opens the ledger's form with the
+  event already chosen.
 - **Storage:** receipts are stored in the database (`finance_receipts`). That suits Turso's free tier for
   a campus-sized load. For heavy use, move the files to object storage (e.g. Cloudflare R2) and keep only
   the fingerprint and a link in the table.
