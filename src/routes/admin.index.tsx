@@ -1,4 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { AppButton } from "@/components/ui/app-button";
+import { PendingOrgRow } from "@/components/dashboard/PendingOrgRow";
+import { eventReviewStatus, useEventDecisions, usePendingOrgs } from "@/lib/admin-queues";
+import { events } from "@/data/site";
+import { showStatusToast } from "@/lib/feedback";
 import { PageHead, StatCard, Panel, Badge, LineSpark, MiniBarChart } from "@/components/dashboard/DashboardLayout";
 import { Users, Building2, Calendar, AlertTriangle, ShieldCheck, Activity, ArrowRight } from "lucide-react";
 
@@ -6,24 +12,35 @@ export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
 });
 
+const ALERTS = [
+  { t: "Flagged announcement: 'Trip fundraiser claim'", d: "UM Travel Society · 2h ago", tone: "danger" as const, to: "/admin/reported-posts" },
+  { t: "Duplicate event detected", d: "UM Cultural Night · 5h ago", tone: "warning" as const, to: "/admin/events" },
+  { t: "Suspicious bulk signups (12 accts)", d: "Auto-flagged · Yesterday", tone: "warning" as const, to: "/admin/users" },
+];
+
 function AdminDashboard() {
+  const pendingOrgs = usePendingOrgs();
+  const [alerts, setAlerts] = useState(ALERTS);
+  const decisions = useEventDecisions();
   return (
     <>
       <PageHead
         title="System overview"
         sub="University-wide health, growth, and moderation."
         action={
-          <Link to="/admin/reports" className="inline-flex items-center gap-2 rounded-full bg-gradient-maroon px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft hover:scale-105">
-            Open reports <ArrowRight className="h-4 w-4" />
-          </Link>
+          <AppButton asChild variant="primary" size="lg" shadow="soft">
+            <Link to="/admin/reports">
+              Open reports <ArrowRight className="h-4 w-4" />
+            </Link>
+          </AppButton>
         }
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Total users" value="18,412" delta="+87 today" icon={Users} tone="primary" />
         <StatCard label="Active orgs" value="120" delta="+3 this month" icon={Building2} tone="gold" />
-        <StatCard label="Pending orgs" value="5" delta="Awaiting review" icon={ShieldCheck} tone="rose" />
-        <StatCard label="Moderation alerts" value="3" delta="2 unresolved" icon={AlertTriangle} tone="emerald" />
+        <StatCard label="Pending orgs" value={String(pendingOrgs.length)} delta="Awaiting review" icon={ShieldCheck} tone="rose" />
+        <StatCard label="Moderation alerts" value={String(alerts.length)} delta={alerts.length ? "Needs review" : "All clear"} icon={AlertTriangle} tone="emerald" />
       </div>
 
       {/* Charts */}
@@ -40,32 +57,20 @@ function AdminDashboard() {
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <Panel title="Pending organization verifications" action={<Link to="/admin/organizations" className="text-xs font-semibold text-primary">Review queue</Link>}>
           <div className="space-y-3">
-            {[
-              { n: "UM Drone Society", c: "Tech", who: "Submitted by Aldous P." },
-              { n: "UM AgriTech Hub", c: "Agriculture", who: "Submitted by Liza M." },
-              { n: "UM Game Dev Guild", c: "Tech", who: "Submitted by Jared K." },
-              { n: "UM Mental Wellness Circle", c: "Wellness", who: "Submitted by Faye R." },
-              { n: "UM Astronomy Club", c: "Science", who: "Submitted by Rian C." },
-            ].map((o, i) => (
-              <div key={o.n} className="flex items-center gap-3 rounded-2xl bg-secondary/60 p-3">
-                <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-maroon text-xs font-bold text-primary-foreground">{o.n.split(" ")[1][0]}{o.n.split(" ")[2]?.[0] ?? ""}</div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold">{o.n}</p>
-                  <p className="text-xs text-muted-foreground">{o.c} · {o.who}</p>
-                </div>
-                <Badge tone={i === 0 ? "warning" : "info"}>Pending</Badge>
-              </div>
-            ))}
+            {pendingOrgs.length === 0 ? (
+              <p className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">No organizations are waiting for verification.</p>
+            ) : (
+              pendingOrgs.slice(0, 3).map((o) => <PendingOrgRow key={o.id} org={o} compact />)
+            )}
           </div>
         </Panel>
 
         <Panel title="Moderation alerts">
           <div className="space-y-3">
-            {[
-              { t: "Flagged announcement: 'Trip fundraiser claim'", d: "UM Travel Society · 2h ago", tone: "danger" as const },
-              { t: "Duplicate event detected", d: "UM Cultural Night · 5h ago", tone: "warning" as const },
-              { t: "Suspicious bulk signups (12 accts)", d: "Auto-flagged · Yesterday", tone: "warning" as const },
-            ].map((a) => (
+            {alerts.length === 0 ? (
+              <p className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">No open moderation alerts.</p>
+            ) : null}
+            {alerts.map((a) => (
               <div key={a.t} className="rounded-2xl border border-border bg-card p-3">
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -75,8 +80,19 @@ function AdminDashboard() {
                   <Badge tone={a.tone}>Flagged</Badge>
                 </div>
                 <div className="mt-3 flex gap-2">
-                  <button className="rounded-full bg-gradient-maroon px-3 py-1 text-xs font-bold text-primary-foreground">Review</button>
-                  <button className="rounded-full border border-border px-3 py-1 text-xs font-semibold">Dismiss</button>
+                  <AppButton asChild variant="primary" size="sm">
+                    <Link to={a.to}>Review</Link>
+                  </AppButton>
+                  <AppButton
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      setAlerts((list) => list.filter((x) => x.t !== a.t));
+                      showStatusToast("Alert dismissed", "It was removed from the moderation list.", "info");
+                    }}
+                  >
+                    Dismiss
+                  </AppButton>
                 </div>
               </div>
             ))}
@@ -143,12 +159,10 @@ function AdminDashboard() {
       <div className="mt-6">
         <Panel title="Recent campus events" action={<Link to="/admin/events" className="text-xs font-semibold text-primary">View all</Link>}>
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {[
-              { t: "Innovation Summit", h: "UM CS Society", st: "Live", tone: "success" as const },
-              { t: "Eco Run", h: "UM Eco Warriors", st: "Open", tone: "info" as const },
-              { t: "Cultural Night", h: "UM Theatre Guild", st: "Pending", tone: "warning" as const },
-              { t: "Sportsfest", h: "UM Athletics", st: "Pending", tone: "warning" as const },
-            ].map((e) => (
+            {events.slice(0, 4).map((ev) => {
+              const st = eventReviewStatus(ev.title, decisions);
+              return { t: ev.title, h: ev.host, st, tone: st === "Approved" ? ("success" as const) : st === "Rejected" ? ("danger" as const) : ("warning" as const) };
+            }).map((e) => (
               <div key={e.t} className="rounded-2xl bg-secondary/60 p-3">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-3.5 w-3.5 text-primary" />

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 
 export const Route = createFileRoute("/admin/logs")({
@@ -16,18 +17,44 @@ const logs = [
   { a: "org.created", who: "liza.m@umindanao.edu.ph", d: "Submitted 'UM AgriTech Hub' for review", time: "2 days ago", t: "info" as const },
 ];
 
+const FILTERS = ["All", "user", "org", "event", "moderation", "system"] as const;
+
 function Logs() {
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
+  const visible = logs.filter((l) => {
+    if (filter === "All") return true;
+    if (filter === "system") return l.who === "system" || l.a.startsWith("backup") || l.a.startsWith("announcement");
+    return l.a.startsWith(filter);
+  });
   return (
     <>
-      <PageHead title="Activity logs" sub="Every important action across the platform." action={<button className="rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold">Filter</button>} />
+      <PageHead
+        title="Activity logs"
+        sub="Every important action across the platform."
+        action={
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value as (typeof FILTERS)[number])}
+            aria-label="Filter activity"
+            className="rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold"
+          >
+            {FILTERS.map((f) => (
+              <option key={f} value={f}>
+                {f === "All" ? "All activity" : f[0].toUpperCase() + f.slice(1)}
+              </option>
+            ))}
+          </select>
+        }
+      />
 
       <Panel>
         <div className="space-y-2">
-          {logs.map((l, i) => (
+          {visible.length === 0 ? <p className="py-6 text-center text-sm text-muted-foreground">No activity matches this filter.</p> : null}
+          {visible.map((l, i) => (
             <div key={i} className="flex items-center gap-3 rounded-2xl bg-secondary/40 px-4 py-3 text-sm">
               <Badge tone={l.t}>{l.a}</Badge>
               <div className="min-w-0 flex-1">
-                <p className="truncate"><span className="font-mono text-xs text-muted-foreground">{l.who}</span> - {l.d}</p>
+                <p className="truncate"><span className="font-mono text-xs text-muted-foreground">{l.who}</span> · {l.d}</p>
               </div>
               <span className="shrink-0 text-xs text-muted-foreground">{l.time}</span>
             </div>
