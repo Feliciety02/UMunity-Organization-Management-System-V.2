@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   ArrowDownLeft,
@@ -68,7 +68,7 @@ const sizeLabel = (n: number) => (n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixe
  * Leaders record, advisers and admins verify, active members read. One component for every role;
  * what each person can do comes from the server.
  */
-export function FinanceLedger({ slug: fixedSlug, sub }: { slug?: string; sub?: string }) {
+export function FinanceLedger({ slug: fixedSlug, sub, recordForEvent }: { slug?: string; sub?: string; recordForEvent?: string }) {
   const orgs = useFinanceOrgs();
   const [picked, setPicked] = useState<string | null>(null);
   const slug = fixedSlug ?? picked ?? orgs?.[0]?.slug ?? null;
@@ -78,6 +78,13 @@ export function FinanceLedger({ slug: fixedSlug, sub }: { slug?: string; sub?: s
   const [q, setQ] = useState("");
   const [recording, setRecording] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
+  // Arriving from an event's closeout ("Record with receipt"): open the form once, event preselected.
+  const autoOpened = useRef(false);
+  useEffect(() => {
+    if (!recordForEvent || autoOpened.current || !ledger?.access.record) return;
+    autoOpened.current = true;
+    setRecording(true);
+  }, [recordForEvent, ledger]);
 
   const entries = useMemo(() => ledger?.entries ?? [], [ledger]);
   const totals = useMemo(() => ledgerTotals(entries), [entries]);
@@ -275,7 +282,14 @@ export function FinanceLedger({ slug: fixedSlug, sub }: { slug?: string; sub?: s
       </Panel>
 
       {access.record ? (
-        <RecordDialog open={recording} onClose={() => setRecording(false)} ledger={ledger} onSaved={reload} onOpen={setOpenId} />
+        <RecordDialog
+          open={recording}
+          onClose={() => setRecording(false)}
+          ledger={ledger}
+          onSaved={reload}
+          onOpen={setOpenId}
+          initialEventId={recordForEvent}
+        />
       ) : null}
       <EntryDialog entry={open} ledger={ledger} onClose={() => setOpenId(null)} onChanged={reload} />
     </>
@@ -369,12 +383,14 @@ function RecordDialog({
   ledger,
   onSaved,
   onOpen,
+  initialEventId,
 }: {
   open: boolean;
   onClose: () => void;
   ledger: Ledger;
   onSaved: () => Promise<void>;
   onOpen: (id: string) => void;
+  initialEventId?: string;
 }) {
   const workflows = useWorkflows();
   const events = workflows.filter((w) => w.orgName === ledger.org.name);
@@ -397,13 +413,13 @@ function RecordDialog({
     setDate(today());
     setCategory(EXPENSE_CATEGORIES[0]);
     setDescription("");
-    setEventId("");
+    setEventId(initialEventId ?? "");
     setFiles([]);
     setUploadKey((k) => k + 1);
     setSubmitted(false);
     setError("");
     setBusy(false);
-  }, [open]);
+  }, [open, initialEventId]);
 
   const cents = Math.round(Number(amount.replace(/,/g, "")) * 100);
   const fieldError = !submitted

@@ -67,6 +67,7 @@ export type WorkflowExpenseItem = {
   label: string;
   plannedAmount: number;
   actualAmount: number;
+  /** Legacy typed receipt name. Real receipts are uploaded to the finance ledger and linked by event. */
   receiptLabel: string;
 };
 

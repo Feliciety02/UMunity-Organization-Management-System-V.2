@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppButton } from "@/components/ui/app-button";
+import { EventFinancePanel } from "@/components/finance/EventFinancePanel";
 import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 import {
   addWorkflowComment,
@@ -632,7 +633,7 @@ export function EventWorkflowDetail({
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold">Financial closeout</p>
-                      <p className="text-xs text-muted-foreground">Dynamic expense lines replace a separate reimbursement packet.</p>
+                      <p className="text-xs text-muted-foreground">Actual spend per budget line. Receipts live in the finance ledger below.</p>
                     </div>
                     <Badge tone="neutral">
                       {money(workflow.operations.postEvent.expenseItems.reduce((sum, item) => sum + item.actualAmount, 0))}
@@ -640,7 +641,7 @@ export function EventWorkflowDetail({
                   </div>
                   <div className="space-y-3">
                     {workflow.operations.postEvent.expenseItems.map((item) => (
-                      <div key={item.id} className="grid gap-2 rounded-2xl border border-border bg-background p-3 md:grid-cols-[1.2fr_0.7fr_0.7fr]">
+                      <div key={item.id} className="grid gap-2 rounded-2xl border border-border bg-background p-3 md:grid-cols-[1.4fr_0.8fr]">
                         <div>
                           <p className="text-sm font-semibold">{item.label}</p>
                           <p className="text-xs text-muted-foreground">Planned {money(item.plannedAmount)}</p>
@@ -655,19 +656,17 @@ export function EventWorkflowDetail({
                             className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-70"
                           />
                         </label>
-                        <label className="block">
-                          <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Receipt</span>
-                          <input
-                            value={item.receiptLabel}
-                            disabled={!canOperate}
-                            onChange={(e) => updateWorkflowExpenseItem(workflow.id, viewer, item.id, { receiptLabel: e.target.value })}
-                            className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-70"
-                          />
-                        </label>
                       </div>
                     ))}
                   </div>
                 </div>
+                <EventFinancePanel
+                  workflowId={workflow.id}
+                  orgName={workflow.orgName}
+                  role={viewer.role}
+                  plannedTotal={totalBudget}
+                  reportedTotal={workflow.operations.postEvent.expenseItems.reduce((sum, item) => sum + item.actualAmount, 0)}
+                />
                 <InlineComposer
                   label="Achievement summary"
                   value={achievementEntry}
