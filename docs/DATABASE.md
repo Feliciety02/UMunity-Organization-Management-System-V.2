@@ -77,6 +77,30 @@ only use it for a throwaway classroom demo.
   someone else saved that item in the meantime, the whole save is refused. The app then shows "Someone else
   changed this at the same time" and loads the latest version, instead of silently overwriting it.
 
+## Finance ledger
+
+Each organization has open books under **Finance** (leader, adviser, Admin 1 and Admin 2 sidebars) and
+**Org Finances** (students).
+
+- **Who does what:**
+  - The organization's leader records money in and out, and attaches receipts.
+  - The org's adviser, or any admin, verifies each transaction or flags it with a note.
+  - Active members can read the whole ledger, receipts included.
+- **Nothing is edited or deleted:**
+  - A mistake is voided with a reason. It stays visible and stops counting toward the totals.
+  - Verified entries can't be voided; record a correcting entry instead.
+  - A receipt removed before verification stays on record in the history.
+- **Receipts:**
+  - PDF, JPG, PNG or WebP, up to 4 MB each and 5 per transaction.
+  - The file type is checked from the file's contents, not its name.
+  - Each receipt gets a SHA-256 fingerprint, shown in the app and in the CSV export.
+  - An expense can't be verified until it has a receipt. A flagged entry goes back for review once the
+    leader adds a receipt.
+- **Audit trail:** every action is logged with who did it, their role and the time.
+- **Storage:** receipts are stored in the database (`finance_receipts`). That suits Turso's free tier for
+  a campus-sized load. For heavy use, move the files to object storage (e.g. Cloudflare R2) and keep only
+  the fingerprint and a link in the table.
+
 ## How it fits together
 
 | File | Role |
@@ -85,6 +109,8 @@ only use it for a throwaway classroom demo.
 | `src/lib/core.server.ts` | Server-only business logic (auth, throttle, reset, accounts, data, memberships). Takes the DB client, so tests run it against a throwaway database. |
 | `src/lib/api.functions.ts` | Server functions the browser calls; thin wrappers over `core.server.ts` that handle cookies and errors. |
 | `src/lib/synced-keys.ts` | The data stores kept in the database: scope, who may write, and item-level diffing. |
+| `src/lib/finance.server.ts` | Server-only. Finance ledger: tables, access, recording, receipts, review, voids, demo books. |
+| `src/lib/finance.ts`, `finance-shared.ts`, `components/finance/FinanceLedger.tsx` | Finance pages and the types and limits they share with the server. |
 | `src/lib/review-rules.ts` | Which role may take which review step, checked on every save of an approval item. |
 | `src/lib/seed-data.ts` | Starting data for the approval stores, written by the server the first time they load (demo mode only). |
 | `src/lib/cloud-storage.ts` | Client adapter the stores use instead of `localStorage`: caches in the browser and saves changes to the database. |
@@ -103,6 +129,9 @@ only use it for a throwaway classroom demo.
 | `membership_requests` | organization, requesting user, reason, pending/approved/denied, who resolved it |
 | `app_items` | one row per list item (or object field) of a synced store, with its position and version |
 | `app_data` | synced stores whose value can't be split into items, stored whole |
+| `finance_entries` | ledger entries: org, money in/out, amount in centavos, category, date, linked event, status, reviewer note |
+| `finance_receipts` | receipt files (PDF or image), SHA-256 fingerprint, uploader; removed ones are kept, marked removed |
+| `finance_history` | append-only log of every finance action: who, role, when, note |
 | `meta` | one-off flags (e.g. demo data seeded) |
 
 ### Data flow
