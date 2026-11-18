@@ -3,6 +3,9 @@ import { PageHead, StatCard, Panel, Badge, MiniBarChart, Avatar } from "@/compon
 import { Users, UserPlus, Calendar, TrendingUp, ArrowRight, Megaphone, CheckCircle2 } from "lucide-react";
 import { useComplianceSubmissions } from "@/lib/org-compliance";
 import { closeoutStatusTone, formatCloseoutStatus, useWorkflows } from "@/lib/workflows";
+import { AppButton } from "@/components/ui/app-button";
+import { resolveMembershipRequest, useMembershipRequests, useOrgMembers } from "@/lib/membership-requests";
+import { showStatusToast } from "@/lib/feedback";
 
 export const Route = createFileRoute("/leader/")({
   component: LeaderDashboard,
@@ -17,22 +20,28 @@ function LeaderDashboard() {
       workflow.operations.postEvent.closeoutStatus !== "approved",
   );
 
+  const requests = useMembershipRequests();
+  const roster = useOrgMembers();
+  const memberCount = roster.filter((m) => m.status === "Active").length;
+
   return (
     <>
       <PageHead
         title="UM Computer Studies Society"
         sub="Manage your organization with clarity and speed."
         action={
-          <Link to="/leader/create-event" className="inline-flex items-center gap-2 rounded-full bg-gradient-maroon px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft transition hover:scale-105">
-            New event <ArrowRight className="h-4 w-4" />
-          </Link>
+          <AppButton asChild variant="primary" size="lg" shadow="soft">
+            <Link to="/leader/create-event">
+              New event <ArrowRight className="h-4 w-4" />
+            </Link>
+          </AppButton>
         }
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total members" value="3" delta="Current active roster" icon={Users} tone="primary" />
-        <StatCard label="Pending requests" value="12" delta="Action needed" icon={UserPlus} tone="gold" />
-        <StatCard label="Upcoming events" value="4" icon={Calendar} tone="rose" />
+        <StatCard label="Total members" value={String(memberCount)} delta="Current active roster" icon={Users} tone="primary" />
+        <StatCard label="Pending requests" value={String(requests.length)} delta={requests.length ? "Action needed" : "All caught up"} icon={UserPlus} tone="gold" />
+        <StatCard label="Upcoming events" value="3" icon={Calendar} tone="rose" />
         <StatCard label="Engagement rate" value="87%" delta="+6% vs. last month" icon={TrendingUp} tone="emerald" />
       </div>
 
@@ -49,7 +58,7 @@ function LeaderDashboard() {
         <Panel title="Org profile" className="lg:col-span-1">
           <div className="grid h-20 w-20 place-items-center rounded-2xl bg-gradient-to-br from-primary to-primary-deep font-display text-xl font-bold text-primary-foreground shadow-soft">CS</div>
           <p className="mt-3 font-display text-base font-bold">UM CS Society</p>
-          <p className="text-xs text-muted-foreground">Academic - Est. 2014</p>
+          <p className="text-xs text-muted-foreground">Academic · Est. 2014</p>
           <div className="mt-4 space-y-2 text-xs">
             <p className="flex items-center justify-between"><span className="text-muted-foreground">Status</span><Badge tone="success">Recognized</Badge></p>
             <p className="flex items-center justify-between"><span className="text-muted-foreground">President</span><span className="font-semibold">Marco R.</span></p>
@@ -66,19 +75,36 @@ function LeaderDashboard() {
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <Panel title="Pending membership requests" action={<Link to="/leader/requests" className="text-xs font-semibold text-primary">Review all</Link>}>
           <div className="space-y-3">
-            {[
-              { n: "Jana Cruz", c: "BS IT - 2nd Year", d: "Today" },
-              { n: "Marvin Lim", c: "BS CS - 1st Year", d: "Today" },
-              { n: "Ria Santos", c: "BS IS - 3rd Year", d: "Yesterday" },
-            ].map((r) => (
-              <div key={r.n} className="flex items-center gap-3 rounded-2xl bg-secondary/60 p-3">
-                <Avatar name={r.n} color="from-rose-400 to-primary" />
+            {requests.length === 0 ? (
+              <p className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">No pending membership requests.</p>
+            ) : null}
+            {requests.slice(0, 3).map((r) => (
+              <div key={r.id} className="flex items-center gap-3 rounded-2xl bg-secondary/60 p-3">
+                <Avatar name={r.name} color="from-rose-400 to-primary" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold">{r.n}</p>
-                  <p className="text-xs text-muted-foreground">{r.c} - {r.d}</p>
+                  <p className="text-sm font-semibold">{r.name}</p>
+                  <p className="text-xs text-muted-foreground">{r.program} · {r.time}</p>
                 </div>
-                <button className="rounded-full bg-gradient-maroon px-3 py-1 text-xs font-bold text-primary-foreground">Approve</button>
-                <button className="rounded-full border border-border px-3 py-1 text-xs font-semibold">Deny</button>
+                <AppButton
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    resolveMembershipRequest(r.id, true);
+                    showStatusToast("Request approved", `${r.name} can now access your organization space.`);
+                  }}
+                >
+                  Approve
+                </AppButton>
+                <AppButton
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    resolveMembershipRequest(r.id, false);
+                    showStatusToast("Request denied", `${r.name}'s membership request has been declined.`, "warning");
+                  }}
+                >
+                  Deny
+                </AppButton>
               </div>
             ))}
           </div>
@@ -107,11 +133,11 @@ function LeaderDashboard() {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <Panel title="Latest announcements" action={<Link to="/leader/announcements" className="text-xs font-semibold text-primary">New post</Link>}>
+        <Panel title="Latest announcements" action={<Link to="/leader/announcements" className="text-xs font-semibold text-primary">View all</Link>}>
           <div className="space-y-3">
             {[
-              { t: "Officer elections opening soon", d: "Posted 2h ago - 312 reads" },
-              { t: "Reminder: Submit your committee reports", d: "Posted yesterday - 248 reads" },
+              { t: "Officer elections opening soon", d: "Posted 2h ago · 312 reads" },
+              { t: "Reminder: Submit committee reports", d: "Posted yesterday · 248 reads" },
             ].map((a) => (
               <div key={a.t} className="rounded-2xl bg-secondary/60 p-3">
                 <p className="flex items-center gap-2 text-sm font-semibold"><Megaphone className="h-4 w-4 text-primary" /> {a.t}</p>

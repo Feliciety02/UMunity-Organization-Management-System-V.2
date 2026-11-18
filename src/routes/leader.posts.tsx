@@ -23,9 +23,11 @@ function ManagePosts() {
         title="Manage posts"
         sub="Track content approvals, drafts, and live posts from one place."
         action={
-          <Link to="/leader/create-post" className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep">
-            <PenSquare className="h-3.5 w-3.5" /> New post
-          </Link>
+          <AppButton asChild variant="primary" size="md">
+            <Link to="/leader/create-post">
+              <PenSquare className="h-4 w-4" /> New post
+            </Link>
+          </AppButton>
         }
       />
 

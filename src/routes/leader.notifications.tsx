@@ -6,8 +6,8 @@ import { resolveLeaderNotificationHref } from "@/lib/notifications";
 export const Route = createFileRoute("/leader/notifications")({
   component: () => (
     <NotificationsView
-      title="Inbox"
-      sub="Membership requests, comments, and event activity for your org."
+      role="leader"
+      sub="Membership requests, comments, and event activity for your organization."
       resolveHref={resolveLeaderNotificationHref}
       emptyAction={
         <AppButton asChild variant="secondary" size="sm">

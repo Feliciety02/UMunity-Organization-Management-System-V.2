@@ -171,7 +171,7 @@ function LeaderCompliancePage() {
 
         <Panel title="Why this workflow">
           <div className="space-y-3 text-sm text-muted-foreground">
-            <p>UMUnity now turns recognition renewals into structured sections with comments, approval history, and role-based handoffs.</p>
+            <p>UMunity now turns recognition renewals into structured sections with comments, approval history, and role-based handoffs.</p>
             <p>Use this workspace for adviser validation, Admin 2 compliance review, and Admin 1 final authority without collecting scattered PDFs first.</p>
           </div>
         </Panel>

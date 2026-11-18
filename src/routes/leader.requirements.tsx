@@ -30,7 +30,7 @@ function RequirementsHub() {
     <>
       <PageHead
         title="Event Requirements"
-        sub="A smart organizer for OSA paperwork before, during, and after every event. UMUnity does not replace official submissions."
+        sub="A smart organizer for OSA paperwork before, during, and after every event. UMunity does not replace official submissions."
         action={
           <AppButton asChild variant="primary">
             <Link to="/leader/create-event">

@@ -89,6 +89,16 @@ function Attendees() {
     return { going, maybe, cancelled, total: eventRsvps.length };
   }, [eventRsvps]);
 
+  const rows: AttendeeRow[] = useMemo(() => statusFiltered.map((r) => ({
+    key: r.attendeeEmail + r.eventTitle,
+    name: r.attendeeName,
+    email: r.attendeeEmail,
+    initials: r.attendeeName.split(" ").slice(0, 2).map((w) => w[0]).join(""),
+    program: r.program ?? "—",
+    status: r.status,
+    updated: new Date(r.updatedAt).toLocaleDateString(),
+  })), [statusFiltered]);
+
   if (loading) {
     return (
       <>
@@ -123,15 +133,6 @@ function Attendees() {
     URL.revokeObjectURL(url);
   }
 
-  const rows: AttendeeRow[] = useMemo(() => statusFiltered.map((r) => ({
-    key: r.attendeeEmail + r.eventTitle,
-    name: r.attendeeName,
-    email: r.attendeeEmail,
-    initials: r.attendeeName.split(" ").slice(0, 2).map((w) => w[0]).join(""),
-    program: r.program ?? "—",
-    status: r.status,
-    updated: new Date(r.updatedAt).toLocaleDateString(),
-  })), [statusFiltered]);
 
   return (
     <>
@@ -156,7 +157,7 @@ function Attendees() {
                   key={title}
                   onClick={() => setSelected(title)}
                   className={`flex w-full items-start justify-between gap-2 rounded-xl px-3 py-2 text-left transition ${
-                    active ? "bg-[color:color-mix(in_oklab,var(--primary)_8%,white)] text-primary" : "text-foreground/85 hover:bg-secondary"
+                    active ? "bg-[color:color-mix(in_oklab,var(--primary)_8%,var(--card))] text-primary" : "text-foreground/85 hover:bg-secondary"
                   }`}
                 >
                   <div className="min-w-0 flex-1">
