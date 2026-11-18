@@ -3,6 +3,7 @@ import { usePostApprovals } from "@/lib/post-approvals";
 import { useComplianceSubmissions } from "@/lib/org-compliance";
 import { useEventDocs } from "@/lib/event-requirements";
 import { useWorkflows } from "@/lib/workflows";
+import { slugify, startOfMonth } from "@/lib/text";
 
 type ActivityEntry = {
   actor: string;
@@ -20,10 +21,6 @@ export type AdviserMemberActivity = {
   lastActiveAt: number;
 };
 
-function slugify(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
-
 function matchesOrg(targetOrg: string | undefined, candidate: { orgName?: string; orgSlug?: string; orgShort?: string }) {
   if (!targetOrg) return true;
   const targetSlug = slugify(targetOrg);
@@ -32,11 +29,6 @@ function matchesOrg(targetOrg: string | undefined, candidate: { orgName?: string
     candidate.orgSlug === targetSlug ||
     candidate.orgShort === "UMCSS"
   );
-}
-
-function startOfMonth(ts = Date.now()) {
-  const d = new Date(ts);
-  return new Date(d.getFullYear(), d.getMonth(), 1).getTime();
 }
 
 function average(values: number[]) {

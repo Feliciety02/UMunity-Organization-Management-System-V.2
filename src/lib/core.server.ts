@@ -618,4 +618,3 @@ export async function removeOrgMember(c: Client, user: UserRow, email: string) {
 
 // Re-exported for the server functions.
 export { toSession };
-export const SYNCED_KEY_LIST = Object.keys(SYNCED_KEYS) as SyncedKey[];

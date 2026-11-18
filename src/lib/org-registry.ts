@@ -1,7 +1,7 @@
-import { cloudStorage } from "@/lib/cloud-storage";
-import { useEffect, useState, useSyncExternalStore } from "react";
 import { organizations, officers } from "@/data/orgs";
 import { addNotification } from "@/lib/notifications";
+import { currentAcademicYear, nowId } from "@/lib/text";
+import { createLocalStore } from "@/lib/local-store";
 
 export type OrgLifecycleStatus = "recognized" | "probationary" | "pending_review" | "disbanded";
 export type OrgAccreditationStatus = "active" | "renewal_pending" | "under_review" | "suspended";
@@ -28,16 +28,6 @@ export type OrgRegistryRecord = {
 };
 
 const KEY = "umunity.org-registry.v1";
-const EVENT = "umunity:org-registry";
-
-function nowId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-}
-
-function currentAcademicYear() {
-  const year = new Date().getFullYear();
-  return `${year}-${year + 1}`;
-}
 
 function defaultAdviserName(slug: string) {
   return officers[slug]?.find((entry) => entry.role.toLowerCase() === "adviser")?.name ?? "Prof. Elena Tan";
@@ -65,26 +55,6 @@ const seed: OrgRegistryRecord[] = organizations.map((org, index) => ({
     },
   ],
 }));
-
-function read() {
-  if (typeof window === "undefined") return seed;
-  try {
-    const raw = cloudStorage.getItem(KEY);
-    if (!raw) {
-      cloudStorage.setItem(KEY, JSON.stringify(seed));
-      return seed;
-    }
-    return JSON.parse(raw) as OrgRegistryRecord[];
-  } catch {
-    return seed;
-  }
-}
-
-function write(list: OrgRegistryRecord[]) {
-  if (typeof window === "undefined") return;
-  cloudStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event(EVENT));
-}
 
 export function formatOrgLifecycleStatus(status: OrgLifecycleStatus) {
   switch (status) {
@@ -138,12 +108,12 @@ export function orgAccreditationTone(status: OrgAccreditationStatus): "success" 
   }
 }
 
+const store = createLocalStore<OrgRegistryRecord[]>(KEY, seed, { saveSeed: true });
+const read = store.read;
+const write = store.write;
+
 export function getOrgRegistry() {
   return read().sort((a, b) => a.name.localeCompare(b.name));
-}
-
-export function getOrgRecord(slug: string) {
-  return read().find((org) => org.slug === slug) ?? null;
 }
 
 function updateRecord(slug: string, updater: (record: OrgRegistryRecord) => OrgRegistryRecord) {
@@ -212,26 +182,8 @@ export function sendOrgRegistryNotification(slug: string, title: string, meta: s
   });
 }
 
-function subscribe(callback: () => void) {
-  if (typeof window === "undefined") return () => {};
-  const handler = () => callback();
-  window.addEventListener(EVENT, handler);
-  window.addEventListener("storage", handler);
-  return () => {
-    window.removeEventListener(EVENT, handler);
-    window.removeEventListener("storage", handler);
-  };
-}
-
 export function useOrgRegistry() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const snapshot = useSyncExternalStore(
-    subscribe,
-    () => JSON.stringify(getOrgRegistry()),
-    () => JSON.stringify(seed),
-  );
-  return mounted ? (JSON.parse(snapshot) as OrgRegistryRecord[]) : seed;
+  return store.useSelect(getOrgRegistry, seed);
 }
 
 export function useOrgRecord(slug: string) {

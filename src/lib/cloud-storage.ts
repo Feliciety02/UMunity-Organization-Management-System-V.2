@@ -279,11 +279,6 @@ export async function flushPending() {
   await Promise.all([...dirty].map((key) => push(key)));
 }
 
-/** True while there are edits the database hasn't confirmed. */
-export function hasUnsavedChanges() {
-  return dirty.size > 0;
-}
-
 /** Keep other people's changes flowing in: re-sync when the tab regains focus; warn before losing edits. */
 export function startBackgroundSync() {
   if (typeof window === "undefined") return () => {};

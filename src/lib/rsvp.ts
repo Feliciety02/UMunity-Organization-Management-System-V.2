@@ -1,7 +1,7 @@
 // Client-side RSVP store (saved to the database via cloud-storage)
-import { cloudStorage } from "@/lib/cloud-storage";
-import { useEffect, useState, useSyncExternalStore } from "react";
 import { addNotification } from "./notifications";
+import { slugify } from "@/lib/text";
+import { createLocalStore } from "@/lib/local-store";
 
 export type RsvpStatus = "going" | "maybe" | "cancelled";
 
@@ -15,7 +15,6 @@ export type RsvpRecord = {
 };
 
 const KEY = "umunity.rsvps.v1";
-const EVENT = "umunity:rsvps";
 
 const seed: RsvpRecord[] = [
   { eventTitle: "UM Innovation Summit 2026", status: "going", attendeeName: "Althea Dumaguete", attendeeEmail: "student@um.edu.ph", program: "BS CS - 3rd Yr", updatedAt: Date.now() - 86_400_000 },
@@ -25,37 +24,9 @@ const seed: RsvpRecord[] = [
   { eventTitle: "Eco Run for the Planet", status: "maybe", attendeeName: "Althea Dumaguete", attendeeEmail: "student@um.edu.ph", program: "BS CS - 3rd Yr", updatedAt: Date.now() - 40_000_000 },
 ];
 
-function read(): RsvpRecord[] {
-  if (typeof window === "undefined") return seed;
-  try {
-    const raw = cloudStorage.getItem(KEY);
-    if (!raw) {
-      cloudStorage.setItem(KEY, JSON.stringify(seed));
-      return seed;
-    }
-    return JSON.parse(raw) as RsvpRecord[];
-  } catch {
-    return seed;
-  }
-}
-
-function write(list: RsvpRecord[]) {
-  if (typeof window === "undefined") return;
-  cloudStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event(EVENT));
-}
-
-export function getAllRsvps(): RsvpRecord[] {
-  return read();
-}
-
-export function getMyRsvp(eventTitle: string, email: string): RsvpRecord | undefined {
-  return read().find((r) => r.eventTitle === eventTitle && r.attendeeEmail === email);
-}
-
-export function getEventRsvps(eventTitle: string): RsvpRecord[] {
-  return read().filter((r) => r.eventTitle === eventTitle);
-}
+const store = createLocalStore<RsvpRecord[]>(KEY, seed, { saveSeed: true });
+const read = store.read;
+const write = store.write;
 
 export function setRsvp(record: Omit<RsvpRecord, "updatedAt">) {
   const list = read();
@@ -78,34 +49,6 @@ export function setRsvp(record: Omit<RsvpRecord, "updatedAt">) {
   return next;
 }
 
-export function slugify(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
-
-export function cancelRsvp(eventTitle: string, email: string) {
-  const existing = getMyRsvp(eventTitle, email);
-  if (!existing) return;
-  setRsvp({ ...existing, status: "cancelled" });
-}
-
-function subscribe(cb: () => void) {
-  if (typeof window === "undefined") return () => {};
-  const handler = () => cb();
-  window.addEventListener(EVENT, handler);
-  window.addEventListener("storage", handler);
-  return () => {
-    window.removeEventListener(EVENT, handler);
-    window.removeEventListener("storage", handler);
-  };
-}
-
 export function useRsvps(): RsvpRecord[] {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
-  const snap = useSyncExternalStore(
-    subscribe,
-    () => JSON.stringify(read()),
-    () => JSON.stringify(seed),
-  );
-  return hydrated ? (JSON.parse(snap) as RsvpRecord[]) : seed;
+  return store.useSelect(read, seed);
 }

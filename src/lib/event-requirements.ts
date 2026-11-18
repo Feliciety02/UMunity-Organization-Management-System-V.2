@@ -1,8 +1,8 @@
 // Event Documentation Workflow store (saved to the database via cloud-storage)
 // Generates an OSA-style Requirements Tracker per event.
-import { cloudStorage } from "@/lib/cloud-storage";
-import { useEffect, useState, useSyncExternalStore } from "react";
 import { addNotification } from "./notifications";
+import { nowId } from "@/lib/text";
+import { createLocalStore } from "@/lib/local-store";
 
 export type ReqStatus = "pending" | "for-review" | "approved" | "missing";
 export type SectionId = "before" | "during" | "after";
@@ -61,13 +61,8 @@ export type EventDoc = {
 };
 
 const KEY = "umunity.event-requirements.v1";
-const EVENT = "umunity:event-requirements";
 
 const DAY = 86_400_000;
-
-function nowId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-}
 
 export function academicYearFor(dateISO: string): string {
   const d = dateISO ? new Date(dateISO) : new Date();
@@ -211,32 +206,12 @@ const seed: EventDoc[] = [
   })(),
 ];
 
-function read(): EventDoc[] {
-  if (typeof window === "undefined") return seed;
-  try {
-    const raw = cloudStorage.getItem(KEY);
-    if (!raw) {
-      cloudStorage.setItem(KEY, JSON.stringify(seed));
-      return seed;
-    }
-    return JSON.parse(raw) as EventDoc[];
-  } catch {
-    return seed;
-  }
-}
-
-function write(list: EventDoc[]) {
-  if (typeof window === "undefined") return;
-  cloudStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event(EVENT));
-}
+const store = createLocalStore<EventDoc[]>(KEY, seed);
+const read = store.read;
+const write = store.write;
 
 export function listEventDocs(): EventDoc[] {
   return read().sort((a, b) => b.createdAt - a.createdAt);
-}
-
-export function getEventDoc(id: string): EventDoc | undefined {
-  return read().find((e) => e.id === id);
 }
 
 export function createEventDoc(input: {
@@ -569,26 +544,8 @@ export function sectionProgress(section: ReqSection): { done: number; total: num
   return { done, total, pct: Math.round((done / total) * 100) };
 }
 
-function subscribe(cb: () => void) {
-  if (typeof window === "undefined") return () => {};
-  const handler = () => cb();
-  window.addEventListener(EVENT, handler);
-  window.addEventListener("storage", handler);
-  return () => {
-    window.removeEventListener(EVENT, handler);
-    window.removeEventListener("storage", handler);
-  };
-}
-
 export function useEventDocs(): EventDoc[] {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
-  const snap = useSyncExternalStore(
-    subscribe,
-    () => JSON.stringify(listEventDocs()),
-    () => JSON.stringify(seed),
-  );
-  return hydrated ? (JSON.parse(snap) as EventDoc[]) : seed;
+  return store.useSelect(listEventDocs, seed);
 }
 
 export function useEventDoc(id: string): EventDoc | undefined {

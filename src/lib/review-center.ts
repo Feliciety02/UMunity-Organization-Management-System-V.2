@@ -7,6 +7,7 @@ import {
   useTransitionWorkflows,
   useWorkflows,
 } from "@/lib/workflows";
+import { orgShortFor } from "@/lib/text";
 
 export type ReviewCenterItem = {
   id: string;
@@ -41,23 +42,12 @@ function toneForStatus(status: string): ReviewCenterItem["tone"] {
   return "info";
 }
 
-function orgShortFrom(name?: string) {
-  if (!name) return "UMORG";
-  const letters = name
-    .replace(/[^A-Za-z\s]/g, "")
-    .split(/\s+/)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
-  return letters.length >= 2 ? letters.slice(0, 6) : "UMORG";
-}
-
 export function useLeaderReviewCenter(orgName?: string) {
   const workflows = useWorkflows().filter((workflow) => !orgName || workflow.orgName === orgName);
   const transitions = useTransitionWorkflows().filter((workflow) => !orgName || workflow.orgName === orgName);
   const postApprovals = usePostApprovals().filter((approval) => !orgName || approval.orgName === orgName);
   const compliance = useComplianceSubmissions().filter((submission) => !orgName || submission.orgName === orgName);
-  const orgShort = orgShortFrom(orgName);
+  const orgShort = orgShortFor(orgName);
   const requirements = useEventDocs().filter((doc) => doc.orgShort === orgShort);
 
   const actionItems: ReviewCenterItem[] = [

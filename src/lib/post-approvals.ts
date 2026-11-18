@@ -1,7 +1,7 @@
-import { cloudStorage } from "@/lib/cloud-storage";
-import { useEffect, useState, useSyncExternalStore } from "react";
 import { addNotification } from "@/lib/notifications";
 import type { WorkflowActor } from "@/lib/workflows";
+import { nowId } from "@/lib/text";
+import { createLocalStore } from "@/lib/local-store";
 
 export type PostApprovalStatus =
   | "draft"
@@ -50,11 +50,6 @@ export type PostApproval = {
 };
 
 const KEY = "umunity.post-approvals.v1";
-const EVENT = "umunity:post-approvals";
-
-function nowId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-}
 
 const seed: PostApproval[] = [
   {
@@ -140,26 +135,6 @@ const seed: PostApproval[] = [
   },
 ];
 
-function read() {
-  if (typeof window === "undefined") return seed;
-  try {
-    const raw = cloudStorage.getItem(KEY);
-    if (!raw) {
-      cloudStorage.setItem(KEY, JSON.stringify(seed));
-      return seed;
-    }
-    return JSON.parse(raw) as PostApproval[];
-  } catch {
-    return seed;
-  }
-}
-
-function write(list: PostApproval[]) {
-  if (typeof window === "undefined") return;
-  cloudStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event(EVENT));
-}
-
 export function formatPostApprovalStatus(status: PostApprovalStatus) {
   switch (status) {
     case "draft":
@@ -194,12 +169,12 @@ export function postApprovalTone(status: PostApprovalStatus): "neutral" | "info"
   }
 }
 
+const store = createLocalStore<PostApproval[]>(KEY, seed);
+const read = store.read;
+const write = store.write;
+
 export function getPostApprovals() {
   return read().sort((a, b) => b.updatedAt - a.updatedAt);
-}
-
-export function getPostApproval(id: string) {
-  return read().find((item) => item.id === id) ?? null;
 }
 
 export function createPostApproval(input: {
@@ -422,26 +397,8 @@ export function approvePostApproval(id: string, actor: WorkflowActor) {
   });
 }
 
-function subscribe(cb: () => void) {
-  if (typeof window === "undefined") return () => {};
-  const handler = () => cb();
-  window.addEventListener(EVENT, handler);
-  window.addEventListener("storage", handler);
-  return () => {
-    window.removeEventListener(EVENT, handler);
-    window.removeEventListener("storage", handler);
-  };
-}
-
 export function usePostApprovals() {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
-  const snapshot = useSyncExternalStore(
-    subscribe,
-    () => JSON.stringify(getPostApprovals()),
-    () => JSON.stringify(seed),
-  );
-  return hydrated ? (JSON.parse(snapshot) as PostApproval[]) : seed;
+  return store.useSelect(getPostApprovals, seed);
 }
 
 export function usePostApproval(id: string) {

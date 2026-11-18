@@ -1,7 +1,6 @@
 // Client-side notifications store (saved to the database via cloud-storage)
-import { cloudStorage } from "@/lib/cloud-storage";
-import { useEffect, useState, useSyncExternalStore } from "react";
 import type { Role } from "@/lib/auth";
+import { createLocalStore } from "@/lib/local-store";
 
 export type NotifCategory =
   | "event"
@@ -25,7 +24,6 @@ export type AppNotif = {
 
 // v2: notifications are scoped per role (v1 showed student items to every role).
 const KEY = "umunity.notifications.v2";
-const EVENT = "umunity:notifications";
 
 const studentSeed: AppNotif[] = [
   {
@@ -150,25 +148,9 @@ export function audienceOf(n: Pick<AppNotif, "audience" | "href">): Role {
   return "student";
 }
 
-function read(): AppNotif[] {
-  if (typeof window === "undefined") return seed;
-  try {
-    const raw = cloudStorage.getItem(KEY);
-    if (!raw) {
-      cloudStorage.setItem(KEY, JSON.stringify(seed));
-      return seed;
-    }
-    return JSON.parse(raw) as AppNotif[];
-  } catch {
-    return seed;
-  }
-}
-
-function write(list: AppNotif[]) {
-  if (typeof window === "undefined") return;
-  cloudStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event(EVENT));
-}
+const store = createLocalStore<AppNotif[]>(KEY, seed, { saveSeed: true });
+const read = store.read;
+const write = store.write;
 
 export function getNotifications(role?: Role): AppNotif[] {
   return read()
@@ -249,25 +231,9 @@ export function resolveAdmin1NotificationHref(href?: string): string | undefined
   return "/admin1";
 }
 
-function subscribe(cb: () => void) {
-  if (typeof window === "undefined") return () => {};
-  const handler = () => cb();
-  window.addEventListener(EVENT, handler);
-  window.addEventListener("storage", handler);
-  return () => {
-    window.removeEventListener(EVENT, handler);
-    window.removeEventListener("storage", handler);
-  };
-}
-
 export function useNotifications(role?: Role): AppNotif[] {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
-  const fallback = role ? seed.filter((n) => audienceOf(n) === role) : seed;
-  const snap = useSyncExternalStore(
-    subscribe,
-    () => JSON.stringify(getNotifications(role)),
-    () => JSON.stringify(fallback),
+  return store.useSelect(
+    () => getNotifications(role),
+    role ? seed.filter((n) => audienceOf(n) === role) : seed,
   );
-  return hydrated ? (JSON.parse(snap) as AppNotif[]) : fallback;
 }

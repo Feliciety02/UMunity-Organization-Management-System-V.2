@@ -7,6 +7,7 @@ import {
   useTransitionWorkflows,
   useWorkflows,
 } from "@/lib/workflows";
+import { startOfMonth } from "@/lib/text";
 
 type AdminRole = "admin2" | "admin1";
 
@@ -45,11 +46,6 @@ function hoursSince(timestamp: number) {
 
 function avg(values: number[]) {
   return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
-}
-
-function startOfMonth() {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1).getTime();
 }
 
 function startOfDay(offset: number) {

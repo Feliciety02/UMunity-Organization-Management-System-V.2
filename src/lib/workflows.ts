@@ -1,7 +1,7 @@
-import { cloudStorage } from "@/lib/cloud-storage";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { createLocalStore } from "@/lib/local-store";
 import { addNotification } from "@/lib/notifications";
 import { sendOrgRegistryNotification } from "@/lib/org-registry";
+import { currentAcademicYear, nowId } from "@/lib/text";
 
 export type WorkflowStatus =
   | "draft"
@@ -183,21 +183,10 @@ export type OfficerTransitionWorkflow = {
 };
 
 const KEY = "umunity.workflows.v1";
-const EVENT = "umunity:workflows";
 const TRANSITION_KEY = "umunity.transitions.v1";
-const TRANSITION_EVENT = "umunity:transitions";
-
-function nowId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-}
 
 export function newWorkflowId(prefix: string) {
   return nowId(prefix);
-}
-
-function currentAy() {
-  const year = new Date().getFullYear();
-  return `${year}-${year + 1}`;
 }
 
 function defaultOperations(title: string): WorkflowOperations {
@@ -325,7 +314,7 @@ export function seedWorkflows(): EventWorkflow[] {
       id: "workflow-innovation-summit",
       orgName: "UM Computer Studies Society",
       orgShort: "UMCSS",
-      ay: currentAy(),
+      ay: currentAcademicYear(),
       createdAt: baseTime,
       updatedAt: Date.now() - 4 * 60 * 60 * 1000,
       createdBy: "Marco Reyes",
@@ -413,7 +402,7 @@ export function seedWorkflows(): EventWorkflow[] {
       id: "workflow-hack-night",
       orgName: "UM Computer Studies Society",
       orgShort: "UMCSS",
-      ay: currentAy(),
+      ay: currentAcademicYear(),
       createdAt: baseTime - 5 * 86_400_000,
       updatedAt: Date.now() - 18 * 60 * 60 * 1000,
       createdBy: "Marco Reyes",
@@ -489,7 +478,7 @@ export function seedWorkflows(): EventWorkflow[] {
       id: "workflow-cultural-night",
       orgName: "UM Cultural Guild",
       orgShort: "UMCG",
-      ay: currentAy(),
+      ay: currentAcademicYear(),
       createdAt: baseTime - 10 * 86_400_000,
       updatedAt: Date.now() - 26 * 60 * 60 * 1000,
       createdBy: "Angela Bautista",
@@ -578,7 +567,7 @@ export function seedWorkflows(): EventWorkflow[] {
       id: "workflow-ai-education",
       orgName: "UM Computer Studies Society",
       orgShort: "UMCSS",
-      ay: currentAy(),
+      ay: currentAcademicYear(),
       createdAt: baseTime - 14 * 86_400_000,
       updatedAt: Date.now() - 5 * 60 * 60 * 1000,
       createdBy: "Marco Reyes",
@@ -681,7 +670,7 @@ export function seedWorkflows(): EventWorkflow[] {
       id: "workflow-student-leadership-forum",
       orgName: "UM Student Leaders Council",
       orgShort: "SLC",
-      ay: currentAy(),
+      ay: currentAcademicYear(),
       createdAt: baseTime - 18 * 86_400_000,
       updatedAt: Date.now() - 3 * 60 * 60 * 1000,
       createdBy: "Rina Delgado",
@@ -907,48 +896,22 @@ export function seedTransitionWorkflows(): OfficerTransitionWorkflow[] {
   ];
 }
 
+const store = createLocalStore<EventWorkflow[]>(KEY, seedWorkflows(), { saveSeed: true });
+const transitionStore = createLocalStore<OfficerTransitionWorkflow[]>(
+  TRANSITION_KEY,
+  seedTransitionWorkflows(),
+  { saveSeed: true },
+);
+
 function read(): EventWorkflow[] {
-  if (typeof window === "undefined") return seedWorkflows();
-  try {
-    const raw = cloudStorage.getItem(KEY);
-    if (!raw) {
-      const seeded = seedWorkflows();
-      cloudStorage.setItem(KEY, JSON.stringify(seeded));
-      return seeded;
-    }
-    // The database is the source of truth (it is seeded on the server), so use what it holds as-is.
-    return (JSON.parse(raw) as EventWorkflow[]).map(normalizeWorkflow);
-  } catch {
-    return seedWorkflows();
-  }
+  return store.read().map(normalizeWorkflow);
 }
 
-function write(list: EventWorkflow[]) {
-  if (typeof window === "undefined") return;
-  cloudStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event(EVENT));
-}
+const write = store.write;
 
-function readTransitions(): OfficerTransitionWorkflow[] {
-  if (typeof window === "undefined") return seedTransitionWorkflows();
-  try {
-    const raw = cloudStorage.getItem(TRANSITION_KEY);
-    if (!raw) {
-      const seeded = seedTransitionWorkflows();
-      cloudStorage.setItem(TRANSITION_KEY, JSON.stringify(seeded));
-      return seeded;
-    }
-    return JSON.parse(raw) as OfficerTransitionWorkflow[];
-  } catch {
-    return seedTransitionWorkflows();
-  }
-}
+const readTransitions = transitionStore.read;
 
-function writeTransitions(list: OfficerTransitionWorkflow[]) {
-  if (typeof window === "undefined") return;
-  cloudStorage.setItem(TRANSITION_KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event(TRANSITION_EVENT));
-}
+const writeTransitions = transitionStore.write;
 
 function cloneWorkflow(workflow: EventWorkflow) {
   return JSON.parse(JSON.stringify(workflow)) as EventWorkflow;
@@ -1042,10 +1005,6 @@ export function getWorkflows() {
   return read().sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
-export function getWorkflow(id: string) {
-  return read().find((workflow) => workflow.id === id) ?? null;
-}
-
 export function createWorkflow(input: {
   orgName: string;
   orgShort: string;
@@ -1058,7 +1017,7 @@ export function createWorkflow(input: {
     id: nowId("workflow"),
     orgName: input.orgName,
     orgShort: input.orgShort,
-    ay: currentAy(),
+    ay: currentAcademicYear(),
     createdAt: Date.now(),
     updatedAt: Date.now(),
     createdBy: input.createdBy,
@@ -1092,25 +1051,6 @@ export function createWorkflow(input: {
     });
   }
   return workflow;
-}
-
-export function saveWorkflowDraft(id: string, proposal: EventProposalData, actorName: string) {
-  return updateWorkflow(id, (workflow) => ({
-    ...workflow,
-    proposal,
-    updatedAt: Date.now(),
-    history: [
-      {
-        id: nowId("history"),
-        action: "draft_saved",
-        byRole: "leader",
-        byName: actorName,
-        note: "Draft saved from the smart form builder.",
-        createdAt: Date.now(),
-      },
-      ...workflow.history,
-    ],
-  }));
 }
 
 export function submitWorkflow(id: string, actor: WorkflowActor) {
@@ -1912,26 +1852,8 @@ export function operationsCompletion(workflow: EventWorkflow) {
   };
 }
 
-function subscribe(cb: () => void) {
-  if (typeof window === "undefined") return () => {};
-  const handler = () => cb();
-  window.addEventListener(EVENT, handler);
-  window.addEventListener("storage", handler);
-  return () => {
-    window.removeEventListener(EVENT, handler);
-    window.removeEventListener("storage", handler);
-  };
-}
-
 export function useWorkflows() {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
-  const snapshot = useSyncExternalStore(
-    subscribe,
-    () => JSON.stringify(getWorkflows()),
-    () => JSON.stringify(seedWorkflows()),
-  );
-  return hydrated ? (JSON.parse(snapshot) as EventWorkflow[]) : seedWorkflows();
+  return store.useSelect(getWorkflows, seedWorkflows());
 }
 
 export function useWorkflow(id: string) {
@@ -1961,10 +1883,6 @@ function nextTransitionStageFor(status: WorkflowStatus) {
 
 export function getTransitionWorkflows() {
   return readTransitions().sort((a, b) => b.updatedAt - a.updatedAt);
-}
-
-export function getTransitionWorkflow(id: string) {
-  return readTransitions().find((workflow) => workflow.id === id) ?? null;
 }
 
 export function createTransitionWorkflow(input: {
@@ -2174,28 +2092,8 @@ export function approveTransitionWorkflow(id: string, actor: WorkflowActor, note
   });
 }
 
-function subscribeTransitions(cb: () => void) {
-  if (typeof window === "undefined") return () => {};
-  const handler = () => cb();
-  window.addEventListener(TRANSITION_EVENT, handler);
-  window.addEventListener("storage", handler);
-  return () => {
-    window.removeEventListener(TRANSITION_EVENT, handler);
-    window.removeEventListener("storage", handler);
-  };
-}
-
 export function useTransitionWorkflows() {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
-  const snapshot = useSyncExternalStore(
-    subscribeTransitions,
-    () => JSON.stringify(getTransitionWorkflows()),
-    () => JSON.stringify(seedTransitionWorkflows()),
-  );
-  return hydrated
-    ? (JSON.parse(snapshot) as OfficerTransitionWorkflow[])
-    : seedTransitionWorkflows();
+  return transitionStore.useSelect(getTransitionWorkflows, seedTransitionWorkflows());
 }
 
 export function useTransitionWorkflow(id: string) {

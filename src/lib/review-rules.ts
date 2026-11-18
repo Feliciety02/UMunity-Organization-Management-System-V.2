@@ -1,8 +1,9 @@
 // Server-enforced rules for the approval stores (event workflows, officer transitions, compliance,
 // post approvals, event requirements). Every save of one of these items is checked here: the server
 // compares the stored item with the new one and refuses steps the signed-in role may not take.
-// Pure module (no imports besides types) so the server and the tests share it.
+// Pure module (only types and the pure text helpers) so the server and the tests share it.
 import type { Role } from "@/lib/demo-users";
+import { orgShortFor } from "@/lib/text";
 
 type Item = Record<string, unknown>;
 
@@ -66,14 +67,6 @@ const STAGE_REVIEWER: Record<string, Role> = {
 };
 /** Fields that only record activity; anyone allowed to touch the item may update them. */
 const ACTIVITY_FIELDS = ["currentStage", "updatedAt", "comments", "history"];
-
-/** "UM Computer Studies Society" -> "UMCSS", "UM Cultural Guild" -> "UMCG". */
-export function orgShortFor(name: string | undefined) {
-  if (!name) return "";
-  const words = name.split(/\s+/).filter(Boolean);
-  const [first, ...rest] = words;
-  return first === "UM" ? `UM${rest.map((w) => w[0]).join("").toUpperCase()}` : words.map((w) => w[0]).join("").toUpperCase();
-}
 
 export type Actor = { role: Role; org?: string };
 

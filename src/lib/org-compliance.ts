@@ -1,8 +1,8 @@
-import { cloudStorage } from "@/lib/cloud-storage";
-import { useEffect, useState, useSyncExternalStore } from "react";
 import { addNotification } from "@/lib/notifications";
 import type { WorkflowActor } from "@/lib/workflows";
 import { applyAccreditationDecision, sendOrgRegistryNotification } from "@/lib/org-registry";
+import { currentAcademicYear, nowId } from "@/lib/text";
+import { createLocalStore } from "@/lib/local-store";
 
 export type ComplianceStatus =
   | "draft"
@@ -70,16 +70,6 @@ export type OrgComplianceSubmission = {
 };
 
 const KEY = "umunity.org-compliance.v1";
-const EVENT = "umunity:org-compliance";
-
-function nowId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-}
-
-function currentAy() {
-  const year = new Date().getFullYear();
-  return `${year}-${year + 1}`;
-}
 
 function defaultFormData(): ComplianceFormData {
   return {
@@ -111,7 +101,7 @@ const seed: OrgComplianceSubmission[] = [
     id: "compliance-umcss-2026",
     orgName: "UM Computer Studies Society",
     orgSlug: "cs-society",
-    academicYear: currentAy(),
+    academicYear: currentAcademicYear(),
     createdBy: "Marco Reyes",
     status: "pending_adviser",
     createdAt: Date.now() - 7 * 60 * 60 * 1000,
@@ -141,7 +131,7 @@ const seed: OrgComplianceSubmission[] = [
     id: "compliance-eco-2026",
     orgName: "Eco Warriors Guild",
     orgSlug: "eco-warriors",
-    academicYear: currentAy(),
+    academicYear: currentAcademicYear(),
     createdBy: "Liza Mendoza",
     status: "pending_admin1",
     createdAt: Date.now() - 40 * 60 * 60 * 1000,
@@ -198,26 +188,6 @@ const seed: OrgComplianceSubmission[] = [
     ],
   },
 ];
-
-function read() {
-  if (typeof window === "undefined") return seed;
-  try {
-    const raw = cloudStorage.getItem(KEY);
-    if (!raw) {
-      cloudStorage.setItem(KEY, JSON.stringify(seed));
-      return seed;
-    }
-    return JSON.parse(raw) as OrgComplianceSubmission[];
-  } catch {
-    return seed;
-  }
-}
-
-function write(list: OrgComplianceSubmission[]) {
-  if (typeof window === "undefined") return;
-  cloudStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event(EVENT));
-}
 
 function notifyQueue(status: ComplianceStatus, submission: OrgComplianceSubmission) {
   if (status === "pending_adviser") {
@@ -283,12 +253,12 @@ export function complianceTone(status: ComplianceStatus): "neutral" | "info" | "
   }
 }
 
+const store = createLocalStore<OrgComplianceSubmission[]>(KEY, seed);
+const read = store.read;
+const write = store.write;
+
 export function getComplianceSubmissions() {
   return read().sort((a, b) => b.updatedAt - a.updatedAt);
-}
-
-export function getComplianceSubmission(id: string) {
-  return read().find((item) => item.id === id) ?? null;
 }
 
 export function createComplianceSubmission(input: {
@@ -522,26 +492,8 @@ export function approveCompliance(id: string, actor: WorkflowActor, note?: strin
   });
 }
 
-function subscribe(callback: () => void) {
-  if (typeof window === "undefined") return () => {};
-  const listener = () => callback();
-  window.addEventListener(EVENT, listener);
-  window.addEventListener("storage", listener);
-  return () => {
-    window.removeEventListener(EVENT, listener);
-    window.removeEventListener("storage", listener);
-  };
-}
-
 export function useComplianceSubmissions() {
-  const [mounted, setMounted] = useState(false);
-  const snapshot = useSyncExternalStore(
-    subscribe,
-    () => JSON.stringify(getComplianceSubmissions()),
-    () => JSON.stringify(seed),
-  );
-  useEffect(() => setMounted(true), []);
-  return mounted ? (JSON.parse(snapshot) as typeof seed) : seed;
+  return store.useSelect(getComplianceSubmissions, seed);
 }
 
 export function useComplianceSubmission(id: string) {
