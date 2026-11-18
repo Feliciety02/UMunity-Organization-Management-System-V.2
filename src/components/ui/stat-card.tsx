@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 const tones = {
   primary: "bg-primary/10 text-primary",
   gold: "bg-gold/20 text-primary-deep",
-  rose: "bg-rose-100 text-rose-700",
-  emerald: "bg-emerald-100 text-emerald-700",
-  sky: "bg-sky-100 text-sky-700",
+  rose: "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300",
+  emerald: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
+  sky: "bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300",
   amber: "bg-primary/15 text-primary-deep",
   neutral: "bg-secondary text-foreground",
 };

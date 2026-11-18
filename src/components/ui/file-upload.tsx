@@ -9,12 +9,15 @@ export function FileUpload({
   accept,
   multiple,
   maxSize,
+  hint,
   className,
 }: {
   onFiles?: (files: File[]) => void;
   accept?: string;
   multiple?: boolean;
   maxSize?: number;
+  /** Plain-language note on what can be uploaded, shown instead of the raw accept list. */
+  hint?: string;
   className?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -66,8 +69,17 @@ export function FileUpload({
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label={multiple ? "Choose files to upload" : "Choose a file to upload"}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition",
+          "flex cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition",
           dragging
             ? "border-primary bg-primary/5"
             : "border-border bg-card hover:border-primary/50",
@@ -81,7 +93,7 @@ export function FileUpload({
             Drop files here or click to browse
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            {accept ? `Supports ${accept}` : "Any file type"}
+            {hint ?? (accept ? `Supports ${accept}` : "Any file type")}
             {maxSize ? ` · Max ${Math.round(maxSize / 1024 / 1024)}MB` : null}
           </p>
         </div>
@@ -112,6 +124,8 @@ export function FileUpload({
                 </p>
               </div>
               <button
+                type="button"
+                aria-label={`Remove ${f.name}`}
                 onClick={(e) => { e.stopPropagation(); removeFile(i); }}
                 className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground"
               >
