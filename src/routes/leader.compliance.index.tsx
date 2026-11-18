@@ -14,7 +14,7 @@ import {
 import { getSession } from "@/lib/auth";
 import { SmartField, SmartFormSection, SmartProgressCard, SmartTextArea } from "@/components/workflows/SmartForm";
 
-export const Route = createFileRoute("/leader/compliance")({
+export const Route = createFileRoute("/leader/compliance/")({
   component: LeaderCompliancePage,
 });
 

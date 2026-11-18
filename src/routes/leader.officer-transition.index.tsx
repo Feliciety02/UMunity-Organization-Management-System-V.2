@@ -8,7 +8,7 @@ import { getSession } from "@/lib/auth";
 import { toast } from "sonner";
 import { SmartField, SmartFormSection, SmartProgressCard, SmartTextArea } from "@/components/workflows/SmartForm";
 
-export const Route = createFileRoute("/leader/officer-transition")({
+export const Route = createFileRoute("/leader/officer-transition/")({
   component: LeaderOfficerTransitionPage,
 });
 

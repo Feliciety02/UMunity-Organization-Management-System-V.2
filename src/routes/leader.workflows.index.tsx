@@ -5,7 +5,7 @@ import { AppButton } from "@/components/ui/app-button";
 import { useWorkflows } from "@/lib/workflows";
 import { getSession } from "@/lib/auth";
 
-export const Route = createFileRoute("/leader/workflows")({
+export const Route = createFileRoute("/leader/workflows/")({
   component: LeaderWorkflows,
 });
 

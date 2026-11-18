@@ -10,7 +10,7 @@ import {
   useOrgRegistry,
 } from "@/lib/org-registry";
 
-export const Route = createFileRoute("/admin1/organizations")({
+export const Route = createFileRoute("/admin1/organizations/")({
   component: Admin1OrganizationsPage,
 });
 

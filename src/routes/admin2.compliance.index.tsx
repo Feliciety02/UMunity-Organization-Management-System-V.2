@@ -1,22 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Building2 } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, EmptyState, PageHead, Panel } from "@/components/dashboard/DashboardLayout";
 import { complianceTone, formatComplianceStatus, useComplianceSubmissions } from "@/lib/org-compliance";
 
-export const Route = createFileRoute("/adviser/compliance")({
-  component: AdviserCompliancePage,
+export const Route = createFileRoute("/admin2/compliance/")({
+  component: Admin2Compliance,
 });
 
-function AdviserCompliancePage() {
-  const submissions = useComplianceSubmissions().filter((submission) => submission.status === "pending_adviser");
+function Admin2Compliance() {
+  const submissions = useComplianceSubmissions().filter((submission) => submission.status === "pending_admin2");
 
   return (
     <>
-      <PageHead title="Accreditation review" sub="Validate organization identity, leadership readiness, and annual governance before university review." />
+      <PageHead title="Compliance overview" sub="Validate adviser-cleared accreditation records before they reach Admin 1." />
       <Panel>
         {submissions.length === 0 ? (
-          <EmptyState title="No accreditation reviews pending" sub="Leader submissions will appear here for adviser validation." icon={Building2} />
+          <EmptyState title="No compliance reviews pending" sub="Adviser-cleared submissions will appear here for secondary validation." icon={ShieldCheck} />
         ) : (
           <div className="space-y-3">
             {submissions.map((submission) => (
@@ -27,11 +27,11 @@ function AdviserCompliancePage() {
                 </div>
                 <p className="mt-2 text-sm font-semibold">{submission.orgName}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {submission.data.accreditationScope} - {submission.data.category} - Adviser: {submission.data.adviserName}
+                  {submission.data.accreditationScope} - {submission.data.memberCount} members - {submission.data.category}
                 </p>
                 <AppButton asChild variant="secondary" size="sm" className="mt-3">
-                  <Link to="/adviser/compliance/$submissionId" params={{ submissionId: submission.id }}>
-                    Review submission <ArrowRight className="h-4 w-4" />
+                  <Link to="/admin2/compliance/$submissionId" params={{ submissionId: submission.id }}>
+                    Review compliance <ArrowRight className="h-4 w-4" />
                   </Link>
                 </AppButton>
               </div>

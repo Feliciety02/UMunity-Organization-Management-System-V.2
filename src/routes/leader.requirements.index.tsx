@@ -7,7 +7,7 @@ import { useEventDocs, computeProgress } from "@/lib/event-requirements";
 import { RequirementsTrackerContent } from "@/components/events/RequirementsTrackerContent";
 import { getSession } from "@/lib/auth";
 
-export const Route = createFileRoute("/leader/requirements")({
+export const Route = createFileRoute("/leader/requirements/")({
   component: RequirementsHub,
 });
 

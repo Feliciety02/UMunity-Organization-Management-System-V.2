@@ -4,7 +4,7 @@ import { AppButton } from "@/components/ui/app-button";
 import { Badge, EmptyState, PageHead, Panel } from "@/components/dashboard/DashboardLayout";
 import { complianceTone, formatComplianceStatus, useComplianceSubmissions } from "@/lib/org-compliance";
 
-export const Route = createFileRoute("/admin1/accreditation")({
+export const Route = createFileRoute("/admin1/accreditation/")({
   component: Admin1AccreditationPage,
 });
 

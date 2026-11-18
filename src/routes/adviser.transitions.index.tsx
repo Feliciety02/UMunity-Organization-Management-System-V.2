@@ -4,7 +4,7 @@ import { Badge, EmptyState, PageHead, Panel } from "@/components/dashboard/Dashb
 import { useTransitionWorkflows } from "@/lib/workflows";
 import { ArrowRight, UserCog } from "lucide-react";
 
-export const Route = createFileRoute("/adviser/transitions")({
+export const Route = createFileRoute("/adviser/transitions/")({
   component: AdviserTransitionsPage,
 });
 

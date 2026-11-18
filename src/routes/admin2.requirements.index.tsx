@@ -4,7 +4,7 @@ import { AppButton } from "@/components/ui/app-button";
 import { Badge, EmptyState, PageHead, Panel } from "@/components/dashboard/DashboardLayout";
 import { formatReqReviewStatus, reqReviewTone, useEventDocs } from "@/lib/event-requirements";
 
-export const Route = createFileRoute("/admin2/requirements")({
+export const Route = createFileRoute("/admin2/requirements/")({
   component: Admin2RequirementsPage,
 });
 
