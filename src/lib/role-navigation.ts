@@ -28,6 +28,7 @@ import {
   UserCog,
   UserPlus,
   Users,
+  Wallet,
   Workflow,
   Bookmark,
   Eye,
@@ -48,6 +49,7 @@ export const ROLE_NAV: Record<Role, NavItem[]> = {
       icon: Users,
       section: "STUDENT",
     },
+    { to: "/student/finance", label: "Org Finances", icon: Wallet, section: "STUDENT" },
     { to: "/student/events", label: "Events", icon: Calendar, section: "STUDENT" },
     { to: "/student/saved", label: "Saved", icon: Bookmark, section: "STUDENT" },
     {
@@ -85,6 +87,7 @@ export const ROLE_NAV: Record<Role, NavItem[]> = {
       section: "MANAGEMENT",
     },
     { to: "/leader/compliance", label: "Accreditation", icon: ShieldCheck, section: "MANAGEMENT" },
+    { to: "/leader/finance", label: "Finance", icon: Wallet, section: "MANAGEMENT" },
     { to: "/leader/members", label: "Members", icon: Users, section: "MANAGEMENT" },
     {
       to: "/leader/requests",
@@ -136,6 +139,7 @@ export const ROLE_NAV: Record<Role, NavItem[]> = {
       section: "WORKSPACE",
     },
     { to: "/adviser/compliance", label: "Accreditation", icon: ShieldCheck, section: "WORKSPACE" },
+    { to: "/adviser/finance", label: "Finance", icon: Wallet, section: "WORKSPACE" },
     {
       to: "/adviser/review-center",
       label: "Review Center",
@@ -157,6 +161,7 @@ export const ROLE_NAV: Record<Role, NavItem[]> = {
       section: "OVERVIEW",
     },
     { to: "/admin2/compliance", label: "Compliance", icon: ShieldCheck, section: "OVERVIEW" },
+    { to: "/admin2/finance", label: "Finance", icon: Wallet, section: "OVERVIEW" },
     { to: "/admin2/requirements", label: "Requirements", icon: ClipboardCheck, section: "REVIEWS" },
     { to: "/admin2/posts", label: "Post Publishing", icon: Megaphone, section: "REVIEWS" },
     { to: "/admin2/notifications", label: "Notifications", icon: Bell, section: "SETTINGS" },
@@ -167,6 +172,7 @@ export const ROLE_NAV: Record<Role, NavItem[]> = {
     { to: "/admin1/authority", label: "Final Authority", icon: ShieldCheck, section: "OVERVIEW" },
     { to: "/admin1/organizations", label: "Organizations", icon: Building2, section: "OVERVIEW" },
     { to: "/admin1/accreditation", label: "Accreditation", icon: Landmark, section: "OVERVIEW" },
+    { to: "/admin1/finance", label: "Finance", icon: Wallet, section: "OVERVIEW" },
     { to: "/admin1/requirements", label: "Requirements", icon: ClipboardCheck, section: "OVERVIEW" },
     { to: "/admin1/transitions", label: "Officer Transitions", icon: UserCog, section: "OVERVIEW" },
     { to: "/admin1/governance", label: "Governance", icon: ScrollText, section: "OVERVIEW" },

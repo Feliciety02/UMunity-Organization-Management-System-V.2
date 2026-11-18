@@ -5,6 +5,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { deleteCookie, getCookie, getRequestHeader, getRequestIP, getRequestProtocol, getRequestUrl, setCookie } from "@tanstack/react-start/server";
 import type { Session } from "@/lib/demo-users";
 import * as core from "@/lib/core.server";
+import * as finance from "@/lib/finance.server";
 import { db, demoAccountsEnabled } from "@/lib/db.server";
 import type { DocPatch } from "@/lib/synced-keys";
 
@@ -289,6 +290,84 @@ export const removeOrgMemberFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) =>
     attempt(async () => {
       await core.removeOrgMember(await db(), await requireUser(), data.email);
+      return {};
+    }),
+  );
+
+// ---------- Finance ----------
+
+async function financeDb() {
+  const c = await db();
+  await finance.ensureFinanceSchema(c);
+  return c;
+}
+
+export const financeOrgsFn = createServerFn({ method: "GET" }).handler(async () =>
+  finance.financeOrgs(await financeDb(), await requireUser()),
+);
+
+export const loadLedgerFn = createServerFn({ method: "GET" })
+  .inputValidator((d: { slug: string }) => ({ slug: String(d.slug) }))
+  .handler(async ({ data }) =>
+    attempt(async () => ({ ledger: await finance.loadLedger(await financeDb(), await requireUser(), data.slug, { demo: demoAccountsEnabled() }) })),
+  );
+
+export const recordEntryFn = createServerFn({ method: "POST" })
+  .inputValidator((d: { slug: string; entry: finance.NewEntry }) => ({
+    slug: String(d.slug),
+    entry: {
+      kind: d.entry?.kind,
+      amountCents: Number(d.entry?.amountCents),
+      category: String(d.entry?.category ?? ""),
+      description: String(d.entry?.description ?? ""),
+      occurredOn: String(d.entry?.occurredOn ?? ""),
+      workflowId: d.entry?.workflowId ? String(d.entry.workflowId) : null,
+      eventTitle: d.entry?.eventTitle ? String(d.entry.eventTitle) : null,
+    } as finance.NewEntry,
+  }))
+  .handler(async ({ data }) => attempt(async () => finance.recordEntry(await financeDb(), await requireUser(), data.slug, data.entry)));
+
+export const addReceiptFn = createServerFn({ method: "POST" })
+  .inputValidator((d: { entryId: string; filename: string; dataBase64: string }) => ({
+    entryId: String(d.entryId),
+    filename: String(d.filename ?? ""),
+    dataBase64: String(d.dataBase64 ?? ""),
+  }))
+  .handler(async ({ data }) =>
+    attempt(async () => finance.addReceipt(await financeDb(), await requireUser(), data.entryId, { filename: data.filename, dataBase64: data.dataBase64 })),
+  );
+
+export const removeReceiptFn = createServerFn({ method: "POST" })
+  .inputValidator((d: { receiptId: string }) => ({ receiptId: String(d.receiptId) }))
+  .handler(async ({ data }) =>
+    attempt(async () => {
+      await finance.removeReceipt(await financeDb(), await requireUser(), data.receiptId);
+      return {};
+    }),
+  );
+
+export const getReceiptFn = createServerFn({ method: "GET" })
+  .inputValidator((d: { receiptId: string }) => ({ receiptId: String(d.receiptId) }))
+  .handler(async ({ data }) => attempt(async () => finance.getReceipt(await financeDb(), await requireUser(), data.receiptId)));
+
+export const reviewEntryFn = createServerFn({ method: "POST" })
+  .inputValidator((d: { entryId: string; decision: "verify" | "flag"; note: string }) => ({
+    entryId: String(d.entryId),
+    decision: d.decision === "flag" ? ("flag" as const) : ("verify" as const),
+    note: String(d.note ?? ""),
+  }))
+  .handler(async ({ data }) =>
+    attempt(async () => {
+      await finance.reviewEntry(await financeDb(), await requireUser(), data.entryId, data.decision, data.note);
+      return {};
+    }),
+  );
+
+export const voidEntryFn = createServerFn({ method: "POST" })
+  .inputValidator((d: { entryId: string; reason: string }) => ({ entryId: String(d.entryId), reason: String(d.reason ?? "") }))
+  .handler(async ({ data }) =>
+    attempt(async () => {
+      await finance.voidEntry(await financeDb(), await requireUser(), data.entryId, data.reason);
       return {};
     }),
   );
