@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/readme/banner.svg" width="1200" alt="UMunity logomark and name, with a minimal organization card from the homepage Featured Organizations section">
+  <img src="docs/readme/banner.svg" width="1200" alt="UMunity logomark and name, with a network illustration linking UMunity to eight student organizations, each shown by its category icon">
 </p>
 
 <h1 align="center">UMunity</h1>
