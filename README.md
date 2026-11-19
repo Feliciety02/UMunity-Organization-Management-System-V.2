@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/readme/banner.svg" width="1200" alt="UMunity logomark and name, with a minimal version of the homepage Student Dashboard card showing recent activity and counts of organizations, events, and posts">
+  <img src="docs/readme/banner.svg" width="1200" alt="UMunity logomark and name, with a minimal organization card from the homepage Featured Organizations section">
 </p>
 
 <h1 align="center">UMunity</h1>
