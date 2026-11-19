@@ -5,7 +5,8 @@ import { PageHead, Panel, EmptyState, PanelSkeleton } from "@/components/dashboa
 import { RsvpButton } from "@/components/events/rsvp-button";
 import { events } from "@/data/site";
 import { useDashboardPageLoading } from "@/lib/feedback";
-import { slugify, useRsvps } from "@/lib/rsvp";
+import { useRsvps } from "@/lib/rsvp";
+import { slugify } from "@/lib/text";
 
 export const Route = createFileRoute("/student/top-events")({
   component: TopEvents,

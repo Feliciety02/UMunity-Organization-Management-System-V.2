@@ -10,7 +10,8 @@ import { AppTabs } from "@/components/ui/app-tabs";
 import { IconButton } from "@/components/ui/icon-button";
 import { getSession } from "@/lib/auth";
 import { useDashboardPageLoading } from "@/lib/feedback";
-import { slugify, useRsvps, type RsvpStatus } from "@/lib/rsvp";
+import { useRsvps, type RsvpStatus } from "@/lib/rsvp";
+import { slugify } from "@/lib/text";
 import { useSaved } from "@/lib/saved";
 
 export const Route = createFileRoute("/student/events")({

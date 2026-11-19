@@ -19,6 +19,7 @@ import { AppButton } from "@/components/ui/app-button";
 import { createWorkflow, proposalCompletion, type EventProposalData } from "@/lib/workflows";
 import { getSession } from "@/lib/auth";
 import { SmartField, SmartFormSection, SmartProgressCard, SmartSelect, SmartTextArea } from "@/components/workflows/SmartForm";
+import { orgShortFor } from "@/lib/text";
 
 export const Route = createFileRoute("/leader/create-event")({
   component: CreateEventWorkflowPage,
@@ -34,12 +35,6 @@ const SDG_OPTIONS = [
   "Climate Action",
 ];
 const DRAFT_KEY = "umunity.event-workflow-draft";
-
-function orgShortFrom(name?: string) {
-  if (!name) return "UMORG";
-  const letters = name.replace(/[^A-Za-z\s]/g, "").split(/\s+/).map((word) => word[0]).join("").toUpperCase();
-  return letters.length >= 2 ? letters.slice(0, 6) : "UMORG";
-}
 
 function defaultProposal(): EventProposalData {
   return {
@@ -136,7 +131,7 @@ function CreateEventWorkflowPage() {
 
     const workflow = createWorkflow({
       orgName: session.org ?? "UM Organization",
-      orgShort: orgShortFrom(session.org),
+      orgShort: orgShortFor(session.org),
       createdBy: session.name,
       proposal: normalized,
       submit,
