@@ -80,7 +80,12 @@ function Login() {
     try {
       const s = await login(u.email, u.password, remember);
       if (s.ok) navigate({ to: homeFor(s.session.role) });
-      else setError(s.reason === "locked" ? loginError(s) : "That demo account isn't available. Try signing in manually.");
+      else
+        setError(
+          s.reason === "locked"
+            ? loginError(s)
+            : "That demo account isn't available. Try signing in manually.",
+        );
     } catch {
       setError("We couldn't reach UMunity. Check your connection and try again.");
     } finally {
@@ -93,15 +98,44 @@ function Login() {
       title="Welcome back."
       sub="Sign in to continue your UMunity journey."
       footer={
-        <>Don't have an account?{" "}
-          <Link to="/register" className="font-semibold text-gold hover:underline">Create one</Link>
+        <>
+          Don't have an account?{" "}
+          <Link to="/register" className="font-semibold text-gold hover:underline">
+            Create one
+          </Link>
         </>
       }
     >
       <form className="space-y-4" onSubmit={submit}>
-        <Field icon={Mail} type="email" label="UM Email" placeholder="you@umindanao.edu.ph" value={email} onChange={(v) => { setEmail(v); setError(""); }} autoComplete="email" />
-        <Field icon={Lock} type="password" label="Password" placeholder="********" value={password} onChange={(v) => { setPassword(v); setError(""); }} autoComplete="current-password" />
-        {error && <p className="rounded-xl bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">{error}</p>}
+        <Field
+          icon={Mail}
+          type="email"
+          label="UM Email"
+          placeholder="you@umindanao.edu.ph"
+          value={email}
+          onChange={(v) => {
+            setEmail(v);
+            setError("");
+          }}
+          autoComplete="email"
+        />
+        <Field
+          icon={Lock}
+          type="password"
+          label="Password"
+          placeholder="********"
+          value={password}
+          onChange={(v) => {
+            setPassword(v);
+            setError("");
+          }}
+          autoComplete="current-password"
+        />
+        {error && (
+          <p className="rounded-xl bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
+            {error}
+          </p>
+        )}
         <div className="flex items-center justify-between text-sm">
           <label className="flex items-center gap-2 text-muted-foreground">
             <input
@@ -112,45 +146,66 @@ function Login() {
             />
             Remember me
           </label>
-          <button type="button" onClick={() => setResetOpen(true)} className="font-medium text-primary hover:underline">
+          <button
+            type="button"
+            onClick={() => setResetOpen(true)}
+            className="font-medium text-primary hover:underline"
+          >
             Forgot password?
           </button>
         </div>
-        <button type="submit" disabled={submitting} className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-maroon py-3 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.02] disabled:opacity-60">
-          {submitting ? "Signing in..." : "Sign in"} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        <button
+          type="submit"
+          disabled={submitting}
+          className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-maroon py-3 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.02] disabled:opacity-60"
+        >
+          {submitting ? "Signing in..." : "Sign in"}{" "}
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </button>
       </form>
 
       <ForgotPasswordDialog open={resetOpen} onOpenChange={setResetOpen} initialEmail={email} />
 
       {showDemo ? (
-      <div className="mt-8 rounded-2xl border border-dashed border-primary/30 bg-secondary/50 p-4">
-        <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
-          <UserIcon className="h-3.5 w-3.5" /> Demo accounts
-        </p>
-        <div className="mt-3 grid gap-2">
-          {DEMO_USERS.map((u, i) => (
-            <button
-              key={u.email}
-              onClick={() => quickLogin(i)}
-              type="button"
-              className="flex items-center justify-between gap-2 rounded-xl bg-card px-3 py-2 text-left text-xs transition hover:border-primary hover:shadow-soft"
-            >
-              <div>
-                <p className="font-semibold capitalize text-foreground">{u.role}</p>
-                <p className="text-muted-foreground">{u.email} · <span className="font-mono">{u.password}</span></p>
-              </div>
-              <ArrowRight className="h-4 w-4 text-primary" />
-            </button>
-          ))}
+        <div className="mt-8 rounded-2xl border border-dashed border-primary/30 bg-secondary/50 p-4">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
+            <UserIcon className="h-3.5 w-3.5" /> Demo accounts
+          </p>
+          <div className="mt-3 grid gap-2">
+            {DEMO_USERS.map((u, i) => (
+              <button
+                key={u.email}
+                onClick={() => quickLogin(i)}
+                type="button"
+                className="flex items-center justify-between gap-2 rounded-xl bg-card px-3 py-2 text-left text-xs transition hover:border-primary hover:shadow-soft"
+              >
+                <div>
+                  <p className="font-semibold capitalize text-foreground">{u.role}</p>
+                  <p className="text-muted-foreground">
+                    {u.email} · <span className="font-mono">{u.password}</span>
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-primary" />
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
       ) : null}
     </AuthLayout>
   );
 }
 
-export function AuthLayout({ title, sub, footer, children }: { title: string; sub: string; footer: React.ReactNode; children: React.ReactNode }) {
+export function AuthLayout({
+  title,
+  sub,
+  footer,
+  children,
+}: {
+  title: string;
+  sub: string;
+  footer: React.ReactNode;
+  children: React.ReactNode;
+}) {
   useForcedTheme("light");
 
   return (
@@ -174,7 +229,9 @@ export function AuthLayout({ title, sub, footer, children }: { title: string; su
             Join 18,000+ Mindanaoans already building their college story on UMunity.
           </p>
         </div>
-        <p className="relative text-xs text-primary-foreground/60">© {new Date().getFullYear()} UMunity · University of Mindanao</p>
+        <p className="relative text-xs text-primary-foreground/60">
+          © {new Date().getFullYear()} UMunity · University of Mindanao
+        </p>
       </div>
 
       <div className="flex items-center justify-center bg-background px-4 py-12 sm:px-6">
@@ -214,7 +271,9 @@ export function Field({
   return (
     <label className="block">
       <span className="mb-1.5 block text-sm font-medium text-foreground">{label}</span>
-      <div className={`flex items-center gap-2 rounded-2xl border bg-card px-4 py-3 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 ${error ? "border-destructive" : "border-input"}`}>
+      <div
+        className={`flex items-center gap-2 rounded-2xl border bg-card px-4 py-3 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 ${error ? "border-destructive" : "border-input"}`}
+      >
         <Icon className="h-4 w-4 text-muted-foreground" />
         <input
           type={type}
@@ -269,21 +328,23 @@ function ForgotPasswordDialog({
         </DialogHeader>
         {sent ? (
           <>
-          {devLink ? (
-            <p className="rounded-xl bg-secondary px-3 py-2 text-xs text-muted-foreground">
-              Development mode (no email service configured):{" "}
-              <a href={devLink} className="font-semibold text-primary underline">open the reset link</a>
-            </p>
-          ) : null}
-          <DialogFooter>
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep"
-            >
-              Back to sign in
-            </button>
-          </DialogFooter>
+            {devLink ? (
+              <p className="rounded-xl bg-secondary px-3 py-2 text-xs text-muted-foreground">
+                Development mode (no email service configured):{" "}
+                <a href={devLink} className="font-semibold text-primary underline">
+                  open the reset link
+                </a>
+              </p>
+            ) : null}
+            <DialogFooter>
+              <button
+                type="button"
+                onClick={() => onOpenChange(false)}
+                className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-deep"
+              >
+                Back to sign in
+              </button>
+            </DialogFooter>
           </>
         ) : (
           <form

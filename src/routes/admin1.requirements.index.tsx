@@ -13,20 +13,31 @@ function Admin1RequirementsPage() {
 
   return (
     <>
-      <PageHead title="Requirements final approval" sub="Approve compliance-cleared requirement trackers as final authority." />
+      <PageHead
+        title="Requirements final approval"
+        sub="Approve compliance-cleared requirement trackers as final authority."
+      />
       <Panel>
         {docs.length === 0 ? (
-          <EmptyState title="No requirements trackers pending Admin 1 review" sub="Admin 2-cleared requirement packets will appear here." icon={ClipboardCheck} />
+          <EmptyState
+            title="No requirements trackers pending Admin 1 review"
+            sub="Admin 2-cleared requirement packets will appear here."
+            icon={ClipboardCheck}
+          />
         ) : (
           <div className="space-y-3">
             {docs.map((doc) => (
               <div key={doc.id} className="rounded-2xl border border-border bg-card p-4">
                 <div className="flex items-center gap-2">
-                  <Badge tone={reqReviewTone(doc.reviewStatus)}>{formatReqReviewStatus(doc.reviewStatus)}</Badge>
+                  <Badge tone={reqReviewTone(doc.reviewStatus)}>
+                    {formatReqReviewStatus(doc.reviewStatus)}
+                  </Badge>
                   <Badge tone="neutral">{doc.category}</Badge>
                 </div>
                 <p className="mt-2 text-sm font-semibold">{doc.title}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{doc.date} - {doc.venue}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {doc.date} - {doc.venue}
+                </p>
                 <AppButton asChild variant="secondary" size="sm" className="mt-3">
                   <Link to="/admin1/requirements/$eventId" params={{ eventId: doc.id }}>
                     Review tracker <ArrowRight className="h-4 w-4" />

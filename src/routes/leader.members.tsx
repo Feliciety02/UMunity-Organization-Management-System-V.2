@@ -70,8 +70,18 @@ function Members() {
       ),
     },
     { key: "role", label: "Role", sortable: true, render: (row) => row.role },
-    { key: "joined", label: "Joined", sortable: true, render: (row) => <span className="text-muted-foreground">{row.joined}</span> },
-    { key: "status", label: "Status", sortable: true, render: (row) => <DataTableStatusBadge status={row.status} /> },
+    {
+      key: "joined",
+      label: "Joined",
+      sortable: true,
+      render: (row) => <span className="text-muted-foreground">{row.joined}</span>,
+    },
+    {
+      key: "status",
+      label: "Status",
+      sortable: true,
+      render: (row) => <DataTableStatusBadge status={row.status} />,
+    },
     {
       key: "actions",
       label: "",
@@ -90,7 +100,11 @@ function Members() {
                   label: "Mark inactive",
                   onSelect: () => {
                     setStatus(row.email, "Inactive");
-                    showStatusToast("Member marked inactive", `${row.name} is now listed as inactive.`, "info");
+                    showStatusToast(
+                      "Member marked inactive",
+                      `${row.name} is now listed as inactive.`,
+                      "info",
+                    );
                   },
                 }
               : {
@@ -119,7 +133,13 @@ function Members() {
             onClick={() =>
               downloadCsv(
                 "umcss-members.csv",
-                members.map((m) => ({ Name: m.name, Email: m.email, Role: m.role, Joined: m.joined, Status: m.status })),
+                members.map((m) => ({
+                  Name: m.name,
+                  Email: m.email,
+                  Role: m.role,
+                  Joined: m.joined,
+                  Status: m.status,
+                })),
               )
             }
           >
@@ -139,12 +159,22 @@ function Members() {
           searchPlaceholder="Search members..."
           filters={
             <>
-              <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} aria-label="Filter by role" className="rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold focus:outline-none">
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                aria-label="Filter by role"
+                className="rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold focus:outline-none"
+              >
                 <option value="all">All roles</option>
                 <option value="officers">Officers</option>
                 <option value="members">Members</option>
               </select>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label="Filter by status" className="rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold focus:outline-none">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                aria-label="Filter by status"
+                className="rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold focus:outline-none"
+              >
                 <option value="all">All statuses</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
@@ -164,7 +194,11 @@ function Members() {
         onConfirm={() => {
           if (!removing) return;
           removeOrgMember(removing.email);
-          showStatusToast("Member removed", `${removing.name} was removed from the organization.`, "warning");
+          showStatusToast(
+            "Member removed",
+            `${removing.name} was removed from the organization.`,
+            "warning",
+          );
           setRemoving(null);
         }}
       />

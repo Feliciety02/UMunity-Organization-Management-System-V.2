@@ -16,11 +16,25 @@ import {
   Trash2,
   Wallet,
 } from "lucide-react";
-import { Badge, EmptyState, PageHead, Panel, PanelSkeleton, StatCard } from "@/components/dashboard/DashboardLayout";
+import {
+  Badge,
+  EmptyState,
+  PageHead,
+  Panel,
+  PanelSkeleton,
+  StatCard,
+} from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { AppTabs } from "@/components/ui/app-tabs";
 import { DataTable, type Column } from "@/components/ui/data-table";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { FileUpload } from "@/components/ui/file-upload";
 import { downloadCsv } from "@/lib/csv";
 import { showStatusToast } from "@/lib/feedback";
@@ -58,17 +72,38 @@ const TABS = ["All", "Money in", "Money out", "Awaiting review", "Flagged", "Voi
 type Tab = (typeof TABS)[number];
 
 const dateLabel = (iso: string) =>
-  new Date(`${iso}T00:00:00`).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" });
+  new Date(`${iso}T00:00:00`).toLocaleDateString("en-PH", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 const timeLabel = (ms: number) =>
-  new Date(ms).toLocaleString("en-PH", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
-const sizeLabel = (n: number) => (n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+  new Date(ms).toLocaleString("en-PH", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+const sizeLabel = (n: number) =>
+  n >= 1024 * 1024
+    ? `${(n / 1024 / 1024).toFixed(1)} MB`
+    : `${Math.max(1, Math.round(n / 1024))} KB`;
 
 /**
  * The organization's books: every peso in and out, with receipts and a full audit trail.
  * Leaders record, advisers and admins verify, active members read. One component for every role;
  * what each person can do comes from the server.
  */
-export function FinanceLedger({ slug: fixedSlug, sub, recordForEvent }: { slug?: string; sub?: string; recordForEvent?: string }) {
+export function FinanceLedger({
+  slug: fixedSlug,
+  sub,
+  recordForEvent,
+}: {
+  slug?: string;
+  sub?: string;
+  recordForEvent?: string;
+}) {
   const orgs = useFinanceOrgs();
   const [picked, setPicked] = useState<string | null>(null);
   const slug = fixedSlug ?? picked ?? orgs?.[0]?.slug ?? null;
@@ -114,7 +149,11 @@ export function FinanceLedger({ slug: fixedSlug, sub, recordForEvent }: { slug?:
     return (
       <>
         <PageHead title="Finance ledger" sub={sub ?? "Every peso in and out, with receipts."} />
-        <EmptyState icon={Wallet} title="No organization books to show" sub="Finances are visible to an organization's officers, adviser, admins and active members." />
+        <EmptyState
+          icon={Wallet}
+          title="No organization books to show"
+          sub="Finances are visible to an organization's officers, adviser, admins and active members."
+        />
       </>
     );
   }
@@ -122,7 +161,12 @@ export function FinanceLedger({ slug: fixedSlug, sub, recordForEvent }: { slug?:
     return (
       <>
         <PageHead title="Finance ledger" />
-        <EmptyState icon={AlertTriangle} title="Couldn't open these books" sub={error ?? undefined} action={<AppButton onClick={() => void reload()}>Try again</AppButton>} />
+        <EmptyState
+          icon={AlertTriangle}
+          title="Couldn't open these books"
+          sub={error ?? undefined}
+          action={<AppButton onClick={() => void reload()}>Try again</AppButton>}
+        />
       </>
     );
   }
@@ -133,16 +177,29 @@ export function FinanceLedger({ slug: fixedSlug, sub, recordForEvent }: { slug?:
       key: "occurredOn",
       label: "Date",
       sortable: true,
-      render: (e) => <span className="whitespace-nowrap text-muted-foreground">{dateLabel(e.occurredOn)}</span>,
+      render: (e) => (
+        <span className="whitespace-nowrap text-muted-foreground">{dateLabel(e.occurredOn)}</span>
+      ),
     },
     {
       key: "description",
       label: "Transaction",
       render: (e) => (
-        <button type="button" onClick={() => setOpenId(e.id)} className="flex items-start gap-3 text-left">
+        <button
+          type="button"
+          onClick={() => setOpenId(e.id)}
+          className="flex items-start gap-3 text-left"
+        >
           <KindIcon kind={e.kind} />
           <span className="min-w-0">
-            <span className={cn("block font-semibold", e.status === "void" && "text-muted-foreground line-through")}>{e.description}</span>
+            <span
+              className={cn(
+                "block font-semibold",
+                e.status === "void" && "text-muted-foreground line-through",
+              )}
+            >
+              {e.description}
+            </span>
             <span className="block text-xs text-muted-foreground">
               {e.category}
               {e.eventTitle ? ` · ${e.eventTitle}` : ""}
@@ -183,7 +240,12 @@ export function FinanceLedger({ slug: fixedSlug, sub, recordForEvent }: { slug?:
       key: "open",
       label: "",
       render: (e) => (
-        <AppButton variant="ghost" size="sm" onClick={() => setOpenId(e.id)} aria-label={`Open ${e.description}`}>
+        <AppButton
+          variant="ghost"
+          size="sm"
+          onClick={() => setOpenId(e.id)}
+          aria-label={`Open ${e.description}`}
+        >
           <Eye className="h-4 w-4" /> Open
         </AppButton>
       ),
@@ -228,7 +290,10 @@ export function FinanceLedger({ slug: fixedSlug, sub, recordForEvent }: { slug?:
 
       {!fixedSlug && orgs.length > 1 ? (
         <div className="mb-6 flex flex-wrap items-center gap-3">
-          <label htmlFor="finance-org" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <label
+            htmlFor="finance-org"
+            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          >
             Organization
           </label>
           <select
@@ -250,9 +315,24 @@ export function FinanceLedger({ slug: fixedSlug, sub, recordForEvent }: { slug?:
       ) : null}
 
       <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Balance" value={formatPeso(totals.balance)} delta={`${formatPeso(totals.verifiedBalance)} verified`} icon={Wallet} />
-        <StatCard label="Money in" value={formatPeso(totals.income)} icon={ArrowDownLeft} tone="emerald" />
-        <StatCard label="Money out" value={formatPeso(totals.expenses)} icon={ArrowUpRight} tone="rose" />
+        <StatCard
+          label="Balance"
+          value={formatPeso(totals.balance)}
+          delta={`${formatPeso(totals.verifiedBalance)} verified`}
+          icon={Wallet}
+        />
+        <StatCard
+          label="Money in"
+          value={formatPeso(totals.income)}
+          icon={ArrowDownLeft}
+          tone="emerald"
+        />
+        <StatCard
+          label="Money out"
+          value={formatPeso(totals.expenses)}
+          icon={ArrowUpRight}
+          tone="rose"
+        />
         <StatCard
           label="Needs attention"
           value={String(totals.awaiting + totals.flagged)}
@@ -276,7 +356,11 @@ export function FinanceLedger({ slug: fixedSlug, sub, recordForEvent }: { slug?:
           onSearchChange={setQ}
           searchPlaceholder="Search transactions..."
           emptyTitle={tab === "All" ? "No transactions yet" : `Nothing under “${tab}”`}
-          emptySub={access.record && tab === "All" ? "Record the first income or expense to start the books." : undefined}
+          emptySub={
+            access.record && tab === "All"
+              ? "Record the first income or expense to start the books."
+              : undefined
+          }
           emptyIcon={<Landmark className="h-5 w-5" />}
         />
       </Panel>
@@ -291,7 +375,12 @@ export function FinanceLedger({ slug: fixedSlug, sub, recordForEvent }: { slug?:
           initialEventId={recordForEvent}
         />
       ) : null}
-      <EntryDialog entry={open} ledger={ledger} onClose={() => setOpenId(null)} onChanged={reload} />
+      <EntryDialog
+        entry={open}
+        ledger={ledger}
+        onClose={() => setOpenId(null)}
+        onChanged={reload}
+      />
     </>
   );
 }
@@ -307,7 +396,11 @@ function KindIcon({ kind }: { kind: FinanceKind }) {
       )}
       aria-label={kind === "income" ? "Money in" : "Money out"}
     >
-      {kind === "income" ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
+      {kind === "income" ? (
+        <ArrowDownLeft className="h-4 w-4" />
+      ) : (
+        <ArrowUpRight className="h-4 w-4" />
+      )}
     </span>
   );
 }
@@ -341,7 +434,9 @@ function TransparencyNote({ ledger, awaiting }: { ledger: Ledger; awaiting: numb
     : access.review
       ? [
           ShieldCheck,
-          awaiting ? `${awaiting} transaction${awaiting === 1 ? "" : "s"} waiting for your review` : "All caught up",
+          awaiting
+            ? `${awaiting} transaction${awaiting === 1 ? "" : "s"} waiting for your review`
+            : "All caught up",
           "Open a transaction to check its receipts, then verify it or flag it with a note for the leader. Expenses need a receipt before they can be verified.",
         ]
       : [
@@ -371,7 +466,8 @@ const today = () => {
 };
 
 function checkFiles(files: File[], room: number) {
-  if (files.length > room) return `You can attach up to ${room} more receipt${room === 1 ? "" : "s"}.`;
+  if (files.length > room)
+    return `You can attach up to ${room} more receipt${room === 1 ? "" : "s"}.`;
   const big = files.find((f) => f.size > MAX_RECEIPT_BYTES);
   if (big) return `${big.name} is larger than ${MAX_RECEIPT_BYTES / 1024 / 1024} MB.`;
   return "";
@@ -435,7 +531,13 @@ function RecordDialog({
   async function save() {
     setSubmitted(true);
     setError("");
-    if (!(cents > 0) || description.trim().length < 3 || !date || checkFiles(files, MAX_RECEIPTS_PER_ENTRY)) return;
+    if (
+      !(cents > 0) ||
+      description.trim().length < 3 ||
+      !date ||
+      checkFiles(files, MAX_RECEIPTS_PER_ENTRY)
+    )
+      return;
     setBusy(true);
     const event = events.find((w) => w.id === eventId);
     const res = await recordEntry(ledger.org.slug, {
@@ -466,7 +568,9 @@ function RecordDialog({
     } else {
       showStatusToast(
         "Transaction recorded",
-        kind === "expense" && !files.length ? "Attach the receipt so your adviser can verify it." : "It's now waiting for your adviser's review.",
+        kind === "expense" && !files.length
+          ? "Attach the receipt so your adviser can verify it."
+          : "It's now waiting for your adviser's review.",
       );
     }
   }
@@ -477,7 +581,9 @@ function RecordDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="font-display text-lg">Record a transaction</DialogTitle>
-          <DialogDescription>Recorded entries can't be edited later, only voided with a reason, so check the details.</DialogDescription>
+          <DialogDescription>
+            Recorded entries can't be edited later, only voided with a reason, so check the details.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4">
@@ -494,10 +600,16 @@ function RecordDialog({
                 }}
                 className={cn(
                   "flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition",
-                  kind === k ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-muted-foreground hover:bg-secondary",
+                  kind === k
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-card text-muted-foreground hover:bg-secondary",
                 )}
               >
-                {k === "income" ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
+                {k === "income" ? (
+                  <ArrowDownLeft className="h-4 w-4" />
+                ) : (
+                  <ArrowUpRight className="h-4 w-4" />
+                )}
                 {k === "income" ? "Money in" : "Money out"}
               </button>
             ))}
@@ -517,13 +629,23 @@ function RecordDialog({
             </label>
             <label className="block">
               <span className={labelCls}>Date</span>
-              <input type="date" value={date} max={today()} onChange={(e) => setDate(e.target.value)} className={inputCls} />
+              <input
+                type="date"
+                value={date}
+                max={today()}
+                onChange={(e) => setDate(e.target.value)}
+                className={inputCls}
+              />
             </label>
           </div>
 
           <label className="block">
             <span className={labelCls}>Category</span>
-            <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputCls}>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className={inputCls}
+            >
               {categories.map((c) => (
                 <option key={c}>{c}</option>
               ))}
@@ -536,7 +658,11 @@ function RecordDialog({
               value={description}
               maxLength={300}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={kind === "income" ? "e.g. Membership dues, first semester" : "e.g. Snacks for volunteers"}
+              placeholder={
+                kind === "income"
+                  ? "e.g. Membership dues, first semester"
+                  : "e.g. Snacks for volunteers"
+              }
               aria-invalid={submitted && description.trim().length < 3}
               className={inputCls}
             />
@@ -544,7 +670,11 @@ function RecordDialog({
 
           <label className="block">
             <span className={labelCls}>Event (optional)</span>
-            <select value={eventId} onChange={(e) => setEventId(e.target.value)} className={inputCls}>
+            <select
+              value={eventId}
+              onChange={(e) => setEventId(e.target.value)}
+              className={inputCls}
+            >
               <option value="">Not linked to an event</option>
               {events.map((w) => (
                 <option key={w.id} value={w.id}>
@@ -555,10 +685,19 @@ function RecordDialog({
           </label>
 
           <div>
-            <span className={labelCls}>Receipts {kind === "expense" ? "(needed for verification)" : "(optional)"}</span>
-            <FileUpload key={uploadKey} accept={RECEIPT_ACCEPT} multiple onFiles={setFiles} hint="PDF or photo of the receipt (JPG, PNG, WebP)" />
+            <span className={labelCls}>
+              Receipts {kind === "expense" ? "(needed for verification)" : "(optional)"}
+            </span>
+            <FileUpload
+              key={uploadKey}
+              accept={RECEIPT_ACCEPT}
+              multiple
+              onFiles={setFiles}
+              hint="PDF or photo of the receipt (JPG, PNG, WebP)"
+            />
             <p className="mt-2 text-xs text-muted-foreground">
-              PDF or photo (JPG, PNG, WebP), up to {MAX_RECEIPT_BYTES / 1024 / 1024} MB each, {MAX_RECEIPTS_PER_ENTRY} per transaction.
+              PDF or photo (JPG, PNG, WebP), up to {MAX_RECEIPT_BYTES / 1024 / 1024} MB each,{" "}
+              {MAX_RECEIPTS_PER_ENTRY} per transaction.
             </p>
           </div>
 
@@ -584,7 +723,17 @@ function RecordDialog({
 
 // ---------- One transaction ----------
 
-function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntry | null; ledger: Ledger; onClose: () => void; onChanged: () => Promise<void> }) {
+function EntryDialog({
+  entry,
+  ledger,
+  onClose,
+  onChanged,
+}: {
+  entry: FinanceEntry | null;
+  ledger: Ledger;
+  onClose: () => void;
+  onChanged: () => Promise<void>;
+}) {
   const { access } = ledger;
   const [note, setNote] = useState("");
   const [mode, setMode] = useState<"flag" | "void" | null>(null);
@@ -592,7 +741,9 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
   const [uploadKey, setUploadKey] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [preview, setPreview] = useState<{ url: string; filename: string; mime: string } | null>(null);
+  const [preview, setPreview] = useState<{ url: string; filename: string; mime: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     setNote("");
@@ -602,16 +753,22 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
     setUploadKey((k) => k + 1);
   }, [entry?.id]);
 
-  useEffect(() => () => {
-    if (preview) URL.revokeObjectURL(preview.url);
-  }, [preview]);
+  useEffect(
+    () => () => {
+      if (preview) URL.revokeObjectURL(preview.url);
+    },
+    [preview],
+  );
 
   if (!entry) return null;
   const locked = entry.status === "verified" || entry.status === "void";
   const room = MAX_RECEIPTS_PER_ENTRY - entry.receipts.length;
   const canReview = access.review && (entry.status === "recorded" || entry.status === "flagged");
 
-  async function run(action: () => Promise<{ ok: true } | { ok: false; error: string }>, done: string) {
+  async function run(
+    action: () => Promise<{ ok: true } | { ok: false; error: string }>,
+    done: string,
+  ) {
     setBusy(true);
     setError("");
     const res = await action();
@@ -642,7 +799,11 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
     setFiles([]);
     setUploadKey((k) => k + 1);
     if (failed.length) setError(failed.join(" "));
-    else showStatusToast(files.length === 1 ? "Receipt attached" : "Receipts attached", entry!.description);
+    else
+      showStatusToast(
+        files.length === 1 ? "Receipt attached" : "Receipts attached",
+        entry!.description,
+      );
   }
 
   async function view(r: ReceiptMeta, download = false) {
@@ -673,7 +834,9 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
           <DialogHeader>
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone={STATUS_TONE[entry.status]}>{STATUS_LABEL[entry.status]}</Badge>
-              <Badge tone={entry.kind === "income" ? "success" : "neutral"}>{entry.kind === "income" ? "Money in" : "Money out"}</Badge>
+              <Badge tone={entry.kind === "income" ? "success" : "neutral"}>
+                {entry.kind === "income" ? "Money in" : "Money out"}
+              </Badge>
             </div>
             <DialogTitle className="font-display text-xl">{entry.description}</DialogTitle>
             <DialogDescription asChild>
@@ -692,7 +855,13 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
                   : "border-border bg-secondary/40",
               )}
             >
-              <p className="font-semibold">{entry.status === "void" ? "Reason for voiding" : entry.status === "flagged" ? "Flagged by reviewer" : "Reviewer note"}</p>
+              <p className="font-semibold">
+                {entry.status === "void"
+                  ? "Reason for voiding"
+                  : entry.status === "flagged"
+                    ? "Flagged by reviewer"
+                    : "Reviewer note"}
+              </p>
               <p className="mt-1">{entry.reviewNote}</p>
             </div>
           ) : null}
@@ -700,7 +869,9 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
           <dl className="grid gap-3 rounded-2xl border border-border p-4 sm:grid-cols-2">
             {facts.map(([k, v]) => (
               <div key={k}>
-                <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{k}</dt>
+                <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {k}
+                </dt>
                 <dd className="mt-0.5 text-sm">{v}</dd>
               </div>
             ))}
@@ -711,20 +882,37 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
             {entry.receipts.length ? (
               <ul className="space-y-2">
                 {entry.receipts.map((r) => (
-                  <li key={r.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card px-3 py-2">
+                  <li
+                    key={r.id}
+                    className="flex items-center gap-3 rounded-2xl border border-border bg-card px-3 py-2"
+                  >
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                       <FileText className="h-4 w-4" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{r.filename}</p>
-                      <p className="truncate text-xs text-muted-foreground" title={`SHA-256 ${r.sha256}`}>
-                        {sizeLabel(r.size)} · {r.uploadedBy} · {timeLabel(r.uploadedAt)} · SHA-256 {r.sha256.slice(0, 12)}…
+                      <p
+                        className="truncate text-xs text-muted-foreground"
+                        title={`SHA-256 ${r.sha256}`}
+                      >
+                        {sizeLabel(r.size)} · {r.uploadedBy} · {timeLabel(r.uploadedAt)} · SHA-256{" "}
+                        {r.sha256.slice(0, 12)}…
                       </p>
                     </div>
-                    <AppButton variant="ghost" size="sm" onClick={() => void view(r)} aria-label={`View ${r.filename}`}>
+                    <AppButton
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => void view(r)}
+                      aria-label={`View ${r.filename}`}
+                    >
                       <Eye className="h-4 w-4" />
                     </AppButton>
-                    <AppButton variant="ghost" size="sm" onClick={() => void view(r, true)} aria-label={`Download ${r.filename}`}>
+                    <AppButton
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => void view(r, true)}
+                      aria-label={`Download ${r.filename}`}
+                    >
                       <Download className="h-4 w-4" />
                     </AppButton>
                     {access.record && !locked ? (
@@ -744,16 +932,32 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
               </ul>
             ) : (
               <p className="rounded-2xl border border-dashed border-border bg-secondary/40 p-4 text-sm text-muted-foreground">
-                {entry.kind === "expense" ? "No receipt yet. An expense can't be verified without one." : "No receipt attached."}
+                {entry.kind === "expense"
+                  ? "No receipt yet. An expense can't be verified without one."
+                  : "No receipt attached."}
               </p>
             )}
 
             {access.record && !locked && room > 0 ? (
               <div className="mt-3 space-y-2">
-                <FileUpload key={uploadKey} accept={RECEIPT_ACCEPT} multiple onFiles={setFiles} hint="PDF or photo of the receipt (JPG, PNG, WebP)" />
+                <FileUpload
+                  key={uploadKey}
+                  accept={RECEIPT_ACCEPT}
+                  multiple
+                  onFiles={setFiles}
+                  hint="PDF or photo of the receipt (JPG, PNG, WebP)"
+                />
                 {files.length ? (
-                  <AppButton variant="primary" size="sm" disabled={busy} onClick={() => void upload()}>
-                    <Paperclip className="h-4 w-4" /> {busy ? "Uploading…" : `Attach ${files.length} receipt${files.length === 1 ? "" : "s"}`}
+                  <AppButton
+                    variant="primary"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() => void upload()}
+                  >
+                    <Paperclip className="h-4 w-4" />{" "}
+                    {busy
+                      ? "Uploading…"
+                      : `Attach ${files.length} receipt${files.length === 1 ? "" : "s"}`}
                   </AppButton>
                 ) : null}
               </div>
@@ -767,7 +971,8 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
                 <li key={i} className="relative">
                   <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-primary" />
                   <p className="text-sm">
-                    <span className="font-semibold">{h.action}</span> by {h.by} <span className="text-muted-foreground">({h.role})</span>
+                    <span className="font-semibold">{h.action}</span> by {h.by}{" "}
+                    <span className="text-muted-foreground">({h.role})</span>
                   </p>
                   {h.note ? <p className="text-sm text-muted-foreground">{h.note}</p> : null}
                   <p className="text-xs text-muted-foreground">{timeLabel(h.at)}</p>
@@ -778,14 +983,20 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
 
           {mode ? (
             <label className="block">
-              <span className={labelCls}>{mode === "flag" ? "What needs fixing?" : "Why void this transaction?"}</span>
+              <span className={labelCls}>
+                {mode === "flag" ? "What needs fixing?" : "Why void this transaction?"}
+              </span>
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 rows={3}
                 maxLength={500}
                 className={inputCls}
-                placeholder={mode === "flag" ? "e.g. The receipt total doesn't match the amount." : "e.g. Recorded twice by mistake."}
+                placeholder={
+                  mode === "flag"
+                    ? "e.g. The receipt total doesn't match the amount."
+                    : "e.g. Recorded twice by mistake."
+                }
               />
             </label>
           ) : null}
@@ -807,7 +1018,10 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
                   disabled={busy || note.trim().length < 3}
                   onClick={() =>
                     void run(
-                      () => (mode === "flag" ? reviewEntry(entry.id, "flag", note) : voidEntry(entry.id, note)),
+                      () =>
+                        mode === "flag"
+                          ? reviewEntry(entry.id, "flag", note)
+                          : voidEntry(entry.id, note),
                       mode === "flag" ? "Transaction flagged" : "Transaction voided",
                     )
                   }
@@ -819,7 +1033,11 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
             ) : (
               <>
                 {access.record && !locked ? (
-                  <AppButton variant="ghost" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => setMode("void")}>
+                  <AppButton
+                    variant="ghost"
+                    className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    onClick={() => setMode("void")}
+                  >
                     <Ban className="h-4 w-4" /> Void
                   </AppButton>
                 ) : null}
@@ -832,8 +1050,14 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
                   <AppButton
                     variant="primary"
                     disabled={busy || (entry.kind === "expense" && !entry.receipts.length)}
-                    title={entry.kind === "expense" && !entry.receipts.length ? "Needs a receipt first" : undefined}
-                    onClick={() => void run(() => reviewEntry(entry.id, "verify", ""), "Transaction verified")}
+                    title={
+                      entry.kind === "expense" && !entry.receipts.length
+                        ? "Needs a receipt first"
+                        : undefined
+                    }
+                    onClick={() =>
+                      void run(() => reviewEntry(entry.id, "verify", ""), "Transaction verified")
+                    }
                   >
                     <CheckCircle2 className="h-4 w-4" /> Verify
                   </AppButton>
@@ -856,14 +1080,24 @@ function EntryDialog({ entry, ledger, onClose, onChanged }: { entry: FinanceEntr
       >
         <DialogContent className="max-h-[92vh] rounded-3xl sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle className="truncate font-display text-base">{preview?.filename}</DialogTitle>
+            <DialogTitle className="truncate font-display text-base">
+              {preview?.filename}
+            </DialogTitle>
             <DialogDescription>Receipt for “{entry.description}”</DialogDescription>
           </DialogHeader>
           {preview ? (
             preview.mime === "application/pdf" ? (
-              <iframe title={preview.filename} src={preview.url} className="h-[70vh] w-full rounded-2xl border border-border bg-white" />
+              <iframe
+                title={preview.filename}
+                src={preview.url}
+                className="h-[70vh] w-full rounded-2xl border border-border bg-white"
+              />
             ) : (
-              <img src={preview.url} alt={`Receipt ${preview.filename}`} className="mx-auto max-h-[70vh] rounded-2xl border border-border object-contain" />
+              <img
+                src={preview.url}
+                alt={`Receipt ${preview.filename}`}
+                className="mx-auto max-h-[70vh] rounded-2xl border border-border object-contain"
+              />
             )
           ) : null}
         </DialogContent>

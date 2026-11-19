@@ -13,10 +13,17 @@ function Admin2PostsPage() {
 
   return (
     <>
-      <PageHead title="Post publishing queue" sub="Clear adviser-approved posts for final publishing." />
+      <PageHead
+        title="Post publishing queue"
+        sub="Clear adviser-approved posts for final publishing."
+      />
       <Panel>
         {approvals.length === 0 ? (
-          <EmptyState title="No posts pending Admin 2 review" sub="Adviser-cleared posts will appear here next." icon={Megaphone} />
+          <EmptyState
+            title="No posts pending Admin 2 review"
+            sub="Adviser-cleared posts will appear here next."
+            icon={Megaphone}
+          />
         ) : (
           <div className="space-y-3">
             {approvals.map((approval) => (
@@ -26,7 +33,9 @@ function Admin2PostsPage() {
                   <Badge tone="neutral">{approval.visibility}</Badge>
                 </div>
                 <p className="mt-2 text-sm font-semibold">{approval.title || "Untitled post"}</p>
-                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{approval.content}</p>
+                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                  {approval.content}
+                </p>
                 <AppButton asChild variant="secondary" size="sm" className="mt-3">
                   <Link to="/admin2/posts/$approvalId" params={{ approvalId: approval.id }}>
                     Review post <ArrowRight className="h-4 w-4" />

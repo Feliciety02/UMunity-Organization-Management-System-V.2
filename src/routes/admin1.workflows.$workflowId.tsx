@@ -16,9 +16,14 @@ function Admin1WorkflowDetailPage() {
   if (!workflow || !session) {
     return (
       <>
-        <PageHead title="Workflow not found" sub="The requested final authority review item is unavailable." />
+        <PageHead
+          title="Workflow not found"
+          sub="The requested final authority review item is unavailable."
+        />
         <Panel>
-          <p className="text-sm text-muted-foreground">Return to the Admin 1 queue to continue reviewing active workflows.</p>
+          <p className="text-sm text-muted-foreground">
+            Return to the Admin 1 queue to continue reviewing active workflows.
+          </p>
         </Panel>
       </>
     );

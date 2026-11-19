@@ -15,7 +15,8 @@ import type { FinanceStatus, Ledger } from "@/lib/finance-shared";
 export * from "@/lib/finance-shared";
 
 export type Result = { ok: true } | { ok: false; error: string };
-const asResult = (res: { ok: boolean; error?: string }): Result => (res.ok ? { ok: true } : { ok: false, error: res.error ?? "Something went wrong." });
+const asResult = (res: { ok: boolean; error?: string }): Result =>
+  res.ok ? { ok: true } : { ok: false, error: res.error ?? "Something went wrong." };
 
 /** Organizations whose books the signed-in user can open. */
 export function useFinanceOrgs() {
@@ -61,7 +62,10 @@ export function useLedger(slug: string | null) {
   return { ledger, error, loading, reload };
 }
 
-export async function recordEntry(slug: string, entry: Parameters<typeof recordEntryFn>[0]["data"]["entry"]) {
+export async function recordEntry(
+  slug: string,
+  entry: Parameters<typeof recordEntryFn>[0]["data"]["entry"],
+) {
   const res = await recordEntryFn({ data: { slug, entry } });
   return res.ok ? { ok: true as const, id: res.id } : { ok: false as const, error: res.error };
 }
@@ -80,17 +84,26 @@ export async function uploadReceipt(entryId: string, file: File): Promise<Result
     const dataBase64 = await fileToBase64(file);
     return asResult(await addReceiptFn({ data: { entryId, filename: file.name, dataBase64 } }));
   } catch {
-    return { ok: false, error: `${file.name} couldn't be uploaded. Check your connection and try again.` };
+    return {
+      ok: false,
+      error: `${file.name} couldn't be uploaded. Check your connection and try again.`,
+    };
   }
 }
 
-export const removeReceipt = async (receiptId: string) => asResult(await removeReceiptFn({ data: { receiptId } }));
+export const removeReceipt = async (receiptId: string) =>
+  asResult(await removeReceiptFn({ data: { receiptId } }));
 export const reviewEntry = async (entryId: string, decision: "verify" | "flag", note: string) =>
   asResult(await reviewEntryFn({ data: { entryId, decision, note } }));
-export const voidEntry = async (entryId: string, reason: string) => asResult(await voidEntryFn({ data: { entryId, reason } }));
+export const voidEntry = async (entryId: string, reason: string) =>
+  asResult(await voidEntryFn({ data: { entryId, reason } }));
 
 /** Fetch a receipt and return a temporary browser URL for viewing or downloading it. */
-export async function openReceipt(receiptId: string): Promise<{ ok: true; url: string; filename: string; mime: string } | { ok: false; error: string }> {
+export async function openReceipt(
+  receiptId: string,
+): Promise<
+  { ok: true; url: string; filename: string; mime: string } | { ok: false; error: string }
+> {
   const res = await getReceiptFn({ data: { receiptId } });
   if (!res.ok) return res;
   const bin = atob(res.dataBase64);

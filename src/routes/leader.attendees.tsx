@@ -89,15 +89,23 @@ function Attendees() {
     return { going, maybe, cancelled, total: eventRsvps.length };
   }, [eventRsvps]);
 
-  const rows: AttendeeRow[] = useMemo(() => statusFiltered.map((r) => ({
-    key: r.attendeeEmail + r.eventTitle,
-    name: r.attendeeName,
-    email: r.attendeeEmail,
-    initials: r.attendeeName.split(" ").slice(0, 2).map((w) => w[0]).join(""),
-    program: r.program ?? "—",
-    status: r.status,
-    updated: new Date(r.updatedAt).toLocaleDateString(),
-  })), [statusFiltered]);
+  const rows: AttendeeRow[] = useMemo(
+    () =>
+      statusFiltered.map((r) => ({
+        key: r.attendeeEmail + r.eventTitle,
+        name: r.attendeeName,
+        email: r.attendeeEmail,
+        initials: r.attendeeName
+          .split(" ")
+          .slice(0, 2)
+          .map((w) => w[0])
+          .join(""),
+        program: r.program ?? "—",
+        status: r.status,
+        updated: new Date(r.updatedAt).toLocaleDateString(),
+      })),
+    [statusFiltered],
+  );
 
   if (loading) {
     return (
@@ -121,9 +129,17 @@ function Attendees() {
   function exportCsv() {
     const rows = [
       ["Name", "Email", "Program", "Status", "Updated"],
-      ...statusFiltered.map((r) => [r.attendeeName, r.attendeeEmail, r.program ?? "", r.status, new Date(r.updatedAt).toISOString()]),
+      ...statusFiltered.map((r) => [
+        r.attendeeName,
+        r.attendeeEmail,
+        r.program ?? "",
+        r.status,
+        new Date(r.updatedAt).toISOString(),
+      ]),
     ];
-    const csv = rows.map((r) => r.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(",")).join("\n");
+    const csv = rows
+      .map((r) => r.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(","))
+      .join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -133,14 +149,18 @@ function Attendees() {
     URL.revokeObjectURL(url);
   }
 
-
   return (
     <>
       <PageHead
         title="Attendees"
         sub="See who RSVP'd to your events and export the attendee list."
         action={
-          <AppButton variant="secondary" size="sm" onClick={exportCsv} disabled={statusFiltered.length === 0}>
+          <AppButton
+            variant="secondary"
+            size="sm"
+            onClick={exportCsv}
+            disabled={statusFiltered.length === 0}
+          >
             <Download className="h-4 w-4" /> Export CSV
           </AppButton>
         }
@@ -157,16 +177,21 @@ function Attendees() {
                   key={title}
                   onClick={() => setSelected(title)}
                   className={`flex w-full items-start justify-between gap-2 rounded-xl px-3 py-2 text-left transition ${
-                    active ? "bg-[color:color-mix(in_oklab,var(--primary)_8%,var(--card))] text-primary" : "text-foreground/85 hover:bg-secondary"
+                    active
+                      ? "bg-[color:color-mix(in_oklab,var(--primary)_8%,var(--card))] text-primary"
+                      : "text-foreground/85 hover:bg-secondary"
                   }`}
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{title}</p>
                     <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                      <Calendar className="h-3 w-3" /> {events.find((e) => e.title === title)?.date ?? "—"}
+                      <Calendar className="h-3 w-3" />{" "}
+                      {events.find((e) => e.title === title)?.date ?? "—"}
                     </p>
                   </div>
-                  <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-foreground">{c}</span>
+                  <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-foreground">
+                    {c}
+                  </span>
                 </button>
               );
             })}
@@ -197,7 +222,9 @@ function Attendees() {
                       key={s}
                       onClick={() => setStatus(s)}
                       className={`rounded-full px-3 py-1.5 font-semibold capitalize transition ${
-                        status === s ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                        status === s
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {s}
@@ -225,7 +252,15 @@ function Attendees() {
   );
 }
 
-function Stat({ label, value, tone = "primary" }: { label: string; value: number; tone?: "primary" | "emerald" | "amber" | "rose" }) {
+function Stat({
+  label,
+  value,
+  tone = "primary",
+}: {
+  label: string;
+  value: number;
+  tone?: "primary" | "emerald" | "amber" | "rose";
+}) {
   const cls = {
     primary: "bg-primary/10 text-primary",
     emerald: "bg-emerald-100 text-emerald-700",
@@ -234,7 +269,9 @@ function Stat({ label, value, tone = "primary" }: { label: string; value: number
   }[tone];
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
-      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
       <div className="mt-2 flex items-center justify-between">
         <p className="font-display text-2xl font-bold">{value}</p>
         <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${cls}`}>RSVPs</span>

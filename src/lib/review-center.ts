@@ -38,15 +38,22 @@ function reviewerName(role: "adviser" | "admin2") {
 function toneForStatus(status: string): ReviewCenterItem["tone"] {
   if (status.toLowerCase().includes("revision")) return "danger";
   if (status.toLowerCase().includes("pending")) return "warning";
-  if (status.toLowerCase().includes("approved") || status.toLowerCase().includes("published")) return "success";
+  if (status.toLowerCase().includes("approved") || status.toLowerCase().includes("published"))
+    return "success";
   return "info";
 }
 
 export function useLeaderReviewCenter(orgName?: string) {
   const workflows = useWorkflows().filter((workflow) => !orgName || workflow.orgName === orgName);
-  const transitions = useTransitionWorkflows().filter((workflow) => !orgName || workflow.orgName === orgName);
-  const postApprovals = usePostApprovals().filter((approval) => !orgName || approval.orgName === orgName);
-  const compliance = useComplianceSubmissions().filter((submission) => !orgName || submission.orgName === orgName);
+  const transitions = useTransitionWorkflows().filter(
+    (workflow) => !orgName || workflow.orgName === orgName,
+  );
+  const postApprovals = usePostApprovals().filter(
+    (approval) => !orgName || approval.orgName === orgName,
+  );
+  const compliance = useComplianceSubmissions().filter(
+    (submission) => !orgName || submission.orgName === orgName,
+  );
   const orgShort = orgShortFor(orgName);
   const requirements = useEventDocs().filter((doc) => doc.orgShort === orgShort);
 
@@ -73,7 +80,8 @@ export function useLeaderReviewCenter(orgName?: string) {
         orgName: workflow.orgName,
         status: formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus),
         href: `/leader/workflows/${workflow.id}`,
-        note: workflow.comments[0]?.message ?? "Closeout updates are required before final approval.",
+        note:
+          workflow.comments[0]?.message ?? "Closeout updates are required before final approval.",
         updatedAt: workflow.updatedAt,
         tone: "danger" as const,
       })),
@@ -112,7 +120,8 @@ export function useLeaderReviewCenter(orgName?: string) {
         orgName: workflow.orgName,
         status: workflow.status.replaceAll("_", " "),
         href: `/leader/officer-transition/${workflow.id}`,
-        note: workflow.comments[0]?.message ?? "Adjust the nominee slate based on reviewer guidance.",
+        note:
+          workflow.comments[0]?.message ?? "Adjust the nominee slate based on reviewer guidance.",
         updatedAt: workflow.updatedAt,
         tone: "danger" as const,
       })),
@@ -177,7 +186,9 @@ export function useLeaderReviewCenter(orgName?: string) {
         orgName: doc.orgShort,
         status: formatReqReviewStatus(doc.reviewStatus),
         href: `/leader/requirements/${doc.id}`,
-        note: doc.comments[0]?.message ?? "The requirements tracker needs updates before it can proceed.",
+        note:
+          doc.comments[0]?.message ??
+          "The requirements tracker needs updates before it can proceed.",
         updatedAt: doc.history[0]?.createdAt ?? doc.createdAt,
         tone: "danger" as const,
       })),
@@ -213,7 +224,8 @@ export function useLeaderReviewCenter(orgName?: string) {
         title: submission.orgName,
         lane: "Accreditation",
         by: submission.comments[0]?.authorName ?? reviewerName("adviser"),
-        note: submission.comments[0]?.message ?? "Reviewer left a note on this accreditation record.",
+        note:
+          submission.comments[0]?.message ?? "Reviewer left a note on this accreditation record.",
         createdAt: submission.comments[0]?.createdAt ?? submission.updatedAt,
         href: `/leader/compliance/${submission.id}`,
       })),
@@ -260,7 +272,13 @@ export function useReviewerReviewCenter(role: "adviser" | "admin2") {
 
   const pendingActionItems: ReviewCenterItem[] = [
     ...workflows
-      .filter((workflow) => (role === "adviser" ? workflow.status === "pending_adviser" : role === "admin2" ? workflow.status === "pending_admin2" : workflow.status === "pending_admin1"))
+      .filter((workflow) =>
+        role === "adviser"
+          ? workflow.status === "pending_adviser"
+          : role === "admin2"
+            ? workflow.status === "pending_admin2"
+            : workflow.status === "pending_admin1",
+      )
       .map((workflow) => ({
         id: `workflow-${workflow.id}`,
         title: workflow.proposal.title,
@@ -292,7 +310,11 @@ export function useReviewerReviewCenter(role: "adviser" | "admin2") {
         tone: toneForStatus(formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus)),
       })),
     ...postApprovals
-      .filter((approval) => (role === "adviser" ? approval.status === "pending_adviser" : approval.status === "pending_admin2"))
+      .filter((approval) =>
+        role === "adviser"
+          ? approval.status === "pending_adviser"
+          : approval.status === "pending_admin2",
+      )
       .map((approval) => ({
         id: `post-${approval.id}`,
         title: approval.title || "Untitled post",
@@ -305,7 +327,11 @@ export function useReviewerReviewCenter(role: "adviser" | "admin2") {
         tone: toneForStatus(approval.status),
       })),
     ...compliance
-      .filter((submission) => (role === "adviser" ? submission.status === "pending_adviser" : submission.status === "pending_admin2"))
+      .filter((submission) =>
+        role === "adviser"
+          ? submission.status === "pending_adviser"
+          : submission.status === "pending_admin2",
+      )
       .map((submission) => ({
         id: `compliance-${submission.id}`,
         title: submission.orgName,
@@ -331,7 +357,11 @@ export function useReviewerReviewCenter(role: "adviser" | "admin2") {
         tone: toneForStatus(workflow.status),
       })),
     ...requirements
-      .filter((doc) => (role === "adviser" ? doc.reviewStatus === "pending_adviser" : doc.reviewStatus === "pending_admin2"))
+      .filter((doc) =>
+        role === "adviser"
+          ? doc.reviewStatus === "pending_adviser"
+          : doc.reviewStatus === "pending_admin2",
+      )
       .map((doc) => ({
         id: `requirements-${doc.id}`,
         title: doc.title,
@@ -346,76 +376,71 @@ export function useReviewerReviewCenter(role: "adviser" | "admin2") {
   ].sort((a, b) => b.updatedAt - a.updatedAt);
 
   const recentFeedback: ReviewCenterActivity[] = [
-    ...workflows
-      .flatMap((workflow) =>
-        workflow.comments
-          .filter((comment) => comment.authorRole === role)
-          .map((comment) => ({
-            id: `workflow-comment-${comment.id}`,
-            title: workflow.proposal.title,
-            lane: "Event workflow",
-            by: comment.authorName,
-            note: comment.message,
-            createdAt: comment.createdAt,
-            href: `/${role}/workflows/${workflow.id}`,
-          })),
-      ),
-    ...postApprovals
-      .flatMap((approval) =>
-        approval.comments
-          .filter((comment) => comment.authorRole === role)
-          .map((comment) => ({
-            id: `post-comment-${comment.id}`,
-            title: approval.title || "Untitled post",
-            lane: "Post approval",
-            by: comment.authorName,
-            note: comment.message,
-            createdAt: comment.createdAt,
-            href: `/${role}/posts/${approval.id}`,
-          })),
-      ),
-    ...compliance
-      .flatMap((submission) =>
-        submission.comments
-          .filter((comment) => comment.authorRole === role)
-          .map((comment) => ({
-            id: `compliance-comment-${comment.id}`,
-            title: submission.orgName,
-            lane: "Accreditation",
-            by: comment.authorName,
-            note: comment.message,
-            createdAt: comment.createdAt,
-            href: `/${role}/compliance/${submission.id}`,
-          })),
-      ),
-    ...transitions
-      .flatMap((workflow) =>
-        workflow.comments
-          .filter((comment) => comment.authorRole === role)
-          .map((comment) => ({
-            id: `transition-comment-${comment.id}`,
-            title: workflow.orgName,
-            lane: "Officer transition",
-            by: comment.authorName,
-            note: comment.message,
-            createdAt: comment.createdAt,
-            href: `/${role}/transitions/${workflow.id}`,
-          })),
-      ),
-    ...requirements
-      .flatMap((doc) =>
-        doc.comments
-          .filter((comment) => comment.authorRole === role)
-          .map((comment) => ({
-            id: `requirements-comment-${comment.id}`,
-            title: doc.title,
-            lane: "Requirements tracker",
-            by: comment.authorName,
-            note: comment.message,
-            createdAt: comment.createdAt,
-            href: `/${role}/requirements/${doc.id}`,
-          })),
-      ),
+    ...workflows.flatMap((workflow) =>
+      workflow.comments
+        .filter((comment) => comment.authorRole === role)
+        .map((comment) => ({
+          id: `workflow-comment-${comment.id}`,
+          title: workflow.proposal.title,
+          lane: "Event workflow",
+          by: comment.authorName,
+          note: comment.message,
+          createdAt: comment.createdAt,
+          href: `/${role}/workflows/${workflow.id}`,
+        })),
+    ),
+    ...postApprovals.flatMap((approval) =>
+      approval.comments
+        .filter((comment) => comment.authorRole === role)
+        .map((comment) => ({
+          id: `post-comment-${comment.id}`,
+          title: approval.title || "Untitled post",
+          lane: "Post approval",
+          by: comment.authorName,
+          note: comment.message,
+          createdAt: comment.createdAt,
+          href: `/${role}/posts/${approval.id}`,
+        })),
+    ),
+    ...compliance.flatMap((submission) =>
+      submission.comments
+        .filter((comment) => comment.authorRole === role)
+        .map((comment) => ({
+          id: `compliance-comment-${comment.id}`,
+          title: submission.orgName,
+          lane: "Accreditation",
+          by: comment.authorName,
+          note: comment.message,
+          createdAt: comment.createdAt,
+          href: `/${role}/compliance/${submission.id}`,
+        })),
+    ),
+    ...transitions.flatMap((workflow) =>
+      workflow.comments
+        .filter((comment) => comment.authorRole === role)
+        .map((comment) => ({
+          id: `transition-comment-${comment.id}`,
+          title: workflow.orgName,
+          lane: "Officer transition",
+          by: comment.authorName,
+          note: comment.message,
+          createdAt: comment.createdAt,
+          href: `/${role}/transitions/${workflow.id}`,
+        })),
+    ),
+    ...requirements.flatMap((doc) =>
+      doc.comments
+        .filter((comment) => comment.authorRole === role)
+        .map((comment) => ({
+          id: `requirements-comment-${comment.id}`,
+          title: doc.title,
+          lane: "Requirements tracker",
+          by: comment.authorName,
+          note: comment.message,
+          createdAt: comment.createdAt,
+          href: `/${role}/requirements/${doc.id}`,
+        })),
+    ),
   ]
     .sort((a, b) => b.createdAt - a.createdAt)
     .slice(0, 12);

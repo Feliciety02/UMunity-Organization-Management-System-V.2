@@ -2,7 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { LifeBuoy, Send } from "lucide-react";
 import { PageHead, Panel } from "@/components/dashboard/DashboardLayout";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { AppButton } from "@/components/ui/app-button";
 import { showStatusToast } from "@/lib/feedback";
 
@@ -52,22 +57,33 @@ function Help() {
     }
     setError("");
     setMessage("");
-    showStatusToast("Request sent", `The OSA support desk received your "${topic}" request and will reply to your UM email.`);
+    showStatusToast(
+      "Request sent",
+      `The OSA support desk received your "${topic}" request and will reply to your UM email.`,
+    );
   }
 
   return (
     <>
-      <PageHead title="Help" sub="Get support for account access, organizations, events, and campus activity." />
+      <PageHead
+        title="Help"
+        sub="Get support for account access, organizations, events, and campus activity."
+      />
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         <Panel title="Frequently asked questions">
           <Accordion type="single" collapsible className="w-full">
             {FAQ.map((item) => (
               <AccordionItem key={item.q} value={item.q}>
-                <AccordionTrigger className="text-left text-sm font-semibold">{item.q}</AccordionTrigger>
+                <AccordionTrigger className="text-left text-sm font-semibold">
+                  {item.q}
+                </AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground">
                   <p>{item.a}</p>
                   {item.link ? (
-                    <Link to={item.link.to} className="mt-2 inline-block text-xs font-semibold text-primary hover:underline">
+                    <Link
+                      to={item.link.to}
+                      className="mt-2 inline-block text-xs font-semibold text-primary hover:underline"
+                    >
                       {item.link.label}
                     </Link>
                   ) : null}
@@ -80,7 +96,9 @@ function Help() {
         <Panel title="Contact support">
           <form onSubmit={submit} className="space-y-3" noValidate>
             <label className="block">
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Topic</span>
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Topic
+              </span>
               <select
                 value={topic}
                 onChange={(e) => setTopic(e.target.value as (typeof TOPICS)[number])}
@@ -92,7 +110,9 @@ function Help() {
               </select>
             </label>
             <label className="block">
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Message</span>
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Message
+              </span>
               <textarea
                 rows={5}
                 value={message}

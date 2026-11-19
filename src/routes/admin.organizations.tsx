@@ -10,7 +10,6 @@ export const Route = createFileRoute("/admin/organizations")({
   component: AdminOrgs,
 });
 
-
 const columns: Column<Org>[] = [
   {
     key: "name",
@@ -18,7 +17,11 @@ const columns: Column<Org>[] = [
     sortable: true,
     render: (row) => (
       <div className="flex items-center gap-3">
-        <div className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${row.color} text-xs font-bold text-primary-foreground`}>{row.initials}</div>
+        <div
+          className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${row.color} text-xs font-bold text-primary-foreground`}
+        >
+          {row.initials}
+        </div>
         <span className="font-semibold">{row.name}</span>
       </div>
     ),
@@ -37,11 +40,18 @@ function AdminOrgs() {
   const pending = usePendingOrgs();
   return (
     <>
-      <PageHead title="Manage organizations" sub={`${organizations.length} active · ${pending.length} pending verification`} />
+      <PageHead
+        title="Manage organizations"
+        sub={`${organizations.length} active · ${pending.length} pending verification`}
+      />
 
       <Panel title="Pending verification" className="mb-6">
         {pending.length === 0 ? (
-          <EmptyState icon={ShieldCheck} title="No pending applications" sub="New organization applications will appear here." />
+          <EmptyState
+            icon={ShieldCheck}
+            title="No pending applications"
+            sub="New organization applications will appear here."
+          />
         ) : (
           <div className="space-y-3">
             {pending.map((o) => (

@@ -16,7 +16,8 @@ export function SiteFooter() {
               />
             </div>
             <p className="mt-4 max-w-sm text-sm text-primary-foreground/80">
-              One platform for every student organization at the University of Mindanao. Discover, connect, and thrive.
+              One platform for every student organization at the University of Mindanao. Discover,
+              connect, and thrive.
             </p>
             <Link
               to="/register"
@@ -29,24 +30,38 @@ export function SiteFooter() {
           <div>
             <h4 className="font-display text-sm font-semibold text-gold">Platform</h4>
             <ul className="mt-4 space-y-2 text-sm text-primary-foreground/80">
-              <li><Link to="/organizations">Organizations</Link></li>
-              <li><Link to="/events">Events</Link></li>
-              <li><Link to="/features">Features</Link></li>
-              <li><Link to="/about">About</Link></li>
+              <li>
+                <Link to="/organizations">Organizations</Link>
+              </li>
+              <li>
+                <Link to="/events">Events</Link>
+              </li>
+              <li>
+                <Link to="/features">Features</Link>
+              </li>
+              <li>
+                <Link to="/about">About</Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-display text-sm font-semibold text-gold">Account</h4>
             <ul className="mt-4 space-y-2 text-sm text-primary-foreground/80">
-              <li><Link to="/login">Login</Link></li>
-              <li><Link to="/register">Register</Link></li>
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
+              <li>
+                <Link to="/register">Register</Link>
+              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-primary-foreground/70 md:flex-row">
-          <p>© {new Date().getFullYear()} UMunity. Built for the University of Mindanao community.</p>
+          <p>
+            © {new Date().getFullYear()} UMunity. Built for the University of Mindanao community.
+          </p>
           <p>One Platform for Every Student Organization.</p>
         </div>
       </div>

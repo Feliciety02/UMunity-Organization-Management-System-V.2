@@ -2,7 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { CalendarDays, FileStack, MapPin } from "lucide-react";
 import { PageHead, Panel, EmptyState, Badge } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
-import { closeoutStatusTone, formatCloseoutStatus, formatWorkflowStatus, proposalCompletion, type EventWorkflow } from "@/lib/workflows";
+import {
+  closeoutStatusTone,
+  formatCloseoutStatus,
+  formatWorkflowStatus,
+  proposalCompletion,
+  type EventWorkflow,
+} from "@/lib/workflows";
 import { WorkflowStatusBadge } from "@/components/workflows/WorkflowStatusBadge";
 
 export function WorkflowBoard({
@@ -41,7 +47,7 @@ export function WorkflowBoard({
                   <WorkflowStatusBadge status={workflow.status} />
                   <Badge tone="info">{workflow.proposal.category}</Badge>
                   <Badge tone="gold">{workflow.orgShort}</Badge>
-                  {(workflow.status === "approved" || workflow.status === "completed") ? (
+                  {workflow.status === "approved" || workflow.status === "completed" ? (
                     <Badge tone={closeoutStatusTone(workflow.operations.postEvent.closeoutStatus)}>
                       {formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus)}
                     </Badge>
@@ -56,7 +62,8 @@ export function WorkflowBoard({
                 <div className="grid gap-2 text-sm text-muted-foreground md:grid-cols-2">
                   <p className="flex items-center gap-2">
                     <CalendarDays className="h-4 w-4 text-primary" />
-                    {workflow.proposal.date || "TBA"}{workflow.proposal.time ? ` - ${workflow.proposal.time}` : ""}
+                    {workflow.proposal.date || "TBA"}
+                    {workflow.proposal.time ? ` - ${workflow.proposal.time}` : ""}
                   </p>
                   <p className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-primary" />
@@ -78,16 +85,22 @@ export function WorkflowBoard({
                 </div>
 
                 <div className="rounded-2xl border border-border bg-card p-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Current stage</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Current stage
+                  </p>
                   <p className="mt-1 text-sm font-semibold">{workflow.currentStage}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {workflow.comments.length} comment{workflow.comments.length === 1 ? "" : "s"} and {workflow.history.length} history entries.
+                    {workflow.comments.length} comment{workflow.comments.length === 1 ? "" : "s"}{" "}
+                    and {workflow.history.length} history entries.
                   </p>
                 </div>
 
                 <div className="mt-auto flex flex-wrap gap-2">
                   <AppButton asChild variant="primary" size="sm">
-                    <Link to={`${detailBase}/$workflowId` as string} params={{ workflowId: workflow.id }}>
+                    <Link
+                      to={`${detailBase}/$workflowId` as string}
+                      params={{ workflowId: workflow.id }}
+                    >
                       Open workflow
                     </Link>
                   </AppButton>

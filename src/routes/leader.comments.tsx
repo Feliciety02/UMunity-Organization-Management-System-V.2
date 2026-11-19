@@ -10,13 +10,51 @@ export const Route = createFileRoute("/leader/comments")({
   component: Comments,
 });
 
-type Item = { id: string; author: string; program: string; post: string; text: string; time: string; flagged?: boolean; reply?: string };
+type Item = {
+  id: string;
+  author: string;
+  program: string;
+  post: string;
+  text: string;
+  time: string;
+  flagged?: boolean;
+  reply?: string;
+};
 
 const initial: Item[] = [
-  { id: "c1", author: "Jana Cruz", program: "BS IT - 2nd Yr", post: "Innovation Summit 2026 - Registration Open", text: "Sulit 'to last year, joining again!", time: "1h" },
-  { id: "c2", author: "Marvin Lim", program: "BS CS - 1st Yr", post: "Innovation Summit 2026 - Registration Open", text: "Will the workshop tracks have certificates?", time: "30m", flagged: true },
-  { id: "c3", author: "Ria Santos", program: "BS IS - 3rd Yr", post: "Officer elections opening soon", text: "Where can I read the candidate platforms?", time: "5h" },
-  { id: "c4", author: "Karl Mendez", program: "BS CS - 4th Yr", post: "Hack Night Vol. 3", text: "Can we bring our own laptops?", time: "1d" },
+  {
+    id: "c1",
+    author: "Jana Cruz",
+    program: "BS IT - 2nd Yr",
+    post: "Innovation Summit 2026 - Registration Open",
+    text: "Sulit 'to last year, joining again!",
+    time: "1h",
+  },
+  {
+    id: "c2",
+    author: "Marvin Lim",
+    program: "BS CS - 1st Yr",
+    post: "Innovation Summit 2026 - Registration Open",
+    text: "Will the workshop tracks have certificates?",
+    time: "30m",
+    flagged: true,
+  },
+  {
+    id: "c3",
+    author: "Ria Santos",
+    program: "BS IS - 3rd Yr",
+    post: "Officer elections opening soon",
+    text: "Where can I read the candidate platforms?",
+    time: "5h",
+  },
+  {
+    id: "c4",
+    author: "Karl Mendez",
+    program: "BS CS - 4th Yr",
+    post: "Hack Night Vol. 3",
+    text: "Can we bring our own laptops?",
+    time: "1d",
+  },
 ];
 
 function Comments() {
@@ -35,16 +73,27 @@ function Comments() {
 
   return (
     <>
-      <PageHead title="Comments" sub="Reply to, report, or remove comments on your organization's posts." />
+      <PageHead
+        title="Comments"
+        sub="Reply to, report, or remove comments on your organization's posts."
+      />
       <Panel>
         {items.length === 0 ? (
-          <EmptyState icon={MessageSquare} title="No comments to review" sub="New comments on your posts will appear here." />
+          <EmptyState
+            icon={MessageSquare}
+            title="No comments to review"
+            sub="New comments on your posts will appear here."
+          />
         ) : (
           <div className="divide-y divide-border">
             {items.map((c) => (
               <div key={c.id} className="flex items-start gap-3 py-4 first:pt-0 last:pb-0">
                 <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-secondary text-xs font-bold text-primary-deep">
-                  {c.author.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+                  {c.author
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((w) => w[0])
+                    .join("")}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -77,7 +126,12 @@ function Comments() {
                         aria-label={`Reply to ${c.author}`}
                         className="flex-1 bg-transparent text-sm focus:outline-none"
                       />
-                      <AppButton type="button" variant="ghost" size="sm" onClick={() => setReplyingTo(null)}>
+                      <AppButton
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setReplyingTo(null)}
+                      >
                         Cancel
                       </AppButton>
                       <AppButton type="submit" variant="primary" size="sm" disabled={!draft.trim()}>
@@ -101,8 +155,14 @@ function Comments() {
                         size="sm"
                         disabled={c.flagged}
                         onClick={() => {
-                          setItems((list) => list.map((x) => (x.id === c.id ? { ...x, flagged: true } : x)));
-                          showStatusToast("Comment reported", "Platform moderators will review it.", "info");
+                          setItems((list) =>
+                            list.map((x) => (x.id === c.id ? { ...x, flagged: true } : x)),
+                          );
+                          showStatusToast(
+                            "Comment reported",
+                            "Platform moderators will review it.",
+                            "info",
+                          );
                         }}
                       >
                         <Flag className="h-3 w-3" /> {c.flagged ? "Reported" : "Report"}
@@ -128,7 +188,9 @@ function Comments() {
         open={removing !== null}
         onOpenChange={(open) => !open && setRemoving(null)}
         title="Remove this comment?"
-        description={removing ? `${removing.author}'s comment will be hidden from the post.` : undefined}
+        description={
+          removing ? `${removing.author}'s comment will be hidden from the post.` : undefined
+        }
         confirmLabel="Remove comment"
         tone="danger"
         onConfirm={() => {

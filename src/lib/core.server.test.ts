@@ -53,27 +53,51 @@ describe("passwords", () => {
 
 describe("sign-in", () => {
   it("accepts the right password and rejects a wrong one", async () => {
-    expect((await core.authenticate(c, "student@um.edu.ph", "student123", "1.1.1.1")).ok).toBe(true);
-    expect(await core.authenticate(c, "student@um.edu.ph", "nope", "1.1.1.1")).toEqual({ ok: false, reason: "invalid" });
-    expect(await core.authenticate(c, "nobody@um.edu.ph", "x", "1.1.1.1")).toEqual({ ok: false, reason: "invalid" });
+    expect((await core.authenticate(c, "student@um.edu.ph", "student123", "1.1.1.1")).ok).toBe(
+      true,
+    );
+    expect(await core.authenticate(c, "student@um.edu.ph", "nope", "1.1.1.1")).toEqual({
+      ok: false,
+      reason: "invalid",
+    });
+    expect(await core.authenticate(c, "nobody@um.edu.ph", "x", "1.1.1.1")).toEqual({
+      ok: false,
+      reason: "invalid",
+    });
   });
 
   it("locks an email after repeated failures, even with the right password, then unlocks", async () => {
     const t0 = Date.now();
-    for (let i = 0; i < core.THROTTLE.maxPerEmail; i++) await core.authenticate(c, "student@um.edu.ph", "bad", `10.0.0.${i}`, t0);
-    const locked = await core.authenticate(c, "student@um.edu.ph", "student123", "10.0.0.99", t0 + 1000);
+    for (let i = 0; i < core.THROTTLE.maxPerEmail; i++)
+      await core.authenticate(c, "student@um.edu.ph", "bad", `10.0.0.${i}`, t0);
+    const locked = await core.authenticate(
+      c,
+      "student@um.edu.ph",
+      "student123",
+      "10.0.0.99",
+      t0 + 1000,
+    );
     expect(locked.ok).toBe(false);
     expect(locked.ok === false && locked.reason).toBe("locked");
-    const later = await core.authenticate(c, "student@um.edu.ph", "student123", "10.0.0.99", t0 + core.THROTTLE.lockMs + 2000);
+    const later = await core.authenticate(
+      c,
+      "student@um.edu.ph",
+      "student123",
+      "10.0.0.99",
+      t0 + core.THROTTLE.lockMs + 2000,
+    );
     expect(later.ok).toBe(true);
   });
 
   it("locks an IP that tries many accounts", async () => {
     const t0 = Date.now();
-    for (let i = 0; i < core.THROTTLE.maxPerIp; i++) await core.authenticate(c, `user${i}@um.edu.ph`, "bad", "6.6.6.6", t0);
+    for (let i = 0; i < core.THROTTLE.maxPerIp; i++)
+      await core.authenticate(c, `user${i}@um.edu.ph`, "bad", "6.6.6.6", t0);
     const res = await core.authenticate(c, "leader@um.edu.ph", "leader123", "6.6.6.6", t0 + 1000);
     expect(res.ok === false && res.reason).toBe("locked");
-    expect((await core.authenticate(c, "leader@um.edu.ph", "leader123", "7.7.7.7", t0 + 1000)).ok).toBe(true);
+    expect(
+      (await core.authenticate(c, "leader@um.edu.ph", "leader123", "7.7.7.7", t0 + 1000)).ok,
+    ).toBe(true);
   });
 
   it("disables the published demo accounts when demo mode is off", async () => {
@@ -105,42 +129,75 @@ describe("sessions", () => {
 
 describe("accounts", () => {
   it("registers a student once per email", async () => {
-    const input = { name: "Test Student", email: "Test.Student@umindanao.edu.ph", program: "BSIT 1", password: "longenough" };
+    const input = {
+      name: "Test Student",
+      email: "Test.Student@umindanao.edu.ph",
+      program: "BSIT 1",
+      password: "longenough",
+    };
     const first = await core.registerStudent(c, input);
     expect(first.ok).toBe(true);
-    const again = await core.registerStudent(c, { ...input, email: "test.student@umindanao.edu.ph" });
+    const again = await core.registerStudent(c, {
+      ...input,
+      email: "test.student@umindanao.edu.ph",
+    });
     expect(again).toMatchObject({ ok: false, field: "email" });
-    expect(await core.registerStudent(c, { ...input, email: "x@gmail.com" })).toMatchObject({ ok: false });
+    expect(await core.registerStudent(c, { ...input, email: "x@gmail.com" })).toMatchObject({
+      ok: false,
+    });
   });
 
   it("changes the password and signs out other sessions only", async () => {
     const user = await signIn("student@um.edu.ph", "student123");
     const keep = await core.createSession(c, user.id, true);
     const other = await core.createSession(c, user.id, true);
-    await expect(core.changePassword(c, user, "wrong", "newpassword1")).rejects.toThrow(core.UserError);
+    await expect(core.changePassword(c, user, "wrong", "newpassword1")).rejects.toThrow(
+      core.UserError,
+    );
     await core.changePassword(c, user, "student123", "newpassword1", keep.token);
     expect(await core.userForToken(c, keep.token)).not.toBeNull();
     expect(await core.userForToken(c, other.token)).toBeNull();
-    expect((await core.authenticate(c, "student@um.edu.ph", "newpassword1", "1.1.1.1")).ok).toBe(true);
+    expect((await core.authenticate(c, "student@um.edu.ph", "newpassword1", "1.1.1.1")).ok).toBe(
+      true,
+    );
   });
 
   it("changes the email only with the password and to a free UM address", async () => {
     const user = await signIn("student@um.edu.ph", "student123");
-    await expect(core.changeEmail(c, user, "student123", "leader@um.edu.ph")).rejects.toThrow("Another account");
-    await expect(core.changeEmail(c, user, "student123", "me@gmail.com")).rejects.toThrow(core.UserError);
+    await expect(core.changeEmail(c, user, "student123", "leader@um.edu.ph")).rejects.toThrow(
+      "Another account",
+    );
+    await expect(core.changeEmail(c, user, "student123", "me@gmail.com")).rejects.toThrow(
+      core.UserError,
+    );
     const session = await core.changeEmail(c, user, "student123", "althea.d@umindanao.edu.ph");
     expect(session.email).toBe("althea.d@umindanao.edu.ph");
-    expect((await core.authenticate(c, "althea.d@umindanao.edu.ph", "student123", "1.1.1.1")).ok).toBe(true);
+    expect(
+      (await core.authenticate(c, "althea.d@umindanao.edu.ph", "student123", "1.1.1.1")).ok,
+    ).toBe(true);
   });
 
   it("deletes the account with its personal data", async () => {
     const user = await signIn("student@um.edu.ph", "student123");
-    await core.saveWhole(c, user, "umunity.saved.v1", JSON.stringify({ posts: ["p1"], events: [] }));
+    await core.saveWhole(
+      c,
+      user,
+      "umunity.saved.v1",
+      JSON.stringify({ posts: ["p1"], events: [] }),
+    );
     await core.deleteAccount(c, user, "student123");
-    expect((await core.authenticate(c, "student@um.edu.ph", "student123", "2.2.2.2")).ok).toBe(false);
-    const left = await c.execute({ sql: "SELECT count(*) AS n FROM app_items WHERE scope = ?", args: [`user:${user.id}`] });
+    expect((await core.authenticate(c, "student@um.edu.ph", "student123", "2.2.2.2")).ok).toBe(
+      false,
+    );
+    const left = await c.execute({
+      sql: "SELECT count(*) AS n FROM app_items WHERE scope = ?",
+      args: [`user:${user.id}`],
+    });
     expect(Number(left.rows[0].n)).toBe(0);
-    const memberships = await c.execute({ sql: "SELECT count(*) AS n FROM org_members WHERE user_id = ?", args: [user.id] });
+    const memberships = await c.execute({
+      sql: "SELECT count(*) AS n FROM org_members WHERE user_id = ?",
+      args: [user.id],
+    });
     expect(Number(memberships.rows[0].n)).toBe(0);
   });
 });
@@ -153,21 +210,30 @@ describe("password reset", () => {
     const reset = (await core.createPasswordReset(c, "student@um.edu.ph"))!;
     await core.resetPassword(c, reset.token, "brand-new-pass");
     expect(await core.userForToken(c, session.token)).toBeNull();
-    expect((await core.authenticate(c, "student@um.edu.ph", "brand-new-pass", "1.1.1.1")).ok).toBe(true);
-    await expect(core.resetPassword(c, reset.token, "another-pass")).rejects.toThrow("invalid or has expired");
+    expect((await core.authenticate(c, "student@um.edu.ph", "brand-new-pass", "1.1.1.1")).ok).toBe(
+      true,
+    );
+    await expect(core.resetPassword(c, reset.token, "another-pass")).rejects.toThrow(
+      "invalid or has expired",
+    );
   });
 
   it("lifts a sign-in lockout", async () => {
-    for (let i = 0; i < core.THROTTLE.maxPerEmail; i++) await core.authenticate(c, "student@um.edu.ph", "bad", `10.1.0.${i}`);
+    for (let i = 0; i < core.THROTTLE.maxPerEmail; i++)
+      await core.authenticate(c, "student@um.edu.ph", "bad", `10.1.0.${i}`);
     const reset = (await core.createPasswordReset(c, "student@um.edu.ph"))!;
     await core.resetPassword(c, reset.token, "brand-new-pass");
-    expect((await core.authenticate(c, "student@um.edu.ph", "brand-new-pass", "10.1.0.200")).ok).toBe(true);
+    expect(
+      (await core.authenticate(c, "student@um.edu.ph", "brand-new-pass", "10.1.0.200")).ok,
+    ).toBe(true);
   });
 
   it("rejects expired tokens", async () => {
     const now = Date.now();
     const reset = (await core.createPasswordReset(c, "student@um.edu.ph", now))!;
-    await expect(core.resetPassword(c, reset.token, "brand-new-pass", now + core.RESET_TTL_MS + 1)).rejects.toThrow(core.UserError);
+    await expect(
+      core.resetPassword(c, reset.token, "brand-new-pass", now + core.RESET_TTL_MS + 1),
+    ).rejects.toThrow(core.UserError);
   });
 });
 
@@ -176,10 +242,26 @@ describe("app data", () => {
     const leader = await signIn("leader@um.edu.ph", "leader123");
     const admin = await signIn("admin1@um.edu.ph", "admin1123");
     const key = "umunity.notifications.v2";
-    await core.saveWhole(c, leader, key, JSON.stringify([{ id: "n1", read: false }, { id: "n2", read: false }]));
+    await core.saveWhole(
+      c,
+      leader,
+      key,
+      JSON.stringify([
+        { id: "n1", read: false },
+        { id: "n2", read: false },
+      ]),
+    );
     // Both started from the same copy; each changes a different item.
-    await core.patchData(c, leader, key, { kind: "array", upserts: [{ k: "n1", v: JSON.stringify({ id: "n1", read: true }), pos: 1024, ver: 1 }], deletes: [] });
-    await core.patchData(c, admin, key, { kind: "array", upserts: [{ k: "n2", v: JSON.stringify({ id: "n2", read: true }), pos: 2048, ver: 1 }], deletes: [] });
+    await core.patchData(c, leader, key, {
+      kind: "array",
+      upserts: [{ k: "n1", v: JSON.stringify({ id: "n1", read: true }), pos: 1024, ver: 1 }],
+      deletes: [],
+    });
+    await core.patchData(c, admin, key, {
+      kind: "array",
+      upserts: [{ k: "n2", v: JSON.stringify({ id: "n2", read: true }), pos: 2048, ver: 1 }],
+      deletes: [],
+    });
     const loaded = await core.loadData(c, admin);
     expect(JSON.parse(loaded[key].value)).toEqual([
       { id: "n1", read: true },
@@ -190,20 +272,41 @@ describe("app data", () => {
 
   it("stops students from writing staff data", async () => {
     const student = await signIn("student@um.edu.ph", "student123");
-    await expect(core.saveWhole(c, student, "umunity.workflows.v1", "[]")).rejects.toThrow("Your role");
+    await expect(core.saveWhole(c, student, "umunity.workflows.v1", "[]")).rejects.toThrow(
+      "Your role",
+    );
     await expect(
-      core.patchData(c, student, "umunity.admin.pending-orgs.v1", { kind: "array", upserts: [], deletes: [{ k: "x", ver: 1 }] }),
+      core.patchData(c, student, "umunity.admin.pending-orgs.v1", {
+        kind: "array",
+        upserts: [],
+        deletes: [{ k: "x", ver: 1 }],
+      }),
     ).rejects.toThrow(core.UserError);
-    await expect(core.saveWhole(c, student, "umunity.not-a-key", "[]")).rejects.toThrow("Unknown data key");
+    await expect(core.saveWhole(c, student, "umunity.not-a-key", "[]")).rejects.toThrow(
+      "Unknown data key",
+    );
   });
 
   it("keeps personal data separate per account", async () => {
     const student = await signIn("student@um.edu.ph", "student123");
-    const other = await core.registerStudent(c, { name: "Other", email: "other@umindanao.edu.ph", program: "BSCS", password: "longenough" });
+    const other = await core.registerStudent(c, {
+      name: "Other",
+      email: "other@umindanao.edu.ph",
+      program: "BSCS",
+      password: "longenough",
+    });
     if (!other.ok) throw new Error("register failed");
-    await core.saveWhole(c, student, "umunity.saved.v1", JSON.stringify({ posts: ["p9"], events: [] }));
+    await core.saveWhole(
+      c,
+      student,
+      "umunity.saved.v1",
+      JSON.stringify({ posts: ["p9"], events: [] }),
+    );
     expect((await core.loadData(c, other.user))["umunity.saved.v1"]).toBeUndefined();
-    expect(JSON.parse((await core.loadData(c, student))["umunity.saved.v1"].value)).toEqual({ posts: ["p9"], events: [] });
+    expect(JSON.parse((await core.loadData(c, student))["umunity.saved.v1"].value)).toEqual({
+      posts: ["p9"],
+      events: [],
+    });
   });
 
   it("refuses a patch on a value still stored whole, so no items are lost", async () => {
@@ -213,7 +316,11 @@ describe("app data", () => {
       args: [`user:${student.id}`, JSON.stringify([{ eventTitle: "A" }, { eventTitle: "B" }])],
     });
     await expect(
-      core.patchData(c, student, "umunity.rsvps.v1", { kind: "array", upserts: [{ k: "A", v: '{"eventTitle":"A","x":1}', pos: 1024, ver: 0 }], deletes: [] }),
+      core.patchData(c, student, "umunity.rsvps.v1", {
+        kind: "array",
+        upserts: [{ k: "A", v: '{"eventTitle":"A","x":1}', pos: 1024, ver: 0 }],
+        deletes: [],
+      }),
     ).rejects.toThrow(core.ReshapeError);
     expect(JSON.parse((await core.loadData(c, student))["umunity.rsvps.v1"].value)).toHaveLength(2);
   });
@@ -227,26 +334,40 @@ describe("app data", () => {
 
 describe("same-item conflicts", () => {
   const key = "umunity.notifications.v2";
-  const up = (k: string, v: object, ver: number, pos = 1024) => ({ kind: "array" as const, upserts: [{ k, v: JSON.stringify(v), pos, ver }], deletes: [] });
+  const up = (k: string, v: object, ver: number, pos = 1024) => ({
+    kind: "array" as const,
+    upserts: [{ k, v: JSON.stringify(v), pos, ver }],
+    deletes: [],
+  });
 
   it("refuses the second of two saves based on the same version", async () => {
     const a = await signIn("leader@um.edu.ph", "leader123");
     const b = await signIn("adviser@um.edu.ph", "adviser123");
     await core.saveWhole(c, a, key, JSON.stringify([{ id: "n1", text: "start" }]));
     await core.patchData(c, a, key, up("n1", { id: "n1", text: "from A" }, 1));
-    await expect(core.patchData(c, b, key, up("n1", { id: "n1", text: "from B" }, 1))).rejects.toThrow(core.ConflictError);
-    expect(JSON.parse((await core.loadData(c, a))[key].value)).toEqual([{ id: "n1", text: "from A" }]);
+    await expect(
+      core.patchData(c, b, key, up("n1", { id: "n1", text: "from B" }, 1)),
+    ).rejects.toThrow(core.ConflictError);
+    expect(JSON.parse((await core.loadData(c, a))[key].value)).toEqual([
+      { id: "n1", text: "from A" },
+    ]);
     // Based on the latest version, B's edit goes through.
     await core.patchData(c, b, key, up("n1", { id: "n1", text: "from B" }, 2));
-    expect(JSON.parse((await core.loadData(c, a))[key].value)).toEqual([{ id: "n1", text: "from B" }]);
+    expect(JSON.parse((await core.loadData(c, a))[key].value)).toEqual([
+      { id: "n1", text: "from B" },
+    ]);
   });
 
   it("refuses creating an item someone else just created, and stale deletes", async () => {
     const a = await signIn("leader@um.edu.ph", "leader123");
     await core.patchData(c, a, key, up("n9", { id: "n9", text: "first" }, 0));
-    await expect(core.patchData(c, a, key, up("n9", { id: "n9", text: "second" }, 0))).rejects.toThrow(core.ConflictError);
+    await expect(
+      core.patchData(c, a, key, up("n9", { id: "n9", text: "second" }, 0)),
+    ).rejects.toThrow(core.ConflictError);
     await core.patchData(c, a, key, up("n9", { id: "n9", text: "edited" }, 1));
-    await expect(core.patchData(c, a, key, { kind: "array", upserts: [], deletes: [{ k: "n9", ver: 1 }] })).rejects.toThrow(core.ConflictError);
+    await expect(
+      core.patchData(c, a, key, { kind: "array", upserts: [], deletes: [{ k: "n9", ver: 1 }] }),
+    ).rejects.toThrow(core.ConflictError);
   });
 
   it("applies a patch all or nothing", async () => {
@@ -262,7 +383,10 @@ describe("same-item conflicts", () => {
       deletes: [],
     };
     await expect(core.patchData(c, a, key, stale)).rejects.toThrow(core.ConflictError);
-    expect(JSON.parse((await core.loadData(c, a))[key].value)).toEqual([{ id: "n1" }, { id: "n2", x: 1 }]);
+    expect(JSON.parse((await core.loadData(c, a))[key].value)).toEqual([
+      { id: "n1" },
+      { id: "n2", x: 1 },
+    ]);
   });
 
   it("keeps an emptied store as an empty placeholder", async () => {
@@ -279,10 +403,21 @@ describe("same-item conflicts", () => {
 describe("review steps", () => {
   const key = "umunity.workflows.v1";
   const CSS = "UM Computer Studies Society";
-  const draft = { id: "w1", orgName: CSS, title: "Hackathon", status: "draft", comments: [] as object[], history: [] as object[] };
+  const draft = {
+    id: "w1",
+    orgName: CSS,
+    title: "Hackathon",
+    status: "draft",
+    comments: [] as object[],
+    history: [] as object[],
+  };
   let ver = 0;
   const save = async (user: UserRow, item: object) => {
-    const res = await core.patchData(c, user, key, { kind: "array", upserts: [{ k: "w1", v: JSON.stringify(item), pos: 1024, ver }], deletes: [] });
+    const res = await core.patchData(c, user, key, {
+      kind: "array",
+      upserts: [{ k: "w1", v: JSON.stringify(item), pos: 1024, ver }],
+      deletes: [],
+    });
     ver = res.versions.w1;
   };
   const users = async () => ({
@@ -300,13 +435,25 @@ describe("review steps", () => {
     const u = await users();
     await save(u.leader, draft);
     const submitted = { ...draft, status: "pending_adviser" };
-    await expect(save(u.leader, { ...draft, status: "pending_admin1" })).rejects.toThrow("can't move this");
+    await expect(save(u.leader, { ...draft, status: "pending_admin1" })).rejects.toThrow(
+      "can't move this",
+    );
     await save(u.leader, submitted);
-    await expect(save(u.leader, { ...submitted, status: "pending_admin2" })).rejects.toThrow(core.UserError);
-    await expect(save(u.admin2, { ...submitted, status: "pending_admin2" })).rejects.toThrow("Your role can't move");
-    const byAdviser = { ...submitted, status: "pending_admin2", history: [{ id: "h1", byRole: "adviser", action: "approved" }] };
+    await expect(save(u.leader, { ...submitted, status: "pending_admin2" })).rejects.toThrow(
+      core.UserError,
+    );
+    await expect(save(u.admin2, { ...submitted, status: "pending_admin2" })).rejects.toThrow(
+      "Your role can't move",
+    );
+    const byAdviser = {
+      ...submitted,
+      status: "pending_admin2",
+      history: [{ id: "h1", byRole: "adviser", action: "approved" }],
+    };
     await save(u.adviser, byAdviser);
-    await expect(save(u.adviser, { ...byAdviser, status: "pending_admin1" })).rejects.toThrow("Your role can't move");
+    await expect(save(u.adviser, { ...byAdviser, status: "pending_admin1" })).rejects.toThrow(
+      "Your role can't move",
+    );
     await save(u.admin2, { ...byAdviser, status: "pending_admin1" });
     await save(u.admin1, { ...byAdviser, status: "approved" });
     const loaded = JSON.parse((await core.loadData(c, u.leader))[key].value);
@@ -316,35 +463,68 @@ describe("review steps", () => {
   it("lets reviewers decide but not rewrite the submission", async () => {
     const u = await users();
     await save(u.leader, { ...draft, status: "pending_adviser" });
-    await expect(save(u.adviser, { ...draft, status: "pending_admin2", title: "Changed" })).rejects.toThrow("not edit the submission");
+    await expect(
+      save(u.adviser, { ...draft, status: "pending_admin2", title: "Changed" }),
+    ).rejects.toThrow("not edit the submission");
     await save(u.adviser, { ...draft, status: "revision_requested" });
     // Back with the leader: now they may edit and resubmit.
     await save(u.leader, { ...draft, status: "revision_requested", title: "Hackathon v2" });
     await save(u.leader, { ...draft, status: "pending_adviser", title: "Hackathon v2" });
-    await expect(save(u.leader, { ...draft, status: "pending_adviser", title: "Sneaky edit" })).rejects.toThrow("only be edited");
+    await expect(
+      save(u.leader, { ...draft, status: "pending_adviser", title: "Sneaky edit" }),
+    ).rejects.toThrow("only be edited");
   });
 
   it("keeps comments and history append-only and signed by the actor", async () => {
     const u = await users();
-    const withNote = { ...draft, status: "pending_adviser", comments: [{ id: "c1", authorRole: "leader", text: "please review" }] };
+    const withNote = {
+      ...draft,
+      status: "pending_adviser",
+      comments: [{ id: "c1", authorRole: "leader", text: "please review" }],
+    };
     await save(u.leader, withNote);
-    await expect(save(u.adviser, { ...withNote, comments: [] })).rejects.toThrow("can't be edited or removed");
-    await expect(save(u.adviser, { ...withNote, history: [{ id: "h1", byRole: "admin1" }] })).rejects.toThrow("your own role");
-    await save(u.adviser, { ...withNote, comments: [...withNote.comments, { id: "c2", authorRole: "adviser", text: "looks good" }] });
+    await expect(save(u.adviser, { ...withNote, comments: [] })).rejects.toThrow(
+      "can't be edited or removed",
+    );
+    await expect(
+      save(u.adviser, { ...withNote, history: [{ id: "h1", byRole: "admin1" }] }),
+    ).rejects.toThrow("your own role");
+    await save(u.adviser, {
+      ...withNote,
+      comments: [...withNote.comments, { id: "c2", authorRole: "adviser", text: "looks good" }],
+    });
   });
 
   it("keeps leaders to their own organization", async () => {
     const u = await users();
-    await expect(save(u.leader, { ...draft, orgName: "UM Cultural Guild" })).rejects.toThrow("own organization");
+    await expect(save(u.leader, { ...draft, orgName: "UM Cultural Guild" })).rejects.toThrow(
+      "own organization",
+    );
     await save(u.leader, draft);
-    await expect(save(u.leader, { ...draft, orgName: "UM Cultural Guild" })).rejects.toThrow("can't change");
-    await expect(core.patchData(c, u.adviser, key, { kind: "array", upserts: [], deletes: [{ k: "w1", ver }] })).rejects.toThrow("delete");
-    await core.patchData(c, u.admin1, key, { kind: "array", upserts: [], deletes: [{ k: "w1", ver }] });
+    await expect(save(u.leader, { ...draft, orgName: "UM Cultural Guild" })).rejects.toThrow(
+      "can't change",
+    );
+    await expect(
+      core.patchData(c, u.adviser, key, {
+        kind: "array",
+        upserts: [],
+        deletes: [{ k: "w1", ver }],
+      }),
+    ).rejects.toThrow("delete");
+    await core.patchData(c, u.admin1, key, {
+      kind: "array",
+      upserts: [],
+      deletes: [{ k: "w1", ver }],
+    });
   });
 
   it("steps the post-event closeout through its own reviewers", async () => {
     const u = await users();
-    const withCloseout = (s: string, report = "Went well") => ({ ...draft, status: "approved", operations: { postEvent: { closeoutStatus: s, report } } });
+    const withCloseout = (s: string, report = "Went well") => ({
+      ...draft,
+      status: "approved",
+      operations: { postEvent: { closeoutStatus: s, report } },
+    });
     await c.execute({
       sql: "INSERT INTO app_items (scope, key, item_key, kind, position, value, updated_at, version) VALUES ('shared', ?, 'w1', 'array', 1024, ?, 0, 1)",
       args: [key, JSON.stringify(withCloseout("draft", ""))],
@@ -356,16 +536,27 @@ describe("review steps", () => {
     await expect(save(u.admin1, withCloseout("pending_admin2"))).rejects.toThrow("closeout step");
     await save(u.adviser, withCloseout("pending_admin2"));
     await save(u.admin2, withCloseout("pending_admin1"));
-    await expect(save(u.leader, { ...withCloseout("approved"), status: "completed" })).rejects.toThrow(core.UserError);
+    await expect(
+      save(u.leader, { ...withCloseout("approved"), status: "completed" }),
+    ).rejects.toThrow(core.UserError);
     await save(u.admin1, { ...withCloseout("approved"), status: "completed" });
   });
 
   it("checks whole saves item by item too", async () => {
     const u = await users();
     await core.saveWhole(c, u.leader, key, JSON.stringify([draft]));
-    await expect(core.saveWhole(c, u.leader, key, JSON.stringify([{ ...draft, status: "approved" }]))).rejects.toThrow(core.UserError);
-    await expect(core.saveWhole(c, u.leader, key, JSON.stringify([{ title: "no id" }]))).rejects.toThrow("needs an id");
-    const saved = await core.saveWhole(c, u.leader, key, JSON.stringify([draft, { ...draft, id: "w2" }]));
+    await expect(
+      core.saveWhole(c, u.leader, key, JSON.stringify([{ ...draft, status: "approved" }])),
+    ).rejects.toThrow(core.UserError);
+    await expect(
+      core.saveWhole(c, u.leader, key, JSON.stringify([{ title: "no id" }])),
+    ).rejects.toThrow("needs an id");
+    const saved = await core.saveWhole(
+      c,
+      u.leader,
+      key,
+      JSON.stringify([draft, { ...draft, id: "w2" }]),
+    );
     expect(saved.items).toEqual({ w1: [1024, 1], w2: [2048, 1] }); // unchanged w1 keeps its version
   });
 });
@@ -373,13 +564,22 @@ describe("review steps", () => {
 describe("server seeding", () => {
   it("fills empty approval stores once, and starts them empty when given no seed", async () => {
     const admin = await signIn("admin1@um.edu.ph", "admin1123");
-    const seeds = { "umunity.workflows.v1": () => [{ id: "s1", status: "approved" }], "umunity.transitions.v1": () => [] };
+    const seeds = {
+      "umunity.workflows.v1": () => [{ id: "s1", status: "approved" }],
+      "umunity.transitions.v1": () => [],
+    };
     const first = await core.loadData(c, admin, seeds);
-    expect(JSON.parse(first["umunity.workflows.v1"].value)).toEqual([{ id: "s1", status: "approved" }]);
+    expect(JSON.parse(first["umunity.workflows.v1"].value)).toEqual([
+      { id: "s1", status: "approved" },
+    ]);
     expect(first["umunity.workflows.v1"].versions).toEqual({ s1: 1 });
     expect(first["umunity.transitions.v1"]).toEqual({ value: "[]" });
     // Once emptied, it stays empty instead of being seeded again.
-    await core.patchData(c, admin, "umunity.workflows.v1", { kind: "array", upserts: [], deletes: [{ k: "s1", ver: 1 }] });
+    await core.patchData(c, admin, "umunity.workflows.v1", {
+      kind: "array",
+      upserts: [],
+      deletes: [{ k: "s1", ver: 1 }],
+    });
     expect((await core.loadData(c, admin, seeds))["umunity.workflows.v1"]).toEqual({ value: "[]" });
   });
 });
@@ -410,10 +610,17 @@ describe("memberships", () => {
     const leader = await signIn("leader@um.edu.ph", "leader123");
     await core.requestMembership(c, student, "eco-warriors"); // already a member: no-op
     await core.requestMembership(c, student, "volunteer-corps");
-    const pendingRow = await c.execute({ sql: "SELECT id FROM membership_requests WHERE org_slug = 'volunteer-corps' AND user_id = ?", args: [student.id] });
+    const pendingRow = await c.execute({
+      sql: "SELECT id FROM membership_requests WHERE org_slug = 'volunteer-corps' AND user_id = ?",
+      args: [student.id],
+    });
     const id = String(pendingRow.rows[0].id);
-    await expect(core.resolveMembershipRequest(c, leader, id, true)).rejects.toThrow("your own organization");
-    await expect(core.resolveMembershipRequest(c, student, id, true)).rejects.toThrow(core.UserError);
+    await expect(core.resolveMembershipRequest(c, leader, id, true)).rejects.toThrow(
+      "your own organization",
+    );
+    await expect(core.resolveMembershipRequest(c, student, id, true)).rejects.toThrow(
+      core.UserError,
+    );
     const admin = await signIn("admin1@um.edu.ph", "admin1123");
     await core.resolveMembershipRequest(c, admin, id, false);
     expect((await core.myMemberships(c, student)).pending["volunteer-corps"]).toBeUndefined();
@@ -422,8 +629,12 @@ describe("memberships", () => {
   it("lets only students request, and only real orgs", async () => {
     const leader = await signIn("leader@um.edu.ph", "leader123");
     const student = await signIn("student@um.edu.ph", "student123");
-    await expect(core.requestMembership(c, leader, "eco-warriors")).rejects.toThrow("Only student accounts");
-    await expect(core.requestMembership(c, student, "no-such-org")).rejects.toThrow("doesn't exist");
+    await expect(core.requestMembership(c, leader, "eco-warriors")).rejects.toThrow(
+      "Only student accounts",
+    );
+    await expect(core.requestMembership(c, student, "no-such-org")).rejects.toThrow(
+      "doesn't exist",
+    );
   });
 
   it("lets the leader manage the roster, but not remove themselves", async () => {
@@ -431,10 +642,14 @@ describe("memberships", () => {
     const roster = await core.orgMembers(c, leader);
     expect(roster.map((m) => m.name)).toContain("Anna Sy");
     await core.setMemberStatus(c, leader, "anna.sy@umindanao.edu.ph", "Inactive");
-    expect((await core.orgMembers(c, leader)).find((m) => m.name === "Anna Sy")?.status).toBe("Inactive");
+    expect((await core.orgMembers(c, leader)).find((m) => m.name === "Anna Sy")?.status).toBe(
+      "Inactive",
+    );
     await core.removeOrgMember(c, leader, "karl.m@umindanao.edu.ph");
     expect((await core.orgMembers(c, leader)).some((m) => m.name === "Karl Mendez")).toBe(false);
-    await expect(core.removeOrgMember(c, leader, "nobody@umindanao.edu.ph")).rejects.toThrow(core.UserError);
+    await expect(core.removeOrgMember(c, leader, "nobody@umindanao.edu.ph")).rejects.toThrow(
+      core.UserError,
+    );
   });
 
   it("seeds demo roster members who cannot sign in", async () => {

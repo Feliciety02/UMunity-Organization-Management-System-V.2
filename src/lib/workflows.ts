@@ -1162,7 +1162,11 @@ export function rejectWorkflow(id: string, actor: WorkflowActor, note: string) {
       category: "event",
       href: `/leader/workflows/${workflow.id}`,
     });
-    sendOrgRegistryNotification(workflow.orgShort, `${workflow.proposal.title} was rejected by ${actor.name}`, workflow.ay);
+    sendOrgRegistryNotification(
+      workflow.orgShort,
+      `${workflow.proposal.title} was rejected by ${actor.name}`,
+      workflow.ay,
+    );
     return {
       ...workflow,
       status: "rejected",
@@ -1223,7 +1227,7 @@ export function approveWorkflow(id: string, actor: WorkflowActor, note?: string)
     } else if (actor.role === "admin2") {
       nextStatus = "pending_admin1";
       href = `/admin1/workflows/${workflow.id}`;
-    } else     if (actor.role === "admin1") {
+    } else if (actor.role === "admin1") {
       nextStatus = "approved";
       href = `/leader/workflows/${workflow.id}`;
     }
@@ -1236,7 +1240,11 @@ export function approveWorkflow(id: string, actor: WorkflowActor, note?: string)
     });
 
     if (actor.role === "admin1") {
-      sendOrgRegistryNotification(workflow.orgShort, `${workflow.proposal.title} approved for execution`, workflow.ay);
+      sendOrgRegistryNotification(
+        workflow.orgShort,
+        `${workflow.proposal.title} approved for execution`,
+        workflow.ay,
+      );
     }
 
     return {
@@ -1621,7 +1629,11 @@ export function approveWorkflowCloseoutFinal(id: string, actor: WorkflowActor, n
       category: "system",
       href: `/leader/workflows/${workflow.id}`,
     });
-    sendOrgRegistryNotification(workflow.orgShort, `${workflow.proposal.title} completed with approved closeout`, workflow.ay);
+    sendOrgRegistryNotification(
+      workflow.orgShort,
+      `${workflow.proposal.title} completed with approved closeout`,
+      workflow.ay,
+    );
     return {
       ...workflow,
       status: "completed",

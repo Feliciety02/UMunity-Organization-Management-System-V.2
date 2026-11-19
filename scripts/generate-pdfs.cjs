@@ -22,7 +22,11 @@ function createDoc(filename, title, subtitle, buildContent) {
 }
 
 function addHeader(doc, title, subtitle) {
-  doc.fontSize(10).font("Helvetica-Bold").fillColor(COLORS.maroon).text("UMUNITY", { align: "right" });
+  doc
+    .fontSize(10)
+    .font("Helvetica-Bold")
+    .fillColor(COLORS.maroon)
+    .text("UMUNITY", { align: "right" });
   doc.moveDown(0.3);
   doc.fontSize(8).font("Helvetica").fillColor(COLORS.gray).text("CONFIDENTIAL", { align: "right" });
   doc.moveDown(1);
@@ -133,10 +137,16 @@ function buildCharter(doc) {
   addHeader(doc, "PROJECT CHARTER", "Version 1.0 — November 15, 2025");
 
   addSection(doc, "1. Project Overview");
-  addBody(doc, "UMunity is a comprehensive organization management system designed for the University of Mindanao. It provides a centralized platform for students to discover and join student organizations, for organization leaders to manage members and events, and for administrators to oversee compliance and governance. The system serves over 20,000 students across 150+ accredited organizations.");
+  addBody(
+    doc,
+    "UMunity is a comprehensive organization management system designed for the University of Mindanao. It provides a centralized platform for students to discover and join student organizations, for organization leaders to manage members and events, and for administrators to oversee compliance and governance. The system serves over 20,000 students across 150+ accredited organizations.",
+  );
 
   addSection(doc, "2. Problem Statement");
-  addBody(doc, "The University of Mindanao currently manages student organizations through fragmented processes involving paper forms, email communication, and multiple disconnected systems. Organization leaders struggle with membership tracking, event management, and compliance reporting. Students have no centralized way to discover organizations or stay updated on activities. Administrators lack visibility into organizational health and compliance status. This fragmentation leads to inefficiencies, missed deadlines, and reduced student engagement.");
+  addBody(
+    doc,
+    "The University of Mindanao currently manages student organizations through fragmented processes involving paper forms, email communication, and multiple disconnected systems. Organization leaders struggle with membership tracking, event management, and compliance reporting. Students have no centralized way to discover organizations or stay updated on activities. Administrators lack visibility into organizational health and compliance status. This fragmentation leads to inefficiencies, missed deadlines, and reduced student engagement.",
+  );
 
   addSection(doc, "3. Project Objectives");
   addBullets(doc, [
@@ -170,34 +180,65 @@ function buildCharter(doc) {
   ]);
 
   addSection(doc, "5. Deliverables");
-  addTable(doc,
+  addTable(
+    doc,
     ["Deliverable", "Description", "Due Date"],
     [
-      ["Platform Architecture & Design", "System architecture, database design, and UI/UX prototypes", "Nov 30, 2025"],
-      ["Core Platform Features", "Organization management, event system, user roles and permissions", "Jan 15, 2026"],
-      ["Compliance & Governance Module", "Accreditation tracking, compliance monitoring, report generation", "Feb 15, 2026"],
-      ["Testing & Quality Assurance", "Comprehensive test suite, UAT, and performance testing", "Mar 1, 2026"],
-      ["Deployment & Documentation", "Production deployment, user manuals, and administrative guides", "Mar 31, 2026"],
+      [
+        "Platform Architecture & Design",
+        "System architecture, database design, and UI/UX prototypes",
+        "Nov 30, 2025",
+      ],
+      [
+        "Core Platform Features",
+        "Organization management, event system, user roles and permissions",
+        "Jan 15, 2026",
+      ],
+      [
+        "Compliance & Governance Module",
+        "Accreditation tracking, compliance monitoring, report generation",
+        "Feb 15, 2026",
+      ],
+      [
+        "Testing & Quality Assurance",
+        "Comprehensive test suite, UAT, and performance testing",
+        "Mar 1, 2026",
+      ],
+      [
+        "Deployment & Documentation",
+        "Production deployment, user manuals, and administrative guides",
+        "Mar 31, 2026",
+      ],
     ],
-    [140, 240, 130]
+    [140, 240, 130],
   );
 
   addSection(doc, "6. Stakeholders");
-  addTable(doc,
+  addTable(
+    doc,
     ["Name", "Role", "Responsibility"],
     [
-      ["University of Mindanao Admin", "Project Sponsor", "Funding approval and strategic direction"],
+      [
+        "University of Mindanao Admin",
+        "Project Sponsor",
+        "Funding approval and strategic direction",
+      ],
       ["OSA Office", "Primary Stakeholder", "Compliance oversight and accreditation management"],
-      ["Student Organization Leaders", "End Users", "Organization management and event coordination"],
+      [
+        "Student Organization Leaders",
+        "End Users",
+        "Organization management and event coordination",
+      ],
       ["Student Body", "End Users", "Platform adoption and engagement"],
       ["IT Department", "Technical Oversight", "Infrastructure support and security review"],
       ["Development Team", "Implementation", "Design, development, testing, and deployment"],
     ],
-    [180, 130, 200]
+    [180, 130, 200],
   );
 
   addSection(doc, "7. Timeline");
-  addTable(doc,
+  addTable(
+    doc,
     ["Phase", "Start", "End"],
     [
       ["Initiation & Planning", "Nov 1, 2025", "Nov 15, 2025"],
@@ -210,21 +251,34 @@ function buildCharter(doc) {
       ["Deployment & Go-Live", "Mar 20, 2026", "Mar 31, 2026"],
       ["Project Closure", "Apr 1, 2026", "Apr 15, 2026"],
     ],
-    [210, 150, 150]
+    [210, 150, 150],
   );
 
   addSection(doc, "8. Success Metrics");
-  addTable(doc,
+  addTable(
+    doc,
     ["Metric", "Target", "Measurement"],
     [
-      ["User Adoption Rate", "80% of orgs onboarded in 3 months", "Active org accounts / total accredited"],
-      ["Student Engagement", "60% of students registered in 6 months", "Registered students / total enrollment"],
+      [
+        "User Adoption Rate",
+        "80% of orgs onboarded in 3 months",
+        "Active org accounts / total accredited",
+      ],
+      [
+        "Student Engagement",
+        "60% of students registered in 6 months",
+        "Registered students / total enrollment",
+      ],
       ["System Uptime", "99.5% uptime during peak usage", "Server monitoring"],
-      ["Compliance Rate", "90% on-time compliance submissions", "Timely submissions / total required"],
+      [
+        "Compliance Rate",
+        "90% on-time compliance submissions",
+        "Timely submissions / total required",
+      ],
       ["User Satisfaction", "4.0/5.0 average rating", "Post-launch user survey"],
       ["Defect Density", "< 5 critical defects per release", "QA tracking and bug reports"],
     ],
-    [140, 200, 170]
+    [140, 200, 170],
   );
 
   addSection(doc, "9. Approval");
@@ -241,24 +295,91 @@ function buildRequirements(doc) {
   addSection(doc, "1. Functional Requirements");
 
   const reqs = [
-    ["FR-001", "User Registration and Authentication", "Critical", "Approved", "Users can register with university email and log in"],
-    ["FR-002", "Organization Discovery and Search", "Critical", "Approved", "Browse, search, and filter all accredited orgs"],
-    ["FR-003", "Membership Management", "Critical", "Approved", "Request, approve, and manage org memberships"],
+    [
+      "FR-001",
+      "User Registration and Authentication",
+      "Critical",
+      "Approved",
+      "Users can register with university email and log in",
+    ],
+    [
+      "FR-002",
+      "Organization Discovery and Search",
+      "Critical",
+      "Approved",
+      "Browse, search, and filter all accredited orgs",
+    ],
+    [
+      "FR-003",
+      "Membership Management",
+      "Critical",
+      "Approved",
+      "Request, approve, and manage org memberships",
+    ],
     ["FR-004", "Event Management", "High", "Approved", "Create, publish, and RSVP to events"],
-    ["FR-005", "Compliance and Accreditation", "High", "Approved", "Submit compliance docs; track accreditation status"],
-    ["FR-006", "Role-Based Dashboards", "Critical", "Approved", "Personalized views for each user role"],
-    ["FR-007", "Notification System", "High", "Approved", "In-app and email notifications with preferences"],
-    ["FR-008", "Officer Transition Management", "Medium", "In Review", "Handover checklists and document tracking"],
-    ["FR-009", "Post and Announcement Publishing", "High", "Approved", "Create, approve, and publish org announcements"],
-    ["FR-010", "Analytics and Reporting", "Medium", "In Review", "Dashboards with exportable reports"],
-    ["FR-011", "Messaging System", "Medium", "Pending", "Direct and group messaging with attachments"],
-    ["FR-012", "Organization Profile Management", "High", "Approved", "Update profile, logo, social links, and mission"],
+    [
+      "FR-005",
+      "Compliance and Accreditation",
+      "High",
+      "Approved",
+      "Submit compliance docs; track accreditation status",
+    ],
+    [
+      "FR-006",
+      "Role-Based Dashboards",
+      "Critical",
+      "Approved",
+      "Personalized views for each user role",
+    ],
+    [
+      "FR-007",
+      "Notification System",
+      "High",
+      "Approved",
+      "In-app and email notifications with preferences",
+    ],
+    [
+      "FR-008",
+      "Officer Transition Management",
+      "Medium",
+      "In Review",
+      "Handover checklists and document tracking",
+    ],
+    [
+      "FR-009",
+      "Post and Announcement Publishing",
+      "High",
+      "Approved",
+      "Create, approve, and publish org announcements",
+    ],
+    [
+      "FR-010",
+      "Analytics and Reporting",
+      "Medium",
+      "In Review",
+      "Dashboards with exportable reports",
+    ],
+    [
+      "FR-011",
+      "Messaging System",
+      "Medium",
+      "Pending",
+      "Direct and group messaging with attachments",
+    ],
+    [
+      "FR-012",
+      "Organization Profile Management",
+      "High",
+      "Approved",
+      "Update profile, logo, social links, and mission",
+    ],
   ];
 
-  addTable(doc,
+  addTable(
+    doc,
     ["ID", "Description", "Priority", "Status"],
     reqs.map((r) => [r[0], r[1], r[2], r[3]]),
-    [65, 245, 80, 80]
+    [65, 245, 80, 80],
   );
   doc.fontSize(9).font("Helvetica").fillColor(COLORS.dark);
 
@@ -278,11 +399,7 @@ function buildRequirements(doc) {
     ["NFR-USA-001", "Usability", "Mobile responsiveness", "320px to 2560px viewports"],
   ];
 
-  addTable(doc,
-    ["ID", "Category", "Description", "Specification"],
-    nfrs,
-    [100, 80, 130, 200]
-  );
+  addTable(doc, ["ID", "Category", "Description", "Specification"], nfrs, [100, 80, 130, 200]);
 
   addSection(doc, "3. User Stories");
   const stories = [
@@ -312,37 +429,92 @@ function buildWBS(doc) {
     {
       name: "1. Project Initiation",
       tasks: [
-        ["1.1 Project Charter", "Define scope, objectives, stakeholders, success metrics", "Approved Charter", "—"],
-        ["1.2 Team Formation", "Assign roles, set up comms, establish reporting", "Team Roster", "—"],
-        ["1.3 Project Kickoff", "Kickoff meeting, present plan, align milestones", "Kickoff Presentation", "1.1, 1.2"],
+        [
+          "1.1 Project Charter",
+          "Define scope, objectives, stakeholders, success metrics",
+          "Approved Charter",
+          "—",
+        ],
+        [
+          "1.2 Team Formation",
+          "Assign roles, set up comms, establish reporting",
+          "Team Roster",
+          "—",
+        ],
+        [
+          "1.3 Project Kickoff",
+          "Kickoff meeting, present plan, align milestones",
+          "Kickoff Presentation",
+          "1.1, 1.2",
+        ],
       ],
     },
     {
       name: "2. Requirements & Analysis",
       tasks: [
-        ["2.1 Stakeholder Interviews", "Interview OSA, leaders, survey students", "Interview Report", "1.3"],
-        ["2.2 Requirements Documentation", "Document functional and non-functional reqs", "Requirements Spec", "2.1"],
-        ["2.3 Requirements Validation", "Review, update, obtain sign-off", "Signed-off Reqs", "2.2"],
+        [
+          "2.1 Stakeholder Interviews",
+          "Interview OSA, leaders, survey students",
+          "Interview Report",
+          "1.3",
+        ],
+        [
+          "2.2 Requirements Documentation",
+          "Document functional and non-functional reqs",
+          "Requirements Spec",
+          "2.1",
+        ],
+        [
+          "2.3 Requirements Validation",
+          "Review, update, obtain sign-off",
+          "Signed-off Reqs",
+          "2.2",
+        ],
       ],
     },
     {
       name: "3. Design & Prototyping",
       tasks: [
-        ["3.1 System Architecture", "Design DB schema, API structure, security", "Architecture Doc", "2.3"],
+        [
+          "3.1 System Architecture",
+          "Design DB schema, API structure, security",
+          "Architecture Doc",
+          "2.3",
+        ],
         ["3.2 UI/UX Design", "Wireframes, mockups, design system", "Design Prototypes", "2.3"],
-        ["3.3 Design Review", "Present, collect feedback, finalize", "Approved Designs", "3.1, 3.2"],
+        [
+          "3.3 Design Review",
+          "Present, collect feedback, finalize",
+          "Approved Designs",
+          "3.1, 3.2",
+        ],
       ],
     },
     {
       name: "4. Development",
       tasks: [
-        ["4.1 Core Infrastructure", "Dev environment, CI/CD, database init", "Dev Environment", "3.3"],
+        [
+          "4.1 Core Infrastructure",
+          "Dev environment, CI/CD, database init",
+          "Dev Environment",
+          "3.3",
+        ],
         ["4.2 Auth & User Management", "Registration, login, RBAC, profiles", "Auth Module", "4.1"],
-        ["4.3 Organization Management", "Profiles, membership, leader dashboards", "Org Module", "4.2"],
+        [
+          "4.3 Organization Management",
+          "Profiles, membership, leader dashboards",
+          "Org Module",
+          "4.2",
+        ],
         ["4.4 Event Management", "Creation, RSVP, calendar", "Event Module", "4.3"],
         ["4.5 Compliance Module", "Tracking, accreditation, reports", "Compliance Module", "4.3"],
         ["4.6 Notification System", "Engine, in-app, email", "Notification Module", "4.2"],
-        ["4.7 Analytics Dashboard", "Data model, visualizations, export", "Analytics Module", "4.3, 4.4"],
+        [
+          "4.7 Analytics Dashboard",
+          "Data model, visualizations, export",
+          "Analytics Module",
+          "4.3, 4.4",
+        ],
       ],
     },
     {
@@ -352,13 +524,23 @@ function buildWBS(doc) {
         ["5.2 Functional Testing", "Execute tests, log defects, regression", "Test Report", "5.1"],
         ["5.3 Performance Testing", "Load and stress testing", "Performance Report", "4.7"],
         ["5.4 Security Testing", "Vulnerability assessment, pen testing", "Security Report", "4.7"],
-        ["5.5 User Acceptance Testing", "Plan, coordinate, collect feedback", "UAT Sign-off", "5.2"],
+        [
+          "5.5 User Acceptance Testing",
+          "Plan, coordinate, collect feedback",
+          "UAT Sign-off",
+          "5.2",
+        ],
       ],
     },
     {
       name: "6. Deployment & Launch",
       tasks: [
-        ["6.1 Deployment Preparation", "Prod environment, monitoring, backups", "Production Env", "5.5"],
+        [
+          "6.1 Deployment Preparation",
+          "Prod environment, monitoring, backups",
+          "Production Env",
+          "5.5",
+        ],
         ["6.2 Data Migration", "Migrate org data, validate integrity", "Migrated Data", "6.1"],
         ["6.3 User Training", "Documentation, training, FAQ", "Training Materials", "6.1"],
         ["6.4 Go-Live", "Production deploy, monitoring, hyper-care", "Live Platform", "6.2, 6.3"],
@@ -376,10 +558,11 @@ function buildWBS(doc) {
   phases.forEach((phase) => {
     if (doc.y > 700) doc.addPage();
     addSection(doc, phase.name);
-    addTable(doc,
+    addTable(
+      doc,
       ["Task", "Description", "Deliverable", "Dependencies"],
       phase.tasks.map((t) => [t[0], t[1], t[2], t[3]]),
-      [100, 200, 120, 90]
+      [100, 200, 120, 90],
     );
   });
 }
@@ -390,20 +573,77 @@ function buildGantt(doc) {
   addSection(doc, "Project Roadmap");
 
   const phases = [
-    ["Project Initiation", "Nov 1, 2025", "Nov 15, 2025", "COMPLETED", "Charter Approved (Nov 15)", "—"],
-    ["Requirements & Analysis", "Nov 15, 2025", "Dec 10, 2025", "COMPLETED", "Reqs Signed Off (Dec 10)", "Initiation"],
-    ["Design & Prototyping", "Dec 1, 2025", "Dec 30, 2025", "COMPLETED", "Design Approval (Dec 30)", "Requirements"],
-    ["Core Development (Phase 1)", "Jan 1, 2026", "Feb 15, 2026", "COMPLETED", "Auth & Orgs Complete (Jan 30)", "Design"],
-    ["Advanced Features (Phase 2)", "Feb 1, 2026", "Mar 1, 2026", "COMPLETED", "Compliance & Analytics (Mar 1)", "Phase 1"],
-    ["Testing & QA", "Feb 15, 2026", "Mar 15, 2026", "IN PROGRESS", "UAT Complete (Mar 15)", "Phase 1, Phase 2"],
-    ["Deployment & Launch", "Mar 20, 2026", "Mar 31, 2026", "PENDING", "Platform Go-Live (Mar 31)", "Testing"],
-    ["Project Closure", "Apr 1, 2026", "Apr 15, 2026", "PENDING", "Project Closed (Apr 15)", "Deployment"],
+    [
+      "Project Initiation",
+      "Nov 1, 2025",
+      "Nov 15, 2025",
+      "COMPLETED",
+      "Charter Approved (Nov 15)",
+      "—",
+    ],
+    [
+      "Requirements & Analysis",
+      "Nov 15, 2025",
+      "Dec 10, 2025",
+      "COMPLETED",
+      "Reqs Signed Off (Dec 10)",
+      "Initiation",
+    ],
+    [
+      "Design & Prototyping",
+      "Dec 1, 2025",
+      "Dec 30, 2025",
+      "COMPLETED",
+      "Design Approval (Dec 30)",
+      "Requirements",
+    ],
+    [
+      "Core Development (Phase 1)",
+      "Jan 1, 2026",
+      "Feb 15, 2026",
+      "COMPLETED",
+      "Auth & Orgs Complete (Jan 30)",
+      "Design",
+    ],
+    [
+      "Advanced Features (Phase 2)",
+      "Feb 1, 2026",
+      "Mar 1, 2026",
+      "COMPLETED",
+      "Compliance & Analytics (Mar 1)",
+      "Phase 1",
+    ],
+    [
+      "Testing & QA",
+      "Feb 15, 2026",
+      "Mar 15, 2026",
+      "IN PROGRESS",
+      "UAT Complete (Mar 15)",
+      "Phase 1, Phase 2",
+    ],
+    [
+      "Deployment & Launch",
+      "Mar 20, 2026",
+      "Mar 31, 2026",
+      "PENDING",
+      "Platform Go-Live (Mar 31)",
+      "Testing",
+    ],
+    [
+      "Project Closure",
+      "Apr 1, 2026",
+      "Apr 15, 2026",
+      "PENDING",
+      "Project Closed (Apr 15)",
+      "Deployment",
+    ],
   ];
 
-  addTable(doc,
+  addTable(
+    doc,
     ["Phase", "Start", "End", "Status", "Key Milestone", "Dependencies"],
     phases,
-    [140, 80, 80, 70, 80, 60]
+    [140, 80, 80, 70, 80, 60],
   );
 }
 
@@ -413,32 +653,152 @@ function buildRiskRegister(doc) {
   addSection(doc, "Identified Risks");
 
   const risks = [
-    ["R-001", "Scope creep from additional feature requests", "High", "Major", "HIGH", "Establish change control process", "Joevan Capote", "Monitoring"],
-    ["R-002", "Timeline delays from underestimated complexity", "Medium", "Major", "HIGH", "Build buffer; weekly reviews; MVP prioritization", "Joevan Capote", "Open"],
-    ["R-003", "Resource constraints across multiple projects", "High", "Moderate", "MEDIUM", "Dedicated team allocation; contingency plan", "Joevan Capote", "Monitoring"],
-    ["R-004", "Requirement changes during development", "Medium", "Moderate", "MEDIUM", "Agile sprints; regular stakeholder demos", "Joevan Capote", "Open"],
-    ["R-005", "University SSO integration technical issues", "Medium", "Major", "HIGH", "Start early; fallback auth; engage IT dept", "Fe Anne Malasarte", "Open"],
-    ["R-006", "Stakeholder misalignment on priorities", "Medium", "Moderate", "MEDIUM", "Prioritization workshops; backlog management", "Joevan Capote", "Monitoring"],
-    ["R-007", "Data migration issues from legacy systems", "Medium", "Minor", "MEDIUM", "Data audit; migration scripts; test migrations", "DBA", "Open"],
-    ["R-008", "Performance bottlenecks at peak enrollment", "Low", "Critical", "HIGH", "Load testing; caching strategy; auto-scaling", "Fe Anne Malasarte", "Open"],
-    ["R-009", "Security vulnerabilities in dependencies", "Medium", "Critical", "HIGH", "Dependency audits; vulnerability scanning", "Fe Anne Malasarte", "Monitoring"],
-    ["R-010", "Low user adoption post-launch", "Medium", "Major", "HIGH", "Adoption campaign; tutorials; early feedback", "Joevan Capote", "Open"],
-    ["R-011", "Compliance requirement changes", "Low", "Moderate", "LOW", "Flexible design; OSA communication", "Joevan Capote", "Closed"],
-    ["R-012", "Team member turnover", "Low", "Major", "MEDIUM", "Cross-training; documentation; knowledge transfer", "Joevan Capote", "Open"],
+    [
+      "R-001",
+      "Scope creep from additional feature requests",
+      "High",
+      "Major",
+      "HIGH",
+      "Establish change control process",
+      "Joevan Capote",
+      "Monitoring",
+    ],
+    [
+      "R-002",
+      "Timeline delays from underestimated complexity",
+      "Medium",
+      "Major",
+      "HIGH",
+      "Build buffer; weekly reviews; MVP prioritization",
+      "Joevan Capote",
+      "Open",
+    ],
+    [
+      "R-003",
+      "Resource constraints across multiple projects",
+      "High",
+      "Moderate",
+      "MEDIUM",
+      "Dedicated team allocation; contingency plan",
+      "Joevan Capote",
+      "Monitoring",
+    ],
+    [
+      "R-004",
+      "Requirement changes during development",
+      "Medium",
+      "Moderate",
+      "MEDIUM",
+      "Agile sprints; regular stakeholder demos",
+      "Joevan Capote",
+      "Open",
+    ],
+    [
+      "R-005",
+      "University SSO integration technical issues",
+      "Medium",
+      "Major",
+      "HIGH",
+      "Start early; fallback auth; engage IT dept",
+      "Fe Anne Malasarte",
+      "Open",
+    ],
+    [
+      "R-006",
+      "Stakeholder misalignment on priorities",
+      "Medium",
+      "Moderate",
+      "MEDIUM",
+      "Prioritization workshops; backlog management",
+      "Joevan Capote",
+      "Monitoring",
+    ],
+    [
+      "R-007",
+      "Data migration issues from legacy systems",
+      "Medium",
+      "Minor",
+      "MEDIUM",
+      "Data audit; migration scripts; test migrations",
+      "DBA",
+      "Open",
+    ],
+    [
+      "R-008",
+      "Performance bottlenecks at peak enrollment",
+      "Low",
+      "Critical",
+      "HIGH",
+      "Load testing; caching strategy; auto-scaling",
+      "Fe Anne Malasarte",
+      "Open",
+    ],
+    [
+      "R-009",
+      "Security vulnerabilities in dependencies",
+      "Medium",
+      "Critical",
+      "HIGH",
+      "Dependency audits; vulnerability scanning",
+      "Fe Anne Malasarte",
+      "Monitoring",
+    ],
+    [
+      "R-010",
+      "Low user adoption post-launch",
+      "Medium",
+      "Major",
+      "HIGH",
+      "Adoption campaign; tutorials; early feedback",
+      "Joevan Capote",
+      "Open",
+    ],
+    [
+      "R-011",
+      "Compliance requirement changes",
+      "Low",
+      "Moderate",
+      "LOW",
+      "Flexible design; OSA communication",
+      "Joevan Capote",
+      "Closed",
+    ],
+    [
+      "R-012",
+      "Team member turnover",
+      "Low",
+      "Major",
+      "MEDIUM",
+      "Cross-training; documentation; knowledge transfer",
+      "Joevan Capote",
+      "Open",
+    ],
   ];
 
-  addTable(doc,
+  addTable(
+    doc,
     ["ID", "Risk", "Prob", "Impact", "Level", "Mitigation", "Owner", "Status"],
     risks,
-    [35, 100, 35, 40, 35, 120, 65, 40]
+    [35, 100, 35, 40, 35, 120, 65, 40],
   );
 
   addSection(doc, "Risk Level Summary");
   const levelCounts = { Critical: 0, High: 0, Medium: 0, Low: 0 };
-  risks.forEach((r) => { levelCounts[r[4]]++; });
-  const levelColors = { Critical: COLORS.red, High: COLORS.amber, Medium: "#D97706", Low: COLORS.green };
+  risks.forEach((r) => {
+    levelCounts[r[4]]++;
+  });
+  const levelColors = {
+    Critical: COLORS.red,
+    High: COLORS.amber,
+    Medium: "#D97706",
+    Low: COLORS.green,
+  };
   Object.entries(levelCounts).forEach(([level, count]) => {
-    doc.fontSize(10).font("Helvetica-Bold").fillColor(levelColors[level]).text(`${level}: ${count}`, { continued: true });
+    doc
+      .fontSize(10)
+      .font("Helvetica-Bold")
+      .fillColor(levelColors[level])
+      .text(`${level}: ${count}`, { continued: true });
     doc.fontSize(9).font("Helvetica").fillColor(COLORS.dark).text(` risk(s)`);
     doc.moveDown(0.1);
   });
@@ -452,9 +812,17 @@ function buildMeetingMinutes(doc) {
     {
       num: 1,
       date: "November 16, 2025",
-      participants: "Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), UI/UX Designer, OSA Rep",
-      agenda: ["Project kickoff", "Review charter", "High-level requirements", "Communication channels", "Sprint cadence"],
-      summary: "Team reviewed approved charter and aligned on objectives. OSA rep provided compliance requirements. Team agreed on 2-week sprints with bi-weekly demos.",
+      participants:
+        "Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), UI/UX Designer, OSA Rep",
+      agenda: [
+        "Project kickoff",
+        "Review charter",
+        "High-level requirements",
+        "Communication channels",
+        "Sprint cadence",
+      ],
+      summary:
+        "Team reviewed approved charter and aligned on objectives. OSA rep provided compliance requirements. Team agreed on 2-week sprints with bi-weekly demos.",
       actions: [
         ["Schedule stakeholder interviews", "PM", "Nov 20"],
         ["Set up repo and CI/CD", "Fe Anne Malasarte", "Nov 18"],
@@ -462,25 +830,48 @@ function buildMeetingMinutes(doc) {
         ["Distribute charter", "PM", "Nov 17"],
       ],
       decisions: [
-        ["Sprint cycle: 2 weeks with Friday demos", "Allows dev time with stakeholder visibility", "PM"],
-        ["React + TypeScript as tech stack", "Team expertise and university preference", "Fe Anne Malasarte"],
-        ["MVP: core org management + events", "Ensures timely delivery of highest value", "Team Consensus"],
+        [
+          "Sprint cycle: 2 weeks with Friday demos",
+          "Allows dev time with stakeholder visibility",
+          "PM",
+        ],
+        [
+          "React + TypeScript as tech stack",
+          "Team expertise and university preference",
+          "Fe Anne Malasarte",
+        ],
+        [
+          "MVP: core org management + events",
+          "Ensures timely delivery of highest value",
+          "Team Consensus",
+        ],
       ],
       outcome: "Successful kickoff. All members aligned on goals and timeline.",
     },
     {
       num: 2,
       date: "December 1, 2025",
-      participants: "Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), UI/UX Designer",
-      agenda: ["Design prototypes review", "Technical architecture", "Requirements progress", "Sprint 1 scope"],
-      summary: "Presented wireframes for student dashboard, org profiles, and events. Minor adjustments needed. Fe Anne Malasarte proposed the system architecture using TanStack Start with PostgreSQL.",
+      participants:
+        "Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), UI/UX Designer",
+      agenda: [
+        "Design prototypes review",
+        "Technical architecture",
+        "Requirements progress",
+        "Sprint 1 scope",
+      ],
+      summary:
+        "Presented wireframes for student dashboard, org profiles, and events. Minor adjustments needed. Fe Anne Malasarte proposed the system architecture using TanStack Start with PostgreSQL.",
       actions: [
         ["Update wireframes and finalize", "UI/UX Designer", "Dec 5"],
         ["Finalize DB schema", "Fe Anne Malasarte", "Dec 4"],
         ["Prepare test strategy", "Joevan Capote", "Dec 6"],
       ],
       decisions: [
-        ["TanStack Start for full-stack framework", "Best fit for React SSR with type-safe routing", "Fe Anne Malasarte"],
+        [
+          "TanStack Start for full-stack framework",
+          "Best fit for React SSR with type-safe routing",
+          "Fe Anne Malasarte",
+        ],
         ["PostgreSQL with Prisma ORM", "Robust relational data model", "Fe Anne Malasarte"],
         ["Design system follows university brand", "Consistent branding", "UI/UX Designer"],
       ],
@@ -489,9 +880,11 @@ function buildMeetingMinutes(doc) {
     {
       num: 3,
       date: "January 15, 2026",
-      participants: "Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), OSA Rep",
+      participants:
+        "Joevan Capote (Project Leader, QA Engineer), Fe Anne Malasarte (Full Stack Developer), OSA Rep",
       agenda: ["Sprint 1 demo", "Compliance requirements", "Testing approach", "Sprint 2 planning"],
-      summary: "Demonstrated working auth and org management. OSA rep tested and provided feedback. Joevan Capote presented the test strategy. Sprint 2 focused on events and notifications.",
+      summary:
+        "Demonstrated working auth and org management. OSA rep tested and provided feedback. Joevan Capote presented the test strategy. Sprint 2 focused on events and notifications.",
       actions: [
         ["Add org category filtering", "Fe Anne Malasarte", "Jan 20"],
         ["Draft compliance requirements", "Joevan Capote", "Jan 22"],
@@ -509,8 +902,16 @@ function buildMeetingMinutes(doc) {
   meetings.forEach((m) => {
     if (doc.y > 680) doc.addPage();
 
-    doc.fontSize(10).font("Helvetica-Bold").fillColor(COLORS.maroon).text(`Meeting #${m.num} — ${m.date}`);
-    doc.fontSize(8).font("Helvetica").fillColor(COLORS.gray).text(`Participants: ${m.participants}`);
+    doc
+      .fontSize(10)
+      .font("Helvetica-Bold")
+      .fillColor(COLORS.maroon)
+      .text(`Meeting #${m.num} — ${m.date}`);
+    doc
+      .fontSize(8)
+      .font("Helvetica")
+      .fillColor(COLORS.gray)
+      .text(`Participants: ${m.participants}`);
     doc.moveDown(0.3);
 
     doc.fontSize(9).font("Helvetica-Bold").fillColor(COLORS.dark).text("Agenda:");
@@ -527,11 +928,18 @@ function buildMeetingMinutes(doc) {
     m.decisions.forEach((d) => {
       doc.fontSize(8.5).font("Helvetica").fillColor(COLORS.dark);
       doc.text(`  • ${d[0]}`, { indent: 10 });
-      doc.fontSize(8).fillColor(COLORS.gray).text(`    Rationale: ${d[1]}  |  By: ${d[2]}`, { indent: 10 });
+      doc
+        .fontSize(8)
+        .fillColor(COLORS.gray)
+        .text(`    Rationale: ${d[1]}  |  By: ${d[2]}`, { indent: 10 });
     });
     doc.moveDown(0.3);
 
-    doc.fontSize(9).font("Helvetica-Bold").fillColor(COLORS.dark).text(`Outcome: `, { continued: true });
+    doc
+      .fontSize(9)
+      .font("Helvetica-Bold")
+      .fillColor(COLORS.dark)
+      .text(`Outcome: `, { continued: true });
     doc.font("Helvetica").fillColor(COLORS.dark);
     doc.font("Helvetica").fillColor(COLORS.dark).text(m.outcome);
     doc.moveDown(0.8);
@@ -542,7 +950,10 @@ function buildQAReport(doc) {
   addHeader(doc, "QUALITY ASSURANCE REPORT", "Version 2.0 — March 15, 2026");
 
   addSection(doc, "1. QA Strategy");
-  addBody(doc, "Risk-based testing approach prioritizing critical business flows: user authentication, organization management, and event workflows. Testing conducted across four phases: (1) Unit testing of components and utilities, (2) Integration testing of API endpoints, (3) End-to-end testing of critical user journeys, and (4) User Acceptance Testing with real stakeholders. Automated testing for regression coverage; exploratory testing for edge cases and usability. Performance testing with k6 for load testing and Lighthouse for frontend auditing.");
+  addBody(
+    doc,
+    "Risk-based testing approach prioritizing critical business flows: user authentication, organization management, and event workflows. Testing conducted across four phases: (1) Unit testing of components and utilities, (2) Integration testing of API endpoints, (3) End-to-end testing of critical user journeys, and (4) User Acceptance Testing with real stakeholders. Automated testing for regression coverage; exploratory testing for edge cases and usability. Performance testing with k6 for load testing and Lighthouse for frontend auditing.",
+  );
 
   addSection(doc, "2. Test Scope");
   addBullets(doc, [
@@ -569,24 +980,77 @@ function buildQAReport(doc) {
     ["Critical Issues Closed", "1"],
     ["UAT Pass Rate", "83% Passed"],
   ];
-  addTable(doc, ["Metric", "Value"], metrics.map((m) => [m[0], m[1]]), [200, 200]);
+  addTable(
+    doc,
+    ["Metric", "Value"],
+    metrics.map((m) => [m[0], m[1]]),
+    [200, 200],
+  );
 
   addSection(doc, "4. Test Cases");
   const tcs = [
-    ["TC-001", "Registration with valid email", "Account created; verification sent", "Account created; email in 30s", "Passed"],
-    ["TC-002", "Registration with invalid email", "Rejected with error", "Error shown correctly", "Passed"],
-    ["TC-003", "Password reset", "Reset email sent; password updated", "Reset successful", "Passed"],
-    ["TC-004", "Browse orgs with filters", "Correct filtered results", "Filters work; < 1 second", "Passed"],
-    ["TC-005", "Join org request", "Request submitted; leader notified", "Submitted; notified", "Passed"],
+    [
+      "TC-001",
+      "Registration with valid email",
+      "Account created; verification sent",
+      "Account created; email in 30s",
+      "Passed",
+    ],
+    [
+      "TC-002",
+      "Registration with invalid email",
+      "Rejected with error",
+      "Error shown correctly",
+      "Passed",
+    ],
+    [
+      "TC-003",
+      "Password reset",
+      "Reset email sent; password updated",
+      "Reset successful",
+      "Passed",
+    ],
+    [
+      "TC-004",
+      "Browse orgs with filters",
+      "Correct filtered results",
+      "Filters work; < 1 second",
+      "Passed",
+    ],
+    [
+      "TC-005",
+      "Join org request",
+      "Request submitted; leader notified",
+      "Submitted; notified",
+      "Passed",
+    ],
     ["TC-006", "Event creation", "Event created in calendar", "Created successfully", "Passed"],
     ["TC-007", "RSVP with waitlist", "Added to list or waitlist", "Works correctly", "Passed"],
     ["TC-008", "Compliance submission", "Uploaded; status = Pending", "Correct status", "Passed"],
     ["TC-009", "Student RBAC", "Only authorized features", "Correctly enforced", "Passed"],
     ["TC-010", "Admin RBAC", "All management features", "Full access granted", "Passed"],
-    ["TC-011", "Notification on event update", "Sent to RSVP'd users", "Delivered in 2 min", "Passed"],
-    ["TC-012", "Post approval workflow", "Created > sent for approval > published", "Workflow correct", "Passed"],
+    [
+      "TC-011",
+      "Notification on event update",
+      "Sent to RSVP'd users",
+      "Delivered in 2 min",
+      "Passed",
+    ],
+    [
+      "TC-012",
+      "Post approval workflow",
+      "Created > sent for approval > published",
+      "Workflow correct",
+      "Passed",
+    ],
     ["TC-013", "Officer transition", "Created; tasks assigned", "Works correctly", "Passed"],
-    ["TC-014", "Data export to PDF", "Valid PDF generated", "PDF generated; formatting minor fix", "Passed"],
+    [
+      "TC-014",
+      "Data export to PDF",
+      "Valid PDF generated",
+      "PDF generated; formatting minor fix",
+      "Passed",
+    ],
     ["TC-015", "Load test (500 users)", "Responds within 3s", "Avg 1.8s; max 3.2s", "Passed"],
     ["TC-016", "Mobile responsiveness", "Renders on 375px", "Breaks below 360px", "Failed"],
     ["TC-017", "Search orgs by name", "Results in 2s", "< 1s; accurate", "Passed"],
@@ -599,23 +1063,79 @@ function buildQAReport(doc) {
   addSection(doc, "5. Bug Tracking");
   const bugs = [
     ["BUG-001", "Org list breaks below 360px", "Major", "P2", "In Progress", "CSS fix in progress"],
-    ["BUG-002", "Password reset email delay > 5min", "Minor", "P3", "Open", "Investigating email queue"],
-    ["BUG-003", "RSVP count not updating immediately", "Major", "P2", "Resolved", "Cache invalidation fixed"],
+    [
+      "BUG-002",
+      "Password reset email delay > 5min",
+      "Minor",
+      "P3",
+      "Open",
+      "Investigating email queue",
+    ],
+    [
+      "BUG-003",
+      "RSVP count not updating immediately",
+      "Major",
+      "P2",
+      "Resolved",
+      "Cache invalidation fixed",
+    ],
     ["BUG-004", "Upload limit needs 10MB (was 5MB)", "Minor", "P3", "Resolved", "Limit increased"],
-    ["BUG-005", "Notification prefs not saving for new users", "Critical", "P1", "Resolved", "Default init added"],
+    [
+      "BUG-005",
+      "Notification prefs not saving for new users",
+      "Critical",
+      "P1",
+      "Resolved",
+      "Default init added",
+    ],
     ["BUG-006", "Analytics chart dates display", "Minor", "P4", "Closed", "Date formatting fixed"],
     ["BUG-007", "Search includes inactive orgs", "Major", "P2", "Open", "Adding active filter"],
   ];
-  addTable(doc, ["ID", "Description", "Sev", "Pri", "Status", "Resolution"], bugs, [40, 130, 40, 30, 50, 150]);
+  addTable(
+    doc,
+    ["ID", "Description", "Sev", "Pri", "Status", "Resolution"],
+    bugs,
+    [40, 130, 40, 30, 50, 150],
+  );
 
   addSection(doc, "6. User Acceptance Testing");
   const uat = [
-    ["Student Rep (Engineering)", "End User", "Platform is intuitive. Love org discovery. Would like dark mode.", "Passed"],
-    ["Org Leader (Student Gov)", "Power User", "Event management is straightforward. Compliance could be simpler.", "Passed w/ Issues"],
-    ["OSA Coordinator", "Admin", "Dashboard gives excellent visibility. Much more efficient than manual.", "Passed"],
-    ["Student Rep (Arts & Sci)", "End User", "Easy to find orgs matching interests. Calendar helps planning.", "Passed"],
-    ["Org Adviser", "Adviser", "Good overview of assigned orgs. Approval workflows clear.", "Passed"],
-    ["IT Department Rep", "Reviewer", "Good performance. Security appropriate. Docs comprehensive.", "Passed"],
+    [
+      "Student Rep (Engineering)",
+      "End User",
+      "Platform is intuitive. Love org discovery. Would like dark mode.",
+      "Passed",
+    ],
+    [
+      "Org Leader (Student Gov)",
+      "Power User",
+      "Event management is straightforward. Compliance could be simpler.",
+      "Passed w/ Issues",
+    ],
+    [
+      "OSA Coordinator",
+      "Admin",
+      "Dashboard gives excellent visibility. Much more efficient than manual.",
+      "Passed",
+    ],
+    [
+      "Student Rep (Arts & Sci)",
+      "End User",
+      "Easy to find orgs matching interests. Calendar helps planning.",
+      "Passed",
+    ],
+    [
+      "Org Adviser",
+      "Adviser",
+      "Good overview of assigned orgs. Approval workflows clear.",
+      "Passed",
+    ],
+    [
+      "IT Department Rep",
+      "Reviewer",
+      "Good performance. Security appropriate. Docs comprehensive.",
+      "Passed",
+    ],
   ];
   addTable(doc, ["Participant", "Role", "Feedback", "Result"], uat, [110, 70, 200, 80]);
   doc.fontSize(9).font("Helvetica").fillColor(COLORS.dark);
@@ -625,21 +1145,31 @@ function buildClosureReport(doc) {
   addHeader(doc, "PROJECT CLOSURE REPORT", "Version 1.0 — April 1, 2026");
 
   addSection(doc, "1. Objectives Achieved");
-  addTable(doc,
+  addTable(
+    doc,
     ["Objective", "Status", "Notes"],
     [
-      ["Unified platform for org discovery and joining", "Achieved", "150+ orgs listed; 5,000+ student registrations"],
+      [
+        "Unified platform for org discovery and joining",
+        "Achieved",
+        "150+ orgs listed; 5,000+ student registrations",
+      ],
       ["Streamlined org management", "Achieved", "200+ events created in first quarter"],
       ["Automated compliance monitoring", "Achieved", "60% increase in compliance submission rate"],
-      ["Role-based access for all user types", "Achieved", "All 6 roles implemented with proper controls"],
+      [
+        "Role-based access for all user types",
+        "Achieved",
+        "All 6 roles implemented with proper controls",
+      ],
       ["Officer transitions", "Partially", "Module launched; adoption increasing"],
       ["Analytics for decision making", "Achieved", "Dashboards used by OSA and admin"],
     ],
-    [220, 80, 210]
+    [220, 80, 210],
   );
 
   addSection(doc, "2. Deliverables Completed");
-  addTable(doc,
+  addTable(
+    doc,
     ["Deliverable", "Status", "Date"],
     [
       ["Platform Architecture & Design", "Delivered", "Dec 30, 2025"],
@@ -648,7 +1178,7 @@ function buildClosureReport(doc) {
       ["Testing & Quality Assurance", "Delivered", "Mar 15, 2026"],
       ["Deployment & Documentation", "Delivered", "Mar 31, 2026"],
     ],
-    [250, 100, 100]
+    [250, 100, 100],
   );
 
   addSection(doc, "3. Project Outcomes");
@@ -662,14 +1192,27 @@ function buildClosureReport(doc) {
   ]);
 
   addSection(doc, "4. Challenges");
-  addTable(doc,
+  addTable(
+    doc,
     ["Challenge", "Impact", "Resolution"],
     [
-      ["SSO integration delays", "2-week auth module delay", "Worked with IT; fallback auth implemented"],
-      ["Leader resistance to new system", "Slower adoption", "Hands-on training; quick-start guides"],
-      ["Performance with large datasets", "Dashboard load times", "Pagination; caching; query optimization"],
+      [
+        "SSO integration delays",
+        "2-week auth module delay",
+        "Worked with IT; fallback auth implemented",
+      ],
+      [
+        "Leader resistance to new system",
+        "Slower adoption",
+        "Hands-on training; quick-start guides",
+      ],
+      [
+        "Performance with large datasets",
+        "Dashboard load times",
+        "Pagination; caching; query optimization",
+      ],
     ],
-    [170, 140, 200]
+    [170, 140, 200],
   );
 
   addSection(doc, "5. Lessons Learned");
@@ -693,7 +1236,8 @@ function buildClosureReport(doc) {
   ]);
 
   addSection(doc, "7. Stakeholder Feedback");
-  addTable(doc,
+  addTable(
+    doc,
     ["Stakeholder", "Rating", "Feedback"],
     [
       ["OSA Office", "4.5/5", "Transformed compliance management. Efficient and transparent."],
@@ -702,7 +1246,7 @@ function buildClosureReport(doc) {
       ["IT Department", "4.2/5", "Solid architecture. Production-ready quality."],
       ["University Admin", "4.4/5", "Valuable insights into engagement and org health."],
     ],
-    [130, 60, 320]
+    [130, 60, 320],
   );
 
   addSection(doc, "8. Final Sign-Off");
@@ -722,13 +1266,28 @@ function buildClosureReport(doc) {
 
 const documents = [
   createDoc("UMunity_ProjectCharter.pdf", "PROJECT CHARTER", "Version 1.0", buildCharter),
-  createDoc("UMunity_RequirementsSpecification.pdf", "REQUIREMENTS SPECIFICATION", "Version 2.1", buildRequirements),
+  createDoc(
+    "UMunity_RequirementsSpecification.pdf",
+    "REQUIREMENTS SPECIFICATION",
+    "Version 2.1",
+    buildRequirements,
+  ),
   createDoc("UMunity_WBS.pdf", "WORK BREAKDOWN STRUCTURE", "Version 1.0", buildWBS),
   createDoc("UMunity_GanttChart.pdf", "PROJECT TIMELINE / GANTT CHART", "Version 1.2", buildGantt),
   createDoc("UMunity_RiskRegister.pdf", "RISK REGISTER", "Version 1.1", buildRiskRegister),
-  createDoc("UMunity_MeetingMinutes.pdf", "MEETING MINUTES & DECISION LOG", "Version 1.0", buildMeetingMinutes),
+  createDoc(
+    "UMunity_MeetingMinutes.pdf",
+    "MEETING MINUTES & DECISION LOG",
+    "Version 1.0",
+    buildMeetingMinutes,
+  ),
   createDoc("UMunity_QAReport.pdf", "QUALITY ASSURANCE REPORT", "Version 2.0", buildQAReport),
-  createDoc("UMunity_ProjectClosureReport.pdf", "PROJECT CLOSURE REPORT", "Version 1.0", buildClosureReport),
+  createDoc(
+    "UMunity_ProjectClosureReport.pdf",
+    "PROJECT CLOSURE REPORT",
+    "Version 1.0",
+    buildClosureReport,
+  ),
 ];
 
 if (!fs.existsSync(DOCS_DIR)) {

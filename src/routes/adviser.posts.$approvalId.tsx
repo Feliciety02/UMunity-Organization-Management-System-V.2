@@ -16,9 +16,14 @@ function AdviserPostApprovalPage() {
   if (!approval || !session) {
     return (
       <>
-        <PageHead title="Post approval not found" sub="The requested post approval could not be found." />
+        <PageHead
+          title="Post approval not found"
+          sub="The requested post approval could not be found."
+        />
         <Panel>
-          <p className="text-sm text-muted-foreground">Return to the adviser post queue and try again.</p>
+          <p className="text-sm text-muted-foreground">
+            Return to the adviser post queue and try again.
+          </p>
         </Panel>
       </>
     );

@@ -42,7 +42,11 @@ export function useTheme() {
   function setTheme(next: Theme) {
     setThemeState(next);
     applyTheme(next);
-    try { localStorage.setItem(KEY, next); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(KEY, next);
+    } catch {
+      /* ignore */
+    }
     window.dispatchEvent(new Event(EVENT));
   }
 

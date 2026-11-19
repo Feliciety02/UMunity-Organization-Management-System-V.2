@@ -30,7 +30,11 @@ export function ReviewCenterBoard({
           </div>
         ) : (
           items.map((item) => (
-            <Link key={item.id} to={item.href as string} className="block rounded-2xl border border-border bg-card p-4 transition hover:bg-secondary/50">
+            <Link
+              key={item.id}
+              to={item.href as string}
+              className="block rounded-2xl border border-border bg-card p-4 transition hover:bg-secondary/50"
+            >
               <div className="flex flex-wrap items-center gap-2">
                 <Badge tone={item.tone}>{item.status}</Badge>
                 <Badge tone="neutral">{item.lane}</Badge>
@@ -60,10 +64,16 @@ export function ReviewActivityFeed({
     <Panel title={title}>
       <div className="space-y-3">
         {items.length === 0 ? (
-          <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">{empty}</div>
+          <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
+            {empty}
+          </div>
         ) : (
           items.map((item) => (
-            <Link key={item.id} to={item.href as string} className="block rounded-2xl bg-secondary/35 p-4 transition hover:bg-secondary/55">
+            <Link
+              key={item.id}
+              to={item.href as string}
+              className="block rounded-2xl bg-secondary/35 p-4 transition hover:bg-secondary/55"
+            >
               <div className="flex flex-wrap items-center gap-2">
                 <Badge tone="info">{item.lane}</Badge>
                 <span className="text-[11px] text-muted-foreground">{timeAgo(item.createdAt)}</span>

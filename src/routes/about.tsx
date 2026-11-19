@@ -6,9 +6,17 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About — UMunity" },
-      { name: "description", content: "UMunity centralizes student organization activities and communication at the University of Mindanao." },
+      {
+        name: "description",
+        content:
+          "UMunity centralizes student organization activities and communication at the University of Mindanao.",
+      },
       { property: "og:title", content: "About — UMunity" },
-      { property: "og:description", content: "UMunity centralizes student organization activities and communication at the University of Mindanao." },
+      {
+        property: "og:description",
+        content:
+          "UMunity centralizes student organization activities and communication at the University of Mindanao.",
+      },
     ],
   }),
   component: About,
@@ -27,7 +35,8 @@ function About() {
             Built to bring <span className="text-gradient-gold">UM together.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-primary-foreground/80">
-            UMunity is a centralized platform designed to streamline student organization activities, communication, and engagement inside the University of Mindanao.
+            UMunity is a centralized platform designed to streamline student organization
+            activities, communication, and engagement inside the University of Mindanao.
           </p>
         </div>
       </section>
@@ -35,18 +44,37 @@ function About() {
       <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
         <div className="prose prose-lg max-w-none">
           <p className="text-lg text-foreground/90 leading-relaxed">
-            For decades, the heart of campus life has lived in scattered group chats, paper forms, and bulletin boards. UMunity changes that. By bringing every recognized student organization, event, and announcement into one beautiful, easy-to-use platform, we make it effortless for Mindanaoan students to <strong className="text-primary">discover, join, and thrive</strong> in the communities that matter to them.
+            For decades, the heart of campus life has lived in scattered group chats, paper forms,
+            and bulletin boards. UMunity changes that. By bringing every recognized student
+            organization, event, and announcement into one beautiful, easy-to-use platform, we make
+            it effortless for Mindanaoan students to{" "}
+            <strong className="text-primary">discover, join, and thrive</strong> in the communities
+            that matter to them.
           </p>
           <p className="mt-6 text-lg text-foreground/90 leading-relaxed">
-            Whether you're a freshman searching for your first org, a leader managing 300 members, or an administrator overseeing 100+ groups — UMunity gives you the tools to do it confidently.
+            Whether you're a freshman searching for your first org, a leader managing 300 members,
+            or an administrator overseeing 100+ groups — UMunity gives you the tools to do it
+            confidently.
           </p>
         </div>
 
         <div className="mt-16 grid gap-6 md:grid-cols-3">
           {[
-            { icon: Eye, t: "Our Vision", d: "A connected UM where every student belongs to a community that empowers them." },
-            { icon: Target, t: "Our Mission", d: "To unify student organizations through a single, intuitive, and reliable platform." },
-            { icon: Heart, t: "Our Values", d: "Inclusion, transparency, leadership, and unwavering Mindanaoan pride." },
+            {
+              icon: Eye,
+              t: "Our Vision",
+              d: "A connected UM where every student belongs to a community that empowers them.",
+            },
+            {
+              icon: Target,
+              t: "Our Mission",
+              d: "To unify student organizations through a single, intuitive, and reliable platform.",
+            },
+            {
+              icon: Heart,
+              t: "Our Values",
+              d: "Inclusion, transparency, leadership, and unwavering Mindanaoan pride.",
+            },
           ].map((v) => (
             <div key={v.t} className="rounded-3xl border border-border bg-card p-7 shadow-soft">
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-gold text-primary-deep">
@@ -63,9 +91,16 @@ function About() {
         <div className="relative overflow-hidden rounded-[2rem] bg-gradient-maroon p-10 text-center text-primary-foreground md:p-16">
           <div className="absolute inset-0 bg-hero opacity-40" />
           <div className="relative">
-            <h2 className="font-display text-3xl font-bold md:text-4xl">Be part of the movement.</h2>
-            <p className="mx-auto mt-3 max-w-xl text-primary-foreground/80">Join UMunity and shape the future of student life at UM.</p>
-            <Link to="/register" className="mt-8 inline-block rounded-full bg-gradient-gold px-7 py-3 text-sm font-bold text-primary-deep shadow-soft transition-transform hover:scale-105">
+            <h2 className="font-display text-3xl font-bold md:text-4xl">
+              Be part of the movement.
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-primary-foreground/80">
+              Join UMunity and shape the future of student life at UM.
+            </p>
+            <Link
+              to="/register"
+              className="mt-8 inline-block rounded-full bg-gradient-gold px-7 py-3 text-sm font-bold text-primary-deep shadow-soft transition-transform hover:scale-105"
+            >
               Get started today
             </Link>
           </div>

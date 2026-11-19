@@ -7,9 +7,15 @@ export const Route = createFileRoute("/events")({
   head: () => ({
     meta: [
       { title: "Events — UMunity" },
-      { name: "description", content: "RSVP to upcoming University of Mindanao student organization events." },
+      {
+        name: "description",
+        content: "RSVP to upcoming University of Mindanao student organization events.",
+      },
       { property: "og:title", content: "Events — UMunity" },
-      { property: "og:description", content: "RSVP to upcoming University of Mindanao student organization events." },
+      {
+        property: "og:description",
+        content: "RSVP to upcoming University of Mindanao student organization events.",
+      },
     ],
   }),
   component: Events,
@@ -32,7 +38,9 @@ function Events() {
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {events.map((e) => <EventCard key={e.title} {...e} />)}
+          {events.map((e) => (
+            <EventCard key={e.title} {...e} />
+          ))}
         </div>
       </section>
     </PageShell>

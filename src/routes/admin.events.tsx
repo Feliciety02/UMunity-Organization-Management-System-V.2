@@ -21,37 +21,67 @@ function AdminEvents() {
   const pending = events.filter((e) => eventReviewStatus(e.title, decisions) === "Pending");
 
   const columns: Column<Event>[] = [
-    { key: "title", label: "Event", sortable: true, render: (row) => <span className="font-semibold">{row.title}</span> },
-    { key: "host", label: "Host", sortable: true, render: (row) => <span className="text-muted-foreground">{row.host}</span> },
+    {
+      key: "title",
+      label: "Event",
+      sortable: true,
+      render: (row) => <span className="font-semibold">{row.title}</span>,
+    },
+    {
+      key: "host",
+      label: "Host",
+      sortable: true,
+      render: (row) => <span className="text-muted-foreground">{row.host}</span>,
+    },
     { key: "date", label: "Date", sortable: true, render: (row) => <>{row.date}</> },
     {
       key: "status",
       label: "Status",
       render: (row) => {
         const status = eventReviewStatus(row.title, decisions);
-        return <Badge tone={status === "Approved" ? "success" : status === "Rejected" ? "danger" : "warning"}>{status}</Badge>;
+        return (
+          <Badge
+            tone={status === "Approved" ? "success" : status === "Rejected" ? "danger" : "warning"}
+          >
+            {status}
+          </Badge>
+        );
       },
     },
   ];
 
   return (
     <>
-      <PageHead title="Manage events" sub={`Oversee every published and pending event. ${pending.length} awaiting approval.`} />
+      <PageHead
+        title="Manage events"
+        sub={`Oversee every published and pending event. ${pending.length} awaiting approval.`}
+      />
 
       <Panel title="Pending approval" className="mb-6">
         {pending.length === 0 ? (
-          <EmptyState icon={CalendarCheck} title="No events waiting" sub="Newly submitted events will appear here for approval." />
+          <EmptyState
+            icon={CalendarCheck}
+            title="No events waiting"
+            sub="Newly submitted events will appear here for approval."
+          />
         ) : (
           <div className="space-y-3">
             {pending.map((e) => (
-              <div key={e.title} className="flex flex-wrap items-center gap-3 rounded-2xl bg-secondary/60 p-3">
+              <div
+                key={e.title}
+                className="flex flex-wrap items-center gap-3 rounded-2xl bg-secondary/60 p-3"
+              >
                 <div className="rounded-xl bg-primary px-3 py-2 text-center text-primary-foreground">
-                  <p className="font-display text-base font-bold leading-none">{e.date.split(" ")[1].replace(",", "")}</p>
+                  <p className="font-display text-base font-bold leading-none">
+                    {e.date.split(" ")[1].replace(",", "")}
+                  </p>
                   <p className="text-[9px] uppercase">{e.date.split(" ")[0].slice(0, 3)}</p>
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold">{e.title}</p>
-                  <p className="text-xs text-muted-foreground">{e.host} · {e.venue} · {e.time}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {e.host} · {e.venue} · {e.time}
+                  </p>
                 </div>
                 <AppButton
                   variant="primary"
@@ -78,7 +108,14 @@ function AdminEvents() {
       </Panel>
 
       <Panel title="All events">
-        <DataTable columns={columns} data={events} keyExtractor={(row) => row.title} searchable searchPlaceholder="Search events..." pageSize={10} />
+        <DataTable
+          columns={columns}
+          data={events}
+          keyExtractor={(row) => row.title}
+          searchable
+          searchPlaceholder="Search events..."
+          pageSize={10}
+        />
       </Panel>
 
       <ConfirmDialog

@@ -21,7 +21,10 @@ export type AdviserMemberActivity = {
   lastActiveAt: number;
 };
 
-function matchesOrg(targetOrg: string | undefined, candidate: { orgName?: string; orgSlug?: string; orgShort?: string }) {
+function matchesOrg(
+  targetOrg: string | undefined,
+  candidate: { orgName?: string; orgSlug?: string; orgShort?: string },
+) {
   if (!targetOrg) return true;
   const targetSlug = slugify(targetOrg);
   return (
@@ -61,44 +64,87 @@ export function useAdviserInsights(orgName?: string) {
       postApprovals.filter((approval) => approval.status === "pending_adviser").length +
       compliance.filter((submission) => submission.status === "pending_adviser").length +
       requirements.filter((doc) => doc.reviewStatus === "pending_adviser").length +
-      workflows.filter((workflow) => workflow.operations.postEvent.closeoutStatus === "pending_adviser").length;
+      workflows.filter(
+        (workflow) => workflow.operations.postEvent.closeoutStatus === "pending_adviser",
+      ).length;
 
     const monthStart = startOfMonth();
 
     const approvedThisMonth =
-      workflows.flatMap((workflow) => workflow.history).filter((entry) => entry.byRole === "adviser" && entry.createdAt >= monthStart && entry.action === "approved").length +
-      postApprovals.flatMap((approval) => approval.history).filter((entry) => entry.byRole === "adviser" && entry.createdAt >= monthStart && entry.action === "approved").length +
-      compliance.flatMap((submission) => submission.history).filter((entry) => entry.byRole === "adviser" && entry.createdAt >= monthStart && entry.action === "approved").length +
-      requirements.flatMap((doc) => doc.history).filter((entry) => entry.byRole === "adviser" && entry.createdAt >= monthStart && entry.action === "approved").length;
+      workflows
+        .flatMap((workflow) => workflow.history)
+        .filter(
+          (entry) =>
+            entry.byRole === "adviser" &&
+            entry.createdAt >= monthStart &&
+            entry.action === "approved",
+        ).length +
+      postApprovals
+        .flatMap((approval) => approval.history)
+        .filter(
+          (entry) =>
+            entry.byRole === "adviser" &&
+            entry.createdAt >= monthStart &&
+            entry.action === "approved",
+        ).length +
+      compliance
+        .flatMap((submission) => submission.history)
+        .filter(
+          (entry) =>
+            entry.byRole === "adviser" &&
+            entry.createdAt >= monthStart &&
+            entry.action === "approved",
+        ).length +
+      requirements
+        .flatMap((doc) => doc.history)
+        .filter(
+          (entry) =>
+            entry.byRole === "adviser" &&
+            entry.createdAt >= monthStart &&
+            entry.action === "approved",
+        ).length;
 
     const turnaroundSamples: number[] = [];
 
     workflows.forEach((workflow) => {
       const submitted = workflow.history.find((entry) => entry.action === "submitted");
-      const approved = workflow.history.find((entry) => entry.byRole === "adviser" && entry.action === "approved");
-      if (submitted && approved) turnaroundSamples.push((approved.createdAt - submitted.createdAt) / 86_400_000);
+      const approved = workflow.history.find(
+        (entry) => entry.byRole === "adviser" && entry.action === "approved",
+      );
+      if (submitted && approved)
+        turnaroundSamples.push((approved.createdAt - submitted.createdAt) / 86_400_000);
     });
     postApprovals.forEach((approval) => {
       const submitted = approval.history.find((entry) => entry.action === "submitted");
-      const approved = approval.history.find((entry) => entry.byRole === "adviser" && entry.action === "approved");
-      if (submitted && approved) turnaroundSamples.push((approved.createdAt - submitted.createdAt) / 86_400_000);
+      const approved = approval.history.find(
+        (entry) => entry.byRole === "adviser" && entry.action === "approved",
+      );
+      if (submitted && approved)
+        turnaroundSamples.push((approved.createdAt - submitted.createdAt) / 86_400_000);
     });
     compliance.forEach((submission) => {
       const submitted = submission.history.find((entry) => entry.action === "submitted");
-      const approved = submission.history.find((entry) => entry.byRole === "adviser" && entry.action === "approved");
-      if (submitted && approved) turnaroundSamples.push((approved.createdAt - submitted.createdAt) / 86_400_000);
+      const approved = submission.history.find(
+        (entry) => entry.byRole === "adviser" && entry.action === "approved",
+      );
+      if (submitted && approved)
+        turnaroundSamples.push((approved.createdAt - submitted.createdAt) / 86_400_000);
     });
     requirements.forEach((doc) => {
       const submitted = doc.history.find((entry) => entry.action === "submitted");
-      const approved = doc.history.find((entry) => entry.byRole === "adviser" && entry.action === "approved");
-      if (submitted && approved) turnaroundSamples.push((approved.createdAt - submitted.createdAt) / 86_400_000);
+      const approved = doc.history.find(
+        (entry) => entry.byRole === "adviser" && entry.action === "approved",
+      );
+      if (submitted && approved)
+        turnaroundSamples.push((approved.createdAt - submitted.createdAt) / 86_400_000);
     });
 
     const avgTurnaroundDays = average(turnaroundSamples);
 
     const memberCount =
-      compliance.find((submission) => matchesOrg(orgName, { orgName: submission.orgName, orgSlug: submission.orgSlug }))?.data.memberCount ??
-      3;
+      compliance.find((submission) =>
+        matchesOrg(orgName, { orgName: submission.orgName, orgSlug: submission.orgSlug }),
+      )?.data.memberCount ?? 3;
 
     const leaderActivities: ActivityEntry[] = [];
 
@@ -208,10 +254,30 @@ export function useAdviserInsights(orgName?: string) {
       const end = Date.now() - (7 - index) * 7 * 86_400_000;
       const start = end - 7 * 86_400_000;
       return (
-        workflows.flatMap((workflow) => workflow.history).filter((entry) => entry.byRole === "adviser" && entry.createdAt >= start && entry.createdAt < end).length +
-        postApprovals.flatMap((approval) => approval.history).filter((entry) => entry.byRole === "adviser" && entry.createdAt >= start && entry.createdAt < end).length +
-        compliance.flatMap((submission) => submission.history).filter((entry) => entry.byRole === "adviser" && entry.createdAt >= start && entry.createdAt < end).length +
-        requirements.flatMap((doc) => doc.history).filter((entry) => entry.byRole === "adviser" && entry.createdAt >= start && entry.createdAt < end).length
+        workflows
+          .flatMap((workflow) => workflow.history)
+          .filter(
+            (entry) =>
+              entry.byRole === "adviser" && entry.createdAt >= start && entry.createdAt < end,
+          ).length +
+        postApprovals
+          .flatMap((approval) => approval.history)
+          .filter(
+            (entry) =>
+              entry.byRole === "adviser" && entry.createdAt >= start && entry.createdAt < end,
+          ).length +
+        compliance
+          .flatMap((submission) => submission.history)
+          .filter(
+            (entry) =>
+              entry.byRole === "adviser" && entry.createdAt >= start && entry.createdAt < end,
+          ).length +
+        requirements
+          .flatMap((doc) => doc.history)
+          .filter(
+            (entry) =>
+              entry.byRole === "adviser" && entry.createdAt >= start && entry.createdAt < end,
+          ).length
       );
     });
 
@@ -220,8 +286,15 @@ export function useAdviserInsights(orgName?: string) {
       Math.round(
         62 +
           memberActivity.length * 3 +
-          Math.min(12, workflows.filter((workflow) => workflow.operations.eventDay.attendanceActual > 0).length * 2) +
-          Math.min(8, postApprovals.filter((approval) => approval.status === "published").length * 2),
+          Math.min(
+            12,
+            workflows.filter((workflow) => workflow.operations.eventDay.attendanceActual > 0)
+              .length * 2,
+          ) +
+          Math.min(
+            8,
+            postApprovals.filter((approval) => approval.status === "published").length * 2,
+          ),
       ),
     );
 

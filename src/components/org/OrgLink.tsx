@@ -20,7 +20,13 @@ export function OrgLink({
 }) {
   if (mode === "student") {
     return (
-      <Link to="/student/org/$slug" params={{ slug }} className={className} target={target} title={title}>
+      <Link
+        to="/student/org/$slug"
+        params={{ slug }}
+        className={className}
+        target={target}
+        title={title}
+      >
         {children}
       </Link>
     );

@@ -18,7 +18,9 @@ function Admin2WorkflowDetailPage() {
       <>
         <PageHead title="Workflow not found" sub="The requested compliance item is unavailable." />
         <Panel>
-          <p className="text-sm text-muted-foreground">Return to the Admin 2 queue to continue secondary review.</p>
+          <p className="text-sm text-muted-foreground">
+            Return to the Admin 2 queue to continue secondary review.
+          </p>
         </Panel>
       </>
     );

@@ -16,9 +16,14 @@ function AdviserTransitionDetailPage() {
   if (!workflow || !session) {
     return (
       <>
-        <PageHead title="Transition not found" sub="The officer transition request could not be found." />
+        <PageHead
+          title="Transition not found"
+          sub="The officer transition request could not be found."
+        />
         <Panel>
-          <p className="text-sm text-muted-foreground">Return to the adviser transition queue and try again.</p>
+          <p className="text-sm text-muted-foreground">
+            Return to the adviser transition queue and try again.
+          </p>
         </Panel>
       </>
     );

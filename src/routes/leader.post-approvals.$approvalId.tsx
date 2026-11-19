@@ -16,9 +16,14 @@ function LeaderPostApprovalPage() {
   if (!approval || !session) {
     return (
       <>
-        <PageHead title="Post approval not found" sub="The post approval workflow could not be found." />
+        <PageHead
+          title="Post approval not found"
+          sub="The post approval workflow could not be found."
+        />
         <Panel>
-          <p className="text-sm text-muted-foreground">Return to manage posts and select another item.</p>
+          <p className="text-sm text-muted-foreground">
+            Return to manage posts and select another item.
+          </p>
         </Panel>
       </>
     );

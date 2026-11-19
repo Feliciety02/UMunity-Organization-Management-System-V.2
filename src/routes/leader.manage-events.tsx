@@ -2,7 +2,12 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageHead, Panel } from "@/components/dashboard/DashboardLayout";
 import { Edit3, Trash2, ExternalLink, ClipboardCheck, Plus } from "lucide-react";
-import { useEventDocs, computeProgress, deleteEventDoc, type EventDoc } from "@/lib/event-requirements";
+import {
+  useEventDocs,
+  computeProgress,
+  deleteEventDoc,
+  type EventDoc,
+} from "@/lib/event-requirements";
 import { AppButton } from "@/components/ui/app-button";
 import { EventFormDialog } from "@/components/events/EventFormDialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -119,7 +124,10 @@ function ManageEvents() {
         row.rsvpR > 0 || row.rsvpCap > 0 ? (
           <div className="flex items-center gap-2">
             <div className="h-1.5 w-24 overflow-hidden rounded-full bg-secondary">
-              <div className="h-full bg-gradient-gold" style={{ width: `${(row.rsvpR / row.rsvpCap) * 100}%` }} />
+              <div
+                className="h-full bg-gradient-gold"
+                style={{ width: `${(row.rsvpR / row.rsvpCap) * 100}%` }}
+              />
             </div>
             <span className="text-xs text-muted-foreground">{row.rsvpValue}</span>
           </div>
@@ -165,7 +173,10 @@ function ManageEvents() {
           </button>
           <button
             type="button"
-            onClick={() => row.doc && navigate({ to: "/leader/requirements/$eventId", params: { eventId: row.reqEventId } })}
+            onClick={() =>
+              row.doc &&
+              navigate({ to: "/leader/requirements/$eventId", params: { eventId: row.reqEventId } })
+            }
             className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label={`Open ${row.title} tracker`}
           >
@@ -207,12 +218,7 @@ function ManageEvents() {
         />
       </Panel>
 
-      <EventFormDialog
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        mode={formMode}
-        doc={editing}
-      />
+      <EventFormDialog open={formOpen} onOpenChange={setFormOpen} mode={formMode} doc={editing} />
 
       <ConfirmDialog
         open={pendingDelete !== null}

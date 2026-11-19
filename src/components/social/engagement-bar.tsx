@@ -18,7 +18,12 @@ export function EngagementBar({
 }) {
   return (
     <div className="mx-5 flex items-center justify-between border-t border-border/80 py-2">
-      <AppButton variant="ghost" shape="soft" className={liked ? "flex-1 text-primary" : "flex-1"} onClick={onLike}>
+      <AppButton
+        variant="ghost"
+        shape="soft"
+        className={liked ? "flex-1 text-primary" : "flex-1"}
+        onClick={onLike}
+      >
         <Heart className={liked ? "fill-primary" : ""} />
         Like
       </AppButton>
@@ -30,7 +35,12 @@ export function EngagementBar({
         <Share2 />
         Share
       </AppButton>
-      <AppButton variant="ghost" shape="soft" className={saved ? "flex-1 text-primary" : "flex-1"} onClick={onSave}>
+      <AppButton
+        variant="ghost"
+        shape="soft"
+        className={saved ? "flex-1 text-primary" : "flex-1"}
+        onClick={onSave}
+      >
         <Bookmark className={saved ? "fill-primary" : ""} />
         Save
       </AppButton>

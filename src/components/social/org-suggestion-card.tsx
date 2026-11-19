@@ -16,14 +16,21 @@ export function OrgSuggestionCard({
   orgLinkMode?: OrgLinkMode;
 }) {
   return (
-    <AppCard className="overflow-hidden rounded-[24px] transition duration-200 hover:-translate-y-0.5 hover:shadow-soft" padded={false}>
+    <AppCard
+      className="overflow-hidden rounded-[24px] transition duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+      padded={false}
+    >
       <div className={`h-16 bg-gradient-to-r ${coverTone}`} />
       <div className="flex gap-3 p-4">
         <div className="-mt-8 rounded-[18px] border-4 border-card bg-card shadow-soft">
           <OrgAvatar org={org} size={52} />
         </div>
         <div className="min-w-0 flex-1">
-          <OrgLink slug={org.slug} mode={orgLinkMode} className="block truncate text-sm font-semibold hover:underline">
+          <OrgLink
+            slug={org.slug}
+            mode={orgLinkMode}
+            className="block truncate text-sm font-semibold hover:underline"
+          >
             {org.name}
           </OrgLink>
           <p className="mt-0.5 text-xs text-muted-foreground">

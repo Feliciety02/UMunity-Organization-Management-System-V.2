@@ -27,9 +27,7 @@ export function BrandLogo({
         className={`shrink-0 object-contain ${imageClassName}`}
       />
       {showText && (
-        <span className={`font-display font-bold tracking-tight ${textClassName}`}>
-          {text}
-        </span>
+        <span className={`font-display font-bold tracking-tight ${textClassName}`}>{text}</span>
       )}
     </span>
   );

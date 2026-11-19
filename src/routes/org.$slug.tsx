@@ -10,7 +10,8 @@ export const Route = createFileRoute("/org/$slug")({
   head: ({ params }) => {
     const org = organizations.find((o) => o.slug === params.slug);
     const title = org ? `${org.name} — UMunity` : "Organization — UMunity";
-    const description = org?.desc ?? "Discover student organizations at the University of Mindanao.";
+    const description =
+      org?.desc ?? "Discover student organizations at the University of Mindanao.";
     return {
       meta: [
         { title },
@@ -34,8 +35,13 @@ function OrgPage() {
         <SiteHeader />
         <div className="mx-auto max-w-3xl px-4 py-24 text-center">
           <h1 className="font-display text-2xl font-bold">Organization not found</h1>
-          <p className="mt-2 text-sm text-muted-foreground">The org you&apos;re looking for doesn&apos;t exist or was archived.</p>
-          <Link to="/organizations" className="mt-6 inline-block rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground">
+          <p className="mt-2 text-sm text-muted-foreground">
+            The org you&apos;re looking for doesn&apos;t exist or was archived.
+          </p>
+          <Link
+            to="/organizations"
+            className="mt-6 inline-block rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
+          >
             Browse all orgs
           </Link>
         </div>

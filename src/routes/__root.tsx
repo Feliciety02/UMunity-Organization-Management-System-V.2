@@ -78,22 +78,45 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "UMunity — One Platform for Every Student Organization" },
-      { name: "description", content: "Discover organizations, join communities, manage events, and stay connected across the University of Mindanao." },
+      {
+        name: "description",
+        content:
+          "Discover organizations, join communities, manage events, and stay connected across the University of Mindanao.",
+      },
       { name: "author", content: "UMunity" },
       { name: "theme-color", content: "#7A0019" },
       { property: "og:title", content: "UMunity — One Platform for Every Student Organization" },
-      { property: "og:description", content: "Discover organizations, join communities, manage events, and stay connected across the University of Mindanao." },
+      {
+        property: "og:description",
+        content:
+          "Discover organizations, join communities, manage events, and stay connected across the University of Mindanao.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "UMunity — One Platform for Every Student Organization" },
-      { name: "twitter:description", content: "Discover organizations, join communities, manage events, and stay connected across the University of Mindanao." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/20648961-7bdd-46ea-a30e-4afd1b4f101a/id-preview-0cef2a6d--94ed6e40-92b1-42a5-8b17-999f1aab5e82.lovable.app-1778711697290.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/20648961-7bdd-46ea-a30e-4afd1b4f101a/id-preview-0cef2a6d--94ed6e40-92b1-42a5-8b17-999f1aab5e82.lovable.app-1778711697290.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Discover organizations, join communities, manage events, and stay connected across the University of Mindanao.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/20648961-7bdd-46ea-a30e-4afd1b4f101a/id-preview-0cef2a6d--94ed6e40-92b1-42a5-8b17-999f1aab5e82.lovable.app-1778711697290.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/20648961-7bdd-46ea-a30e-4afd1b4f101a/id-preview-0cef2a6d--94ed6e40-92b1-42a5-8b17-999f1aab5e82.lovable.app-1778711697290.png",
+      },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
+      },
       { rel: "icon", type: "image/svg+xml", href: brandLogoUrl },
       { rel: "stylesheet", href: appCss },
     ],

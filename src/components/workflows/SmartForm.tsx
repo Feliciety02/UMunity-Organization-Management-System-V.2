@@ -17,7 +17,9 @@ export function SmartFormSection({
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-foreground">{title}</p>
-          {description ? <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p> : null}
+          {description ? (
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p>
+          ) : null}
         </div>
         {action}
       </div>
@@ -166,7 +168,10 @@ export function SmartProgressCard({
       </div>
       <div className="mt-4 space-y-2">
         {steps.map((step) => (
-          <div key={step.title} className={`rounded-2xl border px-4 py-3 ${step.active ? "border-primary/30 bg-primary/8" : "border-border bg-background"}`}>
+          <div
+            key={step.title}
+            className={`rounded-2xl border px-4 py-3 ${step.active ? "border-primary/30 bg-primary/8" : "border-border bg-background"}`}
+          >
             <div className="flex items-center justify-between gap-2">
               <p className="text-sm font-semibold">{step.title}</p>
               {step.active ? <Badge tone="info">Current</Badge> : null}

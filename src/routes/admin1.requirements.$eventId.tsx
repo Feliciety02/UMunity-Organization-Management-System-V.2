@@ -16,9 +16,14 @@ function Admin1RequirementsDetailPage() {
   if (!doc || !session) {
     return (
       <>
-        <PageHead title="Requirements not found" sub="The requested compliance tracker is unavailable." />
+        <PageHead
+          title="Requirements not found"
+          sub="The requested compliance tracker is unavailable."
+        />
         <Panel>
-          <p className="text-sm text-muted-foreground">Return to the Admin 1 queue to continue reviewing submissions.</p>
+          <p className="text-sm text-muted-foreground">
+            Return to the Admin 1 queue to continue reviewing submissions.
+          </p>
         </Panel>
       </>
     );

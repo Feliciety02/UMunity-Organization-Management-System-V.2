@@ -29,7 +29,10 @@ function Saved() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
-      <PageHead title="Saved posts" sub={`${saved.length} ${saved.length === 1 ? "post" : "posts"} bookmarked for later. Saved events are on the Events page.`} />
+      <PageHead
+        title="Saved posts"
+        sub={`${saved.length} ${saved.length === 1 ? "post" : "posts"} bookmarked for later. Saved events are on the Events page.`}
+      />
       {saved.length === 0 ? (
         <Panel>
           <EmptyState
@@ -46,10 +49,14 @@ function Saved() {
           />
         </Panel>
       ) : (
-        saved.map((p) => <PostCard key={p.id} post={p} org={orgBySlug[p.orgSlug]} orgLinkMode="student" />)
+        saved.map((p) => (
+          <PostCard key={p.id} post={p} org={orgBySlug[p.orgSlug]} orgLinkMode="student" />
+        ))
       )}
       <p className="text-center text-xs text-muted-foreground">
-        <Link to="/student" className="font-semibold text-primary">Back to feed</Link>
+        <Link to="/student" className="font-semibold text-primary">
+          Back to feed
+        </Link>
       </p>
     </div>
   );

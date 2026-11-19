@@ -77,10 +77,21 @@ function Messages() {
                       {org ? <OrgAvatar org={org} size={40} /> : null}
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <p className={`truncate text-sm ${t.unread ? "font-bold" : "font-semibold"}`}>{org?.name}</p>
-                          {t.unread ? <span className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-label="Unread" /> : null}
+                          <p
+                            className={`truncate text-sm ${t.unread ? "font-bold" : "font-semibold"}`}
+                          >
+                            {org?.name}
+                          </p>
+                          {t.unread ? (
+                            <span
+                              className="h-2 w-2 shrink-0 rounded-full bg-primary"
+                              aria-label="Unread"
+                            />
+                          ) : null}
                         </div>
-                        <p className="truncate text-xs font-medium text-foreground/80">{t.subject}</p>
+                        <p className="truncate text-xs font-medium text-foreground/80">
+                          {t.subject}
+                        </p>
                         <p className="truncate text-xs text-muted-foreground">{last?.text}</p>
                       </div>
                     </button>
@@ -115,14 +126,21 @@ function Messages() {
                 </div>
                 <div className="flex-1 space-y-3 py-4">
                   {active.messages.map((m) => (
-                    <div key={m.id} className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}>
+                    <div
+                      key={m.id}
+                      className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}
+                    >
                       <div
                         className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
-                          m.from === "me" ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"
+                          m.from === "me"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-secondary text-foreground"
                         }`}
                       >
                         <p>{m.text}</p>
-                        <p className={`mt-1 text-[10px] ${m.from === "me" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                        <p
+                          className={`mt-1 text-[10px] ${m.from === "me" ? "text-primary-foreground/70" : "text-muted-foreground"}`}
+                        >
                           {m.time}
                         </p>
                       </div>
@@ -143,13 +161,24 @@ function Messages() {
                     aria-label="Message"
                     className="flex-1 bg-transparent text-sm focus:outline-none"
                   />
-                  <AppButton type="submit" variant="primary" size="icon" className="h-8 w-8" disabled={!draft.trim()} aria-label="Send message">
+                  <AppButton
+                    type="submit"
+                    variant="primary"
+                    size="icon"
+                    className="h-8 w-8"
+                    disabled={!draft.trim()}
+                    aria-label="Send message"
+                  >
                     <Send className="h-3.5 w-3.5" />
                   </AppButton>
                 </form>
               </div>
             ) : (
-              <EmptyState icon={MessageSquare} title="Select a conversation" sub="Pick a thread on the left to read and reply." />
+              <EmptyState
+                icon={MessageSquare}
+                title="Select a conversation"
+                sub="Pick a thread on the left to read and reply."
+              />
             )}
           </Panel>
         </div>

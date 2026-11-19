@@ -24,7 +24,15 @@ export type PostApprovalComment = {
 
 export type PostApprovalHistory = {
   id: string;
-  action: "created" | "submitted" | "commented" | "revision_requested" | "approved" | "published" | "rejected" | "retracted";
+  action:
+    | "created"
+    | "submitted"
+    | "commented"
+    | "revision_requested"
+    | "approved"
+    | "published"
+    | "rejected"
+    | "retracted";
   byRole: WorkflowActor["role"];
   byName: string;
   note?: string;
@@ -61,7 +69,8 @@ const seed: PostApproval[] = [
     visibility: "public",
     pinned: true,
     title: "Officer assembly this Friday",
-    content: "Adviser-facing draft for the officer assembly notice before it reaches the wider student audience.",
+    content:
+      "Adviser-facing draft for the officer assembly notice before it reaches the wider student audience.",
     imageLabel: "assembly-banner.png",
     status: "pending_adviser",
     createdAt: Date.now() - 5 * 60 * 60 * 1000,
@@ -95,7 +104,8 @@ const seed: PostApproval[] = [
     visibility: "members",
     pinned: false,
     title: "Hack Night volunteer call",
-    content: "Need marshals, registration table leads, and venue setup support for Hack Night Vol. 3.",
+    content:
+      "Need marshals, registration table leads, and venue setup support for Hack Night Vol. 3.",
     status: "pending_admin2",
     createdAt: Date.now() - 26 * 60 * 60 * 1000,
     updatedAt: Date.now() - 8 * 60 * 60 * 1000,
@@ -152,7 +162,9 @@ export function formatPostApprovalStatus(status: PostApprovalStatus) {
   }
 }
 
-export function postApprovalTone(status: PostApprovalStatus): "neutral" | "info" | "warning" | "danger" | "success" {
+export function postApprovalTone(
+  status: PostApprovalStatus,
+): "neutral" | "info" | "warning" | "danger" | "success" {
   switch (status) {
     case "draft":
       return "neutral";
@@ -368,7 +380,8 @@ export function retractPostApproval(id: string, actor: WorkflowActor, note?: str
 
 export function approvePostApproval(id: string, actor: WorkflowActor) {
   return updateApproval(id, (approval) => {
-    const nextStatus: PostApprovalStatus = actor.role === "adviser" ? "pending_admin2" : "published";
+    const nextStatus: PostApprovalStatus =
+      actor.role === "adviser" ? "pending_admin2" : "published";
     addNotification({
       title:
         actor.role === "adviser"
@@ -376,7 +389,10 @@ export function approvePostApproval(id: string, actor: WorkflowActor) {
           : `${approval.orgName} post is now published`,
       meta: approval.title || approval.type,
       category: "announcement",
-      href: actor.role === "adviser" ? `/admin2/posts/${approval.id}` : `/leader/post-approvals/${approval.id}`,
+      href:
+        actor.role === "adviser"
+          ? `/admin2/posts/${approval.id}`
+          : `/leader/post-approvals/${approval.id}`,
     });
     return {
       ...approval,

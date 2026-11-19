@@ -3,7 +3,14 @@ import { useState } from "react";
 import { KeyRound, Mail, Trash2 } from "lucide-react";
 import { Panel } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { changeEmailFn, changePasswordFn, deleteAccountFn } from "@/lib/api.functions";
 import { forgetLocalSession, getSession, updateLocalSession } from "@/lib/auth";
 import { showStatusToast } from "@/lib/feedback";
@@ -39,7 +46,12 @@ export function AccountSecurity({ onEmailChanged }: { onEmailChanged?: (email: s
           <Trash2 className="h-4 w-4" /> Delete account
         </AppButton>
       </div>
-      <SecurityDialog mode={mode} onClose={() => setMode(null)} currentEmail={email} onEmailChanged={onEmailChanged} />
+      <SecurityDialog
+        mode={mode}
+        onClose={() => setMode(null)}
+        currentEmail={email}
+        onEmailChanged={onEmailChanged}
+      />
     </Panel>
   );
 }
@@ -75,10 +87,12 @@ function SecurityDialog({
   const fieldError = (() => {
     if (!submitted) return "";
     if (!password) return "Enter your current password.";
-    if (mode === "email" && !UM_EMAIL.test(next.trim())) return "Use your UM email (@umindanao.edu.ph).";
-    if (mode === "password" && next.length < 8) return "Use at least 8 characters for the new password.";
+    if (mode === "email" && !UM_EMAIL.test(next.trim()))
+      return "Use your UM email (@umindanao.edu.ph).";
+    if (mode === "password" && next.length < 8)
+      return "Use at least 8 characters for the new password.";
     if (mode === "password" && next !== confirm) return "The new passwords don't match.";
-    if (mode === "delete" && confirm !== "DELETE") return 'Type DELETE to confirm.';
+    if (mode === "delete" && confirm !== "DELETE") return "Type DELETE to confirm.";
     return "";
   })();
 
@@ -108,7 +122,11 @@ function SecurityDialog({
         const res = await deleteAccountFn({ data: { password } });
         if (!res.ok) return setError(res.error);
         forgetLocalSession();
-        showStatusToast("Account deleted", "Your UMunity account and personal data were removed.", "info");
+        showStatusToast(
+          "Account deleted",
+          "Your UMunity account and personal data were removed.",
+          "info",
+        );
         navigate({ to: "/" });
       }
       reset();
@@ -120,7 +138,12 @@ function SecurityDialog({
     }
   }
 
-  const title = mode === "email" ? "Change email" : mode === "password" ? "Change password" : "Delete your account?";
+  const title =
+    mode === "email"
+      ? "Change email"
+      : mode === "password"
+        ? "Change password"
+        : "Delete your account?";
   const description =
     mode === "email"
       ? `You currently sign in with ${currentEmail}.`
@@ -147,33 +170,64 @@ function SecurityDialog({
           {mode === "email" ? (
             <label className="block text-sm font-semibold">
               New UM email
-              <input type="email" autoComplete="email" value={next} onChange={(e) => setNext(e.target.value)} className={`mt-1.5 ${inputCls}`} />
+              <input
+                type="email"
+                autoComplete="email"
+                value={next}
+                onChange={(e) => setNext(e.target.value)}
+                className={`mt-1.5 ${inputCls}`}
+              />
             </label>
           ) : null}
           <label className="block text-sm font-semibold">
             Current password
-            <input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className={`mt-1.5 ${inputCls}`} />
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`mt-1.5 ${inputCls}`}
+            />
           </label>
           {mode === "password" ? (
             <>
               <label className="block text-sm font-semibold">
                 New password
-                <input type="password" autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} className={`mt-1.5 ${inputCls}`} />
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={next}
+                  onChange={(e) => setNext(e.target.value)}
+                  className={`mt-1.5 ${inputCls}`}
+                />
               </label>
               <label className="block text-sm font-semibold">
                 Confirm new password
-                <input type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className={`mt-1.5 ${inputCls}`} />
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  className={`mt-1.5 ${inputCls}`}
+                />
               </label>
             </>
           ) : null}
           {mode === "delete" ? (
             <label className="block text-sm font-semibold">
               Type DELETE to confirm
-              <input value={confirm} onChange={(e) => setConfirm(e.target.value)} className={`mt-1.5 ${inputCls}`} />
+              <input
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                className={`mt-1.5 ${inputCls}`}
+              />
             </label>
           ) : null}
           {fieldError || error ? (
-            <p role="alert" className="rounded-xl bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
+            <p
+              role="alert"
+              className="rounded-xl bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive"
+            >
               {error || fieldError}
             </p>
           ) : null}

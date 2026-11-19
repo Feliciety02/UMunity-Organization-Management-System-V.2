@@ -22,14 +22,22 @@ export function Composer({
           <AppAvatar className="h-12 w-12 bg-primary text-sm font-bold text-primary-foreground shadow-[0_10px_24px_rgba(122,0,25,0.18)]">
             {initials}
           </AppAvatar>
-          <Link to={ctaTo} className="flex-1 rounded-full bg-background px-5 py-3 text-sm text-muted-foreground transition hover:bg-secondary">
+          <Link
+            to={ctaTo}
+            className="flex-1 rounded-full bg-background px-5 py-3 text-sm text-muted-foreground transition hover:bg-secondary"
+          >
             {prompt}
           </Link>
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-3 px-5 py-4 sm:px-6">
         {actions.map((item, index) => (
-          <AppButton key={item.label} asChild variant={index === 0 ? "primary" : "subtle"} size="md">
+          <AppButton
+            key={item.label}
+            asChild
+            variant={index === 0 ? "primary" : "subtle"}
+            size="md"
+          >
             <Link to={item.to}>
               <item.icon className="h-4 w-4" />
               {item.label}

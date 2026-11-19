@@ -20,7 +20,11 @@ function Categories() {
     const map = new Map<string, typeof orgs>();
     for (const org of orgs) map.set(org.category, [...(map.get(org.category) ?? []), org]);
     return [...map.entries()]
-      .map(([name, list]) => ({ name, orgs: list, members: list.reduce((sum, o) => sum + o.members, 0) }))
+      .map(([name, list]) => ({
+        name,
+        orgs: list,
+        members: list.reduce((sum, o) => sum + o.members, 0),
+      }))
       .sort((a, b) => b.orgs.length - a.orgs.length || a.name.localeCompare(b.name));
   }, [registry]);
 
@@ -39,11 +43,18 @@ function Categories() {
 
   return (
     <>
-      <PageHead title="Categories" sub="Browse organizations by interest area, advocacy, and campus focus." />
+      <PageHead
+        title="Categories"
+        sub="Browse organizations by interest area, advocacy, and campus focus."
+      />
 
       {categories.length === 0 ? (
         <Panel>
-          <EmptyState icon={Grid2x2} title="No categories yet" sub="Recognized organizations will be grouped here." />
+          <EmptyState
+            icon={Grid2x2}
+            title="No categories yet"
+            sub="Recognized organizations will be grouped here."
+          />
         </Panel>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -58,7 +69,8 @@ function Categories() {
                 <div>
                   <p className="font-display text-lg font-bold">{c.name}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {c.orgs.length} {c.orgs.length === 1 ? "organization" : "organizations"} · {c.members.toLocaleString()} members
+                    {c.orgs.length} {c.orgs.length === 1 ? "organization" : "organizations"} ·{" "}
+                    {c.members.toLocaleString()} members
                   </p>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
@@ -75,7 +87,8 @@ function Categories() {
                 ))}
               </div>
               <p className="mt-4 line-clamp-1 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Users className="h-3.5 w-3.5" /> {c.orgs.map((o) => o.name.replace(/^UM /, "")).join(", ")}
+                <Users className="h-3.5 w-3.5" />{" "}
+                {c.orgs.map((o) => o.name.replace(/^UM /, "")).join(", ")}
               </p>
             </Link>
           ))}

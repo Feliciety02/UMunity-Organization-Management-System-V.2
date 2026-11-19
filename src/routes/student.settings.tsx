@@ -31,21 +31,48 @@ const prefsStore = createLocalStore<Prefs>("umunity.student-prefs.v1", {
   showOrgs: true,
 });
 
-const SECTIONS: Array<{ title: string; items: Array<{ key: keyof Prefs; label: string; hint: string }> }> = [
+const SECTIONS: Array<{
+  title: string;
+  items: Array<{ key: keyof Prefs; label: string; hint: string }>;
+}> = [
   {
     title: "Notifications",
     items: [
-      { key: "eventReminders", label: "Event reminders", hint: "A reminder the day before events you RSVP'd to." },
-      { key: "commentReplies", label: "Comment replies", hint: "When someone replies to your comments." },
-      { key: "orgAnnouncements", label: "Organization announcements", hint: "New announcements from organizations you joined." },
-      { key: "emailDigest", label: "Weekly email digest", hint: "A Monday summary sent to your UM email." },
+      {
+        key: "eventReminders",
+        label: "Event reminders",
+        hint: "A reminder the day before events you RSVP'd to.",
+      },
+      {
+        key: "commentReplies",
+        label: "Comment replies",
+        hint: "When someone replies to your comments.",
+      },
+      {
+        key: "orgAnnouncements",
+        label: "Organization announcements",
+        hint: "New announcements from organizations you joined.",
+      },
+      {
+        key: "emailDigest",
+        label: "Weekly email digest",
+        hint: "A Monday summary sent to your UM email.",
+      },
     ],
   },
   {
     title: "Privacy",
     items: [
-      { key: "showProfile", label: "Public profile", hint: "Let other students view your profile page." },
-      { key: "showOrgs", label: "Show my organizations", hint: "List the organizations you belong to on your profile." },
+      {
+        key: "showProfile",
+        label: "Public profile",
+        hint: "Let other students view your profile page.",
+      },
+      {
+        key: "showOrgs",
+        label: "Show my organizations",
+        hint: "List the organizations you belong to on your profile.",
+      },
     ],
   },
 ];
@@ -63,14 +90,20 @@ function Settings() {
 
   return (
     <>
-      <PageHead title="Settings" sub="Manage your student workspace preferences and notification defaults." />
+      <PageHead
+        title="Settings"
+        sub="Manage your student workspace preferences and notification defaults."
+      />
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-4">
           {SECTIONS.map((section) => (
             <Panel key={section.title} title={section.title}>
               <ul className="divide-y divide-border">
                 {section.items.map((item) => (
-                  <li key={item.key} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+                  <li
+                    key={item.key}
+                    className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
+                  >
                     <label htmlFor={`pref-${item.key}`} className="min-w-0 cursor-pointer">
                       <span className="block text-sm font-semibold">{item.label}</span>
                       <span className="block text-xs text-muted-foreground">{item.hint}</span>
@@ -89,9 +122,15 @@ function Settings() {
             <div className="flex items-center justify-between gap-4">
               <label htmlFor="pref-dark" className="cursor-pointer">
                 <span className="block text-sm font-semibold">Dark mode</span>
-                <span className="block text-xs text-muted-foreground">Use the maroon dark theme across UMunity.</span>
+                <span className="block text-xs text-muted-foreground">
+                  Use the maroon dark theme across UMunity.
+                </span>
               </label>
-              <Switch id="pref-dark" checked={theme === "dark"} onCheckedChange={(v) => setTheme(v ? "dark" : "light")} />
+              <Switch
+                id="pref-dark"
+                checked={theme === "dark"}
+                onCheckedChange={(v) => setTheme(v ? "dark" : "light")}
+              />
             </div>
           </Panel>
         </div>

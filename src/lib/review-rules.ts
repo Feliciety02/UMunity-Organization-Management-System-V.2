@@ -52,7 +52,15 @@ export const REVIEW_RULES: Record<string, ReviewRule> = {
     orgField: "orgShort",
     // Leaders upload files and track checklist items at any stage; reviewers mark items during their stage.
     ownerFields: ["sections"],
-    ownerFieldsWhen: ["draft", "pending_adviser", "revision_requested", "pending_admin2", "pending_admin1", "approved", "rejected"],
+    ownerFieldsWhen: [
+      "draft",
+      "pending_adviser",
+      "revision_requested",
+      "pending_admin2",
+      "pending_admin1",
+      "approved",
+      "rejected",
+    ],
     reviewerFields: ["sections"],
   },
 };
@@ -117,13 +125,16 @@ function checkAppendOnly(before: Item, after: Item, actor: Actor): string | null
     const now = Array.isArray(after[field]) ? (after[field] as Item[]) : [];
     const nowById = new Map(now.map((e) => [String(e.id), JSON.stringify(e)]));
     for (const e of old) {
-      if (nowById.get(String(e.id)) !== JSON.stringify(e)) return `Existing ${field} can't be edited or removed.`;
+      if (nowById.get(String(e.id)) !== JSON.stringify(e))
+        return `Existing ${field} can't be edited or removed.`;
     }
     const oldIds = new Set(old.map((e) => String(e.id)));
     for (const e of now) {
       if (oldIds.has(String(e.id))) continue;
       const claimed = e[roleKey];
-      const ok = claimed === actor.role || (actor.role === "admin" && (claimed === "admin1" || claimed === "admin2"));
+      const ok =
+        claimed === actor.role ||
+        (actor.role === "admin" && (claimed === "admin1" || claimed === "admin2"));
       if (!ok) return `New ${field} must be signed with your own role.`;
     }
   }
@@ -134,7 +145,12 @@ function checkAppendOnly(before: Item, after: Item, actor: Actor): string | null
  * Returns null if `actor` may change `before` into `after` (null = created / deleted),
  * otherwise a message explaining why not.
  */
-export function checkReviewChange(rule: ReviewRule, actor: Actor, before: Item | null, after: Item | null): string | null {
+export function checkReviewChange(
+  rule: ReviewRule,
+  actor: Actor,
+  before: Item | null,
+  after: Item | null,
+): string | null {
   const isAdmin = actor.role === "admin" || actor.role === "admin1" || actor.role === "admin2";
   const sf = rule.statusField;
 
@@ -145,9 +161,11 @@ export function checkReviewChange(rule: ReviewRule, actor: Actor, before: Item |
   }
 
   if (!before) {
-    if (!ownsItem(actor, rule, after)) return "Only a leader can create this, and only for their own organization.";
+    if (!ownsItem(actor, rule, after))
+      return "Only a leader can create this, and only for their own organization.";
     const s = String(after[sf]);
-    if (s !== "draft" && s !== rule.chain[0]) return "New submissions start as a draft or go to adviser review.";
+    if (s !== "draft" && s !== rule.chain[0])
+      return "New submissions start as a draft or go to adviser review.";
     return checkAppendOnly({}, after, actor);
   }
 
@@ -172,28 +190,46 @@ export function checkReviewChange(rule: ReviewRule, actor: Actor, before: Item |
       if (!submit && !retract && !finish) return `A leader can't move this from ${s0} to ${s1}.`;
     }
     if (rule.closeout && c0 !== c1) {
-      if (!(s0 === "approved" && EDITABLE.has(String(c0)) && c1 === "pending_adviser")) return "That closeout step isn't yours to take.";
+      if (!(s0 === "approved" && EDITABLE.has(String(c0)) && c1 === "pending_adviser"))
+        return "That closeout step isn't yours to take.";
     }
-    const changedContent = contentOf(before, [sf, ...ACTIVITY_FIELDS, ...ownerExtra]) !== contentOf(after, [sf, ...ACTIVITY_FIELDS, ...ownerExtra]);
-    if (changedContent && !EDITABLE.has(s0)) return "This can only be edited while it's a draft or returned for revision.";
+    const changedContent =
+      contentOf(before, [sf, ...ACTIVITY_FIELDS, ...ownerExtra]) !==
+      contentOf(after, [sf, ...ACTIVITY_FIELDS, ...ownerExtra]);
+    if (changedContent && !EDITABLE.has(s0))
+      return "This can only be edited while it's a draft or returned for revision.";
     return null;
   }
 
   // Reviewers (and anyone else on staff, who may only comment).
   const reviewerOfStage = reviews(actor, s0);
   if (s0 !== s1) {
-    const closeoutFinal = rule.closeout && s0 === "approved" && s1 === "completed" && c0 === "pending_admin1" && c1 === "approved" && reviews(actor, "pending_admin1");
-    const allowed = reviewerOfStage && (s1 === nextInChain(rule.chain, s0) || s1 === "revision_requested" || s1 === "rejected");
+    const closeoutFinal =
+      rule.closeout &&
+      s0 === "approved" &&
+      s1 === "completed" &&
+      c0 === "pending_admin1" &&
+      c1 === "approved" &&
+      reviews(actor, "pending_admin1");
+    const allowed =
+      reviewerOfStage &&
+      (s1 === nextInChain(rule.chain, s0) || s1 === "revision_requested" || s1 === "rejected");
     if (!allowed && !closeoutFinal) return `Your role can't move this from ${s0} to ${s1}.`;
   }
   if (rule.closeout && c0 !== c1) {
     const closeoutChain = ["pending_adviser", "pending_admin2", "pending_admin1", "approved"];
-    const ok = c0 !== undefined && reviews(actor, c0) && (c1 === nextInChain(closeoutChain, c0) || c1 === "revision_requested" || c1 === "rejected");
+    const ok =
+      c0 !== undefined &&
+      reviews(actor, c0) &&
+      (c1 === nextInChain(closeoutChain, c0) || c1 === "revision_requested" || c1 === "rejected");
     if (!ok) return "That closeout step isn't yours to take.";
   }
   // e.g. archiving outgoing officers on the final approval, or marking requirement items reviewed.
   const extra = reviewerOfStage ? (rule.reviewerFields ?? []) : [];
-  if (contentOf(before, [sf, ...ACTIVITY_FIELDS, ...extra]) !== contentOf(after, [sf, ...ACTIVITY_FIELDS, ...extra])) {
+  if (
+    contentOf(before, [sf, ...ACTIVITY_FIELDS, ...extra]) !==
+    contentOf(after, [sf, ...ACTIVITY_FIELDS, ...extra])
+  ) {
     return "Reviewers can comment and decide, but not edit the submission itself.";
   }
   return null;

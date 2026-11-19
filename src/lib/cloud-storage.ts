@@ -59,8 +59,11 @@ function baseFrom(value: string, saved: Record<string, [number, number]>): Base 
 // Tabs of one browser share the local copy but each remembers its own confirmed versions.
 // After a save, tell the other tabs what the server now holds, so their next save of the same
 // list isn't based on versions that are already out of date (which would look like a conflict).
-type BaseMessage = { key: SyncedKey; kind: DocKind; items: Array<[string, BaseItem]> } | { key: SyncedKey; kind: null };
-const channel = typeof BroadcastChannel === "undefined" ? null : new BroadcastChannel("umunity-sync");
+type BaseMessage =
+  | { key: SyncedKey; kind: DocKind; items: Array<[string, BaseItem]> }
+  | { key: SyncedKey; kind: null };
+const channel =
+  typeof BroadcastChannel === "undefined" ? null : new BroadcastChannel("umunity-sync");
 channel?.addEventListener("message", (e: MessageEvent<BaseMessage>) => {
   const msg = e.data;
   if (!msg || !isSyncedKey(msg.key)) return;
@@ -69,7 +72,9 @@ channel?.addEventListener("message", (e: MessageEvent<BaseMessage>) => {
 
 function shareBase(key: SyncedKey, base: Base) {
   try {
-    channel?.postMessage(base ? { key, kind: base.kind, items: [...base.items] } : { key, kind: null });
+    channel?.postMessage(
+      base ? { key, kind: base.kind, items: [...base.items] } : { key, kind: null },
+    );
   } catch {
     /* other tabs fall back to their next sync */
   }
@@ -105,7 +110,10 @@ function rejectEdit(key: SyncedKey, message: string, conflict: boolean) {
   bases.delete(key);
   clearTimeout(timers.get(key));
   timers.delete(key);
-  if (conflict) toast.info("Someone else changed this at the same time", { description: "Showing the latest version. Please redo your change if it's still needed." });
+  if (conflict)
+    toast.info("Someone else changed this at the same time", {
+      description: "Showing the latest version. Please redo your change if it's still needed.",
+    });
   else toast.error("That change wasn't saved", { description: message });
   if (failures.size === 0) notifySaved();
   void syncFromServer().catch(() => {});
@@ -143,7 +151,9 @@ async function push(key: SyncedKey) {
         }
         // New base: the confirmed items with the positions just sent and the versions now stored.
         patch.deletes.forEach((d) => items.delete(d.k));
-        patch.upserts.forEach((u) => items.set(u.k, { json: u.v, pos: u.pos, ver: res.versions[u.k] ?? u.ver + 1 }));
+        patch.upserts.forEach((u) =>
+          items.set(u.k, { json: u.v, pos: u.pos, ver: res.versions[u.k] ?? u.ver + 1 }),
+        );
       }
       newBase = { kind: patch.kind, items };
     } else {
@@ -167,7 +177,10 @@ async function push(key: SyncedKey) {
     notifySaveProblem();
     const delay = RETRY_DELAYS_MS[Math.min(n - 1, RETRY_DELAYS_MS.length - 1)];
     clearTimeout(timers.get(key));
-    timers.set(key, setTimeout(() => void push(key), delay));
+    timers.set(
+      key,
+      setTimeout(() => void push(key), delay),
+    );
   }
 }
 
@@ -175,7 +188,10 @@ function schedulePush(key: SyncedKey) {
   dirty.add(key);
   if (!synced) return; // pushed once the first sync settles what the server already has
   clearTimeout(timers.get(key));
-  timers.set(key, setTimeout(() => void push(key), PUSH_DELAY_MS));
+  timers.set(
+    key,
+    setTimeout(() => void push(key), PUSH_DELAY_MS),
+  );
 }
 
 export const cloudStorage = {
@@ -223,7 +239,9 @@ export function syncFromServer(forRole?: Role): Promise<void> {
     const firstSync = !synced;
     const [remote] = await Promise.all([
       loadDataFn(),
-      ...[...refreshers].map((fn) => fn().catch((err) => console.warn("[UMunity] Couldn't refresh data.", err))),
+      ...[...refreshers].map((fn) =>
+        fn().catch((err) => console.warn("[UMunity] Couldn't refresh data.", err)),
+      ),
     ]);
     for (const key of Object.keys(SYNCED_KEYS) as SyncedKey[]) {
       const doc = remote[key];
@@ -232,7 +250,10 @@ export function syncFromServer(forRole?: Role): Promise<void> {
         // Only item-stored values can be patched; a value stored whole (e.g. by an older
         // version) gets no base, so its next save is whole and converts it to item rows.
         const saved = Object.fromEntries(
-          Object.entries(doc.positions ?? {}).map(([k, pos]) => [k, [pos, doc.versions?.[k] ?? 1] as [number, number]]),
+          Object.entries(doc.positions ?? {}).map(([k, pos]) => [
+            k,
+            [pos, doc.versions?.[k] ?? 1] as [number, number],
+          ]),
         );
         bases.set(key, doc.kind ? baseFrom(doc.value, saved) : null);
         dirty.delete(key);

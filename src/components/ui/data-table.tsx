@@ -2,7 +2,12 @@ import { useState, useMemo, useCallback, type ReactNode } from "react";
 import { ChevronDown, ChevronUp, ChevronsUpDown, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
 } from "@/components/ui/table";
 import { AppBadge } from "@/components/ui/app-badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -108,7 +113,7 @@ export function DataTable<T>({
         if (col.hidden) return false;
         const v = getValue(row, col.key);
         return v.toLowerCase().includes(query);
-      })
+      }),
     );
   }, [data, q, columns]);
 
@@ -130,17 +135,20 @@ export function DataTable<T>({
     return sorted.slice(start, start + pageSize);
   }, [sorted, page, pageSize]);
 
-  const handleSort = useCallback((key: string) => {
-    const dir: SortDir =
-      sortKey === key ? (sortDir === "asc" ? "desc" : sortDir === "desc" ? false : "asc") : "asc";
-    if (onSort) {
-      onSort(key, dir);
-    } else {
-      setSortKey(key);
-      setSortDir(dir);
-    }
-    setPage(1);
-  }, [sortKey, sortDir, onSort, setPage]);
+  const handleSort = useCallback(
+    (key: string) => {
+      const dir: SortDir =
+        sortKey === key ? (sortDir === "asc" ? "desc" : sortDir === "desc" ? false : "asc") : "asc";
+      if (onSort) {
+        onSort(key, dir);
+      } else {
+        setSortKey(key);
+        setSortDir(dir);
+      }
+      setPage(1);
+    },
+    [sortKey, sortDir, onSort, setPage],
+  );
 
   const displayColumns = columns.filter((c) => !c.hidden);
 
@@ -174,12 +182,21 @@ export function DataTable<T>({
                 <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
                 <input
                   value={q}
-                  onChange={(e) => { setQ(e.target.value); setPage(1); }}
+                  onChange={(e) => {
+                    setQ(e.target.value);
+                    setPage(1);
+                  }}
                   placeholder={searchPlaceholder}
                   className="min-w-0 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
                 />
                 {q && (
-                  <button onClick={() => { setQ(""); setPage(1); }} className="grid h-6 w-6 place-items-center rounded-full hover:bg-secondary">
+                  <button
+                    onClick={() => {
+                      setQ("");
+                      setPage(1);
+                    }}
+                    className="grid h-6 w-6 place-items-center rounded-full hover:bg-secondary"
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 )}
@@ -187,13 +204,13 @@ export function DataTable<T>({
             )}
             {filters}
           </div>
-          {toolbarActions && (
-            <div className="flex items-center gap-2">{toolbarActions}</div>
-          )}
+          {toolbarActions && <div className="flex items-center gap-2">{toolbarActions}</div>}
         </div>
       )}
 
-      <div className={cn("rounded-[24px] border border-border/80 bg-card shadow-soft", tableClassName)}>
+      <div
+        className={cn("rounded-[24px] border border-border/80 bg-card shadow-soft", tableClassName)}
+      >
         {rowCount && !loading && (
           <div className="flex items-center justify-between px-5 pt-4">
             <p className="text-xs font-medium text-muted-foreground">
@@ -243,7 +260,10 @@ export function DataTable<T>({
                   <TableRow key={`skeleton-${i}`}>
                     {displayColumns.map((col) => (
                       <TableCell key={col.key} className="px-4 py-3">
-                        <Skeleton className="h-4 w-full" style={{ maxWidth: `${60 + Math.random() * 40}%` }} />
+                        <Skeleton
+                          className="h-4 w-full"
+                          style={{ maxWidth: `${60 + Math.random() * 40}%` }}
+                        />
                       </TableCell>
                     ))}
                   </TableRow>
@@ -258,7 +278,9 @@ export function DataTable<T>({
                         </div>
                       )}
                       <p className="mt-3 font-display text-sm font-semibold">{emptyTitle}</p>
-                      {emptySub ? <p className="mt-1 text-xs text-muted-foreground">{emptySub}</p> : null}
+                      {emptySub ? (
+                        <p className="mt-1 text-xs text-muted-foreground">{emptySub}</p>
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -293,7 +315,15 @@ export function DataTable<T>({
                 aria-label="First page"
               >
                 <span className="sr-only">First</span>
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 5l-7 7 7 7M5 5v14" /></svg>
+                <svg
+                  className="h-3.5 w-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 5l-7 7 7 7M5 5v14" />
+                </svg>
               </button>
               <button
                 onClick={() => setPage(Math.max(1, page - 1))}
@@ -337,7 +367,15 @@ export function DataTable<T>({
                 aria-label="Last page"
               >
                 <span className="sr-only">Last</span>
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 5l7 7-7 7M19 5v14" /></svg>
+                <svg
+                  className="h-3.5 w-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 5l7 7-7 7M19 5v14" />
+                </svg>
               </button>
             </div>
           </div>
@@ -347,17 +385,38 @@ export function DataTable<T>({
   );
 }
 
-export function DataTableStatusBadge({ status, tone }: { status: string; tone?: "neutral" | "success" | "warning" | "danger" | "info" | "gold" }) {
-  const t = tone ?? (
-    status.toLowerCase().includes("approv") || status.toLowerCase().includes("active") || status.toLowerCase().includes("going") || status.toLowerCase().includes("publish") || status.toLowerCase().includes("complete") || status.toLowerCase().includes("recognized") || status.toLowerCase().includes("ready")
+export function DataTableStatusBadge({
+  status,
+  tone,
+}: {
+  status: string;
+  tone?: "neutral" | "success" | "warning" | "danger" | "info" | "gold";
+}) {
+  const t =
+    tone ??
+    (status.toLowerCase().includes("approv") ||
+    status.toLowerCase().includes("active") ||
+    status.toLowerCase().includes("going") ||
+    status.toLowerCase().includes("publish") ||
+    status.toLowerCase().includes("complete") ||
+    status.toLowerCase().includes("recognized") ||
+    status.toLowerCase().includes("ready")
       ? "success"
       : status.toLowerCase().includes("pend") || status.toLowerCase().includes("maybe")
         ? "warning"
-        : status.toLowerCase().includes("reject") || status.toLowerCase().includes("cancel") || status.toLowerCase().includes("suspend") || status.toLowerCase().includes("danger") || status.toLowerCase().includes("disbanded") || status.toLowerCase().includes("revision")
+        : status.toLowerCase().includes("reject") ||
+            status.toLowerCase().includes("cancel") ||
+            status.toLowerCase().includes("suspend") ||
+            status.toLowerCase().includes("danger") ||
+            status.toLowerCase().includes("disbanded") ||
+            status.toLowerCase().includes("revision")
           ? "danger"
-          : status.toLowerCase().includes("info") || status.toLowerCase().includes("schedule") || status.toLowerCase().includes("probation") || status.toLowerCase().includes("review") || status.toLowerCase().includes("process")
+          : status.toLowerCase().includes("info") ||
+              status.toLowerCase().includes("schedule") ||
+              status.toLowerCase().includes("probation") ||
+              status.toLowerCase().includes("review") ||
+              status.toLowerCase().includes("process")
             ? "info"
-            : "neutral"
-  );
+            : "neutral");
   return <AppBadge tone={t}>{status}</AppBadge>;
 }

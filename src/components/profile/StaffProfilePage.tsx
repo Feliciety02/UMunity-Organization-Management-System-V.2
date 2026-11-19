@@ -29,7 +29,10 @@ export function StaffProfilePage({
   role: Role;
   sub: string;
   panelTitle: string;
-  badges: Array<{ label: string; tone: "neutral" | "success" | "warning" | "danger" | "info" | "gold" }>;
+  badges: Array<{
+    label: string;
+    tone: "neutral" | "success" | "warning" | "danger" | "info" | "gold";
+  }>;
   fields: ProfileField[];
 }) {
   const navigate = useNavigate();
@@ -37,7 +40,9 @@ export function StaffProfilePage({
   const saved = store.useStore()[role] ?? {};
   const { theme, setTheme } = useTheme();
 
-  const initial = Object.fromEntries(fields.filter((f) => f.editable).map((f) => [f.label, saved[f.label] ?? f.value]));
+  const initial = Object.fromEntries(
+    fields.filter((f) => f.editable).map((f) => [f.label, saved[f.label] ?? f.value]),
+  );
   const [draft, setDraft] = useState<Record<string, string>>(initial);
   const savedKey = JSON.stringify(saved);
   useEffect(() => {
@@ -59,7 +64,11 @@ export function StaffProfilePage({
   }
 
   const displayName = draft["Full name"] ?? session?.name ?? "";
-  const initials = displayName.split(" ").slice(0, 2).map((w) => w[0]).join("");
+  const initials = displayName
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("");
 
   return (
     <>
@@ -67,7 +76,9 @@ export function StaffProfilePage({
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-1">
           <Panel>
-            <div className={`grid h-24 w-24 place-items-center rounded-full bg-gradient-to-br ${session?.avatarColor ?? "from-primary to-primary-deep"} text-2xl font-bold text-primary-foreground`}>
+            <div
+              className={`grid h-24 w-24 place-items-center rounded-full bg-gradient-to-br ${session?.avatarColor ?? "from-primary to-primary-deep"} text-2xl font-bold text-primary-foreground`}
+            >
               {initials}
             </div>
             <p className="mt-4 font-display text-lg font-bold">{displayName}</p>
@@ -86,7 +97,11 @@ export function StaffProfilePage({
               <label htmlFor="staff-dark" className="cursor-pointer text-sm font-semibold">
                 Dark mode
               </label>
-              <Switch id="staff-dark" checked={theme === "dark"} onCheckedChange={(v) => setTheme(v ? "dark" : "light")} />
+              <Switch
+                id="staff-dark"
+                checked={theme === "dark"}
+                onCheckedChange={(v) => setTheme(v ? "dark" : "light")}
+              />
             </div>
             <AppButton
               variant="ghost"
@@ -114,7 +129,9 @@ export function StaffProfilePage({
               {fields.map((f) =>
                 f.editable ? (
                   <label key={f.label} className="block">
-                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">{f.label}</span>
+                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      {f.label}
+                    </span>
                     <input
                       value={draft[f.label] ?? ""}
                       onChange={(e) => setDraft((d) => ({ ...d, [f.label]: e.target.value }))}
@@ -124,8 +141,12 @@ export function StaffProfilePage({
                   </label>
                 ) : (
                   <div key={f.label}>
-                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">{f.label}</span>
-                    <p className="rounded-xl border border-dashed border-border bg-secondary/40 px-3 py-2 text-sm text-muted-foreground">{f.value || "—"}</p>
+                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      {f.label}
+                    </span>
+                    <p className="rounded-xl border border-dashed border-border bg-secondary/40 px-3 py-2 text-sm text-muted-foreground">
+                      {f.value || "—"}
+                    </p>
                   </div>
                 ),
               )}
@@ -135,11 +156,18 @@ export function StaffProfilePage({
                 <Save className="h-4 w-4" /> Save changes
               </AppButton>
               {dirty ? (
-                <AppButton type="button" variant="ghost" size="md" onClick={() => setDraft(initial)}>
+                <AppButton
+                  type="button"
+                  variant="ghost"
+                  size="md"
+                  onClick={() => setDraft(initial)}
+                >
                   Discard
                 </AppButton>
               ) : (
-                <span className="text-xs text-muted-foreground">Fields with a dashed border are managed by OSA.</span>
+                <span className="text-xs text-muted-foreground">
+                  Fields with a dashed border are managed by OSA.
+                </span>
               )}
             </div>
           </form>

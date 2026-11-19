@@ -13,10 +13,17 @@ function AdviserPostsPage() {
 
   return (
     <>
-      <PageHead title="Post approval queue" sub="Review organization posts before they become publishable." />
+      <PageHead
+        title="Post approval queue"
+        sub="Review organization posts before they become publishable."
+      />
       <Panel>
         {approvals.length === 0 ? (
-          <EmptyState title="No posts pending adviser review" sub="Leader submissions will appear here first." icon={Megaphone} />
+          <EmptyState
+            title="No posts pending adviser review"
+            sub="Leader submissions will appear here first."
+            icon={Megaphone}
+          />
         ) : (
           <div className="space-y-3">
             {approvals.map((approval) => (
@@ -26,7 +33,9 @@ function AdviserPostsPage() {
                   <Badge tone="neutral">{approval.visibility}</Badge>
                 </div>
                 <p className="mt-2 text-sm font-semibold">{approval.title || "Untitled post"}</p>
-                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{approval.content}</p>
+                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                  {approval.content}
+                </p>
                 <AppButton asChild variant="secondary" size="sm" className="mt-3">
                   <Link to="/adviser/posts/$approvalId" params={{ approvalId: approval.id }}>
                     Review post <ArrowRight className="h-4 w-4" />

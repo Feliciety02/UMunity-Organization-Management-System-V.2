@@ -59,7 +59,8 @@ export function ConfirmDialog({
             onClick={onConfirm}
             className={cn(
               "rounded-full",
-              tone === "danger" && "bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-600",
+              tone === "danger" &&
+                "bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-600",
             )}
           >
             {confirmLabel}

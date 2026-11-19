@@ -1,10 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { canWrite, diffEntries, isSyncedKey, itemKeyOf, toEntries, type DocKind } from "@/lib/synced-keys";
+import {
+  canWrite,
+  diffEntries,
+  isSyncedKey,
+  itemKeyOf,
+  toEntries,
+  type DocKind,
+} from "@/lib/synced-keys";
 
 function baseOf(value: unknown) {
   const split = toEntries(value)!;
   const items = new Map<string, { json: string; pos: number; ver: number }>();
-  split.entries.forEach(([k, v], i) => items.set(k, { json: JSON.stringify(v), pos: (i + 1) * 1024, ver: 3 }));
+  split.entries.forEach(([k, v], i) =>
+    items.set(k, { json: JSON.stringify(v), pos: (i + 1) * 1024, ver: 3 }),
+  );
   return { kind: split.kind as DocKind, items };
 }
 
@@ -34,7 +43,14 @@ describe("diffEntries", () => {
   ]);
 
   it("sends only the item that changed", () => {
-    const patch = diffEntries(base, toEntries([{ id: "a", v: 1 }, { id: "b", v: 2 }, { id: "c", v: 1 }])!)!;
+    const patch = diffEntries(
+      base,
+      toEntries([
+        { id: "a", v: 1 },
+        { id: "b", v: 2 },
+        { id: "c", v: 1 },
+      ])!,
+    )!;
     expect(patch.upserts.map((u) => u.k)).toEqual(["b"]);
     expect(patch.upserts[0].pos).toBe(2048); // keeps its position
     expect(patch.upserts[0].ver).toBe(3); // based on the version it was loaded at
@@ -42,7 +58,10 @@ describe("diffEntries", () => {
   });
 
   it("places a prepended item before the first one without touching the others", () => {
-    const patch = diffEntries(base, toEntries([{ id: "new" }, { id: "a", v: 1 }, { id: "b", v: 1 }, { id: "c", v: 1 }])!)!;
+    const patch = diffEntries(
+      base,
+      toEntries([{ id: "new" }, { id: "a", v: 1 }, { id: "b", v: 1 }, { id: "c", v: 1 }])!,
+    )!;
     expect(patch.upserts).toHaveLength(1);
     expect(patch.upserts[0].k).toBe("new");
     expect(patch.upserts[0].ver).toBe(0);
@@ -50,20 +69,40 @@ describe("diffEntries", () => {
   });
 
   it("places an inserted item between its neighbours", () => {
-    const patch = diffEntries(base, toEntries([{ id: "a", v: 1 }, { id: "mid" }, { id: "b", v: 1 }, { id: "c", v: 1 }])!)!;
+    const patch = diffEntries(
+      base,
+      toEntries([{ id: "a", v: 1 }, { id: "mid" }, { id: "b", v: 1 }, { id: "c", v: 1 }])!,
+    )!;
     expect(patch.upserts[0].pos).toBeGreaterThan(1024);
     expect(patch.upserts[0].pos).toBeLessThan(2048);
   });
 
   it("deletes removed items", () => {
-    const patch = diffEntries(base, toEntries([{ id: "a", v: 1 }, { id: "c", v: 1 }])!)!;
+    const patch = diffEntries(
+      base,
+      toEntries([
+        { id: "a", v: 1 },
+        { id: "c", v: 1 },
+      ])!,
+    )!;
     expect(patch.deletes).toEqual([{ k: "b", ver: 3 }]);
     expect(patch.upserts).toEqual([]);
   });
 
   it("re-numbers everything when the order changes", () => {
-    const patch = diffEntries(base, toEntries([{ id: "c", v: 1 }, { id: "a", v: 1 }, { id: "b", v: 1 }])!)!;
-    expect(patch.upserts.map((u) => [u.k, u.pos])).toEqual([["c", 1024], ["a", 2048], ["b", 3072]]);
+    const patch = diffEntries(
+      base,
+      toEntries([
+        { id: "c", v: 1 },
+        { id: "a", v: 1 },
+        { id: "b", v: 1 },
+      ])!,
+    )!;
+    expect(patch.upserts.map((u) => [u.k, u.pos])).toEqual([
+      ["c", 1024],
+      ["a", 2048],
+      ["b", 3072],
+    ]);
   });
 
   it("diffs objects field by field", () => {

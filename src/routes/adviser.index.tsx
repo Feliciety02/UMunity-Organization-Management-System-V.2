@@ -13,8 +13,12 @@ export const Route = createFileRoute("/adviser/")({
 
 function AdviserDashboard() {
   const workflows = useWorkflows().filter((workflow) => workflow.status === "pending_adviser");
-  const postApprovals = usePostApprovals().filter((approval) => approval.status === "pending_adviser");
-  const compliance = useComplianceSubmissions().filter((submission) => submission.status === "pending_adviser");
+  const postApprovals = usePostApprovals().filter(
+    (approval) => approval.status === "pending_adviser",
+  );
+  const compliance = useComplianceSubmissions().filter(
+    (submission) => submission.status === "pending_adviser",
+  );
   const closeoutQueue = useWorkflows().filter(
     (workflow) =>
       (workflow.status === "approved" || workflow.status === "completed") &&
@@ -42,12 +46,15 @@ function AdviserDashboard() {
         }
       >
         <p className="text-sm text-muted-foreground">
-          Keep revision notes, recent reviewer comments, and the active adviser queue visible in one place instead of jumping across individual routes.
+          Keep revision notes, recent reviewer comments, and the active adviser queue visible in one
+          place instead of jumping across individual routes.
         </p>
       </Panel>
       <Panel title="Post approvals" className="mt-6">
         {postApprovals.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No post submissions are waiting for adviser review.</p>
+          <p className="text-sm text-muted-foreground">
+            No post submissions are waiting for adviser review.
+          </p>
         ) : (
           <div className="space-y-3">
             {postApprovals.slice(0, 3).map((approval) => (
@@ -68,7 +75,9 @@ function AdviserDashboard() {
       </Panel>
       <Panel title="Accreditation reviews" className="mt-6">
         {compliance.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No organization accreditation reviews are waiting for adviser validation.</p>
+          <p className="text-sm text-muted-foreground">
+            No organization accreditation reviews are waiting for adviser validation.
+          </p>
         ) : (
           <div className="space-y-3">
             {compliance.slice(0, 3).map((submission) => (
@@ -78,7 +87,9 @@ function AdviserDashboard() {
                   <Badge tone="neutral">{submission.data.accreditationScope}</Badge>
                 </div>
                 <p className="mt-2 text-sm font-semibold">{submission.orgName}</p>
-                <p className="text-xs text-muted-foreground">{submission.data.category} - {submission.data.memberCount} members</p>
+                <p className="text-xs text-muted-foreground">
+                  {submission.data.category} - {submission.data.memberCount} members
+                </p>
               </div>
             ))}
             <AppButton asChild variant="secondary" size="sm">
@@ -89,7 +100,9 @@ function AdviserDashboard() {
       </Panel>
       <Panel title="Requirements review" className="mt-6">
         {requirements.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No event requirement trackers are waiting for adviser review.</p>
+          <p className="text-sm text-muted-foreground">
+            No event requirement trackers are waiting for adviser review.
+          </p>
         ) : (
           <div className="space-y-3">
             {requirements.slice(0, 3).map((doc) => (
@@ -110,7 +123,9 @@ function AdviserDashboard() {
       </Panel>
       <Panel title="Event closeout reviews" className="mt-6">
         {closeoutQueue.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No post-event packets are waiting for adviser review.</p>
+          <p className="text-sm text-muted-foreground">
+            No post-event packets are waiting for adviser review.
+          </p>
         ) : (
           <div className="space-y-3">
             {closeoutQueue.slice(0, 3).map((workflow) => (

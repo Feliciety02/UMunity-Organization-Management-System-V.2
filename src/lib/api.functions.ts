@@ -2,7 +2,15 @@
 // Each handler runs on the server; the client gets a typed RPC stub. The logic lives in
 // core.server.ts; these wrappers deal with cookies, the request and error shapes.
 import { createServerFn } from "@tanstack/react-start";
-import { deleteCookie, getCookie, getRequestHeader, getRequestIP, getRequestProtocol, getRequestUrl, setCookie } from "@tanstack/react-start/server";
+import {
+  deleteCookie,
+  getCookie,
+  getRequestHeader,
+  getRequestIP,
+  getRequestProtocol,
+  getRequestUrl,
+  setCookie,
+} from "@tanstack/react-start/server";
 import type { Session } from "@/lib/demo-users";
 import * as core from "@/lib/core.server";
 import * as finance from "@/lib/finance.server";
@@ -19,7 +27,8 @@ async function attempt<T extends object>(fn: () => Promise<T>): Promise<({ ok: t
   try {
     return { ok: true, ...(await fn()) };
   } catch (err) {
-    if (err instanceof core.ConflictError) return { ok: false, error: err.message, code: "conflict" };
+    if (err instanceof core.ConflictError)
+      return { ok: false, error: err.message, code: "conflict" };
     if (err instanceof core.ReshapeError) return { ok: false, error: err.message, code: "reshape" };
     if (err instanceof core.UserError) return { ok: false, error: err.message };
     throw err;
@@ -49,7 +58,11 @@ async function requireUser() {
 
 /** Client IP for the sign-in throttle. Only trust proxy headers set by the platform itself. */
 function clientIp() {
-  return getRequestHeader("cf-connecting-ip") || getRequestIP({ xForwardedFor: Boolean(process.env.VERCEL) }) || "unknown";
+  return (
+    getRequestHeader("cf-connecting-ip") ||
+    getRequestIP({ xForwardedFor: Boolean(process.env.VERCEL) }) ||
+    "unknown"
+  );
 }
 
 // ---------- Config ----------
@@ -60,7 +73,10 @@ export const authConfigFn = createServerFn({ method: "GET" }).handler(async () =
 
 // ---------- Auth ----------
 
-export type LoginResult = { ok: true; session: Session } | { ok: false; reason: "invalid" } | { ok: false; reason: "locked"; retryAfterMs: number };
+export type LoginResult =
+  | { ok: true; session: Session }
+  | { ok: false; reason: "invalid" }
+  | { ok: false; reason: "locked"; retryAfterMs: number };
 
 export const loginFn = createServerFn({ method: "POST" })
   .inputValidator((d: { email: string; password: string; remember: boolean }) => ({
@@ -79,14 +95,20 @@ export const loginFn = createServerFn({ method: "POST" })
 
 export const registerFn = createServerFn({ method: "POST" })
   .inputValidator((d: core.RegisterInput) => d)
-  .handler(async ({ data }): Promise<{ ok: true; session: Session } | { ok: false; field: "email" | "form"; error: string }> => {
-    const c = await db();
-    const result = await core.registerStudent(c, data);
-    if (!result.ok) return result;
-    const { token, ttl } = await core.createSession(c, result.user.id, true);
-    setSessionCookie(token, ttl, true);
-    return { ok: true, session: core.toSession(result.user) };
-  });
+  .handler(
+    async ({
+      data,
+    }): Promise<
+      { ok: true; session: Session } | { ok: false; field: "email" | "form"; error: string }
+    > => {
+      const c = await db();
+      const result = await core.registerStudent(c, data);
+      if (!result.ok) return result;
+      const { token, ttl } = await core.createSession(c, result.user.id, true);
+      setSessionCookie(token, ttl, true);
+      return { ok: true, session: core.toSession(result.user) };
+    },
+  );
 
 export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
   const token = getCookie(COOKIE);
@@ -103,7 +125,10 @@ export const meFn = createServerFn({ method: "GET" }).handler(async (): Promise<
 // ---------- Account management ----------
 
 export const changePasswordFn = createServerFn({ method: "POST" })
-  .inputValidator((d: { current: string; next: string }) => ({ current: String(d.current ?? ""), next: String(d.next ?? "") }))
+  .inputValidator((d: { current: string; next: string }) => ({
+    current: String(d.current ?? ""),
+    next: String(d.next ?? ""),
+  }))
   .handler(async ({ data }) =>
     attempt(async () => {
       const user = await requireUser();
@@ -113,7 +138,10 @@ export const changePasswordFn = createServerFn({ method: "POST" })
   );
 
 export const changeEmailFn = createServerFn({ method: "POST" })
-  .inputValidator((d: { password: string; email: string }) => ({ password: String(d.password ?? ""), email: String(d.email ?? "") }))
+  .inputValidator((d: { password: string; email: string }) => ({
+    password: String(d.password ?? ""),
+    email: String(d.email ?? ""),
+  }))
   .handler(async ({ data }) =>
     attempt(async () => {
       const user = await requireUser();
@@ -138,8 +166,12 @@ async function sendResetEmail(to: string, name: string, link: string) {
   const key = process.env.RESEND_API_KEY;
   const from = process.env.RESET_EMAIL_FROM;
   if (!key || !from) {
-    if (process.env.NODE_ENV !== "production") console.info(`[UMunity] Password reset link for ${to}: ${link}`);
-    else console.warn("[UMunity] RESEND_API_KEY / RESET_EMAIL_FROM not set; password reset email not sent.");
+    if (process.env.NODE_ENV !== "production")
+      console.info(`[UMunity] Password reset link for ${to}: ${link}`);
+    else
+      console.warn(
+        "[UMunity] RESEND_API_KEY / RESET_EMAIL_FROM not set; password reset email not sent.",
+      );
     return;
   }
   const res = await fetch("https://api.resend.com/emails", {
@@ -162,7 +194,8 @@ export const requestPasswordResetFn = createServerFn({ method: "POST" })
     if (!reset) return { ok: true }; // same answer either way: don't reveal which emails have accounts
     // Links in emails must not come from the request's Host header (it can be forged), so
     // production needs APP_URL; development falls back to the current origin.
-    const base = process.env.APP_URL || (process.env.NODE_ENV !== "production" ? getRequestUrl().origin : "");
+    const base =
+      process.env.APP_URL || (process.env.NODE_ENV !== "production" ? getRequestUrl().origin : "");
     if (!base) {
       console.warn("[UMunity] APP_URL is not set; can't build a password reset link.");
       return { ok: true };
@@ -170,12 +203,16 @@ export const requestPasswordResetFn = createServerFn({ method: "POST" })
     const link = `${base.replace(/\/$/, "")}/reset-password?token=${reset.token}`;
     await sendResetEmail(reset.user.email, reset.user.name, link);
     // In development without an email service, hand the link back so the flow can be tried.
-    const devLink = process.env.NODE_ENV !== "production" && !process.env.RESEND_API_KEY ? link : undefined;
+    const devLink =
+      process.env.NODE_ENV !== "production" && !process.env.RESEND_API_KEY ? link : undefined;
     return { ok: true, devLink };
   });
 
 export const resetPasswordFn = createServerFn({ method: "POST" })
-  .inputValidator((d: { token: string; password: string }) => ({ token: String(d.token ?? ""), password: String(d.password ?? "") }))
+  .inputValidator((d: { token: string; password: string }) => ({
+    token: String(d.token ?? ""),
+    password: String(d.password ?? ""),
+  }))
   .handler(async ({ data }) =>
     attempt(async () => {
       await core.resetPassword(await db(), data.token, data.password);
@@ -196,7 +233,10 @@ export const loadDataFn = createServerFn({ method: "GET" }).handler(async () => 
 });
 
 export const saveDataFn = createServerFn({ method: "POST" })
-  .inputValidator((d: { key: string; value: string }) => ({ key: String(d.key), value: String(d.value) }))
+  .inputValidator((d: { key: string; value: string }) => ({
+    key: String(d.key),
+    value: String(d.value),
+  }))
   .handler(async ({ data }) =>
     attempt(async () => {
       const user = await requireUser();
@@ -210,9 +250,16 @@ export const patchDataFn = createServerFn({ method: "POST" })
     patch: {
       kind: d.patch?.kind,
       upserts: Array.isArray(d.patch?.upserts)
-        ? d.patch.upserts.map((u) => ({ k: String(u.k), v: String(u.v), pos: Number(u.pos) || 0, ver: Number(u.ver) || 0 }))
+        ? d.patch.upserts.map((u) => ({
+            k: String(u.k),
+            v: String(u.v),
+            pos: Number(u.pos) || 0,
+            ver: Number(u.ver) || 0,
+          }))
         : [],
-      deletes: Array.isArray(d.patch?.deletes) ? d.patch.deletes.map((x) => ({ k: String(x.k), ver: Number(x.ver) || 0 })) : [],
+      deletes: Array.isArray(d.patch?.deletes)
+        ? d.patch.deletes.map((x) => ({ k: String(x.k), ver: Number(x.ver) || 0 }))
+        : [],
     } as DocPatch,
   }))
   .handler(async ({ data }) =>
@@ -230,7 +277,10 @@ export const myMembershipsFn = createServerFn({ method: "GET" }).handler(async (
 });
 
 export const requestMembershipFn = createServerFn({ method: "POST" })
-  .inputValidator((d: { slug: string; reason?: string }) => ({ slug: String(d.slug), reason: String(d.reason ?? "") }))
+  .inputValidator((d: { slug: string; reason?: string }) => ({
+    slug: String(d.slug),
+    reason: String(d.reason ?? ""),
+  }))
   .handler(async ({ data }) =>
     attempt(async () => {
       const user = await requireUser();
@@ -263,7 +313,10 @@ export const orgRequestsFn = createServerFn({ method: "GET" }).handler(async () 
 });
 
 export const resolveMembershipRequestFn = createServerFn({ method: "POST" })
-  .inputValidator((d: { id: string; approve: boolean }) => ({ id: String(d.id), approve: Boolean(d.approve) }))
+  .inputValidator((d: { id: string; approve: boolean }) => ({
+    id: String(d.id),
+    approve: Boolean(d.approve),
+  }))
   .handler(async ({ data }) =>
     attempt(async () => {
       await core.resolveMembershipRequest(await db(), await requireUser(), data.id, data.approve);
@@ -277,7 +330,10 @@ export const orgMembersFn = createServerFn({ method: "GET" }).handler(async () =
 });
 
 export const setMemberStatusFn = createServerFn({ method: "POST" })
-  .inputValidator((d: { email: string; status: core.MemberStatus }) => ({ email: String(d.email), status: d.status }))
+  .inputValidator((d: { email: string; status: core.MemberStatus }) => ({
+    email: String(d.email),
+    status: d.status,
+  }))
   .handler(async ({ data }) =>
     attempt(async () => {
       await core.setMemberStatus(await db(), await requireUser(), data.email, data.status);
@@ -309,7 +365,11 @@ export const financeOrgsFn = createServerFn({ method: "GET" }).handler(async () 
 export const loadLedgerFn = createServerFn({ method: "GET" })
   .inputValidator((d: { slug: string }) => ({ slug: String(d.slug) }))
   .handler(async ({ data }) =>
-    attempt(async () => ({ ledger: await finance.loadLedger(await financeDb(), await requireUser(), data.slug, { demo: demoAccountsEnabled() }) })),
+    attempt(async () => ({
+      ledger: await finance.loadLedger(await financeDb(), await requireUser(), data.slug, {
+        demo: demoAccountsEnabled(),
+      }),
+    })),
   );
 
 export const recordEntryFn = createServerFn({ method: "POST" })
@@ -325,7 +385,11 @@ export const recordEntryFn = createServerFn({ method: "POST" })
       eventTitle: d.entry?.eventTitle ? String(d.entry.eventTitle) : null,
     } as finance.NewEntry,
   }))
-  .handler(async ({ data }) => attempt(async () => finance.recordEntry(await financeDb(), await requireUser(), data.slug, data.entry)));
+  .handler(async ({ data }) =>
+    attempt(async () =>
+      finance.recordEntry(await financeDb(), await requireUser(), data.slug, data.entry),
+    ),
+  );
 
 export const addReceiptFn = createServerFn({ method: "POST" })
   .inputValidator((d: { entryId: string; filename: string; dataBase64: string }) => ({
@@ -334,7 +398,12 @@ export const addReceiptFn = createServerFn({ method: "POST" })
     dataBase64: String(d.dataBase64 ?? ""),
   }))
   .handler(async ({ data }) =>
-    attempt(async () => finance.addReceipt(await financeDb(), await requireUser(), data.entryId, { filename: data.filename, dataBase64: data.dataBase64 })),
+    attempt(async () =>
+      finance.addReceipt(await financeDb(), await requireUser(), data.entryId, {
+        filename: data.filename,
+        dataBase64: data.dataBase64,
+      }),
+    ),
   );
 
 export const removeReceiptFn = createServerFn({ method: "POST" })
@@ -348,7 +417,9 @@ export const removeReceiptFn = createServerFn({ method: "POST" })
 
 export const getReceiptFn = createServerFn({ method: "GET" })
   .inputValidator((d: { receiptId: string }) => ({ receiptId: String(d.receiptId) }))
-  .handler(async ({ data }) => attempt(async () => finance.getReceipt(await financeDb(), await requireUser(), data.receiptId)));
+  .handler(async ({ data }) =>
+    attempt(async () => finance.getReceipt(await financeDb(), await requireUser(), data.receiptId)),
+  );
 
 export const reviewEntryFn = createServerFn({ method: "POST" })
   .inputValidator((d: { entryId: string; decision: "verify" | "flag"; note: string }) => ({
@@ -358,13 +429,22 @@ export const reviewEntryFn = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data }) =>
     attempt(async () => {
-      await finance.reviewEntry(await financeDb(), await requireUser(), data.entryId, data.decision, data.note);
+      await finance.reviewEntry(
+        await financeDb(),
+        await requireUser(),
+        data.entryId,
+        data.decision,
+        data.note,
+      );
       return {};
     }),
   );
 
 export const voidEntryFn = createServerFn({ method: "POST" })
-  .inputValidator((d: { entryId: string; reason: string }) => ({ entryId: String(d.entryId), reason: String(d.reason ?? "") }))
+  .inputValidator((d: { entryId: string; reason: string }) => ({
+    entryId: String(d.entryId),
+    reason: String(d.reason ?? ""),
+  }))
   .handler(async ({ data }) =>
     attempt(async () => {
       await finance.voidEntry(await financeDb(), await requireUser(), data.entryId, data.reason);

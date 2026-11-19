@@ -36,9 +36,16 @@ export function AppCardHeader({
 }) {
   if (!title && !subtitle && !action) return null;
   return (
-    <div className={cn("mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between", className)}>
+    <div
+      className={cn(
+        "mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between",
+        className,
+      )}
+    >
       <div className="space-y-1">
-        {title ? <h3 className="font-display text-base font-semibold text-foreground">{title}</h3> : null}
+        {title ? (
+          <h3 className="font-display text-base font-semibold text-foreground">{title}</h3>
+        ) : null}
         {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
       </div>
       {action}

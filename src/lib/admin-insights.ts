@@ -106,8 +106,12 @@ export function useAdminInsights(role: AdminRole) {
       workflow.operations.postEvent.closeoutStatus === "pending_admin2",
   );
   const admin2PostQueue = postApprovals.filter((approval) => approval.status === "pending_admin2");
-  const admin2ComplianceQueue = compliance.filter((submission) => submission.status === "pending_admin2");
-  const admin2RequirementsQueue = requirements.filter((doc) => doc.reviewStatus === "pending_admin2");
+  const admin2ComplianceQueue = compliance.filter(
+    (submission) => submission.status === "pending_admin2",
+  );
+  const admin2RequirementsQueue = requirements.filter(
+    (doc) => doc.reviewStatus === "pending_admin2",
+  );
 
   const admin1WorkflowQueue = workflows.filter((workflow) => workflow.status === "pending_admin1");
   const admin1CloseoutQueue = workflows.filter(
@@ -115,141 +119,146 @@ export function useAdminInsights(role: AdminRole) {
       (workflow.status === "approved" || workflow.status === "completed") &&
       workflow.operations.postEvent.closeoutStatus === "pending_admin1",
   );
-  const admin1ComplianceQueue = compliance.filter((submission) => submission.status === "pending_admin1");
-  const admin1TransitionQueue = transitions.filter((workflow) => workflow.status === "pending_admin1");
+  const admin1ComplianceQueue = compliance.filter(
+    (submission) => submission.status === "pending_admin1",
+  );
+  const admin1TransitionQueue = transitions.filter(
+    (workflow) => workflow.status === "pending_admin1",
+  );
 
-  const queueItems: AdminQueueItem[] = role === "admin2"
+  const queueItems: AdminQueueItem[] =
+    role === "admin2"
       ? [
-        ...admin2WorkflowQueue.map((workflow) => {
-          const ageHours = hoursSince(workflow.updatedAt);
-          return {
-            id: `workflow-${workflow.id}`,
-            title: workflow.proposal.title,
-            orgName: workflow.orgName,
-            lane: "Event workflow",
-            status: formatWorkflowStatus(workflow.status),
-            tone: queueToneForAge(ageHours),
-            href: `/admin2/workflows/${workflow.id}`,
-            ageHours,
-            note: workflow.currentStage,
-          } satisfies AdminQueueItem;
-        }),
-        ...admin2CloseoutQueue.map((workflow) => {
-          const ageHours = hoursSince(workflow.updatedAt);
-          return {
-            id: `closeout-${workflow.id}`,
-            title: workflow.proposal.title,
-            orgName: workflow.orgName,
-            lane: "Post-event closeout",
-            status: formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus),
-            tone: queueToneForAge(ageHours),
-            href: `/admin2/workflows/${workflow.id}`,
-            ageHours,
-            note: "Financial wrap-up and outcomes review",
-          } satisfies AdminQueueItem;
-        }),
-        ...admin2PostQueue.map((approval) => {
-          const ageHours = hoursSince(approval.updatedAt);
-          return {
-            id: `post-${approval.id}`,
-            title: approval.title || "Untitled post",
-            orgName: approval.orgName,
-            lane: "Post publishing",
-            status: formatPostApprovalStatus(approval.status),
-            tone: queueToneForAge(ageHours),
-            href: `/admin2/posts/${approval.id}`,
-            ageHours,
-            note: `${approval.type} - ${approval.visibility}`,
-          } satisfies AdminQueueItem;
-        }),
-        ...admin2ComplianceQueue.map((submission) => {
-          const ageHours = hoursSince(submission.updatedAt);
-          return {
-            id: `compliance-${submission.id}`,
-            title: submission.orgName,
-            orgName: submission.orgName,
-            lane: "Accreditation",
-            status: submission.status.replaceAll("_", " "),
-            tone: queueToneForAge(ageHours),
-            href: `/admin2/compliance/${submission.id}`,
-            ageHours,
-            note: submission.data.accreditationScope,
-          } satisfies AdminQueueItem;
-        }),
-        ...admin2RequirementsQueue.map((doc) => {
-          const latest = doc.history[0]?.createdAt ?? doc.createdAt;
-          const ageHours = hoursSince(latest);
-          return {
-            id: `requirements-${doc.id}`,
-            title: doc.title,
-            orgName: doc.orgShort,
-            lane: "Requirements tracker",
-            status: formatReqReviewStatus(doc.reviewStatus),
-            tone: queueToneForAge(ageHours),
-            href: `/admin2/requirements/${doc.id}`,
-            ageHours,
-            note: doc.category,
-          } satisfies AdminQueueItem;
-        }),
-      ]
-    : [
-        ...admin1WorkflowQueue.map((workflow) => {
-          const ageHours = hoursSince(workflow.updatedAt);
-          return {
-            id: `workflow-${workflow.id}`,
-            title: workflow.proposal.title,
-            orgName: workflow.orgName,
-            lane: "Final event approval",
-            status: formatWorkflowStatus(workflow.status),
-            tone: queueToneForAge(ageHours),
-            href: `/admin1/workflows/${workflow.id}`,
-            ageHours,
-            note: workflow.currentStage,
-          } satisfies AdminQueueItem;
-        }),
-        ...admin1CloseoutQueue.map((workflow) => {
-          const ageHours = hoursSince(workflow.updatedAt);
-          return {
-            id: `closeout-${workflow.id}`,
-            title: workflow.proposal.title,
-            orgName: workflow.orgName,
-            lane: "Final closeout approval",
-            status: formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus),
-            tone: queueToneForAge(ageHours),
-            href: `/admin1/workflows/${workflow.id}`,
-            ageHours,
-            note: "Financial wrap-up and outcomes review",
-          } satisfies AdminQueueItem;
-        }),
-        ...admin1ComplianceQueue.map((submission) => {
-          const ageHours = hoursSince(submission.updatedAt);
-          return {
-            id: `compliance-${submission.id}`,
-            title: submission.orgName,
-            orgName: submission.orgName,
-            lane: "Accreditation authority",
-            status: submission.status.replaceAll("_", " "),
-            tone: queueToneForAge(ageHours),
-            href: `/admin1/accreditation/${submission.id}`,
-            ageHours,
-            note: submission.data.accreditationScope,
-          } satisfies AdminQueueItem;
-        }),
-        ...admin1TransitionQueue.map((transition) => {
-          const ageHours = hoursSince(transition.updatedAt);
-          return {
-            id: `transition-${transition.id}`,
-            title: transition.orgName,
-            orgName: transition.orgName,
-            lane: "Officer transition",
-            status: transition.status.replaceAll("_", " "),
-            tone: queueToneForAge(ageHours),
-            href: `/admin1/transitions/${transition.id}`,
-            ageHours,
-            note: `${transition.nominees.length} nominees`,
-          } satisfies AdminQueueItem;
-        }),
-      ];
+          ...admin2WorkflowQueue.map((workflow) => {
+            const ageHours = hoursSince(workflow.updatedAt);
+            return {
+              id: `workflow-${workflow.id}`,
+              title: workflow.proposal.title,
+              orgName: workflow.orgName,
+              lane: "Event workflow",
+              status: formatWorkflowStatus(workflow.status),
+              tone: queueToneForAge(ageHours),
+              href: `/admin2/workflows/${workflow.id}`,
+              ageHours,
+              note: workflow.currentStage,
+            } satisfies AdminQueueItem;
+          }),
+          ...admin2CloseoutQueue.map((workflow) => {
+            const ageHours = hoursSince(workflow.updatedAt);
+            return {
+              id: `closeout-${workflow.id}`,
+              title: workflow.proposal.title,
+              orgName: workflow.orgName,
+              lane: "Post-event closeout",
+              status: formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus),
+              tone: queueToneForAge(ageHours),
+              href: `/admin2/workflows/${workflow.id}`,
+              ageHours,
+              note: "Financial wrap-up and outcomes review",
+            } satisfies AdminQueueItem;
+          }),
+          ...admin2PostQueue.map((approval) => {
+            const ageHours = hoursSince(approval.updatedAt);
+            return {
+              id: `post-${approval.id}`,
+              title: approval.title || "Untitled post",
+              orgName: approval.orgName,
+              lane: "Post publishing",
+              status: formatPostApprovalStatus(approval.status),
+              tone: queueToneForAge(ageHours),
+              href: `/admin2/posts/${approval.id}`,
+              ageHours,
+              note: `${approval.type} - ${approval.visibility}`,
+            } satisfies AdminQueueItem;
+          }),
+          ...admin2ComplianceQueue.map((submission) => {
+            const ageHours = hoursSince(submission.updatedAt);
+            return {
+              id: `compliance-${submission.id}`,
+              title: submission.orgName,
+              orgName: submission.orgName,
+              lane: "Accreditation",
+              status: submission.status.replaceAll("_", " "),
+              tone: queueToneForAge(ageHours),
+              href: `/admin2/compliance/${submission.id}`,
+              ageHours,
+              note: submission.data.accreditationScope,
+            } satisfies AdminQueueItem;
+          }),
+          ...admin2RequirementsQueue.map((doc) => {
+            const latest = doc.history[0]?.createdAt ?? doc.createdAt;
+            const ageHours = hoursSince(latest);
+            return {
+              id: `requirements-${doc.id}`,
+              title: doc.title,
+              orgName: doc.orgShort,
+              lane: "Requirements tracker",
+              status: formatReqReviewStatus(doc.reviewStatus),
+              tone: queueToneForAge(ageHours),
+              href: `/admin2/requirements/${doc.id}`,
+              ageHours,
+              note: doc.category,
+            } satisfies AdminQueueItem;
+          }),
+        ]
+      : [
+          ...admin1WorkflowQueue.map((workflow) => {
+            const ageHours = hoursSince(workflow.updatedAt);
+            return {
+              id: `workflow-${workflow.id}`,
+              title: workflow.proposal.title,
+              orgName: workflow.orgName,
+              lane: "Final event approval",
+              status: formatWorkflowStatus(workflow.status),
+              tone: queueToneForAge(ageHours),
+              href: `/admin1/workflows/${workflow.id}`,
+              ageHours,
+              note: workflow.currentStage,
+            } satisfies AdminQueueItem;
+          }),
+          ...admin1CloseoutQueue.map((workflow) => {
+            const ageHours = hoursSince(workflow.updatedAt);
+            return {
+              id: `closeout-${workflow.id}`,
+              title: workflow.proposal.title,
+              orgName: workflow.orgName,
+              lane: "Final closeout approval",
+              status: formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus),
+              tone: queueToneForAge(ageHours),
+              href: `/admin1/workflows/${workflow.id}`,
+              ageHours,
+              note: "Financial wrap-up and outcomes review",
+            } satisfies AdminQueueItem;
+          }),
+          ...admin1ComplianceQueue.map((submission) => {
+            const ageHours = hoursSince(submission.updatedAt);
+            return {
+              id: `compliance-${submission.id}`,
+              title: submission.orgName,
+              orgName: submission.orgName,
+              lane: "Accreditation authority",
+              status: submission.status.replaceAll("_", " "),
+              tone: queueToneForAge(ageHours),
+              href: `/admin1/accreditation/${submission.id}`,
+              ageHours,
+              note: submission.data.accreditationScope,
+            } satisfies AdminQueueItem;
+          }),
+          ...admin1TransitionQueue.map((transition) => {
+            const ageHours = hoursSince(transition.updatedAt);
+            return {
+              id: `transition-${transition.id}`,
+              title: transition.orgName,
+              orgName: transition.orgName,
+              lane: "Officer transition",
+              status: transition.status.replaceAll("_", " "),
+              tone: queueToneForAge(ageHours),
+              href: `/admin1/transitions/${transition.id}`,
+              ageHours,
+              note: `${transition.nominees.length} nominees`,
+            } satisfies AdminQueueItem;
+          }),
+        ];
 
   queueItems.sort((a, b) => b.ageHours - a.ageHours);
 
@@ -257,12 +266,20 @@ export function useAdminInsights(role: AdminRole) {
 
   workflows.forEach((workflow) => {
     pushWatch(watchMap, workflow.orgName, {
-      pending: workflow.status !== "draft" && workflow.status !== "approved" && workflow.status !== "completed",
+      pending:
+        workflow.status !== "draft" &&
+        workflow.status !== "approved" &&
+        workflow.status !== "completed",
       revision: workflow.status === "revision_requested",
       finalAuthority: workflow.status === "pending_admin1",
       ageHours: hoursSince(workflow.updatedAt),
     });
-    if (workflow.operations.postEvent.closeoutStatus === "pending_admin2" || workflow.operations.postEvent.closeoutStatus === "pending_admin1" || workflow.operations.postEvent.closeoutStatus === "revision_requested" || workflow.operations.postEvent.closeoutStatus === "rejected") {
+    if (
+      workflow.operations.postEvent.closeoutStatus === "pending_admin2" ||
+      workflow.operations.postEvent.closeoutStatus === "pending_admin1" ||
+      workflow.operations.postEvent.closeoutStatus === "revision_requested" ||
+      workflow.operations.postEvent.closeoutStatus === "rejected"
+    ) {
       pushWatch(watchMap, workflow.orgName, {
         pending: workflow.operations.postEvent.closeoutStatus === "pending_admin2",
         revision: workflow.operations.postEvent.closeoutStatus === "revision_requested",
@@ -315,80 +332,189 @@ export function useAdminInsights(role: AdminRole) {
     .slice(0, 6);
 
   const monthStart = startOfMonth();
-  const monthlyDecisions = role === "admin2"
-    ? [
-        ...workflows.flatMap((workflow) => workflow.history.filter((entry) => entry.byRole === "admin2" && entry.createdAt >= monthStart && entry.action === "approved")),
-        ...postApprovals.flatMap((approval) => approval.history.filter((entry) => entry.byRole === "admin2" && entry.createdAt >= monthStart && (entry.action === "approved" || entry.action === "published"))),
-        ...compliance.flatMap((submission) => submission.history.filter((entry) => entry.byRole === "admin2" && entry.createdAt >= monthStart && entry.action === "approved")),
-      ].length
-    : [
-        ...workflows.flatMap((workflow) => workflow.history.filter((entry) => entry.byRole === "admin1" && entry.createdAt >= monthStart && (entry.action === "approved" || entry.action === "completed"))),
-        ...compliance.flatMap((submission) => submission.history.filter((entry) => entry.byRole === "admin1" && entry.createdAt >= monthStart && entry.action === "approved")),
-        ...transitions.flatMap((workflow) => workflow.history.filter((entry) => entry.byRole === "admin1" && entry.createdAt >= monthStart && entry.action === "completed")),
-      ].length;
+  const monthlyDecisions =
+    role === "admin2"
+      ? [
+          ...workflows.flatMap((workflow) =>
+            workflow.history.filter(
+              (entry) =>
+                entry.byRole === "admin2" &&
+                entry.createdAt >= monthStart &&
+                entry.action === "approved",
+            ),
+          ),
+          ...postApprovals.flatMap((approval) =>
+            approval.history.filter(
+              (entry) =>
+                entry.byRole === "admin2" &&
+                entry.createdAt >= monthStart &&
+                (entry.action === "approved" || entry.action === "published"),
+            ),
+          ),
+          ...compliance.flatMap((submission) =>
+            submission.history.filter(
+              (entry) =>
+                entry.byRole === "admin2" &&
+                entry.createdAt >= monthStart &&
+                entry.action === "approved",
+            ),
+          ),
+        ].length
+      : [
+          ...workflows.flatMap((workflow) =>
+            workflow.history.filter(
+              (entry) =>
+                entry.byRole === "admin1" &&
+                entry.createdAt >= monthStart &&
+                (entry.action === "approved" || entry.action === "completed"),
+            ),
+          ),
+          ...compliance.flatMap((submission) =>
+            submission.history.filter(
+              (entry) =>
+                entry.byRole === "admin1" &&
+                entry.createdAt >= monthStart &&
+                entry.action === "approved",
+            ),
+          ),
+          ...transitions.flatMap((workflow) =>
+            workflow.history.filter(
+              (entry) =>
+                entry.byRole === "admin1" &&
+                entry.createdAt >= monthStart &&
+                entry.action === "completed",
+            ),
+          ),
+        ].length;
 
-  const turnaroundSamples = role === "admin2"
-    ? [
-        ...workflows
-          .map((workflow) => {
-            const adviserApproval = workflow.history.find((entry) => entry.byRole === "adviser" && entry.action === "approved");
-            const admin2Approval = workflow.history.find((entry) => entry.byRole === "admin2" && entry.action === "approved");
-            return adviserApproval && admin2Approval ? (admin2Approval.createdAt - adviserApproval.createdAt) / 86_400_000 : null;
-          })
-          .filter((value): value is number => value !== null),
-        ...postApprovals
-          .map((approval) => {
-            const adviserApproval = approval.history.find((entry) => entry.byRole === "adviser" && entry.action === "approved");
-            const admin2Decision = approval.history.find((entry) => entry.byRole === "admin2" && (entry.action === "approved" || entry.action === "published"));
-            return adviserApproval && admin2Decision ? (admin2Decision.createdAt - adviserApproval.createdAt) / 86_400_000 : null;
-          })
-          .filter((value): value is number => value !== null),
-        ...compliance
-          .map((submission) => {
-            const adviserApproval = submission.history.find((entry) => entry.byRole === "adviser" && entry.action === "approved");
-            const admin2Approval = submission.history.find((entry) => entry.byRole === "admin2" && entry.action === "approved");
-            return adviserApproval && admin2Approval ? (admin2Approval.createdAt - adviserApproval.createdAt) / 86_400_000 : null;
-          })
-          .filter((value): value is number => value !== null),
-      ]
-    : [
-        ...workflows
-          .map((workflow) => {
-            const admin2Approval = workflow.history.find((entry) => entry.byRole === "admin2" && entry.action === "approved");
-            const admin1Approval = workflow.history.find((entry) => entry.byRole === "admin1" && entry.action === "approved");
-            return admin2Approval && admin1Approval ? (admin1Approval.createdAt - admin2Approval.createdAt) / 86_400_000 : null;
-          })
-          .filter((value): value is number => value !== null),
-        ...compliance
-          .map((submission) => {
-            const admin2Approval = submission.history.find((entry) => entry.byRole === "admin2" && entry.action === "approved");
-            const admin1Approval = submission.history.find((entry) => entry.byRole === "admin1" && entry.action === "approved");
-            return admin2Approval && admin1Approval ? (admin1Approval.createdAt - admin2Approval.createdAt) / 86_400_000 : null;
-          })
-          .filter((value): value is number => value !== null),
-        ...transitions
-          .map((workflow) => {
-            const adviserApproval = workflow.history.find((entry) => entry.byRole === "adviser" && entry.action === "approved");
-            const admin1Decision = workflow.history.find((entry) => entry.byRole === "admin1" && entry.action === "completed");
-            return adviserApproval && admin1Decision ? (admin1Decision.createdAt - adviserApproval.createdAt) / 86_400_000 : null;
-          })
-          .filter((value): value is number => value !== null),
-      ];
+  const turnaroundSamples =
+    role === "admin2"
+      ? [
+          ...workflows
+            .map((workflow) => {
+              const adviserApproval = workflow.history.find(
+                (entry) => entry.byRole === "adviser" && entry.action === "approved",
+              );
+              const admin2Approval = workflow.history.find(
+                (entry) => entry.byRole === "admin2" && entry.action === "approved",
+              );
+              return adviserApproval && admin2Approval
+                ? (admin2Approval.createdAt - adviserApproval.createdAt) / 86_400_000
+                : null;
+            })
+            .filter((value): value is number => value !== null),
+          ...postApprovals
+            .map((approval) => {
+              const adviserApproval = approval.history.find(
+                (entry) => entry.byRole === "adviser" && entry.action === "approved",
+              );
+              const admin2Decision = approval.history.find(
+                (entry) =>
+                  entry.byRole === "admin2" &&
+                  (entry.action === "approved" || entry.action === "published"),
+              );
+              return adviserApproval && admin2Decision
+                ? (admin2Decision.createdAt - adviserApproval.createdAt) / 86_400_000
+                : null;
+            })
+            .filter((value): value is number => value !== null),
+          ...compliance
+            .map((submission) => {
+              const adviserApproval = submission.history.find(
+                (entry) => entry.byRole === "adviser" && entry.action === "approved",
+              );
+              const admin2Approval = submission.history.find(
+                (entry) => entry.byRole === "admin2" && entry.action === "approved",
+              );
+              return adviserApproval && admin2Approval
+                ? (admin2Approval.createdAt - adviserApproval.createdAt) / 86_400_000
+                : null;
+            })
+            .filter((value): value is number => value !== null),
+        ]
+      : [
+          ...workflows
+            .map((workflow) => {
+              const admin2Approval = workflow.history.find(
+                (entry) => entry.byRole === "admin2" && entry.action === "approved",
+              );
+              const admin1Approval = workflow.history.find(
+                (entry) => entry.byRole === "admin1" && entry.action === "approved",
+              );
+              return admin2Approval && admin1Approval
+                ? (admin1Approval.createdAt - admin2Approval.createdAt) / 86_400_000
+                : null;
+            })
+            .filter((value): value is number => value !== null),
+          ...compliance
+            .map((submission) => {
+              const admin2Approval = submission.history.find(
+                (entry) => entry.byRole === "admin2" && entry.action === "approved",
+              );
+              const admin1Approval = submission.history.find(
+                (entry) => entry.byRole === "admin1" && entry.action === "approved",
+              );
+              return admin2Approval && admin1Approval
+                ? (admin1Approval.createdAt - admin2Approval.createdAt) / 86_400_000
+                : null;
+            })
+            .filter((value): value is number => value !== null),
+          ...transitions
+            .map((workflow) => {
+              const adviserApproval = workflow.history.find(
+                (entry) => entry.byRole === "adviser" && entry.action === "approved",
+              );
+              const admin1Decision = workflow.history.find(
+                (entry) => entry.byRole === "admin1" && entry.action === "completed",
+              );
+              return adviserApproval && admin1Decision
+                ? (admin1Decision.createdAt - adviserApproval.createdAt) / 86_400_000
+                : null;
+            })
+            .filter((value): value is number => value !== null),
+        ];
 
   const weeklyDecisions = Array.from({ length: 7 }, (_, index) => {
     const start = startOfDay(6 - index);
     const end = startOfDay(5 - index);
     if (role === "admin2") {
       return (
-        workflows.flatMap((workflow) => workflow.history).filter((entry) => entry.byRole === "admin2" && entry.createdAt >= start && entry.createdAt < end).length +
-        postApprovals.flatMap((approval) => approval.history).filter((entry) => entry.byRole === "admin2" && entry.createdAt >= start && entry.createdAt < end).length +
-        compliance.flatMap((submission) => submission.history).filter((entry) => entry.byRole === "admin2" && entry.createdAt >= start && entry.createdAt < end).length
+        workflows
+          .flatMap((workflow) => workflow.history)
+          .filter(
+            (entry) =>
+              entry.byRole === "admin2" && entry.createdAt >= start && entry.createdAt < end,
+          ).length +
+        postApprovals
+          .flatMap((approval) => approval.history)
+          .filter(
+            (entry) =>
+              entry.byRole === "admin2" && entry.createdAt >= start && entry.createdAt < end,
+          ).length +
+        compliance
+          .flatMap((submission) => submission.history)
+          .filter(
+            (entry) =>
+              entry.byRole === "admin2" && entry.createdAt >= start && entry.createdAt < end,
+          ).length
       );
     }
     return (
-      workflows.flatMap((workflow) => workflow.history).filter((entry) => entry.byRole === "admin1" && entry.createdAt >= start && entry.createdAt < end).length +
-      compliance.flatMap((submission) => submission.history).filter((entry) => entry.byRole === "admin1" && entry.createdAt >= start && entry.createdAt < end).length +
-      transitions.flatMap((workflow) => workflow.history).filter((entry) => entry.byRole === "admin1" && entry.createdAt >= start && entry.createdAt < end).length
+      workflows
+        .flatMap((workflow) => workflow.history)
+        .filter(
+          (entry) => entry.byRole === "admin1" && entry.createdAt >= start && entry.createdAt < end,
+        ).length +
+      compliance
+        .flatMap((submission) => submission.history)
+        .filter(
+          (entry) => entry.byRole === "admin1" && entry.createdAt >= start && entry.createdAt < end,
+        ).length +
+      transitions
+        .flatMap((workflow) => workflow.history)
+        .filter(
+          (entry) => entry.byRole === "admin1" && entry.createdAt >= start && entry.createdAt < end,
+        ).length
     );
   });
 
@@ -403,7 +529,9 @@ export function useAdminInsights(role: AdminRole) {
         href: `/admin1/transitions/${workflow.id}`,
       })),
     ...compliance
-      .filter((submission) => submission.status === "pending_admin1" || submission.status === "approved")
+      .filter(
+        (submission) => submission.status === "pending_admin1" || submission.status === "approved",
+      )
       .slice(0, 3)
       .map((submission) => ({
         title: `${submission.orgName} accreditation`,
@@ -424,11 +552,24 @@ export function useAdminInsights(role: AdminRole) {
     revisionLoad:
       workflows.filter((workflow) => workflow.status === "revision_requested").length +
       workflows.filter((workflow) => workflow.status === "rejected").length +
-      workflows.filter((workflow) => workflow.operations.postEvent.closeoutStatus === "revision_requested" || workflow.operations.postEvent.closeoutStatus === "rejected").length +
-      postApprovals.filter((approval) => approval.status === "revision_requested" || approval.status === "rejected").length +
-      compliance.filter((submission) => submission.status === "revision_requested" || submission.status === "rejected").length +
-      requirements.filter((doc) => doc.reviewStatus === "revision_requested" || doc.reviewStatus === "rejected").length +
-      transitions.filter((workflow) => workflow.status === "revision_requested" || workflow.status === "rejected").length,
+      workflows.filter(
+        (workflow) =>
+          workflow.operations.postEvent.closeoutStatus === "revision_requested" ||
+          workflow.operations.postEvent.closeoutStatus === "rejected",
+      ).length +
+      postApprovals.filter(
+        (approval) => approval.status === "revision_requested" || approval.status === "rejected",
+      ).length +
+      compliance.filter(
+        (submission) =>
+          submission.status === "revision_requested" || submission.status === "rejected",
+      ).length +
+      requirements.filter(
+        (doc) => doc.reviewStatus === "revision_requested" || doc.reviewStatus === "rejected",
+      ).length +
+      transitions.filter(
+        (workflow) => workflow.status === "revision_requested" || workflow.status === "rejected",
+      ).length,
     accreditedOrgs: compliance.filter((submission) => submission.status === "approved").length,
     archivedTransitions: transitions.filter((workflow) => workflow.status === "completed").length,
     weeklyDecisions,

@@ -56,7 +56,10 @@ function MyOrgs() {
             ];
             const thread = threads.find((t) => t.orgSlug === o.slug);
             return (
-              <div key={o.slug} className="rounded-3xl border border-border bg-card p-6 shadow-soft">
+              <div
+                key={o.slug}
+                className="rounded-3xl border border-border bg-card p-6 shadow-soft"
+              >
                 <div className="flex items-start gap-4">
                   <OrgAvatar org={o} size={56} />
                   <div className="min-w-0 flex-1">
@@ -73,7 +76,9 @@ function MyOrgs() {
                   {stats.map(([v, l]) => (
                     <div key={l} className="rounded-xl bg-secondary/60 p-3">
                       <p className="font-display text-lg font-bold">{v}</p>
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{l}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {l}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -104,11 +109,18 @@ function MyOrgs() {
         ) : (
           <div className="space-y-3">
             {pending.map((o) => (
-              <div key={o.slug} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-secondary/60 p-3">
+              <div
+                key={o.slug}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-secondary/60 p-3"
+              >
                 <div className="flex items-center gap-3">
                   <OrgAvatar org={o} size={40} />
                   <div>
-                    <Link to="/student/org/$slug" params={{ slug: o.slug }} className="text-sm font-semibold hover:underline">
+                    <Link
+                      to="/student/org/$slug"
+                      params={{ slug: o.slug }}
+                      className="text-sm font-semibold hover:underline"
+                    >
                       {o.name}
                     </Link>
                     <p className="text-xs text-muted-foreground">
@@ -123,7 +135,11 @@ function MyOrgs() {
                     size="sm"
                     onClick={() => {
                       cancelMembershipRequest(o.slug);
-                      showStatusToast("Request withdrawn", `Your request to join ${o.name} was withdrawn.`, "info");
+                      showStatusToast(
+                        "Request withdrawn",
+                        `Your request to join ${o.name} was withdrawn.`,
+                        "info",
+                      );
                     }}
                   >
                     Withdraw

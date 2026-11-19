@@ -1,6 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Archive, ArrowRight, Ban, CheckCircle2, MessageSquareText, Send, Undo2 } from "lucide-react";
+import {
+  Archive,
+  ArrowRight,
+  Ban,
+  CheckCircle2,
+  MessageSquareText,
+  Send,
+  Undo2,
+} from "lucide-react";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, PageHead, Panel } from "@/components/dashboard/DashboardLayout";
 import {
@@ -32,7 +40,9 @@ export function OfficerTransitionDetail({
   const canAdminApprove = viewer.role === "admin1" && workflow.status === "pending_admin1";
   const canReview = canAdviserApprove || canAdminApprove;
   const canReject = canReview;
-  const canRetract = viewer.role === "leader" && (workflow.status === "pending_adviser" || workflow.status === "pending_admin1");
+  const canRetract =
+    viewer.role === "leader" &&
+    (workflow.status === "pending_adviser" || workflow.status === "pending_admin1");
 
   function submitComment() {
     if (!comment.trim()) {
@@ -71,7 +81,9 @@ export function OfficerTransitionDetail({
 
   function approve() {
     approveTransitionWorkflow(workflow.id, viewer);
-    toast.success(viewer.role === "adviser" ? "Forwarded to Admin 1" : "Transition approved and archived");
+    toast.success(
+      viewer.role === "adviser" ? "Forwarded to Admin 1" : "Transition approved and archived",
+    );
   }
 
   return (
@@ -91,7 +103,8 @@ export function OfficerTransitionDetail({
             ) : null}
             {canReview ? (
               <AppButton variant="primary" size="sm" onClick={approve}>
-                <CheckCircle2 className="h-4 w-4" /> {viewer.role === "adviser" ? "Validate nominees" : "Approve and archive"}
+                <CheckCircle2 className="h-4 w-4" />{" "}
+                {viewer.role === "adviser" ? "Validate nominees" : "Approve and archive"}
               </AppButton>
             ) : null}
             {canReject ? (
@@ -109,13 +122,19 @@ export function OfficerTransitionDetail({
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge tone={statusTone(workflow.status)}>{formatWorkflowStatus(workflow.status)}</Badge>
+                  <Badge tone={statusTone(workflow.status)}>
+                    {formatWorkflowStatus(workflow.status)}
+                  </Badge>
                   <Badge tone="gold">AY {workflow.academicYear}</Badge>
                 </div>
-                <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">{workflow.rationale}</p>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
+                  {workflow.rationale}
+                </p>
               </div>
               <div className="rounded-2xl border border-border bg-secondary/35 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Stage</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Stage
+                </p>
                 <p className="mt-2 font-display text-2xl font-bold">{workflow.currentStage}</p>
                 <p className="text-xs text-muted-foreground">Submitted by {workflow.submittedBy}</p>
               </div>
@@ -125,13 +144,22 @@ export function OfficerTransitionDetail({
           <Panel title="Nominee slate">
             <div className="space-y-3">
               {workflow.nominees.map((nominee) => (
-                <div key={nominee.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
+                <div
+                  key={nominee.id}
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3"
+                >
                   <div className="grid h-11 w-11 place-items-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                    {nominee.name.split(" ").map((word) => word[0]).join("").slice(0, 2)}
+                    {nominee.name
+                      .split(" ")
+                      .map((word) => word[0])
+                      .join("")
+                      .slice(0, 2)}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold">{nominee.name}</p>
-                    <p className="text-xs text-muted-foreground">{nominee.position} - {nominee.program} - {nominee.yearLevel}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {nominee.position} - {nominee.program} - {nominee.yearLevel}
+                    </p>
                     <p className="text-xs text-muted-foreground">{nominee.email}</p>
                   </div>
                 </div>
@@ -150,7 +178,9 @@ export function OfficerTransitionDetail({
                 </div>
                 <div className="space-y-3">
                   {workflow.archivedOfficers.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No archived officer records yet.</p>
+                    <p className="text-sm text-muted-foreground">
+                      No archived officer records yet.
+                    </p>
                   ) : (
                     workflow.archivedOfficers.map((archive) => (
                       <div key={archive.id} className="rounded-2xl bg-secondary/35 p-3">
@@ -159,7 +189,8 @@ export function OfficerTransitionDetail({
                           <Badge tone="neutral">{archive.officers.length} officers</Badge>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          Archived by {archive.approvedBy} on {new Date(archive.archivedAt).toLocaleDateString()}
+                          Archived by {archive.approvedBy} on{" "}
+                          {new Date(archive.archivedAt).toLocaleDateString()}
                         </p>
                       </div>
                     ))
@@ -173,10 +204,26 @@ export function OfficerTransitionDetail({
         <div className="space-y-4">
           <Panel title="Approval lane">
             <div className="space-y-3">
-              <LaneRow label="Organization leader" detail={workflow.submittedBy} active={workflow.status === "revision_requested"} />
-              <LaneRow label="Adviser" detail={workflow.adviserName} active={workflow.status === "pending_adviser"} />
-              <LaneRow label="Admin 1" detail="University final approval" active={workflow.status === "pending_admin1"} />
-              <LaneRow label="Archive" detail="Previous officers preserved in history" active={workflow.status === "completed"} />
+              <LaneRow
+                label="Organization leader"
+                detail={workflow.submittedBy}
+                active={workflow.status === "revision_requested"}
+              />
+              <LaneRow
+                label="Adviser"
+                detail={workflow.adviserName}
+                active={workflow.status === "pending_adviser"}
+              />
+              <LaneRow
+                label="Admin 1"
+                detail="University final approval"
+                active={workflow.status === "pending_admin1"}
+              />
+              <LaneRow
+                label="Archive"
+                detail="Previous officers preserved in history"
+                active={workflow.status === "completed"}
+              />
             </div>
           </Panel>
 
@@ -217,7 +264,9 @@ export function OfficerTransitionDetail({
                           <Badge tone="neutral">{entry.authorRole}</Badge>
                           <p className="text-sm font-semibold">{entry.authorName}</p>
                         </div>
-                        <p className="text-xs text-muted-foreground">{new Date(entry.createdAt).toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(entry.createdAt).toLocaleString()}
+                        </p>
                       </div>
                       <p className="mt-2 text-sm text-foreground">{entry.message}</p>
                     </div>
@@ -235,8 +284,12 @@ export function OfficerTransitionDetail({
                     <p className="text-sm font-semibold">{entry.byName}</p>
                     <Badge tone="info">{entry.action.replaceAll("_", " ")}</Badge>
                   </div>
-                  {entry.note ? <p className="mt-2 text-sm text-muted-foreground">{entry.note}</p> : null}
-                  <p className="mt-1 text-xs text-muted-foreground">{new Date(entry.createdAt).toLocaleString()}</p>
+                  {entry.note ? (
+                    <p className="mt-2 text-sm text-muted-foreground">{entry.note}</p>
+                  ) : null}
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {new Date(entry.createdAt).toLocaleString()}
+                  </p>
                 </div>
               ))}
             </div>
@@ -249,10 +302,16 @@ export function OfficerTransitionDetail({
 
 function LaneRow({ label, detail, active }: { label: string; detail: string; active?: boolean }) {
   return (
-    <div className={`rounded-2xl border px-3 py-3 ${active ? "border-primary/30 bg-primary/8" : "border-border bg-card"}`}>
+    <div
+      className={`rounded-2xl border px-3 py-3 ${active ? "border-primary/30 bg-primary/8" : "border-border bg-card"}`}
+    >
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-semibold">{label}</p>
-        {active ? <Badge tone="info">Current</Badge> : <ArrowRight className="h-4 w-4 text-muted-foreground" />}
+        {active ? (
+          <Badge tone="info">Current</Badge>
+        ) : (
+          <ArrowRight className="h-4 w-4 text-muted-foreground" />
+        )}
       </div>
       <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
     </div>

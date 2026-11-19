@@ -8,7 +8,10 @@ export function nowId(prefix: string) {
 
 /** "UM Eco Warriors" -> "um-eco-warriors". */
 export function slugify(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 /** "UM Computer Studies Society" -> "UMCSS", "UM Cultural Guild" -> "UMCG". */
@@ -16,7 +19,15 @@ export function orgShortFor(name: string | undefined) {
   if (!name) return "";
   const words = name.split(/\s+/).filter(Boolean);
   const [first, ...rest] = words;
-  return first === "UM" ? `UM${rest.map((w) => w[0]).join("").toUpperCase()}` : words.map((w) => w[0]).join("").toUpperCase();
+  return first === "UM"
+    ? `UM${rest
+        .map((w) => w[0])
+        .join("")
+        .toUpperCase()}`
+    : words
+        .map((w) => w[0])
+        .join("")
+        .toUpperCase();
 }
 
 /** The current academic year as "2026-2027". */

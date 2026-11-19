@@ -10,7 +10,17 @@ import type { OrgLinkMode } from "@/components/org/OrgLink";
 import { JoinOrgButton } from "@/components/org/JoinOrgButton";
 import { AppButton } from "@/components/ui/app-button";
 import { events, organizations, posts, type Org } from "@/data/site";
-import { Users, Calendar, Mail, MapPin, Globe, UserPlus, ArrowLeft, Compass, MessageSquare } from "lucide-react";
+import {
+  Users,
+  Calendar,
+  Mail,
+  MapPin,
+  Globe,
+  UserPlus,
+  ArrowLeft,
+  Compass,
+  MessageSquare,
+} from "lucide-react";
 
 export function OrgPageContent({
   org,
@@ -33,7 +43,9 @@ export function OrgPageContent({
 
   const orgPosts = posts.filter((p) => p.orgSlug === org.slug);
   const orgEvents = events.filter((e) => e.host === org.name);
-  const relatedOrgs = organizations.filter((item) => item.slug !== org.slug && item.category === org.category).slice(0, 3);
+  const relatedOrgs = organizations
+    .filter((item) => item.slug !== org.slug && item.category === org.category)
+    .slice(0, 3);
 
   return (
     <div className="relative pt-5 sm:pt-6">
@@ -65,7 +77,9 @@ export function OrgPageContent({
           <div className="flex flex-col gap-4 border-b border-border/80 pb-5 pt-1 md:flex-row md:items-end md:justify-between">
             <div className="flex min-w-0 flex-col gap-4 md:min-w-0 md:flex-1 md:flex-row md:items-end md:gap-5">
               <div className="-mt-16 self-center md:-mt-14 md:self-end">
-                <div className={`grid h-[108px] w-[108px] place-items-center rounded-full border-[6px] border-card bg-gradient-to-br ${org.color} font-display text-[2rem] font-bold text-primary-foreground shadow-soft md:h-[116px] md:w-[116px] md:text-[2.15rem]`}>
+                <div
+                  className={`grid h-[108px] w-[108px] place-items-center rounded-full border-[6px] border-card bg-gradient-to-br ${org.color} font-display text-[2rem] font-bold text-primary-foreground shadow-soft md:h-[116px] md:w-[116px] md:text-[2.15rem]`}
+                >
                   {org.initials}
                 </div>
               </div>
@@ -128,7 +142,10 @@ export function OrgPageContent({
               <FlatCard title="Posts">
                 <div className="rounded-[24px] border border-dashed border-border bg-secondary/35 p-8 text-center">
                   <p className="font-semibold text-foreground">No posts yet</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Check upcoming events or browse related organizations while this page is still quiet.</p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Check upcoming events or browse related organizations while this page is still
+                    quiet.
+                  </p>
                   <div className="mt-5 flex justify-center">
                     <Link
                       to={relatedOrgRoute}
@@ -142,7 +159,9 @@ export function OrgPageContent({
                 </div>
               </FlatCard>
             ) : (
-              orgPosts.map((p) => <PostCard key={p.id} post={p} org={org} orgLinkMode={orgLinkMode} />)
+              orgPosts.map((p) => (
+                <PostCard key={p.id} post={p} org={org} orgLinkMode={orgLinkMode} />
+              ))
             )
           ) : null}
 
@@ -165,11 +184,16 @@ export function OrgPageContent({
               ) : (
                 <div className="space-y-3">
                   {orgEvents.map((e) => (
-                    <div key={e.title} className="rounded-[18px] border border-border/70 bg-secondary/35 p-4">
+                    <div
+                      key={e.title}
+                      className="rounded-[18px] border border-border/70 bg-secondary/35 p-4"
+                    >
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <p className="text-sm font-semibold text-foreground">{e.title}</p>
-                          <p className="mt-1 text-sm text-muted-foreground">{e.date} - {e.time}</p>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {e.date} - {e.time}
+                          </p>
                           <p className="mt-1 text-sm text-muted-foreground">{e.venue}</p>
                         </div>
                         <div className="w-[140px]">
@@ -234,16 +258,12 @@ export function OrgPageContent({
   );
 }
 
-function FlatCard({
-  title,
-  children,
-}: {
-  title?: string;
-  children: ReactNode;
-}) {
+function FlatCard({ title, children }: { title?: string; children: ReactNode }) {
   return (
     <AppCard className="rounded-[20px] border border-border/80 bg-card shadow-soft">
-      {title ? <h2 className="mb-4 font-display text-lg font-semibold text-foreground">{title}</h2> : null}
+      {title ? (
+        <h2 className="mb-4 font-display text-lg font-semibold text-foreground">{title}</h2>
+      ) : null}
       {children}
     </AppCard>
   );
@@ -267,5 +287,9 @@ function InfoItem({
 
   if (asList) return <li className="flex items-center gap-2">{content}</li>;
 
-  return <div className="flex items-center gap-2 rounded-[16px] border border-border/70 bg-secondary/35 px-4 py-3">{content}</div>;
+  return (
+    <div className="flex items-center gap-2 rounded-[16px] border border-border/70 bg-secondary/35 px-4 py-3">
+      {content}
+    </div>
+  );
 }

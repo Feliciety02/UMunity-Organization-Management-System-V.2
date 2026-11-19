@@ -51,7 +51,10 @@ export function SiteHeader() {
             >
               <Menu className="h-5 w-5" />
             </button>
-            <Link to="/" className={`group flex min-w-0 items-center gap-2 rounded-full px-2 py-1 ${textShadowClass}`}>
+            <Link
+              to="/"
+              className={`group flex min-w-0 items-center gap-2 rounded-full px-2 py-1 ${textShadowClass}`}
+            >
               <BrandLogo
                 size={42}
                 imageClassName="drop-shadow-[0_8px_18px_rgba(0,0,0,0.18)]"
@@ -76,11 +79,9 @@ export function SiteHeader() {
               className="inline-flex items-center gap-2 rounded-full bg-[#F4B000] px-5 py-2.5 text-sm font-semibold text-[#4B0010] shadow-[0_12px_30px_rgba(244,176,0,0.32)] transition hover:bg-[#FFC72C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F4B000]"
             >
               Get Started
-
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
-
         </div>
       </div>
 

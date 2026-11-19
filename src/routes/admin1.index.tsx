@@ -20,16 +20,42 @@ function Admin1Dashboard() {
       (workflow.status === "approved" || workflow.status === "completed") &&
       workflow.operations.postEvent.closeoutStatus === "pending_admin1",
   );
-  const compliance = useComplianceSubmissions().filter((submission) => submission.status === "pending_admin1");
+  const compliance = useComplianceSubmissions().filter(
+    (submission) => submission.status === "pending_admin1",
+  );
   const requirements = useEventDocs().filter((doc) => doc.reviewStatus === "pending_admin1");
 
   return (
     <>
       <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Authority queue" value={`${insights.queueCount}`} delta="Final approvals awaiting university action" icon={Landmark} tone="gold" />
-        <StatCard label="Decisions this month" value={`${insights.monthlyDecisions}`} delta={`Avg ${insights.avgTurnaroundDays.toFixed(1)} days final turnaround`} icon={CheckCircle2} tone="emerald" />
-        <StatCard label="Accredited orgs" value={`${insights.accreditedOrgs}`} delta="Already cleared in the new workflow system" icon={ShieldCheck} tone="primary" />
-        <StatCard label="Archived transitions" value={`${insights.archivedTransitions}`} delta="Officer histories preserved by Admin 1" icon={UserCog} tone="rose" />
+        <StatCard
+          label="Authority queue"
+          value={`${insights.queueCount}`}
+          delta="Final approvals awaiting university action"
+          icon={Landmark}
+          tone="gold"
+        />
+        <StatCard
+          label="Decisions this month"
+          value={`${insights.monthlyDecisions}`}
+          delta={`Avg ${insights.avgTurnaroundDays.toFixed(1)} days final turnaround`}
+          icon={CheckCircle2}
+          tone="emerald"
+        />
+        <StatCard
+          label="Accredited orgs"
+          value={`${insights.accreditedOrgs}`}
+          delta="Already cleared in the new workflow system"
+          icon={ShieldCheck}
+          tone="primary"
+        />
+        <StatCard
+          label="Archived transitions"
+          value={`${insights.archivedTransitions}`}
+          delta="Officer histories preserved by Admin 1"
+          icon={UserCog}
+          tone="rose"
+        />
       </div>
       <div className="mb-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <Panel title="Final decision throughput">
@@ -45,13 +71,19 @@ function Admin1Dashboard() {
         >
           <div className="space-y-3">
             {insights.queueItems.slice(0, 3).map((item) => (
-              <Link key={item.id} to={item.href as string} className="block rounded-2xl bg-secondary/35 p-3 transition hover:bg-secondary/55">
+              <Link
+                key={item.id}
+                to={item.href as string}
+                className="block rounded-2xl bg-secondary/35 p-3 transition hover:bg-secondary/55"
+              >
                 <div className="flex items-center gap-2">
                   <Badge tone={item.tone}>{item.status}</Badge>
                   <Badge tone="neutral">{item.lane}</Badge>
                 </div>
                 <p className="mt-2 text-sm font-semibold">{item.title}</p>
-                <p className="text-xs text-muted-foreground">{item.orgName} - {item.ageHours}h waiting</p>
+                <p className="text-xs text-muted-foreground">
+                  {item.orgName} - {item.ageHours}h waiting
+                </p>
               </Link>
             ))}
           </div>
@@ -69,9 +101,16 @@ function Admin1Dashboard() {
         <Panel title="Final closeout approvals" className="mt-6">
           <div className="space-y-3">
             {closeoutQueue.slice(0, 3).map((workflow) => (
-              <Link key={workflow.id} to="/admin1/workflows/$workflowId" params={{ workflowId: workflow.id }} className="block rounded-2xl border border-border bg-card p-3 transition hover:bg-secondary/55">
+              <Link
+                key={workflow.id}
+                to="/admin1/workflows/$workflowId"
+                params={{ workflowId: workflow.id }}
+                className="block rounded-2xl border border-border bg-card p-3 transition hover:bg-secondary/55"
+              >
                 <p className="text-sm font-semibold">{workflow.proposal.title}</p>
-                <p className="text-xs text-muted-foreground">{workflow.orgName} - Post-event closeout awaiting final approval</p>
+                <p className="text-xs text-muted-foreground">
+                  {workflow.orgName} - Post-event closeout awaiting final approval
+                </p>
               </Link>
             ))}
           </div>
@@ -81,9 +120,16 @@ function Admin1Dashboard() {
         <Panel title="Requirements tracker approvals" className="mt-6">
           <div className="space-y-3">
             {requirements.slice(0, 3).map((doc) => (
-              <Link key={doc.id} to="/admin1/requirements/$eventId" params={{ eventId: doc.id }} className="block rounded-2xl border border-border bg-card p-3 transition hover:bg-secondary/55">
+              <Link
+                key={doc.id}
+                to="/admin1/requirements/$eventId"
+                params={{ eventId: doc.id }}
+                className="block rounded-2xl border border-border bg-card p-3 transition hover:bg-secondary/55"
+              >
                 <p className="text-sm font-semibold">{doc.title}</p>
-                <p className="text-xs text-muted-foreground">{doc.orgShort} - Requirements tracker for final approval</p>
+                <p className="text-xs text-muted-foreground">
+                  {doc.orgShort} - Requirements tracker for final approval
+                </p>
               </Link>
             ))}
           </div>
@@ -91,7 +137,9 @@ function Admin1Dashboard() {
       ) : null}
       <Panel title="Accreditation decisions" className="mt-6">
         {compliance.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No final accreditation decisions are waiting for Admin 1.</p>
+          <p className="text-sm text-muted-foreground">
+            No final accreditation decisions are waiting for Admin 1.
+          </p>
         ) : (
           <div className="space-y-3">
             {compliance.slice(0, 3).map((submission) => (
@@ -101,7 +149,9 @@ function Admin1Dashboard() {
                   <Badge tone="neutral">{submission.data.accreditationScope}</Badge>
                 </div>
                 <p className="mt-2 text-sm font-semibold">{submission.orgName}</p>
-                <p className="text-xs text-muted-foreground">{submission.data.category} - {submission.data.memberCount} members</p>
+                <p className="text-xs text-muted-foreground">
+                  {submission.data.category} - {submission.data.memberCount} members
+                </p>
               </div>
             ))}
             <AppButton asChild variant="secondary" size="sm">
@@ -110,9 +160,19 @@ function Admin1Dashboard() {
           </div>
         )}
       </Panel>
-      <Panel title="Organization registry" className="mt-6" action={<AppButton asChild variant="secondary" size="sm"><Link to="/admin1/organizations">Open registry</Link></AppButton>}>
+      <Panel
+        title="Organization registry"
+        className="mt-6"
+        action={
+          <AppButton asChild variant="secondary" size="sm">
+            <Link to="/admin1/organizations">Open registry</Link>
+          </AppButton>
+        }
+      >
         <p className="text-sm text-muted-foreground">
-          Final accreditation approval now updates the organization registry automatically. Use the registry to place organizations on probation, return them to review, or disband them with recorded governance history.
+          Final accreditation approval now updates the organization registry automatically. Use the
+          registry to place organizations on probation, return them to review, or disband them with
+          recorded governance history.
         </p>
       </Panel>
     </>

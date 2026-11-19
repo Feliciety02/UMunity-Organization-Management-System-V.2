@@ -12,7 +12,8 @@ const appButtonVariants = cva(
         secondary: "border border-border bg-background text-foreground hover:bg-secondary",
         ghost: "bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground",
         gold: "bg-gradient-gold text-primary-deep hover:brightness-95",
-        subtle: "bg-secondary text-foreground hover:bg-[color:color-mix(in_oklab,var(--primary)_8%,var(--card))]",
+        subtle:
+          "bg-secondary text-foreground hover:bg-[color:color-mix(in_oklab,var(--primary)_8%,var(--card))]",
       },
       size: {
         sm: "h-8 px-3 text-xs",
@@ -39,8 +40,7 @@ const appButtonVariants = cva(
 );
 
 export interface AppButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof appButtonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof appButtonVariants> {
   asChild?: boolean;
 }
 
@@ -54,7 +54,12 @@ export function AppButton({
   ...props
 }: AppButtonProps) {
   const Comp = asChild ? Slot : "button";
-  return <Comp className={cn(appButtonVariants({ variant, size, shape, shadow, className }))} {...props} />;
+  return (
+    <Comp
+      className={cn(appButtonVariants({ variant, size, shape, shadow, className }))}
+      {...props}
+    />
+  );
 }
 
 export { appButtonVariants };

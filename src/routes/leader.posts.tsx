@@ -50,19 +50,30 @@ function ManagePosts() {
                 {approvals.map((approval) => (
                   <div key={approval.id} className="rounded-2xl border border-border bg-card p-4">
                     <div className="flex items-center gap-2">
-                      <Badge tone={postApprovalTone(approval.status)}>{formatPostApprovalStatus(approval.status)}</Badge>
+                      <Badge tone={postApprovalTone(approval.status)}>
+                        {formatPostApprovalStatus(approval.status)}
+                      </Badge>
                       <Badge tone="info">{approval.type}</Badge>
                       <Badge tone="neutral">{approval.visibility}</Badge>
                     </div>
-                    <p className="mt-2 text-sm font-semibold">{approval.title || "Untitled post"}</p>
-                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{approval.content}</p>
+                    <p className="mt-2 text-sm font-semibold">
+                      {approval.title || "Untitled post"}
+                    </p>
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                      {approval.content}
+                    </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <AppButton asChild variant="secondary" size="sm">
-                        <Link to="/leader/post-approvals/$approvalId" params={{ approvalId: approval.id }}>
+                        <Link
+                          to="/leader/post-approvals/$approvalId"
+                          params={{ approvalId: approval.id }}
+                        >
                           Open workflow
                         </Link>
                       </AppButton>
-                      {approval.status === "published" ? <Badge tone="success">Ready in workflow system</Badge> : null}
+                      {approval.status === "published" ? (
+                        <Badge tone="success">Ready in workflow system</Badge>
+                      ) : null}
                     </div>
                   </div>
                 ))}
@@ -83,9 +94,21 @@ function ManagePosts() {
         <aside className="space-y-4">
           <Panel title="At a glance">
             <ul className="space-y-2 text-sm">
-              <Row label="Pending adviser" value={String(pending.filter((item) => item.status === "pending_adviser").length)} icon={Clock3} />
-              <Row label="Pending Admin 2" value={String(pending.filter((item) => item.status === "pending_admin2").length)} icon={Clock3} />
-              <Row label="Published approvals" value={String(published.length)} icon={CheckCircle2} />
+              <Row
+                label="Pending adviser"
+                value={String(pending.filter((item) => item.status === "pending_adviser").length)}
+                icon={Clock3}
+              />
+              <Row
+                label="Pending Admin 2"
+                value={String(pending.filter((item) => item.status === "pending_admin2").length)}
+                icon={Clock3}
+              />
+              <Row
+                label="Published approvals"
+                value={String(published.length)}
+                icon={CheckCircle2}
+              />
               <Row label="Legacy live posts" value={String(myPosts.length)} icon={PenSquare} />
             </ul>
           </Panel>
@@ -95,10 +118,20 @@ function ManagePosts() {
   );
 }
 
-function Row({ label, value, icon: Icon }: { label: string; value: string; icon: typeof PenSquare }) {
+function Row({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  icon: typeof PenSquare;
+}) {
   return (
     <li className="flex items-center justify-between border-b border-border pb-2 last:border-0">
-      <span className="inline-flex items-center gap-2 text-muted-foreground"><Icon className="h-3.5 w-3.5" /> {label}</span>
+      <span className="inline-flex items-center gap-2 text-muted-foreground">
+        <Icon className="h-3.5 w-3.5" /> {label}
+      </span>
       <span className="font-semibold">{value}</span>
     </li>
   );

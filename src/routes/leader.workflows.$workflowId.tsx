@@ -16,9 +16,14 @@ function LeaderWorkflowDetailPage() {
   if (!workflow || !session) {
     return (
       <>
-        <PageHead title="Workflow not found" sub="The event workflow was removed or does not exist." />
+        <PageHead
+          title="Workflow not found"
+          sub="The event workflow was removed or does not exist."
+        />
         <Panel>
-          <p className="text-sm text-muted-foreground">Return to the workflow list and choose another event proposal.</p>
+          <p className="text-sm text-muted-foreground">
+            Return to the workflow list and choose another event proposal.
+          </p>
         </Panel>
       </>
     );

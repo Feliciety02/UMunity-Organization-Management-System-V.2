@@ -207,7 +207,12 @@ function Explore() {
                 >
                   View
                 </Link>
-                <JoinOrgButton slug={o.slug} orgName={o.name} size="md" className="w-full sm:w-auto" />
+                <JoinOrgButton
+                  slug={o.slug}
+                  orgName={o.name}
+                  size="md"
+                  className="w-full sm:w-auto"
+                />
               </div>
             </div>
           </article>

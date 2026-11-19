@@ -30,7 +30,10 @@ export type OrgRegistryRecord = {
 const KEY = "umunity.org-registry.v1";
 
 function defaultAdviserName(slug: string) {
-  return officers[slug]?.find((entry) => entry.role.toLowerCase() === "adviser")?.name ?? "Prof. Elena Tan";
+  return (
+    officers[slug]?.find((entry) => entry.role.toLowerCase() === "adviser")?.name ??
+    "Prof. Elena Tan"
+  );
 }
 
 const seed: OrgRegistryRecord[] = organizations.map((org, index) => ({
@@ -40,9 +43,17 @@ const seed: OrgRegistryRecord[] = organizations.map((org, index) => ({
   members: org.members,
   adviserName: defaultAdviserName(org.slug),
   lifecycleStatus:
-    org.slug === "eco-warriors" ? "probationary" : org.slug === "theatre-guild" ? "pending_review" : "recognized",
+    org.slug === "eco-warriors"
+      ? "probationary"
+      : org.slug === "theatre-guild"
+        ? "pending_review"
+        : "recognized",
   accreditationStatus:
-    org.slug === "theatre-guild" ? "renewal_pending" : org.slug === "eco-warriors" ? "under_review" : "active",
+    org.slug === "theatre-guild"
+      ? "renewal_pending"
+      : org.slug === "eco-warriors"
+        ? "under_review"
+        : "active",
   accreditationAcademicYear: currentAcademicYear(),
   lastDecisionAt: Date.now() - (index + 1) * 86_400_000,
   history: [
@@ -69,7 +80,9 @@ export function formatOrgLifecycleStatus(status: OrgLifecycleStatus) {
   }
 }
 
-export function orgLifecycleTone(status: OrgLifecycleStatus): "success" | "warning" | "danger" | "info" {
+export function orgLifecycleTone(
+  status: OrgLifecycleStatus,
+): "success" | "warning" | "danger" | "info" {
   switch (status) {
     case "recognized":
       return "success";
@@ -95,7 +108,9 @@ export function formatOrgAccreditationStatus(status: OrgAccreditationStatus) {
   }
 }
 
-export function orgAccreditationTone(status: OrgAccreditationStatus): "success" | "warning" | "danger" | "info" {
+export function orgAccreditationTone(
+  status: OrgAccreditationStatus,
+): "success" | "warning" | "danger" | "info" {
   switch (status) {
     case "active":
       return "success";
@@ -124,7 +139,12 @@ function updateRecord(slug: string, updater: (record: OrgRegistryRecord) => OrgR
 
 export function setOrgLifecycleStatus(
   slug: string,
-  input: { status: OrgLifecycleStatus; by: string; note: string; accreditationStatus?: OrgAccreditationStatus },
+  input: {
+    status: OrgLifecycleStatus;
+    by: string;
+    note: string;
+    accreditationStatus?: OrgAccreditationStatus;
+  },
 ) {
   return updateRecord(slug, (record) => ({
     ...record,

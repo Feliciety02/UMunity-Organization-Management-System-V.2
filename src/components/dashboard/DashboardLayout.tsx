@@ -1,8 +1,18 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState, useEffect, useMemo, useRef } from "react";
 import {
-  Bell, Menu, PanelLeft, X, ChevronDown, LogOut, MessageSquare, Search, Settings, User as UserIcon,
-  Sparkles, type LucideIcon,
+  Bell,
+  Menu,
+  PanelLeft,
+  X,
+  ChevronDown,
+  LogOut,
+  MessageSquare,
+  Search,
+  Settings,
+  User as UserIcon,
+  Sparkles,
+  type LucideIcon,
 } from "lucide-react";
 import { ensureSession, getSession, logout, ROLE_META, type Role } from "@/lib/auth";
 import { markRead, unreadCount, useNotifications } from "@/lib/notifications";
@@ -20,7 +30,13 @@ import { EmptyState as SharedEmptyState } from "@/components/ui/empty-state";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { MobileBottomNav, type BottomNavItem } from "@/components/dashboard/MobileBottomNav";
 
-export type NavItem = { to: string; label: string; icon: LucideIcon; badge?: string; section?: string };
+export type NavItem = {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  badge?: string;
+  section?: string;
+};
 
 /** Live counts for nav items whose numbers come from app state rather than static labels. */
 function useLiveBadges(role: Role): Record<string, string | undefined> {
@@ -89,7 +105,11 @@ export function DashboardLayout({
 
   if (!session) {
     return (
-      <div className="grid min-h-screen place-items-center bg-background" role="status" aria-live="polite">
+      <div
+        className="grid min-h-screen place-items-center bg-background"
+        role="status"
+        aria-live="polite"
+      >
         <div className="flex flex-col items-center gap-3 text-sm text-muted-foreground">
           <span className="h-8 w-8 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
           Loading your workspace...
@@ -105,7 +125,13 @@ export function DashboardLayout({
           sidebarCollapsed ? "w-20" : "w-[280px]"
         }`}
       >
-        <SidebarInner role={role} nav={nav} badges={liveBadges} collapsed={sidebarCollapsed} onToggleCollapse={() => setSidebarCollapsed((v) => !v)} />
+        <SidebarInner
+          role={role}
+          nav={nav}
+          badges={liveBadges}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+        />
       </aside>
 
       <div
@@ -124,24 +150,36 @@ export function DashboardLayout({
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-            <div className="flex h-20 items-center justify-between border-b border-border px-4">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setMobileOpen(false)}
-                  aria-label="Close menu"
-                  className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground transition hover:bg-primary/6 hover:text-primary"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-                <Brand />
-              </div>
+          <div className="flex h-20 items-center justify-between border-b border-border px-4">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setMobileOpen(false)}
+                aria-label="Close menu"
+                className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground transition hover:bg-primary/6 hover:text-primary"
+              >
+                <X className="h-4 w-4" />
+              </button>
+              <Brand />
             </div>
-            <SidebarInner role={role} nav={nav} badges={liveBadges} onNav={() => setMobileOpen(false)} hideBrand />
+          </div>
+          <SidebarInner
+            role={role}
+            nav={nav}
+            badges={liveBadges}
+            onNav={() => setMobileOpen(false)}
+            hideBrand
+          />
         </aside>
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar role={role} nav={nav} session={session} resolveNotifHref={resolveNotifHref} onMenu={() => setMobileOpen(true)} />
+        <Topbar
+          role={role}
+          nav={nav}
+          session={session}
+          resolveNotifHref={resolveNotifHref}
+          onMenu={() => setMobileOpen(true)}
+        />
         <main className={`flex-1 px-6 py-8 sm:px-8 lg:px-10 ${bottomNav ? "pb-24 lg:pb-8" : ""}`}>
           <div className="mx-auto w-full max-w-[1440px]">{children}</div>
         </main>
@@ -238,11 +276,15 @@ function SidebarInner({
             className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-transparent text-muted-foreground transition-all duration-200 hover:border-border hover:bg-secondary hover:text-foreground"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <PanelLeft className={`h-4 w-4 transition-transform duration-300 ${collapsed ? "" : "rotate-180"}`} />
+            <PanelLeft
+              className={`h-4 w-4 transition-transform duration-300 ${collapsed ? "" : "rotate-180"}`}
+            />
           </button>
           <div
             className={`overflow-hidden transition-[max-width,opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              collapsed ? "max-w-0 translate-x-2 opacity-0" : "max-w-[220px] translate-x-0 opacity-100"
+              collapsed
+                ? "max-w-0 translate-x-2 opacity-0"
+                : "max-w-[220px] translate-x-0 opacity-100"
             }`}
           >
             {!collapsed && <Brand />}
@@ -259,7 +301,9 @@ function SidebarInner({
           <section key={section} className="mb-7 last:mb-0">
             <div
               className={`overflow-hidden transition-[max-height,opacity,transform,margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                collapsed ? "mb-0 max-h-0 -translate-y-1 opacity-0" : "mb-2.5 max-h-10 translate-y-0 opacity-100"
+                collapsed
+                  ? "mb-0 max-h-0 -translate-y-1 opacity-0"
+                  : "mb-2.5 max-h-10 translate-y-0 opacity-100"
               }`}
             >
               <div className="px-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground/80">
@@ -269,7 +313,10 @@ function SidebarInner({
             <div className={`space-y-1.5 ${collapsed ? "flex flex-col items-center" : ""}`}>
               {items.map((n) => {
                 const badge = n.to in badges ? badges[n.to] : n.badge;
-                const active = n.to === "/" ? path === "/" : path === n.to || (n.to !== `/${role}` && path.startsWith(n.to));
+                const active =
+                  n.to === "/"
+                    ? path === "/"
+                    : path === n.to || (n.to !== `/${role}` && path.startsWith(n.to));
                 return (
                   <Link
                     key={n.to}
@@ -286,22 +333,30 @@ function SidebarInner({
                         : "border-transparent text-foreground/72 hover:border-border/70 hover:bg-secondary/70 hover:text-foreground"
                     }`}
                   >
-                    <div className={`flex w-full items-center ${collapsed ? "justify-center" : "gap-3"}`}>
+                    <div
+                      className={`flex w-full items-center ${collapsed ? "justify-center" : "gap-3"}`}
+                    >
                       <n.icon
                         className={`h-4 w-4 shrink-0 transition-colors duration-200 ${
-                          active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                          active
+                            ? "text-primary"
+                            : "text-muted-foreground group-hover:text-foreground"
                         }`}
                       />
                       <span
                         className={`min-w-0 flex-1 overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                          collapsed ? "max-w-0 translate-x-2 opacity-0" : "max-w-[160px] translate-x-0 opacity-100"
+                          collapsed
+                            ? "max-w-0 translate-x-2 opacity-0"
+                            : "max-w-[160px] translate-x-0 opacity-100"
                         }`}
                       >
                         {n.label}
                       </span>
                       <span
                         className={`overflow-hidden transition-[max-width,opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                          collapsed || !badge ? "max-w-0 translate-x-2 opacity-0" : "max-w-12 translate-x-0 opacity-100"
+                          collapsed || !badge
+                            ? "max-w-0 translate-x-2 opacity-0"
+                            : "max-w-12 translate-x-0 opacity-100"
                         }`}
                       >
                         <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-primary/12 px-1.5 py-0.5 text-[10px] font-bold text-primary">
@@ -406,7 +461,10 @@ function Topbar({
         <ThemeToggle className={role === "student" ? "ml-auto lg:ml-0" : "ml-auto"} />
         <div ref={notifRef} className="relative">
           <button
-            onClick={() => { setOpenNotif(!openNotif); setOpenProf(false); }}
+            onClick={() => {
+              setOpenNotif(!openNotif);
+              setOpenProf(false);
+            }}
             aria-label={`Notifications${unread > 0 ? ` (${unread} unread)` : ""}`}
             aria-haspopup="menu"
             aria-expanded={openNotif}
@@ -414,7 +472,12 @@ function Topbar({
           >
             <Bell className="h-4 w-4" aria-hidden="true" />
             {unread > 0 && (
-              <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white" aria-hidden="true">{unread > 9 ? "9+" : unread}</span>
+              <span
+                className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white"
+                aria-hidden="true"
+              >
+                {unread > 9 ? "9+" : unread}
+              </span>
             )}
           </button>
           {openNotif && (
@@ -430,11 +493,17 @@ function Topbar({
                 </Link>
               </div>
               <div className="scrollbar-none max-h-80 space-y-1 overflow-y-auto">
-                {displayNotifs.length === 0 && <p className="p-4 text-center text-xs text-muted-foreground">You're all caught up</p>}
+                {displayNotifs.length === 0 && (
+                  <p className="p-4 text-center text-xs text-muted-foreground">
+                    You're all caught up
+                  </p>
+                )}
                 {displayNotifs.slice(0, 8).map((n) => {
                   const content = (
                     <div className="flex items-start gap-2">
-                      {n.unread && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />}
+                      {n.unread && (
+                        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                      )}
                       <div className="min-w-0">
                         <p className="truncate font-medium">{n.title}</p>
                         <p className="truncate text-xs text-muted-foreground">{n.meta}</p>
@@ -448,7 +517,10 @@ function Topbar({
                       <Link
                         key={n.id}
                         to={resolvedHref as string}
-                        onClick={() => { markRead(n.id); setOpenNotif(false); }}
+                        onClick={() => {
+                          markRead(n.id);
+                          setOpenNotif(false);
+                        }}
                         className={cls}
                       >
                         {content}
@@ -472,14 +544,21 @@ function Topbar({
 
         <div ref={profRef} className="relative">
           <button
-            onClick={() => { setOpenProf(!openProf); setOpenNotif(false); }}
+            onClick={() => {
+              setOpenProf(!openProf);
+              setOpenNotif(false);
+            }}
             aria-label={`Account menu for ${session.name}`}
             aria-haspopup="menu"
             aria-expanded={openProf}
             className="flex items-center gap-3 rounded-full border border-border bg-background p-1 pr-4 transition hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <div className="grid h-9 w-9 place-items-center rounded-full bg-primary font-display text-xs font-bold text-primary-foreground">
-              {session.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+              {session.name
+                .split(" ")
+                .slice(0, 2)
+                .map((w) => w[0])
+                .join("")}
             </div>
             <div className="hidden text-left sm:block">
               <p className="text-sm font-semibold text-foreground">{session.name.split(" ")[0]}</p>
@@ -492,20 +571,34 @@ function Topbar({
               <div className="rounded-xl bg-secondary p-3">
                 <p className="font-display text-sm font-bold">{session.name}</p>
                 <p className="text-xs text-muted-foreground">{session.email}</p>
-                <span className={`mt-2 inline-block rounded-full bg-card px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${meta.accent}`}>
+                <span
+                  className={`mt-2 inline-block rounded-full bg-card px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${meta.accent}`}
+                >
                   {meta.label}
                 </span>
               </div>
               <div className="mt-1 space-y-0.5">
-                <Link to={profileLink} onClick={() => setOpenProf(false)} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-secondary">
-                  <UserIcon className="h-4 w-4" /> {role === "student" ? "Profile" : "Profile & settings"}
+                <Link
+                  to={profileLink}
+                  onClick={() => setOpenProf(false)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-secondary"
+                >
+                  <UserIcon className="h-4 w-4" />{" "}
+                  {role === "student" ? "Profile" : "Profile & settings"}
                 </Link>
                 {role === "student" ? (
-                  <Link to="/student/settings" onClick={() => setOpenProf(false)} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-secondary">
+                  <Link
+                    to="/student/settings"
+                    onClick={() => setOpenProf(false)}
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-secondary"
+                  >
                     <Settings className="h-4 w-4" /> Settings
                   </Link>
                 ) : null}
-                <button onClick={doLogout} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-destructive/10">
+                <button
+                  onClick={doLogout}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-destructive/10"
+                >
                   <LogOut className="h-4 w-4" /> Sign out
                 </button>
               </div>
@@ -529,7 +622,9 @@ function NavSearch({ nav }: { nav: NavItem[] }) {
     const q = query.trim().toLowerCase();
     if (!q) return [];
     return nav
-      .filter((n) => n.label.toLowerCase().includes(q) || (n.section ?? "").toLowerCase().includes(q))
+      .filter(
+        (n) => n.label.toLowerCase().includes(q) || (n.section ?? "").toLowerCase().includes(q),
+      )
       .slice(0, 6);
   }, [nav, query]);
 
@@ -594,7 +689,9 @@ function NavSearch({ nav }: { nav: NavItem[] }) {
                 <item.icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 <span className="flex-1">{item.label}</span>
                 {item.section ? (
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{item.section}</span>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {item.section}
+                  </span>
                 ) : null}
               </button>
             ))
@@ -607,11 +704,33 @@ function NavSearch({ nav }: { nav: NavItem[] }) {
 
 /* ----------------------- Shared UI primitives ----------------------- */
 
-export function PageHead({ title, sub, action, breadcrumbs }: { title: string; sub?: string; action?: React.ReactNode; breadcrumbs?: React.ReactNode }) {
+export function PageHead({
+  title,
+  sub,
+  action,
+  breadcrumbs,
+}: {
+  title: string;
+  sub?: string;
+  action?: React.ReactNode;
+  breadcrumbs?: React.ReactNode;
+}) {
   return <PageHeader title={title} sub={sub} action={action} breadcrumbs={breadcrumbs} />;
 }
 
-export function StatCard({ label, value, delta, icon: Icon, tone = "primary" }: { label: string; value: string; delta?: string; icon: LucideIcon; tone?: "primary" | "gold" | "rose" | "emerald" }) {
+export function StatCard({
+  label,
+  value,
+  delta,
+  icon: Icon,
+  tone = "primary",
+}: {
+  label: string;
+  value: string;
+  delta?: string;
+  icon: LucideIcon;
+  tone?: "primary" | "gold" | "rose" | "emerald";
+}) {
   const toneCls = {
     primary: "bg-primary/10 text-primary",
     gold: "bg-gold/20 text-primary-deep",
@@ -622,7 +741,9 @@ export function StatCard({ label, value, delta, icon: Icon, tone = "primary" }: 
     <div className="rounded-lg border border-border bg-card p-5 shadow-soft">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {label}
+          </p>
           <p className="mt-2 font-display text-2xl font-bold tracking-tight">{value}</p>
           {delta && <p className="mt-1 text-xs font-medium text-muted-foreground">{delta}</p>}
         </div>
@@ -634,7 +755,17 @@ export function StatCard({ label, value, delta, icon: Icon, tone = "primary" }: 
   );
 }
 
-export function Panel({ title, action, children, className = "" }: { title?: string; action?: React.ReactNode; children: React.ReactNode; className?: string }) {
+export function Panel({
+  title,
+  action,
+  children,
+  className = "",
+}: {
+  title?: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <AppCard className={`rounded-3xl ${className}`}>
       <AppCardHeader title={title} action={action} />
@@ -643,11 +774,23 @@ export function Panel({ title, action, children, className = "" }: { title?: str
   );
 }
 
-export function Badge({ children, tone = "neutral" }: { children: React.ReactNode; tone?: "neutral" | "success" | "warning" | "danger" | "info" | "gold" }) {
+export function Badge({
+  children,
+  tone = "neutral",
+}: {
+  children: React.ReactNode;
+  tone?: "neutral" | "success" | "warning" | "danger" | "info" | "gold";
+}) {
   return <AppBadge tone={tone}>{children}</AppBadge>;
 }
 
-export function MiniBarChart({ data, color = "var(--primary)" }: { data: number[]; color?: string }) {
+export function MiniBarChart({
+  data,
+  color = "var(--primary)",
+}: {
+  data: number[];
+  color?: string;
+}) {
   const max = Math.max(...data, 1);
   return (
     <div className="flex h-32 items-end gap-2">
@@ -679,7 +822,13 @@ export function LineSpark({ data }: { data: number[] }) {
         </linearGradient>
       </defs>
       <polygon fill="url(#lg)" points={`0,100 ${pts} 100,100`} />
-      <polyline fill="none" stroke="var(--primary)" strokeWidth="2" points={pts} vectorEffect="non-scaling-stroke" />
+      <polyline
+        fill="none"
+        stroke="var(--primary)"
+        strokeWidth="2"
+        points={pts}
+        vectorEffect="non-scaling-stroke"
+      />
     </svg>
   );
 }
@@ -707,8 +856,14 @@ export function PanelSkeleton({ rows = 3, className = "" }: { rows?: number; cla
 
 export function Avatar({ name, color }: { name: string; color: string }) {
   return (
-    <div className={`grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br ${color} text-xs font-bold text-primary-foreground`}>
-      {name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+    <div
+      className={`grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br ${color} text-xs font-bold text-primary-foreground`}
+    >
+      {name
+        .split(" ")
+        .slice(0, 2)
+        .map((w) => w[0])
+        .join("")}
     </div>
   );
 }

@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AlertTriangle, CheckCircle2, Clock3, ShieldAlert } from "lucide-react";
-import { Badge, MiniBarChart, PageHead, Panel, StatCard } from "@/components/dashboard/DashboardLayout";
+import {
+  Badge,
+  MiniBarChart,
+  PageHead,
+  Panel,
+  StatCard,
+} from "@/components/dashboard/DashboardLayout";
 import { useAdminInsights } from "@/lib/admin-insights";
 
 export const Route = createFileRoute("/admin2/monitoring")({
@@ -12,13 +18,40 @@ function Admin2Monitoring() {
 
   return (
     <>
-      <PageHead title="Admin 2 monitoring" sub="Cross-workflow view of secondary validation, compliance pressure, and escalation readiness." />
+      <PageHead
+        title="Admin 2 monitoring"
+        sub="Cross-workflow view of secondary validation, compliance pressure, and escalation readiness."
+      />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Active queue" value={`${insights.queueCount}`} delta="Across workflows, posts, closeouts, trackers, and accreditation" icon={Clock3} tone="gold" />
-        <StatCard label="Escalated to Admin 1" value={`${insights.escalatedCount}`} delta="Records that already cleared secondary validation" icon={CheckCircle2} tone="emerald" />
-        <StatCard label="Revision pressure" value={`${insights.revisionLoad}`} delta={`Avg ${insights.avgTurnaroundDays.toFixed(1)} days validation time`} icon={AlertTriangle} tone="rose" />
-        <StatCard label="Decisions this month" value={`${insights.monthlyDecisions}`} delta="Admin 2 approvals and publishing actions" icon={ShieldAlert} tone="primary" />
+        <StatCard
+          label="Active queue"
+          value={`${insights.queueCount}`}
+          delta="Across workflows, posts, closeouts, trackers, and accreditation"
+          icon={Clock3}
+          tone="gold"
+        />
+        <StatCard
+          label="Escalated to Admin 1"
+          value={`${insights.escalatedCount}`}
+          delta="Records that already cleared secondary validation"
+          icon={CheckCircle2}
+          tone="emerald"
+        />
+        <StatCard
+          label="Revision pressure"
+          value={`${insights.revisionLoad}`}
+          delta={`Avg ${insights.avgTurnaroundDays.toFixed(1)} days validation time`}
+          icon={AlertTriangle}
+          tone="rose"
+        />
+        <StatCard
+          label="Decisions this month"
+          value={`${insights.monthlyDecisions}`}
+          delta="Admin 2 approvals and publishing actions"
+          icon={ShieldAlert}
+          tone="primary"
+        />
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
@@ -27,8 +60,14 @@ function Admin2Monitoring() {
         </Panel>
         <Panel title="Operational notes">
           <div className="space-y-3 text-sm text-muted-foreground">
-            <p>Admin 2 is now the secondary checkpoint across event proposals, post publishing, closeout packets, requirements, and accreditation.</p>
-            <p>Use this page to catch aged submissions before they block student activity or reach Admin 1 with unresolved compliance risk.</p>
+            <p>
+              Admin 2 is now the secondary checkpoint across event proposals, post publishing,
+              closeout packets, requirements, and accreditation.
+            </p>
+            <p>
+              Use this page to catch aged submissions before they block student activity or reach
+              Admin 1 with unresolved compliance risk.
+            </p>
           </div>
         </Panel>
       </div>
@@ -37,7 +76,9 @@ function Admin2Monitoring() {
         <Panel title="Priority queue">
           <div className="space-y-3">
             {insights.queueItems.length === 0 ? (
-              <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">No active Admin 2 queue items right now.</div>
+              <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
+                No active Admin 2 queue items right now.
+              </div>
             ) : (
               insights.queueItems.slice(0, 6).map((item) => (
                 <Link
@@ -48,10 +89,14 @@ function Admin2Monitoring() {
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge tone={item.tone}>{item.status}</Badge>
                     <Badge tone="neutral">{item.lane}</Badge>
-                    <span className="text-[11px] text-muted-foreground">{item.ageHours}h waiting</span>
+                    <span className="text-[11px] text-muted-foreground">
+                      {item.ageHours}h waiting
+                    </span>
                   </div>
                   <p className="mt-2 text-sm font-semibold">{item.title}</p>
-                  <p className="text-xs text-muted-foreground">{item.orgName} - {item.note}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.orgName} - {item.note}
+                  </p>
                 </Link>
               ))
             )}
@@ -61,7 +106,9 @@ function Admin2Monitoring() {
         <Panel title="Organization watchlist">
           <div className="space-y-3">
             {insights.orgWatchlist.length === 0 ? (
-              <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">No organizations need added monitoring.</div>
+              <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
+                No organizations need added monitoring.
+              </div>
             ) : (
               insights.orgWatchlist.map((item) => (
                 <div key={item.orgName} className="rounded-2xl bg-secondary/35 p-4">
@@ -70,7 +117,15 @@ function Admin2Monitoring() {
                       <p className="text-sm font-semibold">{item.orgName}</p>
                       <p className="text-xs text-muted-foreground">{item.activityLabel}</p>
                     </div>
-                    <Badge tone={item.finalAuthorityItems > 0 ? "warning" : item.revisionItems > 0 ? "danger" : "info"}>
+                    <Badge
+                      tone={
+                        item.finalAuthorityItems > 0
+                          ? "warning"
+                          : item.revisionItems > 0
+                            ? "danger"
+                            : "info"
+                      }
+                    >
                       {item.pendingItems} active
                     </Badge>
                   </div>

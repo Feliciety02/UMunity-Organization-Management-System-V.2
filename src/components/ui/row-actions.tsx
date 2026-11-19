@@ -7,7 +7,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-export type RowAction = { label: string; onSelect: () => void; danger?: boolean; disabled?: boolean };
+export type RowAction = {
+  label: string;
+  onSelect: () => void;
+  danger?: boolean;
+  disabled?: boolean;
+};
 
 /** The "..." menu used at the end of table rows. */
 export function RowActions({ label, actions }: { label: string; actions: RowAction[] }) {

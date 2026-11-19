@@ -54,7 +54,11 @@ import {
 } from "@/lib/workflows";
 
 function money(amount: number) {
-  return new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP", maximumFractionDigits: 0 }).format(amount);
+  return new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency: "PHP",
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
 
 function formatDateTime(date: string, time: string) {
@@ -115,8 +119,16 @@ export function EventWorkflowDetail({
     [workflow.proposal.budgetItems],
   );
 
-  const canSubmit = viewer.role === "leader" && (workflow.status === "draft" || workflow.status === "revision_requested" || workflow.status === "rejected");
-  const canRetract = viewer.role === "leader" && (workflow.status === "pending_adviser" || workflow.status === "pending_admin2" || workflow.status === "pending_admin1");
+  const canSubmit =
+    viewer.role === "leader" &&
+    (workflow.status === "draft" ||
+      workflow.status === "revision_requested" ||
+      workflow.status === "rejected");
+  const canRetract =
+    viewer.role === "leader" &&
+    (workflow.status === "pending_adviser" ||
+      workflow.status === "pending_admin2" ||
+      workflow.status === "pending_admin1");
   const canReview =
     (viewer.role === "adviser" && workflow.status === "pending_adviser") ||
     (viewer.role === "admin2" && workflow.status === "pending_admin2") ||
@@ -125,15 +137,20 @@ export function EventWorkflowDetail({
     (viewer.role === "adviser" && workflow.status === "pending_adviser") ||
     (viewer.role === "admin2" && workflow.status === "pending_admin2") ||
     (viewer.role === "admin1" && workflow.status === "pending_admin1");
-  const canOperate = viewer.role === "leader" && (workflow.status === "approved" || workflow.status === "completed");
+  const canOperate =
+    viewer.role === "leader" && (workflow.status === "approved" || workflow.status === "completed");
   const canSubmitCloseout =
     viewer.role === "leader" &&
     (workflow.status === "approved" || workflow.status === "completed") &&
-    (workflow.operations.postEvent.closeoutStatus === "draft" || workflow.operations.postEvent.closeoutStatus === "revision_requested" || workflow.operations.postEvent.closeoutStatus === "rejected");
+    (workflow.operations.postEvent.closeoutStatus === "draft" ||
+      workflow.operations.postEvent.closeoutStatus === "revision_requested" ||
+      workflow.operations.postEvent.closeoutStatus === "rejected");
   const canRetractCloseout =
     viewer.role === "leader" &&
     (workflow.status === "approved" || workflow.status === "completed") &&
-    (workflow.operations.postEvent.closeoutStatus === "pending_adviser" || workflow.operations.postEvent.closeoutStatus === "pending_admin2" || workflow.operations.postEvent.closeoutStatus === "pending_admin1");
+    (workflow.operations.postEvent.closeoutStatus === "pending_adviser" ||
+      workflow.operations.postEvent.closeoutStatus === "pending_admin2" ||
+      workflow.operations.postEvent.closeoutStatus === "pending_admin1");
   const canReviewCloseout =
     (viewer.role === "adviser" &&
       (workflow.status === "approved" || workflow.status === "completed") &&
@@ -154,7 +171,10 @@ export function EventWorkflowDetail({
     (viewer.role === "admin1" &&
       (workflow.status === "approved" || workflow.status === "completed") &&
       workflow.operations.postEvent.closeoutStatus === "pending_admin1");
-  const canComplete = viewer.role === "leader" && workflow.status === "approved" && workflow.operations.postEvent.closeoutStatus === "approved";
+  const canComplete =
+    viewer.role === "leader" &&
+    workflow.status === "approved" &&
+    workflow.operations.postEvent.closeoutStatus === "approved";
 
   function handleComment() {
     if (!comment.trim()) {
@@ -202,7 +222,11 @@ export function EventWorkflowDetail({
   }
 
   function handleComplete() {
-    markWorkflowCompleted(workflow.id, viewer, "Leader marked the workflow as post-event complete.");
+    markWorkflowCompleted(
+      workflow.id,
+      viewer,
+      "Leader marked the workflow as post-event complete.",
+    );
     toast.success("Workflow marked complete");
   }
 
@@ -302,11 +326,15 @@ export function EventWorkflowDetail({
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge tone={statusTone(workflow.status)}>{formatWorkflowStatus(workflow.status)}</Badge>
+                  <Badge tone={statusTone(workflow.status)}>
+                    {formatWorkflowStatus(workflow.status)}
+                  </Badge>
                   <Badge tone="info">{workflow.proposal.category}</Badge>
                   <Badge tone="gold">AY {workflow.ay}</Badge>
                 </div>
-                <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">{workflow.proposal.description}</p>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
+                  {workflow.proposal.description}
+                </p>
               </div>
               <div className="grid min-w-[240px] gap-3">
                 <MetricCard
@@ -346,16 +374,26 @@ export function EventWorkflowDetail({
                             : "bg-secondary text-muted-foreground"
                       }`}
                     >
-                      {stage.state === "done" ? <CheckCircle2 className="h-4 w-4" /> : <Clock3 className="h-4 w-4" />}
+                      {stage.state === "done" ? (
+                        <CheckCircle2 className="h-4 w-4" />
+                      ) : (
+                        <Clock3 className="h-4 w-4" />
+                      )}
                     </div>
                     <div>
                       <p className="text-sm font-semibold">{stage.label}</p>
                       <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                        {stage.state === "done" ? "Complete" : stage.state === "current" ? "Current" : "Upcoming"}
+                        {stage.state === "done"
+                          ? "Complete"
+                          : stage.state === "current"
+                            ? "Current"
+                            : "Upcoming"}
                       </p>
                     </div>
                   </div>
-                  <p className="mt-3 text-xs leading-5 text-muted-foreground">{stage.description}</p>
+                  <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                    {stage.description}
+                  </p>
                 </div>
               ))}
             </div>
@@ -367,9 +405,18 @@ export function EventWorkflowDetail({
                 <WorkflowField label="Objective" value={workflow.proposal.objective} />
                 <WorkflowField label="Description" value={workflow.proposal.description} />
                 <WorkflowField label="Venue" value={workflow.proposal.venue || "Not set"} />
-                <WorkflowField label="Schedule" value={formatDateTime(workflow.proposal.date, workflow.proposal.time)} />
-                <WorkflowField label="Collaborators" value={workflow.proposal.collaborators.join(", ") || "None"} />
-                <WorkflowField label="SDG alignment" value={workflow.proposal.sdgs.join(", ") || "None"} />
+                <WorkflowField
+                  label="Schedule"
+                  value={formatDateTime(workflow.proposal.date, workflow.proposal.time)}
+                />
+                <WorkflowField
+                  label="Collaborators"
+                  value={workflow.proposal.collaborators.join(", ") || "None"}
+                />
+                <WorkflowField
+                  label="SDG alignment"
+                  value={workflow.proposal.sdgs.join(", ") || "None"}
+                />
               </div>
             </Panel>
 
@@ -380,7 +427,9 @@ export function EventWorkflowDetail({
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-semibold">{item.label}</p>
-                        {item.notes ? <p className="text-xs text-muted-foreground">{item.notes}</p> : null}
+                        {item.notes ? (
+                          <p className="text-xs text-muted-foreground">{item.notes}</p>
+                        ) : null}
                       </div>
                       <span className="text-sm font-semibold">{money(item.amount)}</span>
                     </div>
@@ -401,7 +450,9 @@ export function EventWorkflowDetail({
               <div className="space-y-3">
                 {workflow.proposal.timeline.map((item) => (
                   <div key={item.id} className="rounded-2xl border border-border bg-card p-3">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-primary">{item.phase}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                      {item.phase}
+                    </p>
                     <p className="mt-1 text-sm text-foreground">{item.detail}</p>
                   </div>
                 ))}
@@ -412,7 +463,10 @@ export function EventWorkflowDetail({
               {workflow.proposal.attachments.length > 0 ? (
                 <div className="space-y-2">
                   {workflow.proposal.attachments.map((attachment) => (
-                    <div key={attachment} className="flex items-center justify-between rounded-2xl border border-border bg-card px-3 py-2 text-sm">
+                    <div
+                      key={attachment}
+                      className="flex items-center justify-between rounded-2xl border border-border bg-card px-3 py-2 text-sm"
+                    >
                       <span className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-primary" />
                         {attachment}
@@ -423,7 +477,8 @@ export function EventWorkflowDetail({
                 </div>
               ) : (
                 <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
-                  This workflow keeps attachments optional. Most submission details now live directly in structured fields.
+                  This workflow keeps attachments optional. Most submission details now live
+                  directly in structured fields.
                 </div>
               )}
             </Panel>
@@ -435,12 +490,18 @@ export function EventWorkflowDetail({
                 {workflow.operations.preparationChecklist.map((item) => (
                   <button
                     key={item.id}
-                    onClick={() => canOperate && toggleWorkflowChecklistItem(workflow.id, item.id, viewer)}
+                    onClick={() =>
+                      canOperate && toggleWorkflowChecklistItem(workflow.id, item.id, viewer)
+                    }
                     className={`flex w-full items-start gap-3 rounded-2xl border p-3 text-left ${
-                      item.done ? "border-emerald-500/25 bg-emerald-500/10" : "border-border bg-card"
+                      item.done
+                        ? "border-emerald-500/25 bg-emerald-500/10"
+                        : "border-border bg-card"
                     } ${canOperate ? "transition hover:border-primary/30" : "cursor-default"}`}
                   >
-                    <div className={`mt-0.5 grid h-6 w-6 place-items-center rounded-lg ${item.done ? "bg-emerald-500 text-white" : "bg-secondary text-muted-foreground"}`}>
+                    <div
+                      className={`mt-0.5 grid h-6 w-6 place-items-center rounded-lg ${item.done ? "bg-emerald-500 text-white" : "bg-secondary text-muted-foreground"}`}
+                    >
                       <CheckSquare className="h-3.5 w-3.5" />
                     </div>
                     <div className="min-w-0">
@@ -452,7 +513,9 @@ export function EventWorkflowDetail({
               </div>
               <div className="space-y-3 rounded-3xl border border-border bg-secondary/30 p-4">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Smart forms and tools</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Smart forms and tools
+                  </p>
                   <div className="mt-3 space-y-2">
                     <ToggleRow
                       label="Requirements tracker linked"
@@ -502,7 +565,9 @@ export function EventWorkflowDetail({
             <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
               <div className="space-y-3">
                 <label className="block">
-                  <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attendance target</span>
+                  <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Attendance target
+                  </span>
                   <input
                     type="number"
                     value={workflow.operations.eventDay.attendanceTarget}
@@ -516,7 +581,9 @@ export function EventWorkflowDetail({
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actual attendance</span>
+                  <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Actual attendance
+                  </span>
                   <input
                     type="number"
                     value={workflow.operations.eventDay.attendanceActual}
@@ -530,7 +597,8 @@ export function EventWorkflowDetail({
                   />
                 </label>
                 <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
-                  This stage is meant to replace scattered attendance sheets and post-event catch-up notes with one live operations log.
+                  This stage is meant to replace scattered attendance sheets and post-event catch-up
+                  notes with one live operations log.
                 </div>
               </div>
 
@@ -566,8 +634,16 @@ export function EventWorkflowDetail({
                   }}
                 />
                 <div className="grid gap-3 md:grid-cols-2">
-                  <ListPanel title="Participation logs" items={workflow.operations.eventDay.participationLogs} empty="No event-day logs yet." />
-                  <ListPanel title="Media uploads" items={workflow.operations.eventDay.mediaUploads} empty="No media coverage entries yet." />
+                  <ListPanel
+                    title="Participation logs"
+                    items={workflow.operations.eventDay.participationLogs}
+                    empty="No event-day logs yet."
+                  />
+                  <ListPanel
+                    title="Media uploads"
+                    items={workflow.operations.eventDay.mediaUploads}
+                    empty="No media coverage entries yet."
+                  />
                 </div>
               </div>
             </div>
@@ -592,7 +668,12 @@ export function EventWorkflowDetail({
                   ) : null}
                   {canReviewCloseout ? (
                     <AppButton variant="primary" size="sm" onClick={handleCloseoutApprove}>
-                      <CheckCircle2 className="h-4 w-4" /> {viewer.role === "adviser" ? "Approve to Admin 2" : viewer.role === "admin2" ? "Approve to Admin 1" : "Approve closeout"}
+                      <CheckCircle2 className="h-4 w-4" />{" "}
+                      {viewer.role === "adviser"
+                        ? "Approve to Admin 2"
+                        : viewer.role === "admin2"
+                          ? "Approve to Admin 1"
+                          : "Approve closeout"}
                     </AppButton>
                   ) : null}
                   {canRejectCloseout ? (
@@ -633,26 +714,44 @@ export function EventWorkflowDetail({
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold">Financial closeout</p>
-                      <p className="text-xs text-muted-foreground">Actual spend per budget line. Receipts live in the finance ledger below.</p>
+                      <p className="text-xs text-muted-foreground">
+                        Actual spend per budget line. Receipts live in the finance ledger below.
+                      </p>
                     </div>
                     <Badge tone="neutral">
-                      {money(workflow.operations.postEvent.expenseItems.reduce((sum, item) => sum + item.actualAmount, 0))}
+                      {money(
+                        workflow.operations.postEvent.expenseItems.reduce(
+                          (sum, item) => sum + item.actualAmount,
+                          0,
+                        ),
+                      )}
                     </Badge>
                   </div>
                   <div className="space-y-3">
                     {workflow.operations.postEvent.expenseItems.map((item) => (
-                      <div key={item.id} className="grid gap-2 rounded-2xl border border-border bg-background p-3 md:grid-cols-[1.4fr_0.8fr]">
+                      <div
+                        key={item.id}
+                        className="grid gap-2 rounded-2xl border border-border bg-background p-3 md:grid-cols-[1.4fr_0.8fr]"
+                      >
                         <div>
                           <p className="text-sm font-semibold">{item.label}</p>
-                          <p className="text-xs text-muted-foreground">Planned {money(item.plannedAmount)}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Planned {money(item.plannedAmount)}
+                          </p>
                         </div>
                         <label className="block">
-                          <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Actual</span>
+                          <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            Actual
+                          </span>
                           <input
                             type="number"
                             value={item.actualAmount}
                             disabled={!canOperate}
-                            onChange={(e) => updateWorkflowExpenseItem(workflow.id, viewer, item.id, { actualAmount: Number(e.target.value) || 0 })}
+                            onChange={(e) =>
+                              updateWorkflowExpenseItem(workflow.id, viewer, item.id, {
+                                actualAmount: Number(e.target.value) || 0,
+                              })
+                            }
                             className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:opacity-70"
                           />
                         </label>
@@ -665,7 +764,10 @@ export function EventWorkflowDetail({
                   orgName={workflow.orgName}
                   role={viewer.role}
                   plannedTotal={totalBudget}
-                  reportedTotal={workflow.operations.postEvent.expenseItems.reduce((sum, item) => sum + item.actualAmount, 0)}
+                  reportedTotal={workflow.operations.postEvent.expenseItems.reduce(
+                    (sum, item) => sum + item.actualAmount,
+                    0,
+                  )}
                 />
                 <InlineComposer
                   label="Achievement summary"
@@ -677,7 +779,12 @@ export function EventWorkflowDetail({
                   disabled={!canOperate}
                   onSubmit={() => {
                     if (!achievementEntry.trim()) return;
-                    addWorkflowPostEventAsset(workflow.id, viewer, "achievements", achievementEntry.trim());
+                    addWorkflowPostEventAsset(
+                      workflow.id,
+                      viewer,
+                      "achievements",
+                      achievementEntry.trim(),
+                    );
                     toast.success("Achievement added");
                     setAchievementEntry("");
                   }}
@@ -692,14 +799,27 @@ export function EventWorkflowDetail({
                   disabled={!canOperate}
                   onSubmit={() => {
                     if (!documentationEntry.trim()) return;
-                    addWorkflowPostEventAsset(workflow.id, viewer, "documentation", documentationEntry.trim());
+                    addWorkflowPostEventAsset(
+                      workflow.id,
+                      viewer,
+                      "documentation",
+                      documentationEntry.trim(),
+                    );
                     toast.success("Documentation entry added");
                     setDocumentationEntry("");
                   }}
                 />
                 <div className="grid gap-3 md:grid-cols-2">
-                  <ListPanel title="Achievements" items={workflow.operations.postEvent.achievements} empty="No achievements recorded yet." />
-                  <ListPanel title="Documentation" items={workflow.operations.postEvent.documentation} empty="No documentation items yet." />
+                  <ListPanel
+                    title="Achievements"
+                    items={workflow.operations.postEvent.achievements}
+                    empty="No achievements recorded yet."
+                  />
+                  <ListPanel
+                    title="Documentation"
+                    items={workflow.operations.postEvent.documentation}
+                    empty="No documentation items yet."
+                  />
                 </div>
               </div>
             </div>
@@ -709,29 +829,81 @@ export function EventWorkflowDetail({
         <div className="space-y-4">
           <Panel title="Approval lane">
             <div className="space-y-3">
-              <LaneRow label="Leader" detail={workflow.createdBy} active={workflow.status === "draft" || workflow.status === "revision_requested"} />
-              <LaneRow label="Adviser" detail="Prof. Elena Tan" active={workflow.status === "pending_adviser"} />
-              <LaneRow label="Admin 2" detail="OSA Compliance Review" active={workflow.status === "pending_admin2"} />
-              <LaneRow label="Admin 1" detail="University Final Authority" active={workflow.status === "pending_admin1"} />
-              <LaneRow label="Execution" detail="Preparation, event-day tracking, and final closeout" active={workflow.status === "approved" || workflow.status === "completed"} />
+              <LaneRow
+                label="Leader"
+                detail={workflow.createdBy}
+                active={workflow.status === "draft" || workflow.status === "revision_requested"}
+              />
+              <LaneRow
+                label="Adviser"
+                detail="Prof. Elena Tan"
+                active={workflow.status === "pending_adviser"}
+              />
+              <LaneRow
+                label="Admin 2"
+                detail="OSA Compliance Review"
+                active={workflow.status === "pending_admin2"}
+              />
+              <LaneRow
+                label="Admin 1"
+                detail="University Final Authority"
+                active={workflow.status === "pending_admin1"}
+              />
+              <LaneRow
+                label="Execution"
+                detail="Preparation, event-day tracking, and final closeout"
+                active={workflow.status === "approved" || workflow.status === "completed"}
+              />
               <LaneRow
                 label="Closeout review"
                 detail={formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus)}
-                active={workflow.operations.postEvent.closeoutStatus === "pending_adviser" || workflow.operations.postEvent.closeoutStatus === "pending_admin2"}
+                active={
+                  workflow.operations.postEvent.closeoutStatus === "pending_adviser" ||
+                  workflow.operations.postEvent.closeoutStatus === "pending_admin2"
+                }
               />
             </div>
           </Panel>
 
           <Panel title="Execution snapshot">
             <div className="space-y-3">
-              <SnapshotRow label="Preparation checklist" value={`${lifecycle.checklistDone}/${lifecycle.checklistTotal}`} />
-              <SnapshotRow label="Requirements tracker" value={workflow.operations.forms.requirementsTrackerReady ? "Ready" : "Pending"} />
-              <SnapshotRow label="Attendance tools" value={workflow.operations.forms.attendeeCollectionReady ? "Ready" : "Pending"} />
-              <SnapshotRow label="Event-day logs" value={`${workflow.operations.eventDay.participationLogs.length}`} />
-              <SnapshotRow label="Media blocks" value={`${workflow.operations.eventDay.mediaUploads.length}`} />
-              <SnapshotRow label="Documentation entries" value={`${workflow.operations.postEvent.documentation.length}`} />
-              <SnapshotRow label="Closeout status" value={formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus)} />
-              <SnapshotRow label="Actual expense total" value={money(workflow.operations.postEvent.expenseItems.reduce((sum, item) => sum + item.actualAmount, 0))} />
+              <SnapshotRow
+                label="Preparation checklist"
+                value={`${lifecycle.checklistDone}/${lifecycle.checklistTotal}`}
+              />
+              <SnapshotRow
+                label="Requirements tracker"
+                value={workflow.operations.forms.requirementsTrackerReady ? "Ready" : "Pending"}
+              />
+              <SnapshotRow
+                label="Attendance tools"
+                value={workflow.operations.forms.attendeeCollectionReady ? "Ready" : "Pending"}
+              />
+              <SnapshotRow
+                label="Event-day logs"
+                value={`${workflow.operations.eventDay.participationLogs.length}`}
+              />
+              <SnapshotRow
+                label="Media blocks"
+                value={`${workflow.operations.eventDay.mediaUploads.length}`}
+              />
+              <SnapshotRow
+                label="Documentation entries"
+                value={`${workflow.operations.postEvent.documentation.length}`}
+              />
+              <SnapshotRow
+                label="Closeout status"
+                value={formatCloseoutStatus(workflow.operations.postEvent.closeoutStatus)}
+              />
+              <SnapshotRow
+                label="Actual expense total"
+                value={money(
+                  workflow.operations.postEvent.expenseItems.reduce(
+                    (sum, item) => sum + item.actualAmount,
+                    0,
+                  ),
+                )}
+              />
             </div>
           </Panel>
 
@@ -772,7 +944,8 @@ export function EventWorkflowDetail({
               <div className="space-y-3">
                 {workflow.comments.length === 0 ? (
                   <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
-                    No comments yet. Reviewers can leave inline guidance here instead of asking for separate paper notes.
+                    No comments yet. Reviewers can leave inline guidance here instead of asking for
+                    separate paper notes.
                   </div>
                 ) : (
                   workflow.comments.map((item) => (
@@ -782,7 +955,9 @@ export function EventWorkflowDetail({
                           <Badge tone="neutral">{stageLabelFor(item.authorRole)}</Badge>
                           <p className="text-sm font-semibold">{item.authorName}</p>
                         </div>
-                        <p className="text-xs text-muted-foreground">{new Date(item.createdAt).toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(item.createdAt).toLocaleString()}
+                        </p>
                       </div>
                       <p className="mt-2 text-sm leading-6 text-foreground">{item.message}</p>
                     </div>
@@ -795,17 +970,29 @@ export function EventWorkflowDetail({
           <Panel title="Approval history">
             <div className="space-y-3">
               {workflow.history.map((entry) => (
-                <div key={entry.id} className="flex gap-3 rounded-2xl border border-border bg-card p-3">
+                <div
+                  key={entry.id}
+                  className="flex gap-3 rounded-2xl border border-border bg-card p-3"
+                >
                   <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                     <Sparkles className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold">
-                      {entry.byName} <span className="font-normal text-muted-foreground">({stageLabelFor(entry.byRole)})</span>
+                      {entry.byName}{" "}
+                      <span className="font-normal text-muted-foreground">
+                        ({stageLabelFor(entry.byRole)})
+                      </span>
                     </p>
-                    <p className="text-xs uppercase tracking-wider text-primary">{entry.action.replaceAll("_", " ")}</p>
-                    {entry.note ? <p className="mt-1 text-sm text-muted-foreground">{entry.note}</p> : null}
-                    <p className="mt-1 text-xs text-muted-foreground">{new Date(entry.createdAt).toLocaleString()}</p>
+                    <p className="text-xs uppercase tracking-wider text-primary">
+                      {entry.action.replaceAll("_", " ")}
+                    </p>
+                    {entry.note ? (
+                      <p className="mt-1 text-sm text-muted-foreground">{entry.note}</p>
+                    ) : null}
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {new Date(entry.createdAt).toLocaleString()}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -820,7 +1007,9 @@ export function EventWorkflowDetail({
 function MetricCard({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
     <div className="rounded-2xl border border-border bg-secondary/35 p-4">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
       <p className="mt-2 font-display text-3xl font-bold">{value}</p>
       <p className="text-xs text-muted-foreground">{sub}</p>
     </div>
@@ -830,7 +1019,9 @@ function MetricCard({ label, value, sub }: { label: string; value: string; sub: 
 function WorkflowField({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-secondary/35 p-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
       <p className="mt-1 text-sm leading-6 text-foreground">{value}</p>
     </div>
   );
@@ -838,10 +1029,16 @@ function WorkflowField({ label, value }: { label: string; value: string }) {
 
 function LaneRow({ label, detail, active }: { label: string; detail: string; active?: boolean }) {
   return (
-    <div className={`rounded-2xl border px-3 py-3 ${active ? "border-primary/30 bg-primary/8" : "border-border bg-card"}`}>
+    <div
+      className={`rounded-2xl border px-3 py-3 ${active ? "border-primary/30 bg-primary/8" : "border-border bg-card"}`}
+    >
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-semibold">{label}</p>
-        {active ? <Badge tone="info">Current</Badge> : <ArrowRight className="h-4 w-4 text-muted-foreground" />}
+        {active ? (
+          <Badge tone="info">Current</Badge>
+        ) : (
+          <ArrowRight className="h-4 w-4 text-muted-foreground" />
+        )}
       </div>
       <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
     </div>
@@ -905,7 +1102,12 @@ function InlineComposer({
           disabled={disabled}
           className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none disabled:opacity-70"
         />
-        <AppButton variant="secondary" size="sm" onClick={onSubmit} disabled={disabled || !value.trim()}>
+        <AppButton
+          variant="secondary"
+          size="sm"
+          onClick={onSubmit}
+          disabled={disabled || !value.trim()}
+        >
           {buttonLabel}
         </AppButton>
       </div>
@@ -928,7 +1130,9 @@ function TextAreaRow({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
       <textarea
         rows={4}
         value={value}
@@ -944,7 +1148,9 @@ function TextAreaRow({
 function ListPanel({ title, items, empty }: { title: string; items: string[]; empty: string }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{title}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        {title}
+      </p>
       <div className="mt-2 space-y-2">
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">{empty}</p>

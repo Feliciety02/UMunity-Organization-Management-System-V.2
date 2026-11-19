@@ -35,9 +35,28 @@ export const posts: Post[] = [
     image: "from-primary to-primary-deep",
     likes: 184,
     comments: [
-      { id: "c1", author: "Jana Cruz", program: "BS IT - 2nd Yr", text: "Sulit 'to last year, joining again!", time: "1h" },
-      { id: "c2", author: "Marvin Lim", program: "BS CS - 1st Yr", text: "Will the workshop tracks have certificates?", time: "30m",
-        replies: [{ id: "c2r1", author: "UM CS Society", text: "Yes! Certificates for full-track attendees.", time: "20m" }] },
+      {
+        id: "c1",
+        author: "Jana Cruz",
+        program: "BS IT - 2nd Yr",
+        text: "Sulit 'to last year, joining again!",
+        time: "1h",
+      },
+      {
+        id: "c2",
+        author: "Marvin Lim",
+        program: "BS CS - 1st Yr",
+        text: "Will the workshop tracks have certificates?",
+        time: "30m",
+        replies: [
+          {
+            id: "c2r1",
+            author: "UM CS Society",
+            text: "Yes! Certificates for full-track attendees.",
+            time: "20m",
+          },
+        ],
+      },
     ],
   },
   {
@@ -52,7 +71,13 @@ export const posts: Post[] = [
     image: "from-emerald-700 to-primary-deep",
     likes: 96,
     comments: [
-      { id: "c3", author: "Ria Santos", program: "BS IS - 3rd Yr", text: "Proud to be part of this!", time: "5h" },
+      {
+        id: "c3",
+        author: "Ria Santos",
+        program: "BS IS - 3rd Yr",
+        text: "Proud to be part of this!",
+        time: "5h",
+      },
     ],
   },
   {
@@ -73,7 +98,8 @@ export const posts: Post[] = [
     visibility: "public",
     time: "3 days ago",
     title: "Cultural Night auditions",
-    content: "Singers, dancers, and stage crew - sign up at the Guild office until Friday. Callbacks on Saturday.",
+    content:
+      "Singers, dancers, and stage crew - sign up at the Guild office until Friday. Callbacks on Saturday.",
     image: "from-rose-700 to-primary",
     likes: 71,
     comments: [],

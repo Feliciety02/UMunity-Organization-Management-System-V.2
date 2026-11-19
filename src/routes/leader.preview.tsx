@@ -38,11 +38,15 @@ function Preview() {
         <AppCard className="rounded-[28px] p-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-center gap-4">
-              <div className={`grid h-14 w-14 shrink-0 place-items-center rounded-[18px] bg-gradient-to-br ${org.color} font-display text-lg font-bold text-primary-foreground`}>
+              <div
+                className={`grid h-14 w-14 shrink-0 place-items-center rounded-[18px] bg-gradient-to-br ${org.color} font-display text-lg font-bold text-primary-foreground`}
+              >
                 {org.initials}
               </div>
               <div className="min-w-0">
-                <h2 className="truncate font-display text-2xl font-semibold text-foreground">{org.name}</h2>
+                <h2 className="truncate font-display text-2xl font-semibold text-foreground">
+                  {org.name}
+                </h2>
                 <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{org.desc}</p>
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                   <Badge>{org.category}</Badge>
@@ -67,7 +71,11 @@ function Preview() {
 
           <div className="bg-background p-4 sm:p-5">
             <div className="overflow-hidden rounded-[22px] border border-border/70 bg-card">
-              <iframe src={`/org/${slug}`} title="Org preview" className="h-[calc(100vh-260px)] min-h-[780px] w-full" />
+              <iframe
+                src={`/org/${slug}`}
+                title="Org preview"
+                className="h-[calc(100vh-260px)] min-h-[780px] w-full"
+              />
             </div>
           </div>
         </AppCard>

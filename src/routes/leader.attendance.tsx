@@ -18,11 +18,51 @@ type AttendanceRow = {
 };
 
 const eventData: AttendanceRow[] = [
-  { key: "1", event: "Innovation Summit 2026", date: "May 24", rsvps: 184, attended: 162, rate: 88, status: "Upcoming" },
-  { key: "2", event: "Hack Night Vol. 2", date: "Apr 18", rsvps: 78, attended: 70, rate: 90, status: "Completed" },
-  { key: "3", event: "Coding Bootcamp Day 3", date: "Apr 03", rsvps: 64, attended: 58, rate: 91, status: "Completed" },
-  { key: "4", event: "Welcome Mixer 2026", date: "Mar 12", rsvps: 142, attended: 118, rate: 83, status: "Completed" },
-  { key: "5", event: "Tech Talk: Web3", date: "Feb 20", rsvps: 92, attended: 64, rate: 70, status: "Completed" },
+  {
+    key: "1",
+    event: "Innovation Summit 2026",
+    date: "May 24",
+    rsvps: 184,
+    attended: 162,
+    rate: 88,
+    status: "Upcoming",
+  },
+  {
+    key: "2",
+    event: "Hack Night Vol. 2",
+    date: "Apr 18",
+    rsvps: 78,
+    attended: 70,
+    rate: 90,
+    status: "Completed",
+  },
+  {
+    key: "3",
+    event: "Coding Bootcamp Day 3",
+    date: "Apr 03",
+    rsvps: 64,
+    attended: 58,
+    rate: 91,
+    status: "Completed",
+  },
+  {
+    key: "4",
+    event: "Welcome Mixer 2026",
+    date: "Mar 12",
+    rsvps: 142,
+    attended: 118,
+    rate: 83,
+    status: "Completed",
+  },
+  {
+    key: "5",
+    event: "Tech Talk: Web3",
+    date: "Feb 20",
+    rsvps: 92,
+    attended: 64,
+    rate: 70,
+    status: "Completed",
+  },
 ];
 
 const columns: Column<AttendanceRow>[] = [
@@ -80,7 +120,13 @@ function Attendance() {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Avg attendance" value="84%" delta="+3% vs last sem" icon={CheckSquare} tone="primary" />
+        <StatCard
+          label="Avg attendance"
+          value="84%"
+          delta="+3% vs last sem"
+          icon={CheckSquare}
+          tone="primary"
+        />
         <StatCard label="Active attendees" value="284" icon={Users} tone="gold" />
         <StatCard label="Top event" value="Hack 2025" icon={TrendingUp} tone="rose" />
         <StatCard label="Events tracked" value="38" icon={Calendar} tone="emerald" />

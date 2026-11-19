@@ -109,7 +109,12 @@ export const ROLE_NAV: Record<Role, NavItem[]> = {
       section: "ORGANIZATION",
     },
     { to: "/leader/finance", label: "Finance", icon: Wallet, section: "ORGANIZATION" },
-    { to: "/leader/compliance", label: "Accreditation", icon: ShieldCheck, section: "ORGANIZATION" },
+    {
+      to: "/leader/compliance",
+      label: "Accreditation",
+      icon: ShieldCheck,
+      section: "ORGANIZATION",
+    },
     {
       to: "/leader/officer-transition",
       label: "Officer Transition",
@@ -169,7 +174,12 @@ export const ROLE_NAV: Record<Role, NavItem[]> = {
     { to: "/admin1/organizations", label: "Organizations", icon: Building2, section: "OVERVIEW" },
     { to: "/admin1/accreditation", label: "Accreditation", icon: Landmark, section: "OVERVIEW" },
     { to: "/admin1/finance", label: "Finance", icon: Wallet, section: "OVERVIEW" },
-    { to: "/admin1/requirements", label: "Requirements", icon: ClipboardCheck, section: "OVERVIEW" },
+    {
+      to: "/admin1/requirements",
+      label: "Requirements",
+      icon: ClipboardCheck,
+      section: "OVERVIEW",
+    },
     { to: "/admin1/transitions", label: "Officer Transitions", icon: UserCog, section: "OVERVIEW" },
     { to: "/admin1/governance", label: "Governance", icon: ScrollText, section: "OVERVIEW" },
     { to: "/admin1/notifications", label: "Notifications", icon: Bell, section: "SETTINGS" },

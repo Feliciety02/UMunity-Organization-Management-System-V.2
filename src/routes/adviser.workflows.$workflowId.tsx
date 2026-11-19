@@ -18,7 +18,9 @@ function AdviserWorkflowDetailPage() {
       <>
         <PageHead title="Workflow not found" sub="The requested proposal is unavailable." />
         <Panel>
-          <p className="text-sm text-muted-foreground">Return to the adviser queue to continue reviewing active submissions.</p>
+          <p className="text-sm text-muted-foreground">
+            Return to the adviser queue to continue reviewing active submissions.
+          </p>
         </Panel>
       </>
     );

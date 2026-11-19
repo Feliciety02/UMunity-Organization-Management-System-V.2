@@ -57,10 +57,11 @@ export function UnderlineTabs<T extends string>({
           )}
         >
           {item}
-          {value === item ? <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-primary" /> : null}
+          {value === item ? (
+            <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-primary" />
+          ) : null}
         </button>
       ))}
     </div>
   );
 }
-

@@ -137,7 +137,13 @@ export function NotificationsView({
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
         <Panel className="h-fit p-2">
           <div className="space-y-1">
-            {FILTERS.filter((f) => f.id === "all" || f.id === "unread" || (counts.byCat[f.id] ?? 0) > 0 || filter === f.id).map((f) => {
+            {FILTERS.filter(
+              (f) =>
+                f.id === "all" ||
+                f.id === "unread" ||
+                (counts.byCat[f.id] ?? 0) > 0 ||
+                filter === f.id,
+            ).map((f) => {
               const count =
                 f.id === "all"
                   ? counts.total
@@ -150,9 +156,7 @@ export function NotificationsView({
                   key={f.id}
                   onClick={() => setFilter(f.id)}
                   className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm font-medium transition ${
-                    active
-                      ? "bg-primary/8 text-primary"
-                      : "text-foreground/80 hover:bg-secondary"
+                    active ? "bg-primary/8 text-primary" : "text-foreground/80 hover:bg-secondary"
                   }`}
                 >
                   <span>{f.label}</span>

@@ -21,7 +21,9 @@ function RequirementsHub() {
       setSelectedDocId("");
       return;
     }
-    setSelectedDocId((current) => (current && docs.some((doc) => doc.id === current) ? current : docs[0].id));
+    setSelectedDocId((current) =>
+      current && docs.some((doc) => doc.id === current) ? current : docs[0].id,
+    );
   }, [docs]);
 
   const selectedDoc = docs.find((doc) => doc.id === selectedDocId) ?? null;
@@ -48,7 +50,8 @@ function RequirementsHub() {
             </div>
             <h3 className="font-display text-lg font-semibold">No event trackers yet</h3>
             <p className="max-w-md text-sm text-muted-foreground">
-              Create an event to auto-generate its Requirements Tracker with templates, deadlines, and status pills.
+              Create an event to auto-generate its Requirements Tracker with templates, deadlines,
+              and status pills.
             </p>
             <AppButton asChild variant="primary">
               <Link to="/leader/create-event">Create your first event</Link>
@@ -71,29 +74,49 @@ function RequirementsHub() {
               .slice(0, 3);
 
             return (
-              <Panel key={doc.id} className={`flex flex-col gap-4 transition ${selectedDocId === doc.id ? "ring-2 ring-primary/25" : ""}`}>
+              <Panel
+                key={doc.id}
+                className={`flex flex-col gap-4 transition ${selectedDocId === doc.id ? "ring-2 ring-primary/25" : ""}`}
+              >
                 <div>
                   <div className="flex items-center gap-2">
                     <Badge tone="info">{doc.category || "Event"}</Badge>
                     {p.ready ? <Badge tone="success">Ready for Submission</Badge> : null}
                   </div>
-                  <h3 className="mt-2 font-display text-lg font-semibold leading-tight">{doc.title}</h3>
+                  <h3 className="mt-2 font-display text-lg font-semibold leading-tight">
+                    {doc.title}
+                  </h3>
                   <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
                     <CalendarDays className="h-3.5 w-3.5" />
-                    {doc.date || "TBA"}{doc.time ? ` - ${doc.time}` : ""} - {doc.venue || "Venue TBA"}
+                    {doc.date || "TBA"}
+                    {doc.time ? ` - ${doc.time}` : ""} - {doc.venue || "Venue TBA"}
                   </p>
                 </div>
 
                 <div className="space-y-2 rounded-2xl bg-secondary/35 p-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Tracker preview</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Tracker preview
+                  </p>
                   {previewItems.map((item) => (
                     <div key={item.id} className="flex items-start justify-between gap-3 text-xs">
                       <div className="min-w-0">
                         <p className="truncate font-medium text-foreground">{item.title}</p>
                         <p className="truncate text-muted-foreground">{item.sectionTitle}</p>
                       </div>
-                      <Badge tone={item.status === "approved" ? "success" : item.status === "for-review" ? "info" : item.status === "missing" ? "danger" : "neutral"}>
-                        {item.status === "for-review" ? "For review" : item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                      <Badge
+                        tone={
+                          item.status === "approved"
+                            ? "success"
+                            : item.status === "for-review"
+                              ? "info"
+                              : item.status === "missing"
+                                ? "danger"
+                                : "neutral"
+                        }
+                      >
+                        {item.status === "for-review"
+                          ? "For review"
+                          : item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                       </Badge>
                     </div>
                   ))}
@@ -101,7 +124,9 @@ function RequirementsHub() {
 
                 <div>
                   <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{p.done}/{p.total} requirements approved</span>
+                    <span>
+                      {p.done}/{p.total} requirements approved
+                    </span>
                     <span className="font-semibold text-foreground">{p.pct}%</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-secondary">
@@ -141,7 +166,10 @@ function RequirementsHub() {
             title={`${selectedDoc.title} tracker`}
             sub="Live tracker inside the leader dashboard. Use the full-page view if you need a dedicated route."
           />
-          <RequirementsTrackerContent doc={selectedDoc} viewer={{ role: "leader", name: session.name }} />
+          <RequirementsTrackerContent
+            doc={selectedDoc}
+            viewer={{ role: "leader", name: session.name }}
+          />
         </div>
       ) : null}
     </>

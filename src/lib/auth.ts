@@ -24,7 +24,11 @@ function clearLocalSession() {
 
 export type { LoginResult };
 
-export async function login(email: string, password: string, remember = true): Promise<LoginResult> {
+export async function login(
+  email: string,
+  password: string,
+  remember = true,
+): Promise<LoginResult> {
   const result = await loginFn({ data: { email, password, remember } });
   if (result.ok) {
     clearSyncedCache();
@@ -45,9 +49,16 @@ export function forgetLocalSession() {
   clearSyncedCache();
 }
 
-export type RegisterResult = { ok: true; session: Session } | { ok: false; field: "email" | "form"; error: string };
+export type RegisterResult =
+  | { ok: true; session: Session }
+  | { ok: false; field: "email" | "form"; error: string };
 
-export async function registerStudent(input: { name: string; email: string; program: string; password: string }): Promise<RegisterResult> {
+export async function registerStudent(input: {
+  name: string;
+  email: string;
+  program: string;
+  password: string;
+}): Promise<RegisterResult> {
   const result = await registerFn({ data: input });
   if (result.ok) {
     clearSyncedCache();
@@ -101,7 +112,10 @@ export function ensureSession(): Promise<Session | null> {
     } catch {
       return getSession();
     }
-    if (session) await syncFromServer(session.role).catch((err) => console.warn("[UMunity] Couldn't load data from the database.", err));
+    if (session)
+      await syncFromServer(session.role).catch((err) =>
+        console.warn("[UMunity] Couldn't load data from the database.", err),
+      );
     return session;
   })().finally(() => {
     ensuring = null;
@@ -136,41 +150,42 @@ export function homeFor(role: Role) {
   }
 }
 
-export const ROLE_META: Record<Role, { label: string; accent: string; bg: string; ring: string }> = {
-  student: {
-    label: "Student",
-    accent: "text-rose-600",
-    bg: "from-rose-500 to-primary",
-    ring: "ring-rose-200",
-  },
-  leader: {
-    label: "Org Leader",
-    accent: "text-primary",
-    bg: "from-primary to-primary",
-    ring: "ring-primary/30",
-  },
-  adviser: {
-    label: "Adviser",
-    accent: "text-sky-600",
-    bg: "from-sky-500 to-primary",
-    ring: "ring-sky-200",
-  },
-  admin2: {
-    label: "Admin 2",
-    accent: "text-violet-600",
-    bg: "from-violet-500 to-primary",
-    ring: "ring-violet-200",
-  },
-  admin1: {
-    label: "Admin 1",
-    accent: "text-primary",
-    bg: "from-primary-deep to-rose-700",
-    ring: "ring-primary/30",
-  },
-  admin: {
-    label: "Admin",
-    accent: "text-primary",
-    bg: "from-primary-deep to-rose-700",
-    ring: "ring-primary/30",
-  },
-};
+export const ROLE_META: Record<Role, { label: string; accent: string; bg: string; ring: string }> =
+  {
+    student: {
+      label: "Student",
+      accent: "text-rose-600",
+      bg: "from-rose-500 to-primary",
+      ring: "ring-rose-200",
+    },
+    leader: {
+      label: "Org Leader",
+      accent: "text-primary",
+      bg: "from-primary to-primary",
+      ring: "ring-primary/30",
+    },
+    adviser: {
+      label: "Adviser",
+      accent: "text-sky-600",
+      bg: "from-sky-500 to-primary",
+      ring: "ring-sky-200",
+    },
+    admin2: {
+      label: "Admin 2",
+      accent: "text-violet-600",
+      bg: "from-violet-500 to-primary",
+      ring: "ring-violet-200",
+    },
+    admin1: {
+      label: "Admin 1",
+      accent: "text-primary",
+      bg: "from-primary-deep to-rose-700",
+      ring: "ring-primary/30",
+    },
+    admin: {
+      label: "Admin",
+      accent: "text-primary",
+      bg: "from-primary-deep to-rose-700",
+      ring: "ring-primary/30",
+    },
+  };

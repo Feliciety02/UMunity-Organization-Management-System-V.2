@@ -6,12 +6,10 @@ import { resetPasswordFn } from "@/lib/api.functions";
 import { showStatusToast } from "@/lib/feedback";
 
 export const Route = createFileRoute("/reset-password")({
-  validateSearch: (s: Record<string, unknown>): { token?: string } => (typeof s.token === "string" ? { token: s.token } : {}),
+  validateSearch: (s: Record<string, unknown>): { token?: string } =>
+    typeof s.token === "string" ? { token: s.token } : {},
   head: () => ({
-    meta: [
-      { title: "Reset password — UMunity" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Reset password — UMunity" }, { name: "robots", content: "noindex" }],
   }),
   component: ResetPassword,
 });
@@ -54,8 +52,11 @@ function ResetPassword() {
       title="Set a new password."
       sub="Choose a password you don't use anywhere else."
       footer={
-        <>Remembered it?{" "}
-          <Link to="/login" className="font-semibold text-gold hover:underline">Sign in</Link>
+        <>
+          Remembered it?{" "}
+          <Link to="/login" className="font-semibold text-gold hover:underline">
+            Sign in
+          </Link>
         </>
       }
     >
@@ -65,15 +66,41 @@ function ResetPassword() {
         </p>
       ) : (
         <form className="space-y-4" onSubmit={submit} noValidate>
-          <Field icon={Lock} type="password" label="New password" placeholder="At least 8 characters" value={password} onChange={setPassword} autoComplete="new-password" error={pwError} />
-          <Field icon={Lock} type="password" label="Confirm new password" placeholder="Type it again" value={confirm} onChange={setConfirm} autoComplete="new-password" error={confirmError} />
-          {error ? <p role="alert" className="rounded-xl bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">{error}</p> : null}
+          <Field
+            icon={Lock}
+            type="password"
+            label="New password"
+            placeholder="At least 8 characters"
+            value={password}
+            onChange={setPassword}
+            autoComplete="new-password"
+            error={pwError}
+          />
+          <Field
+            icon={Lock}
+            type="password"
+            label="Confirm new password"
+            placeholder="Type it again"
+            value={confirm}
+            onChange={setConfirm}
+            autoComplete="new-password"
+            error={confirmError}
+          />
+          {error ? (
+            <p
+              role="alert"
+              className="rounded-xl bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive"
+            >
+              {error}
+            </p>
+          ) : null}
           <button
             type="submit"
             disabled={saving}
             className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-maroon py-3 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.02] disabled:opacity-60"
           >
-            {saving ? "Saving..." : "Update password"} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            {saving ? "Saving..." : "Update password"}{" "}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </button>
         </form>
       )}

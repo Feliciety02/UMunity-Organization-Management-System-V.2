@@ -18,7 +18,9 @@ function AdviserRequirementsDetailPage() {
       <>
         <PageHead title="Requirements not found" sub="The requested tracker is unavailable." />
         <Panel>
-          <p className="text-sm text-muted-foreground">Return to the adviser requirements queue to continue reviewing submissions.</p>
+          <p className="text-sm text-muted-foreground">
+            Return to the adviser requirements queue to continue reviewing submissions.
+          </p>
         </Panel>
       </>
     );

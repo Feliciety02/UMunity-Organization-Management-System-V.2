@@ -20,9 +20,13 @@ export function demoAccountsEnabled() {
  */
 function connect(): Client {
   if (client) return client;
-  const url = process.env.TURSO_DATABASE_URL || (process.env.NODE_ENV === "production" ? "" : "file:local.db");
+  const url =
+    process.env.TURSO_DATABASE_URL ||
+    (process.env.NODE_ENV === "production" ? "" : "file:local.db");
   if (!url) {
-    throw new Error("TURSO_DATABASE_URL is not set. Add your Turso database URL and TURSO_AUTH_TOKEN to the environment.");
+    throw new Error(
+      "TURSO_DATABASE_URL is not set. Add your Turso database URL and TURSO_AUTH_TOKEN to the environment.",
+    );
   }
   client = createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN || undefined });
   return client;
@@ -144,38 +148,80 @@ async function seedDemo(c: Client) {
     const hash = have.get(u.email);
     if (hash && hash !== DISABLED) continue;
     if (hash === DISABLED) {
-      await c.execute({ sql: "UPDATE users SET password_hash = ? WHERE email = ?", args: [await hashPassword(u.password), u.email] });
+      await c.execute({
+        sql: "UPDATE users SET password_hash = ? WHERE email = ?",
+        args: [await hashPassword(u.password), u.email],
+      });
       continue;
     }
     await c.execute({
       sql: `INSERT OR IGNORE INTO users (id, email, name, role, program, org, avatar_color, password_hash, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [crypto.randomUUID(), u.email, u.name, u.role, u.program ?? null, u.org ?? null, u.avatarColor, await hashPassword(u.password), Date.now()],
+      args: [
+        crypto.randomUUID(),
+        u.email,
+        u.name,
+        u.role,
+        u.program ?? null,
+        u.org ?? null,
+        u.avatarColor,
+        await hashPassword(u.password),
+        Date.now(),
+      ],
     });
   }
 
   // Demo memberships and join requests, once.
   const seeded = await c.execute("SELECT 1 FROM meta WHERE key = 'demo_memberships'");
   if (seeded.rows.length) return;
-  const student = await c.execute("SELECT id, name, program FROM users WHERE email = 'student@um.edu.ph'");
+  const student = await c.execute(
+    "SELECT id, name, program FROM users WHERE email = 'student@um.edu.ph'",
+  );
   const s = student.rows[0];
   const now = Date.now();
   const hour = 60 * 60 * 1000;
   const stmts: Array<{ sql: string; args: Array<string | number | null> }> = [];
   if (s) {
-    for (const [slug, since] of [["cs-society", "Mar 2026"], ["eco-warriors", "Mar 2026"], ["theatre-guild", "Apr 2026"]]) {
-      stmts.push({ sql: "INSERT OR IGNORE INTO org_members (org_slug, user_id, since, joined_at) VALUES (?, ?, ?, ?)", args: [slug, String(s.id), since, now] });
+    for (const [slug, since] of [
+      ["cs-society", "Mar 2026"],
+      ["eco-warriors", "Mar 2026"],
+      ["theatre-guild", "Apr 2026"],
+    ]) {
+      stmts.push({
+        sql: "INSERT OR IGNORE INTO org_members (org_slug, user_id, since, joined_at) VALUES (?, ?, ?, ?)",
+        args: [slug, String(s.id), since, now],
+      });
     }
     stmts.push({
       sql: `INSERT OR IGNORE INTO membership_requests (id, org_slug, user_id, name, program, reason, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`,
-      args: ["demo-althea-debate", "debate-council", String(s.id), String(s.name), String(s.program ?? ""), "I'd love to sharpen my public speaking.", now - 3 * 24 * hour],
+      args: [
+        "demo-althea-debate",
+        "debate-council",
+        String(s.id),
+        String(s.name),
+        String(s.program ?? ""),
+        "I'd love to sharpen my public speaking.",
+        now - 3 * 24 * hour,
+      ],
     });
   }
   // Demo officers of the CS Society: listed on the roster, but they can't sign in.
   const officers = [
     ["anna.sy@umindanao.edu.ph", "Anna Sy", "Officer · VP", "Mar 2024", "from-primary to-primary"],
-    ["karl.m@umindanao.edu.ph", "Karl Mendez", "Officer · Sec", "Mar 2024", "from-rose-400 to-primary"],
-    ["jaymark.burlado@umindanao.edu.ph", "Jaymark Burlado", "Member", "Apr 2024", "from-emerald-400 to-primary-deep"],
+    [
+      "karl.m@umindanao.edu.ph",
+      "Karl Mendez",
+      "Officer · Sec",
+      "Mar 2024",
+      "from-rose-400 to-primary",
+    ],
+    [
+      "jaymark.burlado@umindanao.edu.ph",
+      "Jaymark Burlado",
+      "Member",
+      "Apr 2024",
+      "from-emerald-400 to-primary-deep",
+    ],
   ] as const;
   for (const [email, name, title, since, color] of officers) {
     const id = `demo-${email.split("@")[0]}`;
@@ -189,10 +235,34 @@ async function seedDemo(c: Client) {
     });
   }
   const demoRequests = [
-    ["jana-cruz", "Jana Cruz", "BS IT - 2nd Year", "I want to grow my coding skills and meet like-minded peers.", 2],
-    ["marvin-lim", "Marvin Lim", "BS CS - 1st Year", "Big fan of the org's hackathons. Excited to contribute!", 3],
-    ["ria-santos", "Ria Santos", "BS IS - 3rd Year", "Looking to lead UI/UX initiatives this semester.", 26],
-    ["tomas-vega", "Tomas Vega", "BS CS - 4th Year", "Returning member after a year on exchange.", 28],
+    [
+      "jana-cruz",
+      "Jana Cruz",
+      "BS IT - 2nd Year",
+      "I want to grow my coding skills and meet like-minded peers.",
+      2,
+    ],
+    [
+      "marvin-lim",
+      "Marvin Lim",
+      "BS CS - 1st Year",
+      "Big fan of the org's hackathons. Excited to contribute!",
+      3,
+    ],
+    [
+      "ria-santos",
+      "Ria Santos",
+      "BS IS - 3rd Year",
+      "Looking to lead UI/UX initiatives this semester.",
+      26,
+    ],
+    [
+      "tomas-vega",
+      "Tomas Vega",
+      "BS CS - 4th Year",
+      "Returning member after a year on exchange.",
+      28,
+    ],
   ] as const;
   for (const [id, name, program, reason, hoursAgo] of demoRequests) {
     stmts.push({
@@ -200,7 +270,10 @@ async function seedDemo(c: Client) {
       args: [id, name, program, reason, now - hoursAgo * hour],
     });
   }
-  stmts.push({ sql: "INSERT INTO meta (key, value) VALUES ('demo_memberships', ?)", args: [String(now)] });
+  stmts.push({
+    sql: "INSERT INTO meta (key, value) VALUES ('demo_memberships', ?)",
+    args: [String(now)],
+  });
   await c.batch(stmts, "write");
 }
 
@@ -210,8 +283,14 @@ async function disableDemoAccounts(c: Client) {
   const marks = emails.map(() => "?").join(",");
   await c.batch(
     [
-      { sql: `DELETE FROM sessions WHERE user_id IN (SELECT id FROM users WHERE email IN (${marks}))`, args: emails },
-      { sql: `UPDATE users SET password_hash = '${DISABLED}' WHERE email IN (${marks})`, args: emails },
+      {
+        sql: `DELETE FROM sessions WHERE user_id IN (SELECT id FROM users WHERE email IN (${marks}))`,
+        args: emails,
+      },
+      {
+        sql: `UPDATE users SET password_hash = '${DISABLED}' WHERE email IN (${marks})`,
+        args: emails,
+      },
     ],
     "write",
   );
@@ -224,11 +303,20 @@ export const DISABLED = "disabled";
 const ITERATIONS = 100_000; // Cloudflare Workers' maximum for PBKDF2
 
 const toHex = (buf: ArrayBuffer | Uint8Array) =>
-  Array.from(buf instanceof Uint8Array ? buf : new Uint8Array(buf), (b) => b.toString(16).padStart(2, "0")).join("");
-const fromHex = (hex: string): Uint8Array<ArrayBuffer> => new Uint8Array(hex.match(/../g)?.map((h) => parseInt(h, 16)) ?? []);
+  Array.from(buf instanceof Uint8Array ? buf : new Uint8Array(buf), (b) =>
+    b.toString(16).padStart(2, "0"),
+  ).join("");
+const fromHex = (hex: string): Uint8Array<ArrayBuffer> =>
+  new Uint8Array(hex.match(/../g)?.map((h) => parseInt(h, 16)) ?? []);
 
 async function pbkdf2(password: string, salt: Uint8Array<ArrayBuffer>, iterations: number) {
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"],
+  );
   return crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations }, key, 256);
 }
 
@@ -243,7 +331,8 @@ export async function verifyPassword(password: string, stored: string) {
   const actual = toHex(await pbkdf2(password, fromHex(salt), Number(iter)));
   // Constant-time comparison
   let diff = actual.length ^ hash.length;
-  for (let i = 0; i < Math.min(actual.length, hash.length); i++) diff |= actual.charCodeAt(i) ^ hash.charCodeAt(i);
+  for (let i = 0; i < Math.min(actual.length, hash.length); i++)
+    diff |= actual.charCodeAt(i) ^ hash.charCodeAt(i);
   return diff === 0;
 }
 

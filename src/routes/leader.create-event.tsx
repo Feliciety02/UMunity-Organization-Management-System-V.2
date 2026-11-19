@@ -18,14 +18,29 @@ import { PageHead, Panel, Badge } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { createWorkflow, proposalCompletion, type EventProposalData } from "@/lib/workflows";
 import { getSession } from "@/lib/auth";
-import { SmartField, SmartFormSection, SmartProgressCard, SmartSelect, SmartTextArea } from "@/components/workflows/SmartForm";
+import {
+  SmartField,
+  SmartFormSection,
+  SmartProgressCard,
+  SmartSelect,
+  SmartTextArea,
+} from "@/components/workflows/SmartForm";
 import { orgShortFor } from "@/lib/text";
 
 export const Route = createFileRoute("/leader/create-event")({
   component: CreateEventWorkflowPage,
 });
 
-const CATEGORIES = ["Conference", "Workshop", "Competition", "Cultural", "Sports", "Community Outreach", "General Assembly", "Fundraiser"];
+const CATEGORIES = [
+  "Conference",
+  "Workshop",
+  "Competition",
+  "Cultural",
+  "Sports",
+  "Community Outreach",
+  "General Assembly",
+  "Fundraiser",
+];
 const SDG_OPTIONS = [
   "Quality Education",
   "Gender Equality",
@@ -79,7 +94,11 @@ function CreateEventWorkflowPage() {
 
   const completion = useMemo(() => proposalCompletion(proposal), [proposal]);
   const totalBudget = useMemo(
-    () => proposal.budgetItems.reduce((sum, item) => sum + (Number.isFinite(item.amount) ? item.amount : 0), 0),
+    () =>
+      proposal.budgetItems.reduce(
+        (sum, item) => sum + (Number.isFinite(item.amount) ? item.amount : 0),
+        0,
+      ),
     [proposal.budgetItems],
   );
 
@@ -87,7 +106,11 @@ function CreateEventWorkflowPage() {
     setProposal((current) => ({ ...current, [key]: value }));
   }
 
-  function updateBudgetItem(id: string, field: "label" | "amount" | "notes", value: string | number) {
+  function updateBudgetItem(
+    id: string,
+    field: "label" | "amount" | "notes",
+    value: string | number,
+  ) {
     patch(
       "budgetItems",
       proposal.budgetItems.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
@@ -138,14 +161,11 @@ function CreateEventWorkflowPage() {
     });
 
     localStorage.removeItem(DRAFT_KEY);
-    toast.success(
-      submit ? "Workflow submitted to adviser" : "Workflow draft saved",
-      {
-        description: submit
-          ? "The proposal now moves through adviser, Admin 2, and Admin 1 review."
-          : "You can reopen this draft from the event workflow dashboard.",
-      },
-    );
+    toast.success(submit ? "Workflow submitted to adviser" : "Workflow draft saved", {
+      description: submit
+        ? "The proposal now moves through adviser, Admin 2, and Admin 1 review."
+        : "You can reopen this draft from the event workflow dashboard.",
+    });
     navigate({ to: "/leader/workflows/$workflowId", params: { workflowId: workflow.id } });
   }
 
@@ -234,7 +254,9 @@ function CreateEventWorkflowPage() {
                       onChange={(e) =>
                         patch(
                           "collaborators",
-                          proposal.collaborators.map((entry, currentIndex) => (currentIndex === index ? e.target.value : entry)),
+                          proposal.collaborators.map((entry, currentIndex) =>
+                            currentIndex === index ? e.target.value : entry,
+                          ),
                         )
                       }
                       placeholder="Partner org, sponsor, college unit"
@@ -248,7 +270,9 @@ function CreateEventWorkflowPage() {
                           "collaborators",
                           proposal.collaborators.length === 1
                             ? [""]
-                            : proposal.collaborators.filter((_, currentIndex) => currentIndex !== index),
+                            : proposal.collaborators.filter(
+                                (_, currentIndex) => currentIndex !== index,
+                              ),
                         )
                       }
                     >
@@ -276,11 +300,15 @@ function CreateEventWorkflowPage() {
                         onClick={() =>
                           patch(
                             "sdgs",
-                            active ? proposal.sdgs.filter((item) => item !== sdg) : [...proposal.sdgs, sdg],
+                            active
+                              ? proposal.sdgs.filter((item) => item !== sdg)
+                              : [...proposal.sdgs, sdg],
                           )
                         }
                         className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
-                          active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:bg-secondary"
+                          active
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-card hover:bg-secondary"
                         }`}
                       >
                         {sdg}
@@ -289,7 +317,8 @@ function CreateEventWorkflowPage() {
                   })}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Tag the outcomes your activity directly supports. These stay attached to the workflow history.
+                  Tag the outcomes your activity directly supports. These stay attached to the
+                  workflow history.
                 </p>
               </div>
             </div>
@@ -298,7 +327,10 @@ function CreateEventWorkflowPage() {
           <Panel title="Budget builder">
             <div className="space-y-3">
               {proposal.budgetItems.map((item) => (
-                <div key={item.id} className="grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-[1.5fr_0.8fr_1fr_auto]">
+                <div
+                  key={item.id}
+                  className="grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-[1.5fr_0.8fr_1fr_auto]"
+                >
                   <input
                     value={item.label}
                     onChange={(e) => updateBudgetItem(item.id, "label", e.target.value)}
@@ -319,7 +351,16 @@ function CreateEventWorkflowPage() {
                     placeholder="Notes or supplier"
                     className="rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none"
                   />
-                  <AppButton variant="ghost" size="icon" onClick={() => patch("budgetItems", proposal.budgetItems.filter((entry) => entry.id !== item.id))}>
+                  <AppButton
+                    variant="ghost"
+                    size="icon"
+                    onClick={() =>
+                      patch(
+                        "budgetItems",
+                        proposal.budgetItems.filter((entry) => entry.id !== item.id),
+                      )
+                    }
+                  >
                     <Trash2 className="h-4 w-4" />
                   </AppButton>
                 </div>
@@ -338,8 +379,12 @@ function CreateEventWorkflowPage() {
                   <Plus className="h-4 w-4" /> Add expense
                 </AppButton>
                 <div className="text-right">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Projected total</p>
-                  <p className="font-display text-2xl font-bold">PHP {totalBudget.toLocaleString()}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Projected total
+                  </p>
+                  <p className="font-display text-2xl font-bold">
+                    PHP {totalBudget.toLocaleString()}
+                  </p>
                 </div>
               </div>
             </div>
@@ -363,7 +408,16 @@ function CreateEventWorkflowPage() {
                         placeholder="Describe the work happening in this stage."
                         className="flex-1 rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none"
                       />
-                      <AppButton variant="ghost" size="icon" onClick={() => patch("timeline", proposal.timeline.filter((entry) => entry.id !== item.id))}>
+                      <AppButton
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          patch(
+                            "timeline",
+                            proposal.timeline.filter((entry) => entry.id !== item.id),
+                          )
+                        }
+                      >
                         <Trash2 className="h-4 w-4" />
                       </AppButton>
                     </div>
@@ -388,7 +442,10 @@ function CreateEventWorkflowPage() {
                   <Upload className="h-4 w-4 text-primary" />
                   <div>
                     <p className="font-semibold text-foreground">Optional supporting uploads</p>
-                    <p className="text-xs text-muted-foreground">Keep attachments lightweight. The core submission should still live in structured fields.</p>
+                    <p className="text-xs text-muted-foreground">
+                      Keep attachments lightweight. The core submission should still live in
+                      structured fields.
+                    </p>
                   </div>
                   <input
                     type="file"
@@ -408,13 +465,21 @@ function CreateEventWorkflowPage() {
                     </div>
                   ) : (
                     proposal.attachments.map((attachment) => (
-                      <div key={attachment} className="flex items-center justify-between rounded-2xl border border-border bg-card px-3 py-2 text-sm">
+                      <div
+                        key={attachment}
+                        className="flex items-center justify-between rounded-2xl border border-border bg-card px-3 py-2 text-sm"
+                      >
                         <span className="flex items-center gap-2">
                           <FileText className="h-4 w-4 text-primary" />
                           {attachment}
                         </span>
                         <button
-                          onClick={() => patch("attachments", proposal.attachments.filter((item) => item !== attachment))}
+                          onClick={() =>
+                            patch(
+                              "attachments",
+                              proposal.attachments.filter((item) => item !== attachment),
+                            )
+                          }
                           className="text-xs font-semibold text-muted-foreground hover:text-foreground"
                         >
                           Remove
@@ -435,19 +500,38 @@ function CreateEventWorkflowPage() {
               pct={completion.pct}
               summary="This draft stays inside the new workflow system and routes through adviser, Admin 2, and Admin 1."
               steps={[
-                { title: "Draft", detail: "Leader builds the workflow in a Google Forms style flow.", active: true },
-                { title: "Pending Adviser", detail: "Adviser reviews content, activity details, and officer readiness." },
-                { title: "Pending Admin 2", detail: "Secondary compliance review after adviser approval." },
+                {
+                  title: "Draft",
+                  detail: "Leader builds the workflow in a Google Forms style flow.",
+                  active: true,
+                },
+                {
+                  title: "Pending Adviser",
+                  detail: "Adviser reviews content, activity details, and officer readiness.",
+                },
+                {
+                  title: "Pending Admin 2",
+                  detail: "Secondary compliance review after adviser approval.",
+                },
                 { title: "Pending Admin 1", detail: "Final university authority review." },
-                { title: "Approved", detail: "Workflow opens preparation, checklist, and post-event stages." },
+                {
+                  title: "Approved",
+                  detail: "Workflow opens preparation, checklist, and post-event stages.",
+                },
               ]}
             />
           </Panel>
 
           <Panel title="Smart workflow notes">
             <div className="space-y-3 text-sm text-muted-foreground">
-              <p>This builder turns the old paperwork stack into a structured workflow record with comments, approval history, and clear routing.</p>
-              <p>Uploads are optional. The system prioritizes form fields, repeatable budget rows, timeline blocks, and approval checkpoints.</p>
+              <p>
+                This builder turns the old paperwork stack into a structured workflow record with
+                comments, approval history, and clear routing.
+              </p>
+              <p>
+                Uploads are optional. The system prioritizes form fields, repeatable budget rows,
+                timeline blocks, and approval checkpoints.
+              </p>
               <div className="flex flex-wrap gap-2">
                 <Badge tone="info">Auto-save draft</Badge>
                 <Badge tone="gold">Structured budget</Badge>
@@ -458,10 +542,18 @@ function CreateEventWorkflowPage() {
 
           <Panel title="Submission output">
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="rounded-2xl bg-secondary/35 px-3 py-2">Event objective and activity details</li>
-              <li className="rounded-2xl bg-secondary/35 px-3 py-2">Budget table with auto totals</li>
-              <li className="rounded-2xl bg-secondary/35 px-3 py-2">Venue, collaborators, and SDG alignment</li>
-              <li className="rounded-2xl bg-secondary/35 px-3 py-2">Timeline, comments, and approval history</li>
+              <li className="rounded-2xl bg-secondary/35 px-3 py-2">
+                Event objective and activity details
+              </li>
+              <li className="rounded-2xl bg-secondary/35 px-3 py-2">
+                Budget table with auto totals
+              </li>
+              <li className="rounded-2xl bg-secondary/35 px-3 py-2">
+                Venue, collaborators, and SDG alignment
+              </li>
+              <li className="rounded-2xl bg-secondary/35 px-3 py-2">
+                Timeline, comments, and approval history
+              </li>
             </ul>
           </Panel>
         </div>
@@ -474,7 +566,9 @@ function SectionLabel({ icon: Icon, label }: { icon: typeof Users; label: string
   return (
     <div className="flex items-center gap-2">
       <Icon className="h-4 w-4 text-primary" />
-      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
     </div>
   );
 }

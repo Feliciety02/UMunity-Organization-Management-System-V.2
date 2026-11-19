@@ -11,7 +11,9 @@ export function AppAvatar({
   ring?: boolean;
 }) {
   return (
-    <div className={cn("grid place-items-center rounded-full", ring && "ring-4 ring-white", className)}>
+    <div
+      className={cn("grid place-items-center rounded-full", ring && "ring-4 ring-white", className)}
+    >
       {children}
     </div>
   );

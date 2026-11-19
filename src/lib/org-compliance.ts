@@ -48,7 +48,14 @@ export type ComplianceComment = {
 
 export type ComplianceHistoryEntry = {
   id: string;
-  action: "created" | "submitted" | "commented" | "revision_requested" | "approved" | "rejected" | "retracted";
+  action:
+    | "created"
+    | "submitted"
+    | "commented"
+    | "revision_requested"
+    | "approved"
+    | "rejected"
+    | "retracted";
   byRole: WorkflowActor["role"];
   byName: string;
   note?: string;
@@ -77,18 +84,29 @@ function defaultFormData(): ComplianceFormData {
     adviserName: "Prof. Elena Tan",
     memberCount: 3,
     accreditationScope: "Recognition renewal",
-    mission: "Build student leaders in computing through guided projects, service, and campus collaboration.",
-    vision: "Be the university's most trusted student technology community for innovation, ethics, and peer growth.",
-    annualGoals: "Deliver four flagship programs, improve retention, and strengthen cross-college partnerships.",
+    mission:
+      "Build student leaders in computing through guided projects, service, and campus collaboration.",
+    vision:
+      "Be the university's most trusted student technology community for innovation, ethics, and peer growth.",
+    annualGoals:
+      "Deliver four flagship programs, improve retention, and strengthen cross-college partnerships.",
     flagshipPrograms: ["Innovation Summit", "Hack Night", "Peer Tutoring Sprint"],
-    memberDevelopment: "Monthly skill labs, mentorship circles, and officer shadowing tracks for new volunteers.",
-    riskControls: "Venue approvals, attendance cap planning, marshal assignments, and adviser-facing escalation rules.",
-    budgetSummary: "Blend of member dues, sponsorship support, and project-based allocations with tracked spending checkpoints.",
-    fundingModel: "Treasurer-led budgeting with pre-event estimates and post-event reconciliation per activity.",
-    accountabilityPlan: "Quarterly reporting, workflow comments, and officer transition archival every academic year.",
-    officerRosterSummary: "President, Vice President, Secretary, Treasurer, PRO, and committee leads mapped to clear owners.",
-    transitionReadiness: "All major roles have shadow officers and handover notes prepared before the next cycle.",
-    adviserNotes: "Org is active and capable of handling another recognition cycle with structured oversight.",
+    memberDevelopment:
+      "Monthly skill labs, mentorship circles, and officer shadowing tracks for new volunteers.",
+    riskControls:
+      "Venue approvals, attendance cap planning, marshal assignments, and adviser-facing escalation rules.",
+    budgetSummary:
+      "Blend of member dues, sponsorship support, and project-based allocations with tracked spending checkpoints.",
+    fundingModel:
+      "Treasurer-led budgeting with pre-event estimates and post-event reconciliation per activity.",
+    accountabilityPlan:
+      "Quarterly reporting, workflow comments, and officer transition archival every academic year.",
+    officerRosterSummary:
+      "President, Vice President, Secretary, Treasurer, PRO, and committee leads mapped to clear owners.",
+    transitionReadiness:
+      "All major roles have shadow officers and handover notes prepared before the next cycle.",
+    adviserNotes:
+      "Org is active and capable of handling another recognition cycle with structured oversight.",
     attachments: [
       { id: "seed-attach-1", label: "constitution-summary.pdf" },
       { id: "seed-attach-2", label: "annual-plan-outline.pdf" },
@@ -235,7 +253,9 @@ export function formatComplianceStatus(status: ComplianceStatus) {
   }
 }
 
-export function complianceTone(status: ComplianceStatus): "neutral" | "info" | "warning" | "danger" | "success" {
+export function complianceTone(
+  status: ComplianceStatus,
+): "neutral" | "info" | "warning" | "danger" | "success" {
   switch (status) {
     case "draft":
       return "neutral";
@@ -308,8 +328,13 @@ export function createComplianceSubmission(input: {
   return submission;
 }
 
-function updateSubmission(id: string, updater: (submission: OrgComplianceSubmission) => OrgComplianceSubmission) {
-  const next = read().map((submission) => (submission.id === id ? updater({ ...submission }) : submission));
+function updateSubmission(
+  id: string,
+  updater: (submission: OrgComplianceSubmission) => OrgComplianceSubmission,
+) {
+  const next = read().map((submission) =>
+    submission.id === id ? updater({ ...submission }) : submission,
+  );
   write(next);
   return next.find((submission) => submission.id === id) ?? null;
 }
@@ -473,7 +498,8 @@ export function approveCompliance(id: string, actor: WorkflowActor, note?: strin
         academicYear: submission.academicYear,
         status: "active",
         lifecycleStatus: "recognized",
-        note: note ?? "Admin 1 approved this accreditation cycle and kept the organization recognized.",
+        note:
+          note ?? "Admin 1 approved this accreditation cycle and kept the organization recognized.",
       });
       sendOrgRegistryNotification(
         submission.orgSlug,

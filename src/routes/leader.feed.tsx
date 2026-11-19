@@ -75,7 +75,9 @@ function LeaderFeed() {
             />
           </Panel>
         ) : (
-          visible.map((post) => <PostCard key={post.id} post={post} org={org} manage orgLinkMode="leader" />)
+          visible.map((post) => (
+            <PostCard key={post.id} post={post} org={org} manage orgLinkMode="leader" />
+          ))
         )}
       </div>
     </>

@@ -1,6 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Ban, CheckCircle2, Globe, Lock, Megaphone, MessageSquareText, Pin, Send, FileText, Calendar, Undo2 } from "lucide-react";
+import {
+  Ban,
+  CheckCircle2,
+  Globe,
+  Lock,
+  Megaphone,
+  MessageSquareText,
+  Pin,
+  Send,
+  FileText,
+  Calendar,
+  Undo2,
+} from "lucide-react";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, PageHead, Panel } from "@/components/dashboard/DashboardLayout";
 import {
@@ -40,8 +52,14 @@ export function PostApprovalDetail({
 }) {
   const [comment, setComment] = useState("");
   const Icon = typeIcon(approval.type);
-  const canSubmit = viewer.role === "leader" && (approval.status === "draft" || approval.status === "revision_requested" || approval.status === "rejected");
-  const canRetract = viewer.role === "leader" && (approval.status === "pending_adviser" || approval.status === "pending_admin2");
+  const canSubmit =
+    viewer.role === "leader" &&
+    (approval.status === "draft" ||
+      approval.status === "revision_requested" ||
+      approval.status === "rejected");
+  const canRetract =
+    viewer.role === "leader" &&
+    (approval.status === "pending_adviser" || approval.status === "pending_admin2");
   const canReview =
     (viewer.role === "adviser" && approval.status === "pending_adviser") ||
     (viewer.role === "admin2" && approval.status === "pending_admin2");
@@ -100,7 +118,14 @@ export function PostApprovalDetail({
               <Link to={backTo as string}>{backLabel}</Link>
             </AppButton>
             {canSubmit ? (
-              <AppButton variant="primary" size="sm" onClick={() => { approvePostApproval(approval.id, viewer); toast.success("Submitted for review"); }}>
+              <AppButton
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  approvePostApproval(approval.id, viewer);
+                  toast.success("Submitted for review");
+                }}
+              >
                 <Send className="h-4 w-4" /> Submit for review
               </AppButton>
             ) : null}
@@ -111,7 +136,8 @@ export function PostApprovalDetail({
             ) : null}
             {canReview ? (
               <AppButton variant="primary" size="sm" onClick={approve}>
-                <CheckCircle2 className="h-4 w-4" /> {viewer.role === "adviser" ? "Approve to Admin 2" : "Publish post"}
+                <CheckCircle2 className="h-4 w-4" />{" "}
+                {viewer.role === "adviser" ? "Approve to Admin 2" : "Publish post"}
               </AppButton>
             ) : null}
             {canReject ? (
@@ -139,7 +165,9 @@ export function PostApprovalDetail({
               {approval.title ? <p className="text-lg font-semibold">{approval.title}</p> : null}
               <p className="mt-2 text-sm leading-6 text-foreground">{approval.content}</p>
               <div className="mt-4 flex flex-wrap gap-2">
-                <Badge tone={postApprovalTone(approval.status)}>{formatPostApprovalStatus(approval.status)}</Badge>
+                <Badge tone={postApprovalTone(approval.status)}>
+                  {formatPostApprovalStatus(approval.status)}
+                </Badge>
                 <Badge tone="info">{approval.type}</Badge>
                 <Badge tone="neutral">{approval.visibility}</Badge>
                 {approval.pinned ? <Badge tone="gold">Pinned</Badge> : null}
@@ -149,10 +177,22 @@ export function PostApprovalDetail({
 
           <Panel title="Publishing metadata">
             <div className="grid gap-3 md:grid-cols-2">
-              <MetaCard label="Visibility" value={approval.visibility === "public" ? "Public campus view" : "Members only"} icon={approval.visibility === "public" ? Globe : Lock} />
-              <MetaCard label="Pinned state" value={approval.pinned ? "Pinned after approval" : "Standard feed order"} icon={Pin} />
+              <MetaCard
+                label="Visibility"
+                value={approval.visibility === "public" ? "Public campus view" : "Members only"}
+                icon={approval.visibility === "public" ? Globe : Lock}
+              />
+              <MetaCard
+                label="Pinned state"
+                value={approval.pinned ? "Pinned after approval" : "Standard feed order"}
+                icon={Pin}
+              />
               <MetaCard label="Type" value={approval.type} icon={Icon} />
-              <MetaCard label="Media" value={approval.imageLabel ?? "No image attached"} icon={FileText} />
+              <MetaCard
+                label="Media"
+                value={approval.imageLabel ?? "No image attached"}
+                icon={FileText}
+              />
             </div>
           </Panel>
         </div>
@@ -184,7 +224,9 @@ export function PostApprovalDetail({
               </div>
               <div className="space-y-3">
                 {approval.comments.length === 0 ? (
-                  <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">No comments yet.</div>
+                  <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
+                    No comments yet.
+                  </div>
                 ) : (
                   approval.comments.map((entry) => (
                     <div key={entry.id} className="rounded-2xl border border-border bg-card p-3">
@@ -193,7 +235,9 @@ export function PostApprovalDetail({
                           <Badge tone="neutral">{entry.authorRole}</Badge>
                           <p className="text-sm font-semibold">{entry.authorName}</p>
                         </div>
-                        <p className="text-xs text-muted-foreground">{new Date(entry.createdAt).toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(entry.createdAt).toLocaleString()}
+                        </p>
                       </div>
                       <p className="mt-2 text-sm text-foreground">{entry.message}</p>
                     </div>
@@ -211,8 +255,12 @@ export function PostApprovalDetail({
                     <p className="text-sm font-semibold">{entry.byName}</p>
                     <Badge tone="info">{entry.action.replaceAll("_", " ")}</Badge>
                   </div>
-                  {entry.note ? <p className="mt-2 text-sm text-muted-foreground">{entry.note}</p> : null}
-                  <p className="mt-1 text-xs text-muted-foreground">{new Date(entry.createdAt).toLocaleString()}</p>
+                  {entry.note ? (
+                    <p className="mt-2 text-sm text-muted-foreground">{entry.note}</p>
+                  ) : null}
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {new Date(entry.createdAt).toLocaleString()}
+                  </p>
                 </div>
               ))}
             </div>
@@ -223,7 +271,15 @@ export function PostApprovalDetail({
   );
 }
 
-function MetaCard({ label, value, icon: Icon }: { label: string; value: string; icon: typeof Globe }) {
+function MetaCard({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  icon: typeof Globe;
+}) {
   return (
     <div className="rounded-2xl border border-border bg-card p-3">
       <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">

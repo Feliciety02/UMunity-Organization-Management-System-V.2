@@ -2,7 +2,12 @@
 // Stored in the database (org_members / membership_requests tables); this module keeps a browser
 // cache for instant UI, updates it optimistically, and rolls back if the server refuses.
 import { toast } from "sonner";
-import { cancelMembershipRequestFn, leaveOrganizationFn, myMembershipsFn, requestMembershipFn } from "@/lib/api.functions";
+import {
+  cancelMembershipRequestFn,
+  leaveOrganizationFn,
+  myMembershipsFn,
+  requestMembershipFn,
+} from "@/lib/api.functions";
 import { registerRefresher } from "@/lib/cloud-storage";
 import { createLocalStore } from "@/lib/local-store";
 
@@ -13,7 +18,10 @@ type MembershipState = {
   pending: Record<string, string>; // slug -> requested-at label
 };
 
-const store = createLocalStore<MembershipState>("umunity.memberships.v1", { member: {}, pending: {} });
+const store = createLocalStore<MembershipState>("umunity.memberships.v1", {
+  member: {},
+  pending: {},
+});
 
 export async function refreshMemberships() {
   store.write(await myMembershipsFn());
@@ -31,7 +39,10 @@ export function membershipStatus(state: MembershipState, slug: string): Membersh
 }
 
 /** Apply the change locally now, confirm with the server, and undo it if the server says no. */
-function optimistic(change: (s: MembershipState) => MembershipState, call: () => Promise<{ ok: true } | { ok: false; error: string }>) {
+function optimistic(
+  change: (s: MembershipState) => MembershipState,
+  call: () => Promise<{ ok: true } | { ok: false; error: string }>,
+) {
   const before = store.read();
   store.write(change(before));
   call()
@@ -41,7 +52,10 @@ function optimistic(change: (s: MembershipState) => MembershipState, call: () =>
     .catch((err: unknown) => {
       store.write(before);
       toast.error("That didn't go through", {
-        description: err instanceof Error && err.message ? err.message : "Check your connection and try again.",
+        description:
+          err instanceof Error && err.message
+            ? err.message
+            : "Check your connection and try again.",
       });
     })
     .finally(() => void refreshMemberships().catch(() => {}));

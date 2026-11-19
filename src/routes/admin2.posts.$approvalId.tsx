@@ -16,9 +16,14 @@ function Admin2PostApprovalPage() {
   if (!approval || !session) {
     return (
       <>
-        <PageHead title="Post approval not found" sub="The requested post approval could not be found." />
+        <PageHead
+          title="Post approval not found"
+          sub="The requested post approval could not be found."
+        />
         <Panel>
-          <p className="text-sm text-muted-foreground">Return to the Admin 2 post queue and try again.</p>
+          <p className="text-sm text-muted-foreground">
+            Return to the Admin 2 post queue and try again.
+          </p>
         </Panel>
       </>
     );

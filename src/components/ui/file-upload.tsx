@@ -119,14 +119,15 @@ export function FileUpload({
               <File className="h-4 w-4 shrink-0 text-muted-foreground" />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-foreground">{f.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {(f.size / 1024).toFixed(1)} KB
-                </p>
+                <p className="text-xs text-muted-foreground">{(f.size / 1024).toFixed(1)} KB</p>
               </div>
               <button
                 type="button"
                 aria-label={`Remove ${f.name}`}
-                onClick={(e) => { e.stopPropagation(); removeFile(i); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeFile(i);
+                }}
                 className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground"
               >
                 <X className="h-3.5 w-3.5" />

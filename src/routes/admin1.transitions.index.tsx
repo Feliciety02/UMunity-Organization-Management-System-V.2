@@ -9,14 +9,23 @@ export const Route = createFileRoute("/admin1/transitions/")({
 });
 
 function Admin1TransitionsPage() {
-  const workflows = useTransitionWorkflows().filter((workflow) => workflow.status === "pending_admin1" || workflow.status === "completed");
+  const workflows = useTransitionWorkflows().filter(
+    (workflow) => workflow.status === "pending_admin1" || workflow.status === "completed",
+  );
 
   return (
     <>
-      <PageHead title="Officer transitions" sub="Final approval and archive management for yearly officer changes." />
+      <PageHead
+        title="Officer transitions"
+        sub="Final approval and archive management for yearly officer changes."
+      />
       <Panel>
         {workflows.length === 0 ? (
-          <EmptyState title="No transition reviews ready" sub="Adviser-validated transitions will appear here for Admin 1." icon={Archive} />
+          <EmptyState
+            title="No transition reviews ready"
+            sub="Adviser-validated transitions will appear here for Admin 1."
+            icon={Archive}
+          />
         ) : (
           <div className="space-y-3">
             {workflows.map((workflow) => (
@@ -28,9 +37,14 @@ function Admin1TransitionsPage() {
                   </Badge>
                 </div>
                 <p className="mt-2 text-sm font-semibold">{workflow.orgName}</p>
-                <p className="text-xs text-muted-foreground">{workflow.nominees.length} nominees - adviser {workflow.adviserName}</p>
+                <p className="text-xs text-muted-foreground">
+                  {workflow.nominees.length} nominees - adviser {workflow.adviserName}
+                </p>
                 <AppButton asChild variant="secondary" size="sm" className="mt-3">
-                  <Link to="/admin1/transitions/$transitionId" params={{ transitionId: workflow.id }}>
+                  <Link
+                    to="/admin1/transitions/$transitionId"
+                    params={{ transitionId: workflow.id }}
+                  >
                     Open transition <ArrowRight className="h-4 w-4" />
                   </Link>
                 </AppButton>

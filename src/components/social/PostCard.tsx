@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Bookmark, Calendar, Flag, Globe, Link2, Lock, MoreHorizontal, Pin, Send } from "lucide-react";
+import {
+  Bookmark,
+  Calendar,
+  Flag,
+  Globe,
+  Link2,
+  Lock,
+  MoreHorizontal,
+  Pin,
+  Send,
+} from "lucide-react";
 import type { Comment, Org, Post } from "@/data/site";
 import { Badge } from "@/components/dashboard/DashboardLayout";
 import { OrgLink, type OrgLinkMode } from "@/components/org/OrgLink";
@@ -21,7 +31,13 @@ import { showImportantActionToast, showStatusToast } from "@/lib/feedback";
 import { toggleSavedPost, useSaved } from "@/lib/saved";
 import { svgToDataUri } from "@/lib/text";
 
-export function OrgAvatar({ org, size = 40 }: { org: Pick<Org, "color" | "initials">; size?: number }) {
+export function OrgAvatar({
+  org,
+  size = 40,
+}: {
+  org: Pick<Org, "color" | "initials">;
+  size?: number;
+}) {
   return (
     <div
       className={`grid shrink-0 place-items-center rounded-[16px] bg-gradient-to-br ${org.color} font-display font-bold text-primary-foreground`}
@@ -55,13 +71,19 @@ export function PostCard({
   const [comments, setComments] = useState<Comment[]>(post.comments);
   const session = getSession();
   const myName = session?.name ?? "You";
-  const myInitials = myName.split(" ").slice(0, 2).map((w) => w[0]).join("");
+  const myInitials = myName
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("");
 
   function toggleSave() {
     const nowSaved = toggleSavedPost(post.id);
     showImportantActionToast(
       "save",
-      nowSaved ? "You can find this post anytime in Saved posts." : "This post has been removed from your saved list.",
+      nowSaved
+        ? "You can find this post anytime in Saved posts."
+        : "This post has been removed from your saved list.",
       nowSaved ? "Saved for later" : "Removed from saved",
     );
   }
@@ -88,7 +110,13 @@ export function PostCard({
     if (!draft.trim()) return;
     setComments((current) => [
       ...current,
-      { id: `local-${Date.now()}`, author: myName, program: session?.program, text: draft, time: "now" },
+      {
+        id: `local-${Date.now()}`,
+        author: myName,
+        program: session?.program,
+        text: draft,
+        time: "now",
+      },
     ]);
     setDraft("");
     showStatusToast("Comment posted", "Your reply is now visible in the thread.");
@@ -96,11 +124,15 @@ export function PostCard({
 
   if (deleted) return null;
 
-  const typeLabel = post.type === "event" ? "Event" : post.type === "announcement" ? "Announcement" : null;
-  const visual = post.image ? postVisuals[post.id] ?? defaultVisual : null;
+  const typeLabel =
+    post.type === "event" ? "Event" : post.type === "announcement" ? "Announcement" : null;
+  const visual = post.image ? (postVisuals[post.id] ?? defaultVisual) : null;
 
   return (
-    <AppCard className="overflow-hidden rounded-[24px] transition duration-200 hover:-translate-y-0.5 hover:shadow-soft" padded={false}>
+    <AppCard
+      className="overflow-hidden rounded-[24px] transition duration-200 hover:-translate-y-0.5 hover:shadow-soft"
+      padded={false}
+    >
       <header className="flex items-start gap-3 px-5 pb-4 pt-5">
         <OrgLink slug={org.slug} mode={orgLinkMode}>
           <div className="rounded-[18px] bg-secondary/65 p-0.5">
@@ -109,7 +141,11 @@ export function PostCard({
         </OrgLink>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2.5">
-            <OrgLink slug={org.slug} mode={orgLinkMode} className="font-display text-[15px] font-semibold hover:underline">
+            <OrgLink
+              slug={org.slug}
+              mode={orgLinkMode}
+              className="font-display text-[15px] font-semibold hover:underline"
+            >
               {org.name}
             </OrgLink>
             {pinned ? (
@@ -117,10 +153,17 @@ export function PostCard({
                 <Pin className="h-3 w-3" /> Pinned
               </span>
             ) : null}
-            {typeLabel ? <Badge tone={post.type === "event" ? "gold" : "info"}>{typeLabel}</Badge> : null}
+            {typeLabel ? (
+              <Badge tone={post.type === "event" ? "gold" : "info"}>{typeLabel}</Badge>
+            ) : null}
           </div>
           <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span>{post.time}</span> · {post.visibility === "public" ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
+            <span>{post.time}</span> ·{" "}
+            {post.visibility === "public" ? (
+              <Globe className="h-3 w-3" />
+            ) : (
+              <Lock className="h-3 w-3" />
+            )}
             <span>{post.visibility === "public" ? "Public" : "Members only"}</span>
           </p>
         </div>
@@ -139,7 +182,13 @@ export function PostCard({
             </DropdownMenuItem>
             {!manage ? (
               <DropdownMenuItem
-                onSelect={() => showStatusToast("Post reported", "Moderators will review this post. Thanks for flagging it.", "info")}
+                onSelect={() =>
+                  showStatusToast(
+                    "Post reported",
+                    "Moderators will review this post. Thanks for flagging it.",
+                    "info",
+                  )
+                }
                 className="text-destructive focus:text-destructive"
               >
                 <Flag className="h-4 w-4" /> Report post
@@ -150,7 +199,11 @@ export function PostCard({
       </header>
 
       <div className="px-5 pb-4">
-        {post.title ? <h3 className="mb-2 font-display text-[1.05rem] font-semibold leading-7 text-foreground">{post.title}</h3> : null}
+        {post.title ? (
+          <h3 className="mb-2 font-display text-[1.05rem] font-semibold leading-7 text-foreground">
+            {post.title}
+          </h3>
+        ) : null}
         <p className="whitespace-pre-line text-sm leading-7 text-foreground/90">{post.content}</p>
       </div>
 
@@ -201,13 +254,17 @@ export function PostCard({
       {showComments ? (
         <div className="border-t border-border bg-secondary/25 p-5">
           <div className="space-y-3">
-            {comments.length === 0 ? <p className="text-center text-xs text-muted-foreground">Be the first to comment.</p> : null}
+            {comments.length === 0 ? (
+              <p className="text-center text-xs text-muted-foreground">Be the first to comment.</p>
+            ) : null}
             {comments.map((comment) => (
               <CommentItem key={comment.id} comment={comment} onReply={replyTo} />
             ))}
           </div>
           <div className="mt-4 flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 shadow-soft">
-            <div className="grid h-7 w-7 place-items-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">{myInitials}</div>
+            <div className="grid h-7 w-7 place-items-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+              {myInitials}
+            </div>
             <input
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
@@ -215,7 +272,14 @@ export function PostCard({
               placeholder="Write a comment..."
               className="flex-1 bg-transparent text-sm focus:outline-none"
             />
-            <AppButton onClick={submitComment} variant="primary" size="icon" className="h-7 w-7" aria-label="Post comment" disabled={!draft.trim()}>
+            <AppButton
+              onClick={submitComment}
+              variant="primary"
+              size="icon"
+              className="h-7 w-7"
+              aria-label="Post comment"
+              disabled={!draft.trim()}
+            >
               <Send className="h-3.5 w-3.5" />
             </AppButton>
           </div>
@@ -233,7 +297,12 @@ export function PostCard({
             shape="soft"
             onClick={() => {
               setPinned((p) => !p);
-              showStatusToast(pinned ? "Post unpinned" : "Post pinned", pinned ? "It returns to its normal place in the feed." : "It now stays at the top of your feed.");
+              showStatusToast(
+                pinned ? "Post unpinned" : "Post pinned",
+                pinned
+                  ? "It returns to its normal place in the feed."
+                  : "It now stays at the top of your feed.",
+              );
             }}
           >
             {pinned ? "Unpin" : "Pin"}
@@ -265,18 +334,30 @@ export function PostCard({
   );
 }
 
-function CommentItem({ comment, onReply }: { comment: Comment; onReply: (author: string) => void }) {
+function CommentItem({
+  comment,
+  onReply,
+}: {
+  comment: Comment;
+  onReply: (author: string) => void;
+}) {
   const [liked, setLiked] = useState(false);
   return (
     <div className="flex items-start gap-2">
       <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-secondary text-[10px] font-bold text-primary-deep">
-        {comment.author.split(" ").slice(0, 2).map((word) => word[0]).join("")}
+        {comment.author
+          .split(" ")
+          .slice(0, 2)
+          .map((word) => word[0])
+          .join("")}
       </div>
       <div className="min-w-0 flex-1">
         <div className="rounded-2xl bg-card px-3 py-2 shadow-soft">
           <p className="text-xs font-semibold">
             {comment.author}
-            {comment.program ? <span className="ml-1 font-normal text-muted-foreground">· {comment.program}</span> : null}
+            {comment.program ? (
+              <span className="ml-1 font-normal text-muted-foreground">· {comment.program}</span>
+            ) : null}
           </p>
           <p className="text-sm">{comment.text}</p>
         </div>
@@ -289,7 +370,11 @@ function CommentItem({ comment, onReply }: { comment: Comment; onReply: (author:
           >
             {liked ? "Liked" : "Like"}
           </button>
-          <button type="button" onClick={() => onReply(comment.author)} className="font-semibold hover:text-foreground">
+          <button
+            type="button"
+            onClick={() => onReply(comment.author)}
+            className="font-semibold hover:text-foreground"
+          >
             Reply
           </button>
           <span>{comment.time}</span>

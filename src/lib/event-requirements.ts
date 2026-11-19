@@ -6,7 +6,14 @@ import { createLocalStore } from "@/lib/local-store";
 
 export type ReqStatus = "pending" | "for-review" | "approved" | "missing";
 export type SectionId = "before" | "during" | "after";
-export type ReqReviewStatus = "draft" | "pending_adviser" | "revision_requested" | "pending_admin2" | "pending_admin1" | "approved" | "rejected";
+export type ReqReviewStatus =
+  | "draft"
+  | "pending_adviser"
+  | "revision_requested"
+  | "pending_admin2"
+  | "pending_admin1"
+  | "approved"
+  | "rejected";
 export type ReqActorRole = "leader" | "adviser" | "admin2" | "admin1";
 
 export type ReqFile = { name: string; size: number; uploadedAt: number };
@@ -51,7 +58,14 @@ export type EventDoc = {
   }[];
   history: {
     id: string;
-    action: "created" | "submitted" | "commented" | "revision_requested" | "approved" | "rejected" | "retracted";
+    action:
+      | "created"
+      | "submitted"
+      | "commented"
+      | "revision_requested"
+      | "approved"
+      | "rejected"
+      | "retracted";
     byRole: ReqActorRole;
     byName: string;
     note?: string;
@@ -79,33 +93,138 @@ export function suggestFilename(orgShort: string, eventTitle: string, item: stri
   return `${safeOrg}_${safeTitle}_${safeItem}_${ay}.pdf`;
 }
 
-type Template = { id: string; title: string; description: string; template: string; offsetDays: number };
+type Template = {
+  id: string;
+  title: string;
+  description: string;
+  template: string;
+  offsetDays: number;
+};
 
 const BEFORE: Template[] = [
-  { id: "activity-proposal", title: "Activity Proposal", description: "Concept paper, programme flow, and budget overview.", template: "ActivityProposal.docx", offsetDays: -21 },
-  { id: "due-diligence", title: "Due Diligence", description: "Safety, venue clearance, and risk checklist.", template: "DueDiligence.docx", offsetDays: -18 },
-  { id: "financial-due-diligence", title: "Financial Due Diligence", description: "Detailed budget breakdown and source of funds.", template: "FinancialDueDiligence.xlsx", offsetDays: -18 },
-  { id: "letter-requests", title: "Letter Requests", description: "Permits, invitations, venue, and sponsor letters.", template: "LetterRequests.docx", offsetDays: -14 },
+  {
+    id: "activity-proposal",
+    title: "Activity Proposal",
+    description: "Concept paper, programme flow, and budget overview.",
+    template: "ActivityProposal.docx",
+    offsetDays: -21,
+  },
+  {
+    id: "due-diligence",
+    title: "Due Diligence",
+    description: "Safety, venue clearance, and risk checklist.",
+    template: "DueDiligence.docx",
+    offsetDays: -18,
+  },
+  {
+    id: "financial-due-diligence",
+    title: "Financial Due Diligence",
+    description: "Detailed budget breakdown and source of funds.",
+    template: "FinancialDueDiligence.xlsx",
+    offsetDays: -18,
+  },
+  {
+    id: "letter-requests",
+    title: "Letter Requests",
+    description: "Permits, invitations, venue, and sponsor letters.",
+    template: "LetterRequests.docx",
+    offsetDays: -14,
+  },
 ];
 
 const DURING: Template[] = [
-  { id: "attendance-sheet", title: "Attendance Sheet", description: "Printed sheet + digital tracker for sign-ins.", template: "AttendanceSheet.xlsx", offsetDays: 0 },
-  { id: "documentation-reminder", title: "Documentation Reminder", description: "Assign documentor, ensure camera + storage ready.", template: "DocumentationChecklist.pdf", offsetDays: 0 },
-  { id: "photo-coverage", title: "Photo Coverage Checklist", description: "Shotlist: opening, speakers, audience, awarding.", template: "PhotoChecklist.pdf", offsetDays: 0 },
-  { id: "evaluation-forms", title: "Evaluation Forms", description: "Participant feedback and speaker rating sheets.", template: "EvaluationForm.docx", offsetDays: 0 },
-  { id: "collaboration-forms", title: "Collaboration Forms", description: "Sign-off forms for partner orgs and sponsors.", template: "CollaborationForm.docx", offsetDays: 0 },
+  {
+    id: "attendance-sheet",
+    title: "Attendance Sheet",
+    description: "Printed sheet + digital tracker for sign-ins.",
+    template: "AttendanceSheet.xlsx",
+    offsetDays: 0,
+  },
+  {
+    id: "documentation-reminder",
+    title: "Documentation Reminder",
+    description: "Assign documentor, ensure camera + storage ready.",
+    template: "DocumentationChecklist.pdf",
+    offsetDays: 0,
+  },
+  {
+    id: "photo-coverage",
+    title: "Photo Coverage Checklist",
+    description: "Shotlist: opening, speakers, audience, awarding.",
+    template: "PhotoChecklist.pdf",
+    offsetDays: 0,
+  },
+  {
+    id: "evaluation-forms",
+    title: "Evaluation Forms",
+    description: "Participant feedback and speaker rating sheets.",
+    template: "EvaluationForm.docx",
+    offsetDays: 0,
+  },
+  {
+    id: "collaboration-forms",
+    title: "Collaboration Forms",
+    description: "Sign-off forms for partner orgs and sponsors.",
+    template: "CollaborationForm.docx",
+    offsetDays: 0,
+  },
 ];
 
 const AFTER: Template[] = [
-  { id: "narrative-report", title: "Narrative Report", description: "Story of the event — objectives, flow, outcomes.", template: "NarrativeReport.docx", offsetDays: 7 },
-  { id: "reflection-paper", title: "Reflection Paper", description: "Officer reflections and learnings.", template: "ReflectionPaper.docx", offsetDays: 7 },
-  { id: "documentation-upload", title: "Documentation Upload", description: "Curated photo set and video highlights.", template: "DocumentationIndex.pdf", offsetDays: 10 },
-  { id: "liquidation-report", title: "Liquidation Report", description: "Receipts, summary of expenses, balance.", template: "LiquidationReport.xlsx", offsetDays: 14 },
-  { id: "awards-certificates", title: "Awards & Certificates", description: "Issued certificates for speakers and volunteers.", template: "CertificateList.xlsx", offsetDays: 10 },
-  { id: "accreditation-requirements", title: "Accreditation Requirements", description: "Compile for OSA accreditation cycle.", template: "AccreditationPacket.pdf", offsetDays: 21 },
+  {
+    id: "narrative-report",
+    title: "Narrative Report",
+    description: "Story of the event — objectives, flow, outcomes.",
+    template: "NarrativeReport.docx",
+    offsetDays: 7,
+  },
+  {
+    id: "reflection-paper",
+    title: "Reflection Paper",
+    description: "Officer reflections and learnings.",
+    template: "ReflectionPaper.docx",
+    offsetDays: 7,
+  },
+  {
+    id: "documentation-upload",
+    title: "Documentation Upload",
+    description: "Curated photo set and video highlights.",
+    template: "DocumentationIndex.pdf",
+    offsetDays: 10,
+  },
+  {
+    id: "liquidation-report",
+    title: "Liquidation Report",
+    description: "Receipts, summary of expenses, balance.",
+    template: "LiquidationReport.xlsx",
+    offsetDays: 14,
+  },
+  {
+    id: "awards-certificates",
+    title: "Awards & Certificates",
+    description: "Issued certificates for speakers and volunteers.",
+    template: "CertificateList.xlsx",
+    offsetDays: 10,
+  },
+  {
+    id: "accreditation-requirements",
+    title: "Accreditation Requirements",
+    description: "Compile for OSA accreditation cycle.",
+    template: "AccreditationPacket.pdf",
+    offsetDays: 21,
+  },
 ];
 
-function buildSection(id: SectionId, title: string, blurb: string, templates: Template[], eventDate: string, orgShort: string, eventTitle: string, ay: string): ReqSection {
+function buildSection(
+  id: SectionId,
+  title: string,
+  blurb: string,
+  templates: Template[],
+  eventDate: string,
+  orgShort: string,
+  eventTitle: string,
+  ay: string,
+): ReqSection {
   const base = eventDate ? new Date(eventDate).getTime() : Date.now();
   return {
     id,
@@ -123,11 +242,43 @@ function buildSection(id: SectionId, title: string, blurb: string, templates: Te
   };
 }
 
-export function buildSections(eventDate: string, orgShort: string, eventTitle: string, ay: string): ReqSection[] {
+export function buildSections(
+  eventDate: string,
+  orgShort: string,
+  eventTitle: string,
+  ay: string,
+): ReqSection[] {
   return [
-    buildSection("before", "Before Event", "Plan, propose, and secure approvals.", BEFORE, eventDate, orgShort, eventTitle, ay),
-    buildSection("during", "During Event", "Capture attendance, coverage, and feedback.", DURING, eventDate, orgShort, eventTitle, ay),
-    buildSection("after", "After Event", "Report, liquidate, and prepare for accreditation.", AFTER, eventDate, orgShort, eventTitle, ay),
+    buildSection(
+      "before",
+      "Before Event",
+      "Plan, propose, and secure approvals.",
+      BEFORE,
+      eventDate,
+      orgShort,
+      eventTitle,
+      ay,
+    ),
+    buildSection(
+      "during",
+      "During Event",
+      "Capture attendance, coverage, and feedback.",
+      DURING,
+      eventDate,
+      orgShort,
+      eventTitle,
+      ay,
+    ),
+    buildSection(
+      "after",
+      "After Event",
+      "Report, liquidate, and prepare for accreditation.",
+      AFTER,
+      eventDate,
+      orgShort,
+      eventTitle,
+      ay,
+    ),
   ];
 }
 
@@ -150,7 +301,9 @@ export function formatReqReviewStatus(status: ReqReviewStatus) {
   }
 }
 
-export function reqReviewTone(status: ReqReviewStatus): "neutral" | "info" | "warning" | "danger" | "success" {
+export function reqReviewTone(
+  status: ReqReviewStatus,
+): "neutral" | "info" | "warning" | "danger" | "success" {
   switch (status) {
     case "draft":
       return "neutral";
@@ -180,7 +333,8 @@ const seed: EventDoc[] = [
       venue: "DPT Building Auditorium",
       date,
       time: "09:00",
-      objectives: "Showcase student innovation projects and connect students with industry mentors.",
+      objectives:
+        "Showcase student innovation projects and connect students with industry mentors.",
       collaborators: "UM Eco Warriors, UM Debate Council",
       orgShort: "UMCSS",
       ay,
@@ -199,7 +353,16 @@ const seed: EventDoc[] = [
       ],
       sections: buildSections(date, "UMCSS", "UM Innovation Summit 2026", ay).map((s) =>
         s.id === "before"
-          ? { ...s, items: s.items.map((i, idx) => (idx < 2 ? { ...i, status: "approved" as ReqStatus } : idx === 2 ? { ...i, status: "for-review" as ReqStatus } : i)) }
+          ? {
+              ...s,
+              items: s.items.map((i, idx) =>
+                idx < 2
+                  ? { ...i, status: "approved" as ReqStatus }
+                  : idx === 2
+                    ? { ...i, status: "for-review" as ReqStatus }
+                    : i,
+              ),
+            }
           : s,
       ),
     };
@@ -226,7 +389,10 @@ export function createEventDoc(input: {
 }): EventDoc {
   const ay = academicYearFor(input.date);
   const orgShort = input.orgShort || "UMORG";
-  const id = `evt-${input.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")}-${Date.now().toString(36)}`;
+  const id = `evt-${input.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")}-${Date.now().toString(36)}`;
   const doc: EventDoc = {
     id,
     title: input.title,
@@ -265,7 +431,12 @@ export function createEventDoc(input: {
 
 export function updateEventDoc(
   id: string,
-  patch: Partial<Pick<EventDoc, "title" | "category" | "venue" | "date" | "time" | "objectives" | "collaborators" | "orgShort">>,
+  patch: Partial<
+    Pick<
+      EventDoc,
+      "title" | "category" | "venue" | "date" | "time" | "objectives" | "collaborators" | "orgShort"
+    >
+  >,
 ): EventDoc | undefined {
   return updateDoc(id, (doc) => {
     const next: EventDoc = { ...doc, ...patch };
@@ -276,7 +447,12 @@ export function updateEventDoc(
   });
 }
 
-export function updateItemStatus(eventId: string, sectionId: SectionId, itemId: string, status: ReqStatus) {
+export function updateItemStatus(
+  eventId: string,
+  sectionId: SectionId,
+  itemId: string,
+  status: ReqStatus,
+) {
   write(
     read().map((e) =>
       e.id !== eventId
@@ -284,7 +460,9 @@ export function updateItemStatus(eventId: string, sectionId: SectionId, itemId: 
         : {
             ...e,
             sections: e.sections.map((s) =>
-              s.id !== sectionId ? s : { ...s, items: s.items.map((i) => (i.id === itemId ? { ...i, status } : i)) },
+              s.id !== sectionId
+                ? s
+                : { ...s, items: s.items.map((i) => (i.id === itemId ? { ...i, status } : i)) },
             ),
           },
     ),
@@ -323,7 +501,11 @@ export function submitEventDoc(id: string, actor: { role: ReqActorRole; name: st
   });
 }
 
-export function addEventDocComment(id: string, actor: { role: ReqActorRole; name: string }, message: string) {
+export function addEventDocComment(
+  id: string,
+  actor: { role: ReqActorRole; name: string },
+  message: string,
+) {
   return updateDoc(id, (doc) => ({
     ...doc,
     comments: [
@@ -350,7 +532,11 @@ export function addEventDocComment(id: string, actor: { role: ReqActorRole; name
   }));
 }
 
-export function requestEventDocRevision(id: string, actor: { role: ReqActorRole; name: string }, note: string) {
+export function requestEventDocRevision(
+  id: string,
+  actor: { role: ReqActorRole; name: string },
+  note: string,
+) {
   return updateDoc(id, (doc) => {
     addNotification({
       title: `${doc.title} requirements need revisions`,
@@ -428,7 +614,11 @@ export function approveEventDoc(id: string, actor: { role: ReqActorRole; name: s
   });
 }
 
-export function rejectEventDoc(id: string, actor: { role: ReqActorRole; name: string }, note: string) {
+export function rejectEventDoc(
+  id: string,
+  actor: { role: ReqActorRole; name: string },
+  note: string,
+) {
   return updateDoc(id, (doc) => {
     addNotification({
       title: `${doc.title} requirements were rejected`,
@@ -464,7 +654,11 @@ export function rejectEventDoc(id: string, actor: { role: ReqActorRole; name: st
   });
 }
 
-export function retractEventDoc(id: string, actor: { role: ReqActorRole; name: string }, note?: string) {
+export function retractEventDoc(
+  id: string,
+  actor: { role: ReqActorRole; name: string },
+  note?: string,
+) {
   return updateDoc(id, (doc) => ({
     ...doc,
     reviewStatus: "draft",
@@ -482,7 +676,12 @@ export function retractEventDoc(id: string, actor: { role: ReqActorRole; name: s
   }));
 }
 
-export function uploadItemFile(eventId: string, sectionId: SectionId, itemId: string, file: { name: string; size: number }) {
+export function uploadItemFile(
+  eventId: string,
+  sectionId: SectionId,
+  itemId: string,
+  file: { name: string; size: number },
+) {
   write(
     read().map((e) =>
       e.id !== eventId
@@ -500,7 +699,8 @@ export function uploadItemFile(eventId: string, sectionId: SectionId, itemId: st
                         : {
                             ...i,
                             files: [...i.files, { ...file, uploadedAt: Date.now() }],
-                            status: i.status === "approved" ? i.status : ("for-review" as ReqStatus),
+                            status:
+                              i.status === "approved" ? i.status : ("for-review" as ReqStatus),
                           },
                     ),
                   },
@@ -510,7 +710,12 @@ export function uploadItemFile(eventId: string, sectionId: SectionId, itemId: st
   );
 }
 
-export function removeItemFile(eventId: string, sectionId: SectionId, itemId: string, fileName: string) {
+export function removeItemFile(
+  eventId: string,
+  sectionId: SectionId,
+  itemId: string,
+  fileName: string,
+) {
   write(
     read().map((e) =>
       e.id !== eventId
@@ -520,7 +725,14 @@ export function removeItemFile(eventId: string, sectionId: SectionId, itemId: st
             sections: e.sections.map((s) =>
               s.id !== sectionId
                 ? s
-                : { ...s, items: s.items.map((i) => (i.id === itemId ? { ...i, files: i.files.filter((f) => f.name !== fileName) } : i)) },
+                : {
+                    ...s,
+                    items: s.items.map((i) =>
+                      i.id === itemId
+                        ? { ...i, files: i.files.filter((f) => f.name !== fileName) }
+                        : i,
+                    ),
+                  },
             ),
           },
     ),
@@ -531,7 +743,12 @@ export function deleteEventDoc(id: string) {
   write(read().filter((e) => e.id !== id));
 }
 
-export function computeProgress(doc: EventDoc): { done: number; total: number; pct: number; ready: boolean } {
+export function computeProgress(doc: EventDoc): {
+  done: number;
+  total: number;
+  pct: number;
+  ready: boolean;
+} {
   const all = doc.sections.flatMap((s) => s.items);
   const done = all.filter((i) => i.status === "approved").length;
   const total = all.length || 1;

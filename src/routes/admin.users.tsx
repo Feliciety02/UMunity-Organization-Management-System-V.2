@@ -29,13 +29,62 @@ type User = {
 };
 
 const initialUsers: User[] = [
-  { n: "Althea Dumaguete", e: "althea.d@umindanao.edu.ph", r: "Student", s: "Active", c: "from-rose-400 to-primary", join: "Mar 2026" },
-  { n: "Marco Reyes", e: "marco.r@umindanao.edu.ph", r: "Leader", s: "Active", c: "from-primary to-primary", join: "Mar 2024" },
-  { n: "Dr. Liana Kintanar", e: "liana.k@umindanao.edu.ph", r: "Admin", s: "Active", c: "from-primary-deep to-rose-700", join: "Aug 2022" },
-  { n: "Jana Cruz", e: "jana.c@umindanao.edu.ph", r: "Student", s: "Pending", c: "from-emerald-400 to-primary", join: "May 2026" },
-  { n: "Renz Aquino", e: "renz.a@umindanao.edu.ph", r: "Student", s: "Suspended", c: "from-primary to-primary", join: "Feb 2026" },
-  { n: "Anna Sy", e: "anna.sy@umindanao.edu.ph", r: "Leader", s: "Active", c: "from-rose-400 to-primary", join: "Mar 2024" },
-  { n: "Prof. Tan", e: "prof.tan@umindanao.edu.ph", r: "Adviser", s: "Active", c: "from-primary to-primary-deep", join: "Jun 2021" },
+  {
+    n: "Althea Dumaguete",
+    e: "althea.d@umindanao.edu.ph",
+    r: "Student",
+    s: "Active",
+    c: "from-rose-400 to-primary",
+    join: "Mar 2026",
+  },
+  {
+    n: "Marco Reyes",
+    e: "marco.r@umindanao.edu.ph",
+    r: "Leader",
+    s: "Active",
+    c: "from-primary to-primary",
+    join: "Mar 2024",
+  },
+  {
+    n: "Dr. Liana Kintanar",
+    e: "liana.k@umindanao.edu.ph",
+    r: "Admin",
+    s: "Active",
+    c: "from-primary-deep to-rose-700",
+    join: "Aug 2022",
+  },
+  {
+    n: "Jana Cruz",
+    e: "jana.c@umindanao.edu.ph",
+    r: "Student",
+    s: "Pending",
+    c: "from-emerald-400 to-primary",
+    join: "May 2026",
+  },
+  {
+    n: "Renz Aquino",
+    e: "renz.a@umindanao.edu.ph",
+    r: "Student",
+    s: "Suspended",
+    c: "from-primary to-primary",
+    join: "Feb 2026",
+  },
+  {
+    n: "Anna Sy",
+    e: "anna.sy@umindanao.edu.ph",
+    r: "Leader",
+    s: "Active",
+    c: "from-rose-400 to-primary",
+    join: "Mar 2024",
+  },
+  {
+    n: "Prof. Tan",
+    e: "prof.tan@umindanao.edu.ph",
+    r: "Adviser",
+    s: "Active",
+    c: "from-primary to-primary-deep",
+    join: "Jun 2021",
+  },
 ];
 
 function ManageUsers() {
@@ -44,8 +93,11 @@ function ManageUsers() {
   const [statusFilter, setStatusFilter] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
   const [invite, setInvite] = useState({ name: "", email: "", role: "Student" });
-  const inviteError =
-    !invite.name.trim() ? "Enter a name." : !/^[^\s@]+@(umindanao\.edu\.ph|um\.edu\.ph)$/i.test(invite.email.trim()) ? "Use a UM email address (@umindanao.edu.ph)." : "";
+  const inviteError = !invite.name.trim()
+    ? "Enter a name."
+    : !/^[^\s@]+@(umindanao\.edu\.ph|um\.edu\.ph)$/i.test(invite.email.trim())
+      ? "Use a UM email address (@umindanao.edu.ph)."
+      : "";
   const [inviteTouched, setInviteTouched] = useState(false);
 
   function setStatus(row: User, status: string) {
@@ -61,7 +113,14 @@ function ManageUsers() {
     setInviteTouched(true);
     if (inviteError) return;
     setUsers((list) => [
-      { n: invite.name.trim(), e: invite.email.trim(), r: invite.role, s: "Pending", c: "from-primary to-primary-deep", join: "Just invited" },
+      {
+        n: invite.name.trim(),
+        e: invite.email.trim(),
+        r: invite.role,
+        s: "Pending",
+        c: "from-primary to-primary-deep",
+        join: "Just invited",
+      },
       ...list,
     ]);
     showStatusToast("Invite sent", `${invite.email.trim()} will get a sign-up link.`);
@@ -89,9 +148,18 @@ function ManageUsers() {
       key: "role",
       label: "Role",
       sortable: true,
-      render: (row) => <Badge tone={row.r === "Admin" ? "gold" : row.r === "Leader" ? "warning" : "info"}>{row.r}</Badge>,
+      render: (row) => (
+        <Badge tone={row.r === "Admin" ? "gold" : row.r === "Leader" ? "warning" : "info"}>
+          {row.r}
+        </Badge>
+      ),
     },
-    { key: "join", label: "Joined", sortable: true, render: (row) => <span className="text-muted-foreground">{row.join}</span> },
+    {
+      key: "join",
+      label: "Joined",
+      sortable: true,
+      render: (row) => <span className="text-muted-foreground">{row.join}</span>,
+    },
     {
       key: "status",
       label: "Status",
@@ -122,9 +190,12 @@ function ManageUsers() {
     },
   ];
 
-  const filtered = roleFilter || statusFilter
-    ? users.filter((u) => (!roleFilter || u.r === roleFilter) && (!statusFilter || u.s === statusFilter))
-    : users;
+  const filtered =
+    roleFilter || statusFilter
+      ? users.filter(
+          (u) => (!roleFilter || u.r === roleFilter) && (!statusFilter || u.s === statusFilter),
+        )
+      : users;
 
   return (
     <>
@@ -214,9 +285,16 @@ function ManageUsers() {
               <option>Adviser</option>
               <option>Admin</option>
             </select>
-            {inviteTouched && inviteError ? <p className="text-xs text-destructive">{inviteError}</p> : null}
+            {inviteTouched && inviteError ? (
+              <p className="text-xs text-destructive">{inviteError}</p>
+            ) : null}
             <DialogFooter>
-              <AppButton type="button" variant="secondary" size="md" onClick={() => setInviteOpen(false)}>
+              <AppButton
+                type="button"
+                variant="secondary"
+                size="md"
+                onClick={() => setInviteOpen(false)}
+              >
                 Cancel
               </AppButton>
               <AppButton type="submit" variant="primary" size="md">

@@ -23,9 +23,13 @@ function RequirementsTracker() {
         <PageHead title="Requirements" sub="Event not found." />
         <Panel>
           <div className="grid place-items-center gap-3 py-12 text-center">
-            <p className="text-sm text-muted-foreground">This event tracker doesn't exist or has been removed.</p>
+            <p className="text-sm text-muted-foreground">
+              This event tracker doesn't exist or has been removed.
+            </p>
             <AppButton asChild variant="secondary">
-              <Link to="/leader/requirements"><ArrowLeft className="h-4 w-4" /> Back to trackers</Link>
+              <Link to="/leader/requirements">
+                <ArrowLeft className="h-4 w-4" /> Back to trackers
+              </Link>
             </AppButton>
           </div>
         </Panel>
@@ -41,7 +45,9 @@ function RequirementsTracker() {
         action={
           <div className="flex flex-wrap gap-2">
             <AppButton asChild variant="ghost">
-              <Link to="/leader/requirements"><ArrowLeft className="h-4 w-4" /> All trackers</Link>
+              <Link to="/leader/requirements">
+                <ArrowLeft className="h-4 w-4" /> All trackers
+              </Link>
             </AppButton>
             <AppButton
               variant="ghost"

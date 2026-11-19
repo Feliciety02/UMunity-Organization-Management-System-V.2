@@ -23,7 +23,12 @@ const schema = z.object({
   time: z.string().regex(/^\d{2}:\d{2}$/, "Pick a valid time"),
   objectives: z.string().trim().min(5, "Add a short objective").max(600),
   collaborators: z.string().trim().max(200).optional().default(""),
-  orgShort: z.string().trim().min(2, "Org short code required").max(20).regex(/^[A-Za-z0-9]+$/, "Letters and digits only"),
+  orgShort: z
+    .string()
+    .trim()
+    .min(2, "Org short code required")
+    .max(20)
+    .regex(/^[A-Za-z0-9]+$/, "Letters and digits only"),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -95,7 +100,11 @@ export function EventFormDialog({ open, onOpenChange, mode, doc, onSaved }: Even
       onSaved?.(doc.id);
     } else {
       const created = createEventDoc(parsed.data);
-      showStatusToast("Event created", `Requirements tracker ready for ${created.title}.`, "success");
+      showStatusToast(
+        "Event created",
+        `Requirements tracker ready for ${created.title}.`,
+        "success",
+      );
       onSaved?.(created.id);
     }
     onOpenChange(false);
@@ -117,37 +126,73 @@ export function EventFormDialog({ open, onOpenChange, mode, doc, onSaved }: Even
 
         <form onSubmit={handleSubmit} className="grid gap-4">
           <Field label="Title" error={errors.title}>
-            <Input value={values.title} onChange={(e) => update("title", e.target.value)} maxLength={120} />
+            <Input
+              value={values.title}
+              onChange={(e) => update("title", e.target.value)}
+              maxLength={120}
+            />
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Category" error={errors.category}>
-              <Input value={values.category} onChange={(e) => update("category", e.target.value)} placeholder="Conference, Workshop, ..." maxLength={40} />
+              <Input
+                value={values.category}
+                onChange={(e) => update("category", e.target.value)}
+                placeholder="Conference, Workshop, ..."
+                maxLength={40}
+              />
             </Field>
             <Field label="Organization code" error={errors.orgShort}>
-              <Input value={values.orgShort} onChange={(e) => update("orgShort", e.target.value)} placeholder="UMCSS" maxLength={20} />
+              <Input
+                value={values.orgShort}
+                onChange={(e) => update("orgShort", e.target.value)}
+                placeholder="UMCSS"
+                maxLength={20}
+              />
             </Field>
           </div>
 
           <Field label="Venue" error={errors.venue}>
-            <Input value={values.venue} onChange={(e) => update("venue", e.target.value)} maxLength={120} />
+            <Input
+              value={values.venue}
+              onChange={(e) => update("venue", e.target.value)}
+              maxLength={120}
+            />
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Date" error={errors.date}>
-              <Input type="date" value={values.date} onChange={(e) => update("date", e.target.value)} />
+              <Input
+                type="date"
+                value={values.date}
+                onChange={(e) => update("date", e.target.value)}
+              />
             </Field>
             <Field label="Time" error={errors.time}>
-              <Input type="time" value={values.time} onChange={(e) => update("time", e.target.value)} />
+              <Input
+                type="time"
+                value={values.time}
+                onChange={(e) => update("time", e.target.value)}
+              />
             </Field>
           </div>
 
           <Field label="Objectives" error={errors.objectives}>
-            <Textarea rows={3} value={values.objectives} onChange={(e) => update("objectives", e.target.value)} maxLength={600} />
+            <Textarea
+              rows={3}
+              value={values.objectives}
+              onChange={(e) => update("objectives", e.target.value)}
+              maxLength={600}
+            />
           </Field>
 
           <Field label="Collaborators" error={errors.collaborators} optional>
-            <Input value={values.collaborators} onChange={(e) => update("collaborators", e.target.value)} placeholder="Partner orgs, sponsors" maxLength={200} />
+            <Input
+              value={values.collaborators}
+              onChange={(e) => update("collaborators", e.target.value)}
+              placeholder="Partner orgs, sponsors"
+              maxLength={200}
+            />
           </Field>
 
           <DialogFooter className="gap-2">
@@ -178,7 +223,10 @@ function Field({
   return (
     <div className="grid gap-1.5">
       <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        {label} {optional ? <span className="text-[10px] normal-case text-muted-foreground/70">(optional)</span> : null}
+        {label}{" "}
+        {optional ? (
+          <span className="text-[10px] normal-case text-muted-foreground/70">(optional)</span>
+        ) : null}
       </Label>
       {children}
       {error ? <p className="text-xs text-rose-600">{error}</p> : null}

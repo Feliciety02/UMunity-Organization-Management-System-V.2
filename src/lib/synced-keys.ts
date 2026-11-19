@@ -35,7 +35,10 @@ export const SYNCED_KEYS = {
 export type SyncedKey = keyof typeof SYNCED_KEYS;
 
 /** Browser caches of data that has its own tables (memberships); cleared on sign-in/out. */
-export const SERVER_CACHE_KEYS = ["umunity.memberships.v1", "umunity.membership-requests.v1"] as const;
+export const SERVER_CACHE_KEYS = [
+  "umunity.memberships.v1",
+  "umunity.membership-requests.v1",
+] as const;
 
 export function isSyncedKey(key: string): key is SyncedKey {
   return Object.prototype.hasOwnProperty.call(SYNCED_KEYS, key);
@@ -114,7 +117,9 @@ export function diffEntries(
   if (base.kind !== next.kind) return null;
   const upserts: DocPatch["upserts"] = [];
   const nextKeys = new Set(next.entries.map(([k]) => k));
-  const deletes = [...base.items.entries()].filter(([k]) => !nextKeys.has(k)).map(([k, b]) => ({ k, ver: b.ver }));
+  const deletes = [...base.items.entries()]
+    .filter(([k]) => !nextKeys.has(k))
+    .map(([k, b]) => ({ k, ver: b.ver }));
   const verOf = (k: string) => base.items.get(k)?.ver ?? 0;
 
   if (next.kind === "object") {
@@ -126,10 +131,14 @@ export function diffEntries(
   }
 
   // Arrays: keep existing items' positions unless their relative order changed.
-  const known = next.entries.filter(([k]) => base.items.has(k)).map(([k]) => base.items.get(k)!.pos);
+  const known = next.entries
+    .filter(([k]) => base.items.has(k))
+    .map(([k]) => base.items.get(k)!.pos);
   const ordered = known.every((p, i) => i === 0 || p > known[i - 1]);
   if (!ordered) {
-    next.entries.forEach(([k, v], i) => upserts.push({ k, v: JSON.stringify(v), pos: (i + 1) * GAP, ver: verOf(k) }));
+    next.entries.forEach(([k, v], i) =>
+      upserts.push({ k, v: JSON.stringify(v), pos: (i + 1) * GAP, ver: verOf(k) }),
+    );
     return { kind: "array", upserts, deletes: [...deletes] };
   }
   const positions = next.entries.map(([k]) => base.items.get(k)?.pos ?? null);
@@ -142,7 +151,14 @@ export function diffEntries(
       for (let j = i - 1; j >= 0 && prev === null; j--) prev = positions[j];
       let after: number | null = null;
       for (let j = i + 1; j < positions.length && after === null; j++) after = positions[j];
-      pos = prev === null && after === null ? (i + 1) * GAP : prev === null ? after! - GAP : after === null ? prev + GAP : (prev + after) / 2;
+      pos =
+        prev === null && after === null
+          ? (i + 1) * GAP
+          : prev === null
+            ? after! - GAP
+            : after === null
+              ? prev + GAP
+              : (prev + after) / 2;
       positions[i] = pos;
       upserts.push({ k, v: json, pos, ver: 0 });
     } else if (base.items.get(k)!.json !== json) {

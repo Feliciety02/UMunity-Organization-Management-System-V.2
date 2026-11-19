@@ -1,7 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Calendar, Compass, MessageSquare, Newspaper, Sparkles } from "lucide-react";
-import { PageHead, Panel, Badge, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
+import {
+  PageHead,
+  Panel,
+  Badge,
+  EmptyState,
+  PanelSkeleton,
+} from "@/components/dashboard/DashboardLayout";
 import { defaultEventCover, eventCovers } from "@/components/events/event-covers";
 import { EventCard } from "@/components/events/event-card";
 import { PostCard } from "@/components/social/PostCard";
@@ -26,9 +32,15 @@ function StudentFeed() {
   const memberships = useMemberships();
   const orgBySlug = Object.fromEntries(organizations.map((o) => [o.slug, o]));
   const upcoming = events.slice(0, 3);
-  const recommended = organizations.filter((o) => !memberships.member[o.slug] && !memberships.pending[o.slug]).slice(0, 3);
+  const recommended = organizations
+    .filter((o) => !memberships.member[o.slug] && !memberships.pending[o.slug])
+    .slice(0, 3);
   const session = getSession();
-  const initials = (session?.name ?? "").split(" ").slice(0, 2).map((w) => w[0]).join("");
+  const initials = (session?.name ?? "")
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("");
   const visiblePosts = useMemo(() => {
     if (tab === "Following") return posts.filter((p) => Boolean(memberships.member[p.orgSlug]));
     if (tab === "Events") return posts.filter((p) => p.type === "event");
@@ -84,7 +96,11 @@ function StudentFeed() {
                 <Panel>
                   <EmptyState
                     icon={Newspaper}
-                    title={tab === "Following" ? "No posts from your organizations yet" : "No event posts yet"}
+                    title={
+                      tab === "Following"
+                        ? "No posts from your organizations yet"
+                        : "No event posts yet"
+                    }
                     sub="Join more organizations to fill your feed."
                     action={
                       <AppButton asChild variant="primary" size="sm">

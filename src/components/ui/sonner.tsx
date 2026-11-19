@@ -19,7 +19,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
           description: "text-sm text-muted-foreground",
           actionButton: "bg-primary text-primary-foreground",
           cancelButton: "bg-secondary text-foreground",
-          closeButton: "border-border bg-card text-muted-foreground hover:bg-secondary hover:text-foreground",
+          closeButton:
+            "border-border bg-card text-muted-foreground hover:bg-secondary hover:text-foreground",
         },
       }}
       {...props}

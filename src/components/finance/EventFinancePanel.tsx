@@ -1,5 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { AlertTriangle, ArrowDownLeft, ArrowUpRight, CheckCircle2, Paperclip, Plus, Wallet } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowDownLeft,
+  ArrowUpRight,
+  CheckCircle2,
+  Paperclip,
+  Plus,
+  Wallet,
+} from "lucide-react";
 import { Badge } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { organizations } from "@/data/orgs";
@@ -36,7 +44,9 @@ export function EventFinancePanel({
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold">Ledger and receipts</p>
-          <p className="text-xs text-muted-foreground">Transactions recorded in the finance ledger for this event.</p>
+          <p className="text-xs text-muted-foreground">
+            Transactions recorded in the finance ledger for this event.
+          </p>
         </div>
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
           <Wallet className="h-4 w-4" />
@@ -46,7 +56,12 @@ export function EventFinancePanel({
     </div>
   );
 
-  if (!slug) return shell(<p className="text-sm text-muted-foreground">This organization doesn't have a finance ledger yet.</p>);
+  if (!slug)
+    return shell(
+      <p className="text-sm text-muted-foreground">
+        This organization doesn't have a finance ledger yet.
+      </p>,
+    );
   if (error) return shell(<p className="text-sm text-muted-foreground">{error}</p>);
   if (!ledger) return shell(<div className="h-16 animate-pulse rounded-xl bg-secondary" />);
 
@@ -61,9 +76,12 @@ export function EventFinancePanel({
 
   const warnings: string[] = [];
   if (missing) warnings.push(`${missing} expense${missing === 1 ? "" : "s"} without a receipt`);
-  if (unverified) warnings.push(`${unverified} transaction${unverified === 1 ? "" : "s"} not verified yet`);
+  if (unverified)
+    warnings.push(`${unverified} transaction${unverified === 1 ? "" : "s"} not verified yet`);
   if (reportedCents > 0 && gap !== 0) {
-    warnings.push(`The closeout reports ${formatPeso(reportedCents)} spent, but the ledger shows ${formatPeso(spent)} (${gap > 0 ? "+" : "−"}${formatPeso(Math.abs(gap))})`);
+    warnings.push(
+      `The closeout reports ${formatPeso(reportedCents)} spent, but the ledger shows ${formatPeso(spent)} (${gap > 0 ? "+" : "−"}${formatPeso(Math.abs(gap))})`,
+    );
   }
 
   return shell(
@@ -75,7 +93,9 @@ export function EventFinancePanel({
           ["Raised", formatPeso(raised)],
         ].map(([k, v]) => (
           <div key={k} className="rounded-xl bg-secondary/50 px-2 py-2">
-            <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{k}</dt>
+            <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {k}
+            </dt>
             <dd className="font-display text-sm font-semibold tabular-nums">{v}</dd>
           </div>
         ))}
@@ -84,7 +104,10 @@ export function EventFinancePanel({
       {linked.length ? (
         <ul className="mt-3 space-y-2">
           {linked.map((e) => (
-            <li key={e.id} className="flex items-center gap-3 rounded-xl border border-border bg-background px-3 py-2">
+            <li
+              key={e.id}
+              className="flex items-center gap-3 rounded-xl border border-border bg-background px-3 py-2"
+            >
               <span
                 className={cn(
                   "grid h-7 w-7 shrink-0 place-items-center rounded-lg",
@@ -93,14 +116,26 @@ export function EventFinancePanel({
                     : "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300",
                 )}
               >
-                {e.kind === "income" ? <ArrowDownLeft className="h-3.5 w-3.5" /> : <ArrowUpRight className="h-3.5 w-3.5" />}
+                {e.kind === "income" ? (
+                  <ArrowDownLeft className="h-3.5 w-3.5" />
+                ) : (
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                )}
               </span>
               <div className="min-w-0 flex-1">
-                <p className={cn("truncate text-sm font-medium", e.status === "void" && "text-muted-foreground line-through")}>{e.description}</p>
+                <p
+                  className={cn(
+                    "truncate text-sm font-medium",
+                    e.status === "void" && "text-muted-foreground line-through",
+                  )}
+                >
+                  {e.description}
+                </p>
                 <p className="flex items-center gap-1 text-xs text-muted-foreground">
                   {e.receipts.length ? (
                     <>
-                      <Paperclip className="h-3 w-3" /> {e.receipts.length} receipt{e.receipts.length === 1 ? "" : "s"}
+                      <Paperclip className="h-3 w-3" /> {e.receipts.length} receipt
+                      {e.receipts.length === 1 ? "" : "s"}
                     </>
                   ) : e.kind === "expense" && e.status !== "void" ? (
                     <span className="font-semibold text-destructive">No receipt</span>
@@ -120,7 +155,9 @@ export function EventFinancePanel({
       ) : (
         <p className="mt-3 rounded-xl border border-dashed border-border bg-secondary/40 p-3 text-sm text-muted-foreground">
           No transactions are linked to this event yet.
-          {role === "leader" ? " Record each expense with its receipt so reviewers can check the closeout." : ""}
+          {role === "leader"
+            ? " Record each expense with its receipt so reviewers can check the closeout."
+            : ""}
         </p>
       )}
 

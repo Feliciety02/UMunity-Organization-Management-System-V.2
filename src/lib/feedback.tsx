@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Bookmark, CalendarCheck2, CheckCircle2, Info, Send, ShieldAlert, UserPlus, XCircle, type LucideIcon } from "lucide-react";
+import {
+  Bookmark,
+  CalendarCheck2,
+  CheckCircle2,
+  Info,
+  Send,
+  ShieldAlert,
+  UserPlus,
+  XCircle,
+  type LucideIcon,
+} from "lucide-react";
 
 type ImportantAction = "join" | "apply" | "save" | "rsvp";
 
@@ -35,11 +45,7 @@ export function showImportantActionToast(
   });
 }
 
-export function showStatusToast(
-  title: string,
-  description?: string,
-  tone: StatusTone = "success",
-) {
+export function showStatusToast(title: string, description?: string, tone: StatusTone = "success") {
   const Icon = STATUS_META[tone].icon;
   const method =
     tone === "error"

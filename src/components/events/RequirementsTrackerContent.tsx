@@ -39,7 +39,11 @@ import {
   type SectionId,
 } from "@/lib/event-requirements";
 
-const STATUSES: { value: ReqStatus; label: string; tone: "neutral" | "warning" | "success" | "danger" | "info" }[] = [
+const STATUSES: {
+  value: ReqStatus;
+  label: string;
+  tone: "neutral" | "warning" | "success" | "danger" | "info";
+}[] = [
   { value: "pending", label: "Pending", tone: "neutral" },
   { value: "for-review", label: "For Review", tone: "info" },
   { value: "approved", label: "Approved", tone: "success" },
@@ -50,7 +54,10 @@ function statusMeta(s: ReqStatus) {
   return STATUSES.find((x) => x.value === s) ?? STATUSES[0];
 }
 
-function dueLabel(due?: number): { text: string; tone: "neutral" | "warning" | "danger" | "success" } {
+function dueLabel(due?: number): {
+  text: string;
+  tone: "neutral" | "warning" | "danger" | "success";
+} {
   if (!due) return { text: "No deadline", tone: "neutral" };
   const diff = due - Date.now();
   const days = Math.round(diff / 86_400_000);
@@ -71,9 +78,18 @@ export function RequirementsTrackerContent({
   const [activeSection, setActiveSection] = useState<SectionId | "all">("all");
   const [comment, setComment] = useState("");
   const progress = useMemo(() => computeProgress(doc), [doc]);
-  const sections = activeSection === "all" ? doc.sections : doc.sections.filter((s) => s.id === activeSection);
-  const canSubmit = viewer.role === "leader" && (doc.reviewStatus === "draft" || doc.reviewStatus === "revision_requested" || doc.reviewStatus === "rejected");
-  const canRetract = viewer.role === "leader" && (doc.reviewStatus === "pending_adviser" || doc.reviewStatus === "pending_admin2" || doc.reviewStatus === "pending_admin1");
+  const sections =
+    activeSection === "all" ? doc.sections : doc.sections.filter((s) => s.id === activeSection);
+  const canSubmit =
+    viewer.role === "leader" &&
+    (doc.reviewStatus === "draft" ||
+      doc.reviewStatus === "revision_requested" ||
+      doc.reviewStatus === "rejected");
+  const canRetract =
+    viewer.role === "leader" &&
+    (doc.reviewStatus === "pending_adviser" ||
+      doc.reviewStatus === "pending_admin2" ||
+      doc.reviewStatus === "pending_admin1");
   const canReview =
     (viewer.role === "adviser" && doc.reviewStatus === "pending_adviser") ||
     (viewer.role === "admin2" && doc.reviewStatus === "pending_admin2") ||
@@ -90,12 +106,18 @@ export function RequirementsTrackerContent({
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Overall progress</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Overall progress
+                </p>
                 <p className="mt-1 font-display text-3xl font-bold">{progress.pct}%</p>
-                <p className="mt-1 text-sm text-muted-foreground">{progress.done} of {progress.total} requirements approved</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {progress.done} of {progress.total} requirements approved
+                </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <Badge tone={reqReviewTone(doc.reviewStatus)}>{formatReqReviewStatus(doc.reviewStatus)}</Badge>
+                <Badge tone={reqReviewTone(doc.reviewStatus)}>
+                  {formatReqReviewStatus(doc.reviewStatus)}
+                </Badge>
                 {canSubmit ? (
                   <button
                     onClick={() => {
@@ -123,18 +145,29 @@ export function RequirementsTrackerContent({
                     onClick={() => {
                       approveEventDoc(doc.id, viewer);
                       toast.success(
-                        viewer.role === "adviser" ? "Tracker approved to Admin 2" : viewer.role === "admin2" ? "Tracker approved to Admin 1" : "Tracker fully approved"
+                        viewer.role === "adviser"
+                          ? "Tracker approved to Admin 2"
+                          : viewer.role === "admin2"
+                            ? "Tracker approved to Admin 1"
+                            : "Tracker fully approved",
                       );
                     }}
                     className="inline-flex items-center rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition hover:opacity-90"
                   >
-                    {viewer.role === "adviser" ? "Approve to Admin 2" : viewer.role === "admin2" ? "Approve to Admin 1" : "Approve tracker"}
+                    {viewer.role === "adviser"
+                      ? "Approve to Admin 2"
+                      : viewer.role === "admin2"
+                        ? "Approve to Admin 1"
+                        : "Approve tracker"}
                   </button>
                 ) : null}
                 {canReject ? (
                   <button
                     onClick={() => {
-                      if (!comment.trim()) { toast.error("Write the rejection reason first."); return; }
+                      if (!comment.trim()) {
+                        toast.error("Write the rejection reason first.");
+                        return;
+                      }
                       rejectEventDoc(doc.id, viewer, comment.trim());
                       toast.success("Tracker rejected");
                       setComment("");
@@ -151,17 +184,23 @@ export function RequirementsTrackerContent({
                 <Sparkles className="h-5 w-5" />
                 <div>
                   <p className="text-sm font-semibold">Ready for Official Submission</p>
-                  <p className="text-xs opacity-80">All items approved. Hand off to OSA via your usual channel.</p>
+                  <p className="text-xs opacity-80">
+                    All items approved. Hand off to OSA via your usual channel.
+                  </p>
                 </div>
               </div>
             ) : (
               <div className="rounded-2xl border border-border bg-secondary/40 px-4 py-3 text-xs text-muted-foreground">
-                UMunity does <strong className="text-foreground">not</strong> submit on your behalf - it only helps you prepare.
+                UMunity does <strong className="text-foreground">not</strong> submit on your behalf
+                - it only helps you prepare.
               </div>
             )}
           </div>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
-            <div className={`h-full ${progress.ready ? "bg-emerald-500" : "bg-gradient-gold"}`} style={{ width: `${progress.pct}%` }} />
+            <div
+              className={`h-full ${progress.ready ? "bg-emerald-500" : "bg-gradient-gold"}`}
+              style={{ width: `${progress.pct}%` }}
+            />
           </div>
         </Panel>
 
@@ -211,7 +250,9 @@ export function RequirementsTrackerContent({
             </div>
             <div className="space-y-2">
               {doc.comments.length === 0 ? (
-                <div className="rounded-2xl bg-secondary/35 p-3 text-xs text-muted-foreground">No tracker comments yet.</div>
+                <div className="rounded-2xl bg-secondary/35 p-3 text-xs text-muted-foreground">
+                  No tracker comments yet.
+                </div>
               ) : (
                 doc.comments.slice(0, 4).map((entry) => (
                   <div key={entry.id} className="rounded-2xl border border-border bg-card p-3">
@@ -220,7 +261,9 @@ export function RequirementsTrackerContent({
                         <Badge tone="neutral">{entry.authorRole}</Badge>
                         <p className="text-sm font-semibold">{entry.authorName}</p>
                       </div>
-                      <p className="text-xs text-muted-foreground">{new Date(entry.createdAt).toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(entry.createdAt).toLocaleString()}
+                      </p>
                     </div>
                     <p className="mt-2 text-sm text-foreground">{entry.message}</p>
                   </div>
@@ -232,11 +275,40 @@ export function RequirementsTrackerContent({
 
         <Panel title="Event details">
           <dl className="space-y-2 text-sm">
-            <div className="flex items-start gap-2"><CalendarDays className="mt-0.5 h-4 w-4 text-muted-foreground" /><div><dt className="sr-only">Date</dt><dd>{doc.date || "TBA"}{doc.time ? ` - ${doc.time}` : ""}</dd></div></div>
-            <div className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" /><div><dt className="sr-only">Venue</dt><dd>{doc.venue || "Venue TBA"}</dd></div></div>
-            {doc.collaborators ? <div className="flex items-start gap-2"><Users className="mt-0.5 h-4 w-4 text-muted-foreground" /><dd>{doc.collaborators}</dd></div> : null}
-            {doc.objectives ? <div className="rounded-xl bg-secondary/40 p-3 text-xs leading-5 text-muted-foreground">{doc.objectives}</div> : null}
-            <div className="pt-1 text-xs text-muted-foreground">Naming convention: <code className="rounded bg-secondary px-1.5 py-0.5 text-foreground">{doc.orgShort}_{doc.title.replace(/[^A-Za-z0-9]+/g, "")}_..._{doc.ay}.pdf</code></div>
+            <div className="flex items-start gap-2">
+              <CalendarDays className="mt-0.5 h-4 w-4 text-muted-foreground" />
+              <div>
+                <dt className="sr-only">Date</dt>
+                <dd>
+                  {doc.date || "TBA"}
+                  {doc.time ? ` - ${doc.time}` : ""}
+                </dd>
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
+              <div>
+                <dt className="sr-only">Venue</dt>
+                <dd>{doc.venue || "Venue TBA"}</dd>
+              </div>
+            </div>
+            {doc.collaborators ? (
+              <div className="flex items-start gap-2">
+                <Users className="mt-0.5 h-4 w-4 text-muted-foreground" />
+                <dd>{doc.collaborators}</dd>
+              </div>
+            ) : null}
+            {doc.objectives ? (
+              <div className="rounded-xl bg-secondary/40 p-3 text-xs leading-5 text-muted-foreground">
+                {doc.objectives}
+              </div>
+            ) : null}
+            <div className="pt-1 text-xs text-muted-foreground">
+              Naming convention:{" "}
+              <code className="rounded bg-secondary px-1.5 py-0.5 text-foreground">
+                {doc.orgShort}_{doc.title.replace(/[^A-Za-z0-9]+/g, "")}_..._{doc.ay}.pdf
+              </code>
+            </div>
           </dl>
         </Panel>
       </div>
@@ -244,13 +316,22 @@ export function RequirementsTrackerContent({
       <div className="mt-6 flex flex-wrap items-center gap-2">
         {(["all", "before", "during", "after"] as const).map((id) => {
           const active = activeSection === id;
-          const label = id === "all" ? "All sections" : id === "before" ? "Before" : id === "during" ? "During" : "After";
+          const label =
+            id === "all"
+              ? "All sections"
+              : id === "before"
+                ? "Before"
+                : id === "during"
+                  ? "During"
+                  : "After";
           return (
             <button
               key={id}
               onClick={() => setActiveSection(id)}
               className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
-                active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:bg-secondary"
+                active
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card text-foreground hover:bg-secondary"
               }`}
             >
               {label}
@@ -268,15 +349,26 @@ export function RequirementsTrackerContent({
   );
 }
 
-function SectionBoard({ doc, section, viewer }: { doc: EventDoc; section: ReqSection; viewer: { role: ReqActorRole; name: string } }) {
+function SectionBoard({
+  doc,
+  section,
+  viewer,
+}: {
+  doc: EventDoc;
+  section: ReqSection;
+  viewer: { role: ReqActorRole; name: string };
+}) {
   const p = sectionProgress(section);
-  const icon = section.id === "before" ? Clock : section.id === "during" ? AlertCircle : CheckCircle2;
+  const icon =
+    section.id === "before" ? Clock : section.id === "during" ? AlertCircle : CheckCircle2;
   const Icon = icon;
   return (
     <Panel>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary"><Icon className="h-5 w-5" /></div>
+          <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+            <Icon className="h-5 w-5" />
+          </div>
           <div>
             <h2 className="font-display text-lg font-semibold">{section.title}</h2>
             <p className="text-xs text-muted-foreground">{section.blurb}</p>
@@ -286,7 +378,9 @@ function SectionBoard({ doc, section, viewer }: { doc: EventDoc; section: ReqSec
           <div className="h-1.5 w-28 overflow-hidden rounded-full bg-secondary">
             <div className="h-full bg-gradient-gold" style={{ width: `${p.pct}%` }} />
           </div>
-          <span className="text-xs text-muted-foreground">{p.done}/{p.total}</span>
+          <span className="text-xs text-muted-foreground">
+            {p.done}/{p.total}
+          </span>
         </div>
       </div>
 
@@ -323,8 +417,12 @@ function RequirementCard({
 
   function onFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
-    Array.from(files).forEach((f) => uploadItemFile(doc.id, section.id, item.id, { name: f.name, size: f.size }));
-    toast.success(`Uploaded ${files.length} file${files.length === 1 ? "" : "s"} for ${item.title}`);
+    Array.from(files).forEach((f) =>
+      uploadItemFile(doc.id, section.id, item.id, { name: f.name, size: f.size }),
+    );
+    toast.success(
+      `Uploaded ${files.length} file${files.length === 1 ? "" : "s"} for ${item.title}`,
+    );
   }
 
   return (
@@ -332,9 +430,16 @@ function RequirementCard({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="font-semibold leading-tight">{item.title}</h3>
-          {item.description ? <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{item.description}</p> : null}
+          {item.description ? (
+            <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{item.description}</p>
+          ) : null}
         </div>
-        <button onClick={cycleStatus} title="Click to update status" className="shrink-0" aria-label={`Change status (currently ${meta.label})`}>
+        <button
+          onClick={cycleStatus}
+          title="Click to update status"
+          className="shrink-0"
+          aria-label={`Change status (currently ${meta.label})`}
+        >
           <Badge tone={meta.tone}>{meta.label}</Badge>
         </button>
       </div>
@@ -354,7 +459,8 @@ function RequirementCard({
           {due.text}
         </span>
         <span className="truncate text-muted-foreground" title={suggested}>
-          <FileText className="-mt-0.5 mr-1 inline h-3 w-3" />{suggested}
+          <FileText className="-mt-0.5 mr-1 inline h-3 w-3" />
+          {suggested}
         </span>
       </div>
 
@@ -362,9 +468,18 @@ function RequirementCard({
         <ul className="space-y-1 rounded-xl bg-secondary/40 p-2 text-xs">
           {item.files.map((f) => (
             <li key={f.name} className="flex items-center justify-between gap-2">
-              <span className="truncate"><FileText className="-mt-0.5 mr-1 inline h-3 w-3" />{f.name} <span className="text-muted-foreground">({Math.max(1, Math.round(f.size / 1024))} KB)</span></span>
+              <span className="truncate">
+                <FileText className="-mt-0.5 mr-1 inline h-3 w-3" />
+                {f.name}{" "}
+                <span className="text-muted-foreground">
+                  ({Math.max(1, Math.round(f.size / 1024))} KB)
+                </span>
+              </span>
               <button
-                onClick={() => { removeItemFile(doc.id, section.id, item.id, f.name); toast.success("File removed"); }}
+                onClick={() => {
+                  removeItemFile(doc.id, section.id, item.id, f.name);
+                  toast.success("File removed");
+                }}
                 className="grid h-6 w-6 place-items-center rounded-full text-muted-foreground hover:bg-rose-100 hover:text-rose-600"
                 aria-label={`Remove ${f.name}`}
               >
@@ -377,12 +492,25 @@ function RequirementCard({
 
       <div className="mt-auto flex flex-wrap gap-2">
         <button
-          onClick={() => toast.info(`Template "${suggested}" would download here`, { description: "Template library is a placeholder in this demo." })}
+          onClick={() =>
+            toast.info(`Template "${suggested}" would download here`, {
+              description: "Template library is a placeholder in this demo.",
+            })
+          }
           className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold transition hover:bg-secondary"
         >
           <Download className="h-3.5 w-3.5" /> Template
         </button>
-        <input ref={fileInput} type="file" multiple className="hidden" onChange={(e) => { onFiles(e.target.files); e.currentTarget.value = ""; }} />
+        <input
+          ref={fileInput}
+          type="file"
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            onFiles(e.target.files);
+            e.currentTarget.value = "";
+          }}
+        />
         <button
           onClick={() => fileInput.current?.click()}
           className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition hover:opacity-90"

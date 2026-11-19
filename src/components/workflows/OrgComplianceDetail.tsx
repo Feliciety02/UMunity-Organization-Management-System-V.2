@@ -1,6 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Ban, Building2, CheckCircle2, ClipboardCheck, FileText, Landmark, MessageSquareText, Send, ShieldCheck, Undo2, Users } from "lucide-react";
+import {
+  Ban,
+  Building2,
+  CheckCircle2,
+  ClipboardCheck,
+  FileText,
+  Landmark,
+  MessageSquareText,
+  Send,
+  ShieldCheck,
+  Undo2,
+  Users,
+} from "lucide-react";
 import { toast } from "sonner";
 import { AppButton } from "@/components/ui/app-button";
 import { Badge, PageHead, Panel } from "@/components/dashboard/DashboardLayout";
@@ -29,8 +41,16 @@ export function OrgComplianceDetail({
 }) {
   const [comment, setComment] = useState("");
 
-  const canSubmit = viewer.role === "leader" && (submission.status === "draft" || submission.status === "revision_requested" || submission.status === "rejected");
-  const canRetract = viewer.role === "leader" && (submission.status === "pending_adviser" || submission.status === "pending_admin2" || submission.status === "pending_admin1");
+  const canSubmit =
+    viewer.role === "leader" &&
+    (submission.status === "draft" ||
+      submission.status === "revision_requested" ||
+      submission.status === "rejected");
+  const canRetract =
+    viewer.role === "leader" &&
+    (submission.status === "pending_adviser" ||
+      submission.status === "pending_admin2" ||
+      submission.status === "pending_admin1");
   const canReview =
     (viewer.role === "adviser" && submission.status === "pending_adviser") ||
     (viewer.role === "admin2" && submission.status === "pending_admin2") ||
@@ -98,7 +118,14 @@ export function OrgComplianceDetail({
               <Link to={backTo as string}>{backLabel}</Link>
             </AppButton>
             {canSubmit ? (
-              <AppButton variant="primary" size="sm" onClick={() => { approveCompliance(submission.id, viewer); toast.success("Submitted for review"); }}>
+              <AppButton
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  approveCompliance(submission.id, viewer);
+                  toast.success("Submitted for review");
+                }}
+              >
                 <Send className="h-4 w-4" /> Submit for review
               </AppButton>
             ) : null}
@@ -126,10 +153,23 @@ export function OrgComplianceDetail({
           <Panel title="Accreditation profile">
             <div className="grid gap-3 md:grid-cols-2">
               <MetaCard label="Category" value={submission.data.category} icon={Building2} />
-              <MetaCard label="Status" value={formatComplianceStatus(submission.status)} icon={ShieldCheck} tone={complianceTone(submission.status)} />
+              <MetaCard
+                label="Status"
+                value={formatComplianceStatus(submission.status)}
+                icon={ShieldCheck}
+                tone={complianceTone(submission.status)}
+              />
               <MetaCard label="Adviser" value={submission.data.adviserName} icon={Users} />
-              <MetaCard label="Members" value={`${submission.data.memberCount} active members`} icon={Users} />
-              <MetaCard label="Scope" value={submission.data.accreditationScope} icon={ClipboardCheck} />
+              <MetaCard
+                label="Members"
+                value={`${submission.data.memberCount} active members`}
+                icon={Users}
+              />
+              <MetaCard
+                label="Scope"
+                value={submission.data.accreditationScope}
+                icon={ClipboardCheck}
+              />
               <MetaCard label="Academic year" value={submission.academicYear} icon={Landmark} />
             </div>
           </Panel>
@@ -142,23 +182,37 @@ export function OrgComplianceDetail({
           </Panel>
 
           <Panel title="Operations and accountability">
-            <SectionBlock title="Flagship programs" value={submission.data.flagshipPrograms.join(", ")} />
+            <SectionBlock
+              title="Flagship programs"
+              value={submission.data.flagshipPrograms.join(", ")}
+            />
             <SectionBlock title="Risk controls" value={submission.data.riskControls} />
             <SectionBlock title="Funding model" value={submission.data.fundingModel} />
             <SectionBlock title="Budget summary" value={submission.data.budgetSummary} />
             <SectionBlock title="Accountability plan" value={submission.data.accountabilityPlan} />
-            <SectionBlock title="Officer roster summary" value={submission.data.officerRosterSummary} />
-            <SectionBlock title="Transition readiness" value={submission.data.transitionReadiness} />
+            <SectionBlock
+              title="Officer roster summary"
+              value={submission.data.officerRosterSummary}
+            />
+            <SectionBlock
+              title="Transition readiness"
+              value={submission.data.transitionReadiness}
+            />
             <SectionBlock title="Adviser notes" value={submission.data.adviserNotes} />
           </Panel>
 
           <Panel title="Attachments">
             <div className="grid gap-3 md:grid-cols-2">
               {submission.data.attachments.length === 0 ? (
-                <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">No supporting attachments included.</div>
+                <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
+                  No supporting attachments included.
+                </div>
               ) : (
                 submission.data.attachments.map((attachment) => (
-                  <div key={attachment.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
+                  <div
+                    key={attachment.id}
+                    className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3"
+                  >
                     <div className="grid h-10 w-10 place-items-center rounded-2xl bg-primary/10 text-primary">
                       <FileText className="h-4 w-4" />
                     </div>
@@ -200,7 +254,9 @@ export function OrgComplianceDetail({
               </div>
               <div className="space-y-3">
                 {submission.comments.length === 0 ? (
-                  <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">No comments yet.</div>
+                  <div className="rounded-2xl bg-secondary/35 p-4 text-sm text-muted-foreground">
+                    No comments yet.
+                  </div>
                 ) : (
                   submission.comments.map((entry) => (
                     <div key={entry.id} className="rounded-2xl border border-border bg-card p-3">
@@ -209,7 +265,9 @@ export function OrgComplianceDetail({
                           <Badge tone="neutral">{entry.authorRole}</Badge>
                           <p className="text-sm font-semibold">{entry.authorName}</p>
                         </div>
-                        <p className="text-xs text-muted-foreground">{new Date(entry.createdAt).toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(entry.createdAt).toLocaleString()}
+                        </p>
                       </div>
                       <p className="mt-2 text-sm">{entry.message}</p>
                     </div>
@@ -227,8 +285,12 @@ export function OrgComplianceDetail({
                     <p className="text-sm font-semibold">{entry.byName}</p>
                     <Badge tone="info">{entry.action.replaceAll("_", " ")}</Badge>
                   </div>
-                  {entry.note ? <p className="mt-2 text-sm text-muted-foreground">{entry.note}</p> : null}
-                  <p className="mt-1 text-xs text-muted-foreground">{new Date(entry.createdAt).toLocaleString()}</p>
+                  {entry.note ? (
+                    <p className="mt-2 text-sm text-muted-foreground">{entry.note}</p>
+                  ) : null}
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {new Date(entry.createdAt).toLocaleString()}
+                  </p>
                 </div>
               ))}
             </div>
@@ -269,7 +331,9 @@ function MetaCard({
 function SectionBlock({ title, value }: { title: string; value: string }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{title}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        {title}
+      </p>
       <p className="mt-2 text-sm leading-6 text-foreground">{value}</p>
     </div>
   );

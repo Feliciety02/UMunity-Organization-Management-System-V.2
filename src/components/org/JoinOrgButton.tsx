@@ -38,7 +38,11 @@ export function JoinOrgButton({
       showImportantActionToast("join", `${orgName} will review your membership request soon.`);
     } else if (status === "pending") {
       cancelMembershipRequest(slug);
-      showStatusToast("Request withdrawn", `Your request to join ${orgName} was withdrawn.`, "info");
+      showStatusToast(
+        "Request withdrawn",
+        `Your request to join ${orgName} was withdrawn.`,
+        "info",
+      );
     } else {
       setConfirmLeave(true);
     }
@@ -62,7 +66,13 @@ export function JoinOrgButton({
               ? `Withdraw request to join ${orgName}`
               : `Join ${orgName}`
         }
-        title={status === "member" ? "Leave organization" : status === "pending" ? "Withdraw request" : undefined}
+        title={
+          status === "member"
+            ? "Leave organization"
+            : status === "pending"
+              ? "Withdraw request"
+              : undefined
+        }
         className={cn(className)}
       >
         <Icon className="h-4 w-4" aria-hidden="true" />

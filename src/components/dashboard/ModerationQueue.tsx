@@ -1,12 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { SearchX } from "lucide-react";
-import { PageHead, Panel, Badge, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
+import {
+  PageHead,
+  Panel,
+  Badge,
+  EmptyState,
+  PanelSkeleton,
+} from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { showStatusToast, useDashboardPageLoading } from "@/lib/feedback";
 
-export type ModerationItem = { id: string; heading: ReactNode; body: string; reason: string; meta: string };
+export type ModerationItem = {
+  id: string;
+  heading: ReactNode;
+  body: string;
+  reason: string;
+  meta: string;
+};
 
 export type ModerationAction = {
   label: string;
@@ -34,7 +46,9 @@ export function ModerationQueue({
 }) {
   const loading = useDashboardPageLoading();
   const [items, setItems] = useState(initialItems);
-  const [pending, setPending] = useState<{ item: ModerationItem; action: ModerationAction } | null>(null);
+  const [pending, setPending] = useState<{ item: ModerationItem; action: ModerationAction } | null>(
+    null,
+  );
 
   function run(item: ModerationItem, action: ModerationAction) {
     setItems((list) => list.filter((x) => x.id !== item.id));
@@ -68,7 +82,10 @@ export function ModerationQueue({
         ) : (
           <div className="divide-y divide-border">
             {items.map((item) => (
-              <div key={item.id} className="flex flex-wrap items-start gap-4 py-4 first:pt-0 last:pb-0">
+              <div
+                key={item.id}
+                className="flex flex-wrap items-start gap-4 py-4 first:pt-0 last:pb-0"
+              >
                 <div className="min-w-0 flex-1">
                   <div className="text-sm">{item.heading}</div>
                   <p className="mt-1 rounded-md bg-secondary/60 p-2 text-sm">{item.body}</p>
@@ -83,8 +100,14 @@ export function ModerationQueue({
                       key={action.label}
                       size="sm"
                       variant={action.variant === "danger" ? "ghost" : action.variant}
-                      className={action.variant === "danger" ? "border border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive" : undefined}
-                      onClick={() => (action.confirm ? setPending({ item, action }) : run(item, action))}
+                      className={
+                        action.variant === "danger"
+                          ? "border border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          : undefined
+                      }
+                      onClick={() =>
+                        action.confirm ? setPending({ item, action }) : run(item, action)
+                      }
                     >
                       {action.label}
                     </AppButton>

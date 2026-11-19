@@ -1,7 +1,13 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarX2, ChevronLeft, ChevronRight } from "lucide-react";
-import { PageHead, Panel, Badge, EmptyState, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
+import {
+  PageHead,
+  Panel,
+  Badge,
+  EmptyState,
+  PanelSkeleton,
+} from "@/components/dashboard/DashboardLayout";
 import { EventCard } from "@/components/events/event-card";
 import { defaultEventCover, eventCovers } from "@/components/events/event-covers";
 import { events, pastEvents } from "@/data/site";
@@ -15,7 +21,9 @@ import { slugify } from "@/lib/text";
 import { useSaved } from "@/lib/saved";
 
 export const Route = createFileRoute("/student/events")({
-  validateSearch: (s: Record<string, unknown>) => ({ event: typeof s.event === "string" ? s.event : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    event: typeof s.event === "string" ? s.event : undefined,
+  }),
   component: Events,
 });
 
@@ -35,12 +43,35 @@ const STATUS_LABEL: Record<RsvpStatus, string> = {
 const EMPTY_COPY: Record<(typeof tabs)[number], { title: string; sub: string }> = {
   All: { title: "No upcoming events", sub: "New campus events will show up here." },
   "RSVP'd": { title: "No RSVPs yet", sub: "Choose Going or Maybe on an event to keep it here." },
-  Saved: { title: "No saved events", sub: "Tap the bookmark on an event card to save it for later." },
+  Saved: {
+    title: "No saved events",
+    sub: "Tap the bookmark on an event card to save it for later.",
+  },
   Past: { title: "No past events", sub: "Events you could have attended will appear here." },
 };
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const DOTS = ["bg-primary", "bg-emerald-500", "bg-amber-500", "bg-sky-500", "bg-rose-500", "bg-violet-500"];
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+const DOTS = [
+  "bg-primary",
+  "bg-emerald-500",
+  "bg-amber-500",
+  "bg-sky-500",
+  "bg-rose-500",
+  "bg-violet-500",
+];
 
 function Events() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("All");
@@ -60,10 +91,11 @@ function Events() {
 
   const visible = useMemo(() => {
     if (tab === "Past") return pastEvents;
-    if (tab === "RSVP'd") return events.filter((e) => {
-      const s = myRsvpByTitle.get(e.title);
-      return s === "going" || s === "maybe";
-    });
+    if (tab === "RSVP'd")
+      return events.filter((e) => {
+        const s = myRsvpByTitle.get(e.title);
+        return s === "going" || s === "maybe";
+      });
     if (tab === "Saved") return events.filter((e) => savedTitles.includes(e.title));
     return events;
   }, [tab, myRsvpByTitle, savedTitles]);
@@ -131,7 +163,13 @@ function Events() {
             ) : myStatus ? (
               <Badge tone={STATUS_TONE[myStatus]}>{STATUS_LABEL[myStatus]}</Badge>
             ) : (
-              <Badge tone={event.status === "Open" ? "success" : event.status === "Soon" ? "info" : "warning"}>{event.status}</Badge>
+              <Badge
+                tone={
+                  event.status === "Open" ? "success" : event.status === "Soon" ? "info" : "warning"
+                }
+              >
+                {event.status}
+              </Badge>
             );
             return (
               <div
@@ -171,7 +209,12 @@ function parseDate(date: string) {
 
 function EventCalendar() {
   const all = useMemo(
-    () => [...pastEvents, ...events].map((e, i) => ({ ...e, ...parseDate(e.date), dot: DOTS[i % DOTS.length] })),
+    () =>
+      [...pastEvents, ...events].map((e, i) => ({
+        ...e,
+        ...parseDate(e.date),
+        dot: DOTS[i % DOTS.length],
+      })),
     [],
   );
   // Start on the month of the first upcoming event.
@@ -199,13 +242,19 @@ function EventCalendar() {
     <Panel className="mt-8">
       <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Event Calendar</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Event Calendar
+          </p>
           <h3 className="mt-1 font-display text-xl font-bold">
             {MONTHS[cursor.month]} {cursor.year}
           </h3>
         </div>
         <div className="flex items-center gap-2">
-          <IconButton className="rounded-full" onClick={() => shift(-1)} aria-label="Previous month">
+          <IconButton
+            className="rounded-full"
+            onClick={() => shift(-1)}
+            aria-label="Previous month"
+          >
             <ChevronLeft className="h-4 w-4" />
           </IconButton>
           <IconButton className="rounded-full" onClick={() => shift(1)} aria-label="Next month">
@@ -218,7 +267,10 @@ function EventCalendar() {
         <div className="min-w-[560px] rounded-[28px] border border-border bg-card/95 p-4 shadow-soft sm:p-5">
           <div className="grid grid-cols-7 gap-2 text-center">
             {weekdayLabels.map((day) => (
-              <p key={day} className="pb-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              <p
+                key={day}
+                className="pb-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground"
+              >
                 {day}
               </p>
             ))}
@@ -229,20 +281,27 @@ function EventCalendar() {
               const content = (
                 <>
                   <div className="flex items-start justify-between gap-2">
-                    <span className={`text-sm font-semibold ${event ? "text-primary" : "text-foreground"}`}>{cell}</span>
+                    <span
+                      className={`text-sm font-semibold ${event ? "text-primary" : "text-foreground"}`}
+                    >
+                      {cell}
+                    </span>
                     {event ? <span className={`mt-1 h-2 w-2 rounded-full ${event.dot}`} /> : null}
                   </div>
                   <div className="mt-auto min-h-[2.5rem]">
                     {event ? (
                       <>
-                        <p className="line-clamp-2 text-[11px] font-semibold leading-4 text-foreground">{event.title}</p>
+                        <p className="line-clamp-2 text-[11px] font-semibold leading-4 text-foreground">
+                          {event.title}
+                        </p>
                         <p className="mt-1 text-[10px] text-muted-foreground">{event.time}</p>
                       </>
                     ) : null}
                   </div>
                 </>
               );
-              const base = "group flex aspect-[0.95] flex-col rounded-2xl border p-2.5 text-left transition";
+              const base =
+                "group flex aspect-[0.95] flex-col rounded-2xl border p-2.5 text-left transition";
               return event ? (
                 <Link
                   key={cell}
@@ -267,7 +326,10 @@ function EventCalendar() {
           <p className="text-xs text-muted-foreground">No events scheduled this month.</p>
         ) : (
           monthEvents.map((event) => (
-            <div key={event.title} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground">
+            <div
+              key={event.title}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground"
+            >
               <span className={`h-2 w-2 rounded-full ${event.dot}`} />
               <span className="font-medium text-foreground">{event.title}</span>
               <span>

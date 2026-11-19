@@ -16,8 +16,12 @@ export const Route = createFileRoute("/admin2/")({
 function Admin2Dashboard() {
   const insights = useAdminInsights("admin2");
   const workflows = useWorkflows().filter((workflow) => workflow.status === "pending_admin2");
-  const postApprovals = usePostApprovals().filter((approval) => approval.status === "pending_admin2");
-  const compliance = useComplianceSubmissions().filter((submission) => submission.status === "pending_admin2");
+  const postApprovals = usePostApprovals().filter(
+    (approval) => approval.status === "pending_admin2",
+  );
+  const compliance = useComplianceSubmissions().filter(
+    (submission) => submission.status === "pending_admin2",
+  );
   const closeoutQueue = useWorkflows().filter(
     (workflow) =>
       (workflow.status === "approved" || workflow.status === "completed") &&
@@ -28,10 +32,34 @@ function Admin2Dashboard() {
   return (
     <>
       <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Queue now" value={`${insights.queueCount}`} delta="Secondary review across all workflow lanes" icon={Clock3} tone="gold" />
-        <StatCard label="Escalated onward" value={`${insights.escalatedCount}`} delta="Items already cleared for final authority" icon={CheckCircle2} tone="emerald" />
-        <StatCard label="Revision load" value={`${insights.revisionLoad}`} delta={`Avg ${insights.avgTurnaroundDays.toFixed(1)} days validation time`} icon={ShieldAlert} tone="rose" />
-        <StatCard label="Monthly decisions" value={`${insights.monthlyDecisions}`} delta="Admin 2 approvals and publishes" icon={Activity} tone="primary" />
+        <StatCard
+          label="Queue now"
+          value={`${insights.queueCount}`}
+          delta="Secondary review across all workflow lanes"
+          icon={Clock3}
+          tone="gold"
+        />
+        <StatCard
+          label="Escalated onward"
+          value={`${insights.escalatedCount}`}
+          delta="Items already cleared for final authority"
+          icon={CheckCircle2}
+          tone="emerald"
+        />
+        <StatCard
+          label="Revision load"
+          value={`${insights.revisionLoad}`}
+          delta={`Avg ${insights.avgTurnaroundDays.toFixed(1)} days validation time`}
+          icon={ShieldAlert}
+          tone="rose"
+        />
+        <StatCard
+          label="Monthly decisions"
+          value={`${insights.monthlyDecisions}`}
+          delta="Admin 2 approvals and publishes"
+          icon={Activity}
+          tone="primary"
+        />
       </div>
       <div className="mb-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <Panel title="Validation throughput">
@@ -47,13 +75,19 @@ function Admin2Dashboard() {
         >
           <div className="space-y-3">
             {insights.queueItems.slice(0, 3).map((item) => (
-              <Link key={item.id} to={item.href as string} className="block rounded-2xl bg-secondary/35 p-3 transition hover:bg-secondary/55">
+              <Link
+                key={item.id}
+                to={item.href as string}
+                className="block rounded-2xl bg-secondary/35 p-3 transition hover:bg-secondary/55"
+              >
                 <div className="flex items-center gap-2">
                   <Badge tone={item.tone}>{item.status}</Badge>
                   <Badge tone="neutral">{item.lane}</Badge>
                 </div>
                 <p className="mt-2 text-sm font-semibold">{item.title}</p>
-                <p className="text-xs text-muted-foreground">{item.orgName} - {item.ageHours}h waiting</p>
+                <p className="text-xs text-muted-foreground">
+                  {item.orgName} - {item.ageHours}h waiting
+                </p>
               </Link>
             ))}
           </div>
@@ -69,7 +103,8 @@ function Admin2Dashboard() {
         }
       >
         <p className="text-sm text-muted-foreground">
-          Use the review center to see Admin 2 validation notes and pending review context across compliance, publishing, closeout, and workflow lanes.
+          Use the review center to see Admin 2 validation notes and pending review context across
+          compliance, publishing, closeout, and workflow lanes.
         </p>
       </Panel>
       <WorkflowBoard
@@ -82,7 +117,9 @@ function Admin2Dashboard() {
       />
       <Panel title="Post publishing queue" className="mt-6">
         {postApprovals.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No adviser-approved posts are waiting for publishing.</p>
+          <p className="text-sm text-muted-foreground">
+            No adviser-approved posts are waiting for publishing.
+          </p>
         ) : (
           <div className="space-y-3">
             {postApprovals.slice(0, 3).map((approval) => (
@@ -103,7 +140,9 @@ function Admin2Dashboard() {
       </Panel>
       <Panel title="Accreditation compliance queue" className="mt-6">
         {compliance.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No adviser-cleared accreditation records are waiting for Admin 2 review.</p>
+          <p className="text-sm text-muted-foreground">
+            No adviser-cleared accreditation records are waiting for Admin 2 review.
+          </p>
         ) : (
           <div className="space-y-3">
             {compliance.slice(0, 3).map((submission) => (
@@ -113,7 +152,9 @@ function Admin2Dashboard() {
                   <Badge tone="neutral">{submission.data.accreditationScope}</Badge>
                 </div>
                 <p className="mt-2 text-sm font-semibold">{submission.orgName}</p>
-                <p className="text-xs text-muted-foreground">{submission.data.category} - {submission.data.adviserName}</p>
+                <p className="text-xs text-muted-foreground">
+                  {submission.data.category} - {submission.data.adviserName}
+                </p>
               </div>
             ))}
             <AppButton asChild variant="secondary" size="sm">
@@ -124,7 +165,9 @@ function Admin2Dashboard() {
       </Panel>
       <Panel title="Requirements compliance queue" className="mt-6">
         {requirements.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No adviser-cleared requirements trackers are waiting for Admin 2.</p>
+          <p className="text-sm text-muted-foreground">
+            No adviser-cleared requirements trackers are waiting for Admin 2.
+          </p>
         ) : (
           <div className="space-y-3">
             {requirements.slice(0, 3).map((doc) => (
@@ -145,7 +188,9 @@ function Admin2Dashboard() {
       </Panel>
       <Panel title="Event closeout approval queue" className="mt-6">
         {closeoutQueue.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No adviser-cleared post-event packets are waiting for Admin 2.</p>
+          <p className="text-sm text-muted-foreground">
+            No adviser-cleared post-event packets are waiting for Admin 2.
+          </p>
         ) : (
           <div className="space-y-3">
             {closeoutQueue.slice(0, 3).map((workflow) => (

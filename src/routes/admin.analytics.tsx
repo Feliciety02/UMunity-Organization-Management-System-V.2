@@ -1,7 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { BarChart3, Building2, Calendar, TrendingUp, Users } from "lucide-react";
-import { PageHead, Panel, StatCard, MiniBarChart, LineSpark, PanelSkeleton } from "@/components/dashboard/DashboardLayout";
+import {
+  PageHead,
+  Panel,
+  StatCard,
+  MiniBarChart,
+  LineSpark,
+  PanelSkeleton,
+} from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { AppTabs } from "@/components/ui/app-tabs";
 import { events, organizations } from "@/data/site";
@@ -75,10 +82,32 @@ function Analytics() {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Org memberships" value={totalMembers.toLocaleString()} delta={`${organizations.length} organizations`} icon={Users} tone="primary" />
-        <StatCard label="Organizations" value={String(organizations.length)} delta={`${categories.length} categories`} icon={Building2} tone="gold" />
-        <StatCard label="Upcoming events" value={String(events.length)} icon={Calendar} tone="rose" />
-        <StatCard label="Active RSVPs" value={String(rsvps.filter((r) => r.status !== "cancelled").length)} icon={TrendingUp} tone="emerald" />
+        <StatCard
+          label="Org memberships"
+          value={totalMembers.toLocaleString()}
+          delta={`${organizations.length} organizations`}
+          icon={Users}
+          tone="primary"
+        />
+        <StatCard
+          label="Organizations"
+          value={String(organizations.length)}
+          delta={`${categories.length} categories`}
+          icon={Building2}
+          tone="gold"
+        />
+        <StatCard
+          label="Upcoming events"
+          value={String(events.length)}
+          icon={Calendar}
+          tone="rose"
+        />
+        <StatCard
+          label="Active RSVPs"
+          value={String(rsvps.filter((r) => r.status !== "cancelled").length)}
+          icon={TrendingUp}
+          tone="emerald"
+        />
       </div>
 
       <div className="mt-6">
@@ -101,7 +130,10 @@ function Analytics() {
               <div key={name} className="flex items-center gap-3 py-1.5">
                 <span className="w-32 truncate text-sm">{name}</span>
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
-                  <div className="h-full bg-primary" style={{ width: `${(members / maxCategory) * 100}%` }} />
+                  <div
+                    className="h-full bg-primary"
+                    style={{ width: `${(members / maxCategory) * 100}%` }}
+                  />
                 </div>
                 <span className="w-12 text-right text-xs font-semibold">{members}</span>
               </div>
@@ -114,7 +146,8 @@ function Analytics() {
               <li key={e.title} className="flex items-center justify-between gap-3 py-2">
                 <span className="truncate">{e.title}</span>
                 <span className="shrink-0 text-xs text-muted-foreground">
-                  <span className="font-semibold text-foreground">{e.going}</span> going · {e.maybe} maybe
+                  <span className="font-semibold text-foreground">{e.going}</span> going · {e.maybe}{" "}
+                  maybe
                 </span>
               </li>
             ))}

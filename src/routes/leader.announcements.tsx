@@ -10,12 +10,44 @@ export const Route = createFileRoute("/leader/announcements")({
   component: Announcements,
 });
 
-type Announcement = { t: string; body: string; time: string; reads: number; likes: number; tag: string; audience: string };
+type Announcement = {
+  t: string;
+  body: string;
+  time: string;
+  reads: number;
+  likes: number;
+  tag: string;
+  audience: string;
+};
 
 const initial: Announcement[] = [
-  { t: "Officer elections opening soon", body: "Filing of candidacy starts May 30. Submit forms via the portal.", time: "2h ago", reads: 312, likes: 48, tag: "Election", audience: "All members" },
-  { t: "Reminder: Submit committee reports", body: "All committee heads must submit their April reports by Friday.", time: "Yesterday", reads: 248, likes: 22, tag: "Reminder", audience: "Officers only" },
-  { t: "Welcome our new members 🎉", body: "New members joined this month. Make sure to greet them at the next gathering!", time: "3 days ago", reads: 410, likes: 96, tag: "Welcome", audience: "All members" },
+  {
+    t: "Officer elections opening soon",
+    body: "Filing of candidacy starts May 30. Submit forms via the portal.",
+    time: "2h ago",
+    reads: 312,
+    likes: 48,
+    tag: "Election",
+    audience: "All members",
+  },
+  {
+    t: "Reminder: Submit committee reports",
+    body: "All committee heads must submit their April reports by Friday.",
+    time: "Yesterday",
+    reads: 248,
+    likes: 22,
+    tag: "Reminder",
+    audience: "Officers only",
+  },
+  {
+    t: "Welcome our new members 🎉",
+    body: "New members joined this month. Make sure to greet them at the next gathering!",
+    time: "3 days ago",
+    reads: 410,
+    likes: 96,
+    tag: "Welcome",
+    audience: "All members",
+  },
 ];
 
 function Announcements() {
@@ -31,7 +63,18 @@ function Announcements() {
   function publish() {
     setTouched(true);
     if (!valid) return;
-    setList((l) => [{ t: headline.trim(), body: body.trim(), time: "Just now", reads: 0, likes: 0, tag: "Update", audience }, ...l]);
+    setList((l) => [
+      {
+        t: headline.trim(),
+        body: body.trim(),
+        time: "Just now",
+        reads: 0,
+        likes: 0,
+        tag: "Update",
+        audience,
+      },
+      ...l,
+    ]);
     setHeadline("");
     setBody("");
     setTouched(false);
@@ -76,7 +119,11 @@ function Announcements() {
             aria-invalid={touched && !body.trim()}
             className="mt-3 w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none aria-[invalid=true]:border-destructive"
           />
-          {touched && !valid ? <p className="mt-1 text-xs text-destructive">Add a headline and a message before publishing.</p> : null}
+          {touched && !valid ? (
+            <p className="mt-1 text-xs text-destructive">
+              Add a headline and a message before publishing.
+            </p>
+          ) : null}
           <div className="mt-3 flex items-center justify-between gap-3">
             <select
               value={audience}
@@ -98,17 +145,25 @@ function Announcements() {
         {list.map((a, i) => (
           <Panel key={`${a.t}-${i}`}>
             <div className="flex items-start gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary"><Megaphone className="h-4 w-4" /></div>
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+                <Megaphone className="h-4 w-4" />
+              </div>
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-display text-base font-bold">{a.t}</p>
                   <Badge tone="info">{a.tag}</Badge>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">{a.audience} · {a.time}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {a.audience} · {a.time}
+                </p>
                 <p className="mt-3 text-sm text-foreground/85">{a.body}</p>
                 <div className="mt-4 flex gap-4 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1"><Eye className="h-3 w-3" /> {a.reads}</span>
-                  <span className="inline-flex items-center gap-1"><Heart className="h-3 w-3" /> {a.likes}</span>
+                  <span className="inline-flex items-center gap-1">
+                    <Eye className="h-3 w-3" /> {a.reads}
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <Heart className="h-3 w-3" /> {a.likes}
+                  </span>
                 </div>
               </div>
             </div>

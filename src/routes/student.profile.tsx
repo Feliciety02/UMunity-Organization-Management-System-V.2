@@ -1,6 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Award, Calendar, Camera, Heart, Link as LinkIcon, Mail, MapPin, MessageCircle } from "lucide-react";
+import {
+  Award,
+  Calendar,
+  Camera,
+  Heart,
+  Link as LinkIcon,
+  Mail,
+  MapPin,
+  MessageCircle,
+  type LucideIcon,
+} from "lucide-react";
 import { PageHead, Badge } from "@/components/dashboard/DashboardLayout";
 import { AppButton } from "@/components/ui/app-button";
 import { ProfileHeader } from "@/components/profile/profile-header";
@@ -24,11 +34,12 @@ function Profile() {
   const edit = useToggle();
   const photo = useToggle();
 
-  const initials = session?.name
-    .split(" ")
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join("") ?? "AD";
+  const initials =
+    session?.name
+      .split(" ")
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join("") ?? "AD";
   const joined = organizations.slice(0, 3);
 
   return (
@@ -58,8 +69,10 @@ function Profile() {
             {tab === "About" ? (
               <InfoCard title="About">
                 <p className="text-sm leading-7 text-foreground/90">
-                  Third-year CS student passionate about open-source, accessible design, and campus-led tech for good.
-                  Currently building <span className="font-semibold">UMunity</span> and helping organize the Innovation Summit.
+                  Third-year CS student passionate about open-source, accessible design, and
+                  campus-led tech for good. Currently building{" "}
+                  <span className="font-semibold">UMunity</span> and helping organize the Innovation
+                  Summit.
                 </p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <Row icon={Mail} label={session?.email ?? ""} />
@@ -74,7 +87,10 @@ function Profile() {
               <InfoCard title="Joined organizations">
                 <div className="grid gap-3 sm:grid-cols-2">
                   {joined.map((org) => (
-                    <div key={org.slug} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4">
+                    <div
+                      key={org.slug}
+                      className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4"
+                    >
                       <OrgAvatar org={org} size={44} />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold">{org.name}</p>
@@ -92,11 +108,18 @@ function Profile() {
                 <ul className="space-y-3">
                   {[
                     { icon: Heart, text: "Liked a post from UM CS Society", time: "2h" },
-                    { icon: MessageCircle, text: "Commented on Eco Warriors' Plastic-Free May recap", time: "1d" },
+                    {
+                      icon: MessageCircle,
+                      text: "Commented on Eco Warriors' Plastic-Free May recap",
+                      time: "1d",
+                    },
                     { icon: Calendar, text: "RSVP'd to UM Innovation Summit 2026", time: "2d" },
                     { icon: Award, text: "Earned the 'Active Member' badge", time: "1w" },
                   ].map((activity) => (
-                    <li key={activity.text} className="flex items-start gap-3 rounded-2xl border border-transparent p-3 transition hover:border-border hover:bg-secondary/60">
+                    <li
+                      key={activity.text}
+                      className="flex items-start gap-3 rounded-2xl border border-transparent p-3 transition hover:border-border hover:bg-secondary/60"
+                    >
                       <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                         <activity.icon className="h-4 w-4" />
                       </div>
@@ -133,7 +156,10 @@ function Profile() {
                     { title: "Volunteer", desc: "5 community events" },
                     { title: "First Comment", desc: "Joined the conversation" },
                   ].map((badge) => (
-                    <div key={badge.title} className="rounded-2xl border border-border bg-card p-5 text-center">
+                    <div
+                      key={badge.title}
+                      className="rounded-2xl border border-border bg-card p-5 text-center"
+                    >
                       <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-gold/20 text-primary-deep">
                         <Award className="h-5 w-5" />
                       </div>
@@ -148,7 +174,10 @@ function Profile() {
             <InfoCard title="Your activity feed">
               <div className="space-y-3">
                 {posts.slice(0, 2).map((post) => (
-                  <div key={post.id} className="rounded-2xl border border-border bg-card p-4 text-sm">
+                  <div
+                    key={post.id}
+                    className="rounded-2xl border border-border bg-card p-4 text-sm"
+                  >
                     <p className="text-xs text-muted-foreground">You liked - {post.time}</p>
                     <p className="mt-2 line-clamp-2 leading-6">{post.content}</p>
                   </div>
@@ -255,7 +284,17 @@ function Profile() {
   );
 }
 
-function Row({ icon: Icon, label, link, small }: { icon: any; label: string; link?: boolean; small?: boolean }) {
+function Row({
+  icon: Icon,
+  label,
+  link,
+  small,
+}: {
+  icon: LucideIcon;
+  label: string;
+  link?: boolean;
+  small?: boolean;
+}) {
   return (
     <li className="flex items-center gap-2 text-sm">
       <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />

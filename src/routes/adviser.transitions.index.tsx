@@ -9,14 +9,23 @@ export const Route = createFileRoute("/adviser/transitions/")({
 });
 
 function AdviserTransitionsPage() {
-  const workflows = useTransitionWorkflows().filter((workflow) => workflow.status === "pending_adviser");
+  const workflows = useTransitionWorkflows().filter(
+    (workflow) => workflow.status === "pending_adviser",
+  );
 
   return (
     <>
-      <PageHead title="Officer transition queue" sub="Validate next academic year officer slates before they reach Admin 1." />
+      <PageHead
+        title="Officer transition queue"
+        sub="Validate next academic year officer slates before they reach Admin 1."
+      />
       <Panel>
         {workflows.length === 0 ? (
-          <EmptyState title="No officer transitions pending" sub="New nomination sets will appear here after leaders submit them." icon={UserCog} />
+          <EmptyState
+            title="No officer transitions pending"
+            sub="New nomination sets will appear here after leaders submit them."
+            icon={UserCog}
+          />
         ) : (
           <div className="space-y-3">
             {workflows.map((workflow) => (
@@ -28,7 +37,10 @@ function AdviserTransitionsPage() {
                 <p className="mt-2 text-sm font-semibold">{workflow.orgName}</p>
                 <p className="text-xs text-muted-foreground">{workflow.rationale}</p>
                 <AppButton asChild variant="secondary" size="sm" className="mt-3">
-                  <Link to="/adviser/transitions/$transitionId" params={{ transitionId: workflow.id }}>
+                  <Link
+                    to="/adviser/transitions/$transitionId"
+                    params={{ transitionId: workflow.id }}
+                  >
                     Review transition <ArrowRight className="h-4 w-4" />
                   </Link>
                 </AppButton>
